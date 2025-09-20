@@ -1,0 +1,46 @@
+'use client';
+
+import { Button } from '@/shared/ui/button';
+
+interface Course {
+  id: number;
+  title: string;
+  description: string;
+  level: string;
+  levelColor: string;
+}
+
+interface CourseCardProps {
+  course: Course;
+  index: number;
+}
+
+export const CourseCard = ({ course, index }: CourseCardProps) => {
+  return (
+    <div 
+      className="bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 animate-fade-in-up"
+      style={{ animationDelay: `${index * 0.1}s` }}
+    >
+      <div className="p-6">
+        <div className={`inline-block px-3 py-1 rounded-full text-sm font-semibold mb-4 ${course.levelColor}`}>
+          {course.level}
+        </div>
+
+        <h3 className="text-xl font-bold text-gray-800 mb-4 line-clamp-2">
+          {course.title}
+        </h3>
+
+        <p className="text-gray-600 mb-6 line-clamp-3">
+          {course.description}
+        </p>
+
+        <div className="flex items-center justify-between">
+          <Button variant="primary" className="text-sm px-4 py-2">
+            Узнать больше
+          </Button>
+          <span className="text-2xl text-gray-400 font-light">–</span>
+        </div>
+      </div>
+    </div>
+  );
+};
