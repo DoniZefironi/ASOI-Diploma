@@ -13,15 +13,12 @@ export const Header = () => {
           </Link>
           
           <nav className="hidden md:flex space-x-6 animate-slide-in-right">
-            <a href="#courses" className="text-gray-600 hover:text-blue-600 transition-colors">Courses</a>
-            <a href="#career" className="text-gray-600 hover:text-blue-600 transition-colors">Career</a>
-            <a href="#about" className="text-gray-600 hover:text-blue-600 transition-colors">About</a>
+            <Link href="/courses" className="text-gray-600 hover:text-blue-600 transition-colors">Courses</Link>
+            <Link href="/career" className="text-gray-600 hover:text-blue-600 transition-colors">Career</Link>
           </nav>
 
           <div className="animate-slide-in-right">
-            <Button variant="primary" className="px-6 py-2">
-              Get Started
-            </Button>
+              <Link href="/auth" className="text-gray-600 hover:text-blue-600 transition-colors">Auth</Link>
           </div>
         </div>
       </div>
