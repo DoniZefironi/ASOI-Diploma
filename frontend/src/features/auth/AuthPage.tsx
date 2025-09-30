@@ -8,11 +8,11 @@ export const AuthPage = () => {
   const [isLogin, setIsLogin] = useState(true);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-12">
+    <div className="min-h-screen bg-[#0D1117] py-12">
       <div className="container mx-auto px-4">
         <div className="text-center mb-12 animate-fade-in-up">
-          <h1 className="text-4xl font-bold text-gray-800 mb-4">TechLearn</h1>
-          <nav className="flex justify-center space-x-6 text-gray-600 mb-8">
+          <h1 className="text-4xl font-bold text-white-800 mb-4">TechLearn</h1>
+          <nav className="flex justify-center space-x-6 text-white-600 mb-8">
             <Link href="/courses" className="hover:text-blue-600 transition-colors">Courses</Link>
             <Link href="/career" className="hover:text-blue-600 transition-colors">Career Paths</Link>
             <Link href="/simulator" className="hover:text-blue-600 transition-colors">Circuit Simulator</Link>
@@ -62,10 +62,10 @@ export const AuthPage = () => {
                   <input
                     type="text"
                     placeholder="Enter your username"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-black"
                   />
                 </div>
-              )}
+                          )}
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -74,7 +74,7 @@ export const AuthPage = () => {
                 <input
                   type={isLogin ? "text" : "email"}
                   placeholder={isLogin ? "Enter your email or username" : "Enter your email"}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-black"
                 />
               </div>
 
@@ -85,7 +85,7 @@ export const AuthPage = () => {
                 <input
                   type="password"
                   placeholder="Enter your password"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-black"
                 />
               </div>
 
@@ -134,11 +134,11 @@ export const AuthPage = () => {
             </div>
 
             <div className="grid grid-cols-2 gap-4">
-              <button className="flex items-center justify-center px-4 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+              <button className="flex items-center justify-center text-gray-500 px-4 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
                 <span className="w-5 h-5 mr-2">🎯</span>
                 Google
               </button>
-              <button className="flex items-center justify-center px-4 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+              <button className="flex items-center justify-center text-gray-500 px-4 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
                 <span className="w-5 h-5 mr-2">💼</span>
                 GitHub
               </button>

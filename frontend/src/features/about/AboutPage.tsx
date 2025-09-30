@@ -32,30 +32,30 @@ export const AboutPage = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12">
+    <div className="min-h-screen bg-[#0D1117] py-12">
       <div className="container mx-auto px-4">
         <div className="text-center mb-16 animate-fade-in-up">
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-800 mb-6">
+          <h1 className="text-4xl md:text-5xl font-bold text-white mb-6">
             О TechEd
           </h1>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+          <p className="text-xl text-white max-w-3xl mx-auto">
             Мы делаем качественное техническое образование доступным для каждого
           </p>
         </div>
 
         <section className="mb-20 animate-fade-in-up">
           <div className="max-w-4xl mx-auto">
-            <h2 className="text-3xl font-bold text-gray-800 mb-8 text-center">
+            <h2 className="text-3xl font-bold text-white mb-8 text-center">
               Наша история
             </h2>
             <Card className="p-8">
-              <p className="text-lg text-gray-700 leading-relaxed mb-6">
+              <p className="text-lg text-white leading-relaxed mb-6">
                 TechEd был основан в 2018 году с простой миссией: сделать качественное техническое 
                 образование доступным для каждого, независимо от происхождения или местоположения. 
                 Мы верим, что технологии обладают силой изменять жизни, и мы стремимся дать людям 
                 навыки, необходимые для успеха в цифровую эпоху.
               </p>
-              <p className="text-lg text-gray-700 leading-relaxed">
+              <p className="text-lg text-white leading-relaxed">
                 Начиная с небольших онлайн-курсов, мы выросли в полноценную образовательную платформу, 
                 которая помогла тысячам студентов по всему миру начать карьеру в IT.
               </p>
@@ -64,15 +64,15 @@ export const AboutPage = () => {
         </section>
 
         <section className="mb-20 animate-fade-in-up">
-          <h2 className="text-3xl font-bold text-gray-800 mb-12 text-center">
+          <h2 className="text-3xl font-bold text-white mb-12 text-center">
             Наши ценности
           </h2>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-6xl mx-auto">
             <Card className="p-6 hover:shadow-xl transition-shadow">
               <div className="text-4xl mb-4">🚀</div>
-              <h3 className="text-xl font-semibold text-gray-800 mb-3">Инновации</h3>
-              <p className="text-gray-600">
+              <h3 className="text-xl font-semibold text-white mb-3">Инновации</h3>
+              <p className="text-white">
                 Мы постоянно ищем новые и лучшие способы доставки образовательного контента, 
                 используя современные технологии и методики обучения.
               </p>
@@ -80,8 +80,8 @@ export const AboutPage = () => {
 
             <Card className="p-6 hover:shadow-xl transition-shadow">
               <div className="text-4xl mb-4">🌍</div>
-              <h3 className="text-xl font-semibold text-gray-800 mb-3">Инклюзивность</h3>
-              <p className="text-gray-600">
+              <h3 className="text-xl font-semibold text-white mb-3">Инклюзивность</h3>
+              <p className="text-white">
                 Мы обеспечиваем доступность нашей платформы для всех учащихся, создавая 
                 инклюзивную и welcoming среду для людей из разных背景.
               </p>
@@ -89,8 +89,8 @@ export const AboutPage = () => {
 
             <Card className="p-6 hover:shadow-xl transition-shadow">
               <div className="text-4xl mb-4">🤝</div>
-              <h3 className="text-xl font-semibold text-gray-800 mb-3">Сотрудничество</h3>
-              <p className="text-gray-600">
+              <h3 className="text-xl font-semibold text-white mb-3">Сотрудничество</h3>
+              <p className="text-white">
                 Мы верим, что лучшее обучение происходит, когда мы работаем вместе. 
                 Мы поощряем совместное обучение и обмен знаниями.
               </p>
@@ -98,8 +98,8 @@ export const AboutPage = () => {
 
             <Card className="p-6 hover:shadow-xl transition-shadow">
               <div className="text-4xl mb-4">⭐</div>
-              <h3 className="text-xl font-semibold text-gray-800 mb-3">Стремление к excellence</h3>
-              <p className="text-gray-600">
+              <h3 className="text-xl font-semibold text-white mb-3">Стремление к excellence</h3>
+              <p className="text-white">
                 Мы стремимся к высочайшим стандартам в наших курсах и услугах, 
                 постоянно улучшая качество образовательного опыта.
               </p>
@@ -108,7 +108,7 @@ export const AboutPage = () => {
         </section>
 
         <section className="mb-20 animate-fade-in-up">
-          <h2 className="text-3xl font-bold text-gray-800 mb-12 text-center">
+          <h2 className="text-3xl font-bold text-white mb-12 text-center">
             Знакомьтесь с командой
           </h2>
           
@@ -120,13 +120,13 @@ export const AboutPage = () => {
                 style={{ animationDelay: `${index * 0.1}s` }}
               >
                 <div className="text-6xl mb-4">{member.avatar}</div>
-                <h3 className="text-xl font-semibold text-gray-800 mb-2">
+                <h3 className="text-xl font-semibold text-white mb-2">
                   {member.name}
                 </h3>
                 <p className="text-blue-600 font-medium mb-4">
                   {member.position}
                 </p>
-                <p className="text-gray-600 text-sm">
+                <p className="text-white text-sm">
                   {member.bio}
                 </p>
               </Card>
@@ -159,10 +159,10 @@ export const AboutPage = () => {
         </section>
 
         <section className="text-center animate-fade-in-up">
-          <h2 className="text-3xl font-bold text-gray-800 mb-6">
+          <h2 className="text-3xl font-bold text-white mb-6">
             Присоединяйтесь к нашему сообществу
           </h2>
-          <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
+          <p className="text-xl text-white mb-8 max-w-2xl mx-auto">
             Начните свой путь в IT вместе с TechEd и откройте новые возможности для карьеры
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">

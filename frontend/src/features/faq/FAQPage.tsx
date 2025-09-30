@@ -83,13 +83,13 @@ export const FAQPage = () => {
   })).filter(category => category.items.length > 0);
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12">
+    <div className="min-h-screen bg-[#0D1117] py-12">
       <div className="container mx-auto px-4">
         <div className="text-center mb-12 animate-fade-in-up">
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-800 mb-6">
+          <h1 className="text-4xl md:text-5xl font-bold text-white mb-6">
             Frequently Asked Questions
           </h1>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+          <p className="text-xl text-white max-w-2xl mx-auto">
             Find answers to common questions about our platform, courses, payments, and technical requirements.
           </p>
         </div>
@@ -104,7 +104,7 @@ export const FAQPage = () => {
               className="w-full px-6 py-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent text-lg transition-all"
             />
             <div className="absolute right-4 top-1/2 transform -translate-y-1/2">
-              <span className="text-gray-400">🔍</span>
+              <span className="text-white">🔍</span>
             </div>
           </div>
         </div>
@@ -112,7 +112,7 @@ export const FAQPage = () => {
         <div className="max-w-4xl mx-auto space-y-8">
           {filteredFAQs.map((category, categoryIndex) => (
             <div key={categoryIndex} className="animate-fade-in-up">
-              <h2 className="text-2xl font-bold text-gray-800 mb-6">
+              <h2 className="text-2xl font-bold text-white mb-6">
                 {category.category}
               </h2>
 
@@ -130,17 +130,17 @@ export const FAQPage = () => {
                         onClick={() => toggleItem(globalIndex)}
                         className="w-full text-left flex items-center justify-between"
                       >
-                        <h3 className="text-lg font-semibold text-gray-800 pr-4">
+                        <h3 className="text-lg font-semibold text-white pr-4">
                           {item.question}
                         </h3>
-                        <span className="text-gray-400 text-xl transform transition-transform">
+                        <span className="text-white text-xl transform transition-transform">
                           {isOpen ? '−' : '+'}
                         </span>
                       </button>
 
                       {isOpen && (
                         <div className="mt-4 pl-2 animate-fade-in">
-                          <p className="text-gray-600 leading-relaxed border-l-2 border-blue-500 pl-4">
+                          <p className="text-white leading-relaxed border-l-2 border-blue-500 pl-4">
                             {item.answer}
                           </p>
                         </div>
@@ -156,10 +156,10 @@ export const FAQPage = () => {
         {filteredFAQs.length === 0 && (
           <div className="text-center mt-16 animate-fade-in-up">
             <div className="text-6xl mb-4">🤔</div>
-            <h3 className="text-2xl font-bold text-gray-800 mb-4">
+            <h3 className="text-2xl font-bold text-white mb-4">
               No results found
             </h3>
-            <p className="text-gray-600 mb-6">
+            <p className="text-white mb-6">
               Try different search terms or browse our categories above.
             </p>
           </div>
@@ -167,10 +167,10 @@ export const FAQPage = () => {
 
         <div className="text-center mt-20 animate-fade-in-up">
           <Card className="p-8 bg-blue-50 border-blue-200">
-            <h3 className="text-2xl font-bold text-gray-800 mb-4">
+            <h3 className="text-2xl font-bold text-white mb-4">
               Still have questions?
             </h3>
-            <p className="text-gray-600 mb-6">
+            <p className="text-white mb-6">
               Can't find what you're looking for? Our support team is here to help.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">

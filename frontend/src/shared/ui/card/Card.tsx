@@ -14,7 +14,7 @@ export const Card = ({
 }: CardProps) => {
   return (
     <div 
-      className={`bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-300 ${className}`}
+      className={`bg-gray-800 text-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-300 ${className}`}
       {...props}
     >
       {children}
