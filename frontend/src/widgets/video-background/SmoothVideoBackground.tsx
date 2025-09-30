@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 
 export const SmoothVideoBackground = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -49,7 +49,9 @@ export const SmoothVideoBackground = () => {
 
       // Запускаем анимацию только при активном скролле
       isScrolling = setTimeout(() => {
-        cancelAnimationFrame(requestRef.current!);
+        if (requestRef.current) {
+          cancelAnimationFrame(requestRef.current);
+        }
       }, 100);
 
       requestRef.current = requestAnimationFrame(animateVideo);
@@ -61,7 +63,9 @@ export const SmoothVideoBackground = () => {
     return () => {
       window.removeEventListener('scroll', handleScroll);
       clearTimeout(isScrolling);
-      cancelAnimationFrame(requestRef.current!);
+      if (requestRef.current) {
+        cancelAnimationFrame(requestRef.current);
+      }
     };
   }, []);
 
@@ -77,6 +81,7 @@ export const SmoothVideoBackground = () => {
       >
         <source src="/videos/background.mp4" type="video/mp4" />
         <source src="/videos/background.webm" type="video/webm" />
+        Your browser does not support the video tag.
       </video>
       <div className="absolute inset-0 bg-black bg-opacity-50"></div>
     </div>

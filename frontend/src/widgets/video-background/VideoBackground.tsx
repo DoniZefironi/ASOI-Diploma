@@ -16,8 +16,7 @@ export const VideoBackground = () => {
     const handleScroll = () => {
       const sectionRect = section.getBoundingClientRect();
       const windowHeight = window.innerHeight;
-      
-      // Проверяем, видна ли секция на экране
+
       const isSectionVisible = (
         sectionRect.top < windowHeight && 
         sectionRect.bottom > 0
@@ -26,22 +25,19 @@ export const VideoBackground = () => {
       setIsVisible(isSectionVisible);
 
       if (isSectionVisible) {
-        // Вычисляем прогресс скролла внутри секции (0 до 1)
         const scrollProgress = Math.max(0, Math.min(1, 
           (-sectionRect.top) / (sectionRect.height - windowHeight)
         ));
 
-        // Устанавливаем время видео в зависимости от прогресса скролла
         if (video.duration) {
           video.currentTime = video.duration * scrollProgress;
         }
       }
     };
 
-    // Ждем загрузки метаданных видео
     const handleLoadedMetadata = () => {
       window.addEventListener('scroll', handleScroll, { passive: true });
-      handleScroll(); // Инициализация при загрузке
+      handleScroll(); 
     };
 
     video.addEventListener('loadedmetadata', handleLoadedMetadata);
@@ -57,7 +53,6 @@ export const VideoBackground = () => {
       ref={sectionRef}
       className="relative min-h-screen flex items-center justify-center overflow-hidden"
     >
-      {/* Видео бэкграунд */}
       <video
         ref={videoRef}
         className="absolute inset-0 w-full h-full object-cover"
@@ -70,10 +65,8 @@ export const VideoBackground = () => {
         Your browser does not support the video tag.
       </video>
 
-      {/* Затемнение для лучшей читаемости текста */}
       <div className="absolute inset-0 bg-black bg-opacity-40"></div>
 
-      {/* Контент поверх видео */}
       <div className="relative z-10 text-center text-white px-4 max-w-4xl mx-auto">
         <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight">
           Unlock Your Potential with <span className="text-blue-400">EduTech</span>
