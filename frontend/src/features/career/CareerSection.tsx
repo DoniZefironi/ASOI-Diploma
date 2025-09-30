@@ -5,7 +5,7 @@ import { Button } from '@/shared/ui/button';
 
 export const CareerSection = () => {
   return (
-    <section id="career" className="py-20 bg-gray-50">
+    <section id="career" className="py-20">
       <div className="container mx-auto px-4">
         <h2 className="text-3xl md:text-4xl font-bold text-center text-gray-800 mb-12 animate-fade-in-up">
           Career Guidance

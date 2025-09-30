@@ -4,9 +4,7 @@ import { Button } from '@/shared/ui/button';
 
 export const Hero = () => {
   return (
-    <section className="min-h-screen bg-gradient-to-br from-blue-900 to-purple-900 flex items-center justify-center relative overflow-hidden">
-      <div className="absolute inset-0 bg-black opacity-10"></div>
-
+    <section className="min-h-screen flex items-center justify-center relative">
       <div className="relative z-10 text-center text-white px-4 max-w-4xl mx-auto">
         <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight animate-fade-in-up">
           Unlock Your Potential with <span className="text-blue-400">EduTech</span>
@@ -28,10 +26,6 @@ export const Hero = () => {
           </Button>
         </div>
       </div>
-
-      <div className="absolute top-20 left-20 w-32 h-32 bg-blue-500 rounded-full opacity-20 animate-pulse"></div>
-      <div className="absolute bottom-20 right-20 w-24 h-24 bg-purple-500 rounded-full opacity-20 animate-pulse animate-delay-1000"></div>
-      <div className="absolute top-1/3 right-1/4 w-16 h-16 bg-green-500 rounded-full opacity-20 animate-pulse animate-delay-2000"></div>
     </section>
   );
 };
