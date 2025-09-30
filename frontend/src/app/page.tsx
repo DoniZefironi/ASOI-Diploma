@@ -1,13 +1,15 @@
-import { Hero } from '@/widgets/hero';
+import { VideoBackground } from '@/widgets/video-background/VideoBackground';
 import { CoursesSection } from '@/features/courses';
 import { CareerSection } from '@/features/career';
 
 export default function Home() {
   return (
     <main className="min-h-screen">
-      <Hero />
-      <CoursesSection />
-      <CareerSection />
+      <VideoBackground />
+      <div className="relative z-10">
+        <CoursesSection />
+        <CareerSection />
+      </div>
     </main>
   );
 }
