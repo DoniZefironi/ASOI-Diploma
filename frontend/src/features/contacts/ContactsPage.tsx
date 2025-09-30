@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card } from '@/shared/ui/card';
 import { Button } from '@/shared/ui/button';
 
@@ -10,6 +10,47 @@ export const ContactsPage = () => {
     email: '',
     message: ''
   });
+
+  const [mapLoaded, setMapLoaded] = useState(false);
+
+  useEffect(() => {
+    const script = document.createElement('script');
+    script.src = 'https://api-maps.yandex.ru/2.1/?lang=ru_RU';
+    script.async = true;
+    
+    script.onload = () => {
+      // @ts-ignore
+      window.ymaps.ready(() => {
+        setMapLoaded(true);
+        // @ts-ignore
+        const map = new window.ymaps.Map('map', {
+          center: [55.7819, 37.6117], 
+          zoom: 16,
+          controls: ['zoomControl', 'fullscreenControl']
+        });
+
+        // @ts-ignore
+        const placemark = new window.ymaps.Placemark([55.7819, 37.6117], {
+          hintContent: 'EduTech Office',
+          balloonContent: `
+            <strong>EduTech</strong><br/>
+            г. Москва, ул. Образцова, д. 25<br/>
+            Бизнес-центр "ТехноПарк", офис 304
+          `
+        }, {
+          preset: 'islands#blueDotIcon'
+        });
+
+        map.geoObjects.add(placemark);
+      });
+    };
+
+    document.head.appendChild(script);
+
+    return () => {
+      document.head.removeChild(script);
+    };
+  }, []);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -99,7 +140,7 @@ export const ContactsPage = () => {
                     onChange={handleChange}
                     placeholder="Введите ваше имя"
                     required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-black"
                   />
                 </div>
 
@@ -114,7 +155,7 @@ export const ContactsPage = () => {
                     onChange={handleChange}
                     placeholder="Введите ваш адрес электронной почты"
                     required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-black"
                   />
                 </div>
 
@@ -129,7 +170,7 @@ export const ContactsPage = () => {
                     placeholder="Введите ваше сообщение"
                     rows={5}
                     required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none text-black"
                   />
                 </div>
 
@@ -152,12 +193,17 @@ export const ContactsPage = () => {
           </div>
 
           <Card className="p-6">
-            <div className="aspect-video bg-gradient-to-br from-blue-100 to-indigo-200 rounded-lg flex items-center justify-center">
-              <div className="text-center">
-                <div className="text-6xl mb-4">🏢</div>
-                <p className="text-white">Изображение офиса</p>
-                <p className="text-sm text-white">г. Москва, ул. Образцова, д. 25</p>
-              </div>
+            <div 
+              id="map" 
+              className="aspect-video rounded-lg bg-gray-200 flex items-center justify-center"
+              style={{ minHeight: '400px' }}
+            >
+              {!mapLoaded && (
+                <div className="text-center">
+                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+                  <p className="text-gray-600">Загрузка карты...</p>
+                </div>
+              )}
             </div>
             
             <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
