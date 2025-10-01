@@ -2,6 +2,7 @@
 
 import { Card } from '@/shared/ui/card';
 import { Button } from '@/shared/ui/button';
+import Image from 'next/image';
 
 export const CareerPage = () => {
   return (
@@ -67,15 +68,21 @@ export const CareerPage = () => {
             </h3>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              <Card className="hover:shadow-xl transition-all duration-300">
-                <div className="h-48 bg-gradient-to-br from-blue-100 to-indigo-200 rounded-t-xl flex items-center justify-center">
-                  <span className="text-4xl">📈</span>
+              <Card className="hover:shadow-xl transition-all duration-300 overflow-hidden">
+                <div className="relative h-48 bg-gray-700 rounded-t-xl overflow-hidden">
+                  <Image
+                    src="/images/TechIndustry.jpg"
+                    alt="Top Skills for Tech Professionals in 2024"
+                    fill
+                    className="object-cover"
+                  />
+                  <div className="absolute inset-0 bg-black bg-opacity-20"></div>
                 </div>
                 <div className="p-6">
                   <h4 className="text-xl font-semibold text-white mb-3">
                     Top Skills for Tech Professionals in 2024
                   </h4>
-                  <p className="text-white mb-4">
+                  <p className="text-gray-300 mb-4">
                     Stay ahead of the curve with the most in-demand skills in the tech industry.
                   </p>
                   <Button variant="primary" className="w-full">
@@ -84,15 +91,21 @@ export const CareerPage = () => {
                 </div>
               </Card>
 
-              <Card className="hover:shadow-xl transition-all duration-300">
-                <div className="h-48 bg-gradient-to-br from-green-100 to-teal-200 rounded-t-xl flex items-center justify-center">
-                  <span className="text-4xl">🚀</span>
+              <Card className="hover:shadow-xl transition-all duration-300 overflow-hidden">
+                <div className="relative h-48 bg-gray-700 rounded-t-xl overflow-hidden">
+                  <Image
+                    src="/images/ProgrammingLanguage.png"
+                    alt="Choosing the Right Programming Language"
+                    fill
+                    className="object-cover"
+                  />
+                  <div className="absolute inset-0 bg-black bg-opacity-20"></div>
                 </div>
                 <div className="p-6">
                   <h4 className="text-xl font-semibold text-white mb-3">
                     Choosing the Right Programming Language for Your Career
                   </h4>
-                  <p className="text-white mb-4">
+                  <p className="text-gray-300 mb-4">
                     A guide to selecting the best programming language based on your career goals.
                   </p>
                   <Button variant="primary" className="w-full">
@@ -101,15 +114,21 @@ export const CareerPage = () => {
                 </div>
               </Card>
 
-              <Card className="hover:shadow-xl transition-all duration-300">
-                <div className="h-48 bg-gradient-to-br from-purple-100 to-pink-200 rounded-t-xl flex items-center justify-center">
-                  <span className="text-4xl">🔮</span>
+              <Card className="hover:shadow-xl transition-all duration-300 overflow-hidden">
+                <div className="relative h-48 bg-gray-700 rounded-t-xl overflow-hidden">
+                  <Image
+                    src="/images/TechProfessionals.png"
+                    alt="The Future of Work in Tech"
+                    fill
+                    className="object-cover"
+                  />
+                  <div className="absolute inset-0 bg-black bg-opacity-20"></div>
                 </div>
                 <div className="p-6">
                   <h4 className="text-xl font-semibold text-white mb-3">
                     The Future of Work in the Tech Industry
                   </h4>
-                  <p className="text-white mb-4">
+                  <p className="text-gray-300 mb-4">
                     Insights into emerging trends and future career opportunities in the tech sector.
                   </p>
                   <Button variant="primary" className="w-full">

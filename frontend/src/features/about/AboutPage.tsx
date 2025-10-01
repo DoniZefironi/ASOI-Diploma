@@ -2,34 +2,53 @@
 
 import { Card } from '@/shared/ui/card';
 import { Button } from '@/shared/ui/button';
+import { useState, useRef } from 'react'
 
 export const AboutPage = () => {
+  const [hoveredCard, setHoveredCard] = useState<number | null>(null);
+  const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
+
   const teamMembers = [
     {
-      name: "Др. Аня Шарма",
-      position: "CEO & Основатель",
-      bio: "Эксперт в области образовательных технологий с 15-летним опытом работы в ведущих IT-компаниях.",
-      avatar: "👩‍💼"
+      name: "Электроника и схемотехника",
+      position: "Интерактивный эмулятор",
+      bio: "Изучайте электронику через практические эксперименты с нашим виртуальным эмулятором схем",
+      video: "/videos/vladik.mp4"
     },
     {
-      name: "Мистер Бен Картер",
-      position: "Глава учебного плана",
-      bio: "Специалист по разработке образовательных программ с фокусом на практические навыки.",
-      avatar: "👨‍🏫"
+      name: "Английский для IT-специалистов",
+      position: "Языковая практика",
+      bio: "Совершенствуйте английский через реальные рабочие ситуации в IT-среде",
+      video: "/videos/matvey.mp4"
     },
     {
-      name: "Мисс Хлоя Дэвис",
-      position: "Ведущий инструктор",
-      bio: "Опытный преподаватель с более чем 10-летним стажем в IT-образовании.",
-      avatar: "👩‍🎓"
-    },
-    {
-      name: "Мистер Дэвид Эванс",
-      position: "Менеджер сообщества",
-      bio: "Специалист по построению и поддержке обучающих сообществ.",
-      avatar: "👨‍💼"
+      name: "Информатика и профориентация",
+      position: "Карьерный гид",
+      bio: "Определите свой путь в IT через тестирование и персонализированные рекомендации",
+      video: "/videos/lizav2.mp4"
     }
-  ];
+  ];  
+
+  const handleMouseEnter = (index: number) => {
+    setHoveredCard(index);
+    const video = videoRefs.current[index];
+    if (video) {
+      video.currentTime = 0;
+      video.play().catch(() => {});
+    }
+  };
+
+  const handleMouseLeave = (index: number) => {
+    setHoveredCard(null);
+    const video = videoRefs.current[index];
+    if (video) {
+      video.pause();
+    }
+  };
+
+  const setVideoRef = (index: number) => (el: HTMLVideoElement | null) => {
+    videoRefs.current[index] = el;
+  };
 
   return (
     <div className="min-h-screen bg-[#0D1117] py-12">
@@ -70,7 +89,6 @@ export const AboutPage = () => {
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-6xl mx-auto">
             <Card className="p-6 hover:shadow-xl transition-shadow">
-              <div className="text-4xl mb-4">🚀</div>
               <h3 className="text-xl font-semibold text-white mb-3">Инновации</h3>
               <p className="text-white">
                 Мы постоянно ищем новые и лучшие способы доставки образовательного контента, 
@@ -79,7 +97,6 @@ export const AboutPage = () => {
             </Card>
 
             <Card className="p-6 hover:shadow-xl transition-shadow">
-              <div className="text-4xl mb-4">🌍</div>
               <h3 className="text-xl font-semibold text-white mb-3">Инклюзивность</h3>
               <p className="text-white">
                 Мы обеспечиваем доступность нашей платформы для всех учащихся, создавая 
@@ -88,7 +105,6 @@ export const AboutPage = () => {
             </Card>
 
             <Card className="p-6 hover:shadow-xl transition-shadow">
-              <div className="text-4xl mb-4">🤝</div>
               <h3 className="text-xl font-semibold text-white mb-3">Сотрудничество</h3>
               <p className="text-white">
                 Мы верим, что лучшее обучение происходит, когда мы работаем вместе. 
@@ -97,7 +113,6 @@ export const AboutPage = () => {
             </Card>
 
             <Card className="p-6 hover:shadow-xl transition-shadow">
-              <div className="text-4xl mb-4">⭐</div>
               <h3 className="text-xl font-semibold text-white mb-3">Стремление к excellence</h3>
               <p className="text-white">
                 Мы стремимся к высочайшим стандартам в наших курсах и услугах, 
@@ -109,24 +124,41 @@ export const AboutPage = () => {
 
         <section className="mb-20 animate-fade-in-up">
           <h2 className="text-3xl font-bold text-white mb-12 text-center">
-            Знакомьтесь с командой
+            Наши направления
           </h2>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-6xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
             {teamMembers.map((member, index) => (
               <Card 
                 key={index} 
-                className="p-6 text-center hover:shadow-xl transition-shadow animate-fade-in-up"
-                style={{ animationDelay: `${index * 0.1}s` }}
+                className="p-0 text-center hover:shadow-xl transition-all duration-300 overflow-hidden group relative"
+                onMouseEnter={() => handleMouseEnter(index)}
+                onMouseLeave={() => handleMouseLeave(index)}
               >
-                <div className="text-6xl mb-4">{member.avatar}</div>
-                <h3 className="text-xl font-semibold text-white mb-2">
+                <div className="relative h-80 mb-4 rounded-lg overflow-hidden bg-gray-700">
+                  <video
+                    ref={setVideoRef(index)}
+                    src={member.video}
+                    muted
+                    loop
+                    playsInline
+                    preload="metadata"
+                    className={`w-full h-full object-cover transition-all duration-500 ${
+                      hoveredCard === index 
+                        ? 'scale-105' 
+                        : 'scale-100'
+                    }`}
+                  />
+                  
+                </div>
+
+                <h3 className="text-xl font-semibold text-white mb-2 pt-3 px-5">
                   {member.name}
                 </h3>
-                <p className="text-blue-600 font-medium mb-4">
+                <p className="text-blue-400 font-medium mb-4 px-5">
                   {member.position}
                 </p>
-                <p className="text-white text-sm">
+                <p className="text-gray-300 text-sm leading-relaxed pb-6 px-5">
                   {member.bio}
                 </p>
               </Card>
@@ -135,7 +167,7 @@ export const AboutPage = () => {
         </section>
 
         <section className="mb-20 animate-fade-in-up">
-          <div className="bg-blue-600 rounded-2xl p-8 text-white text-center">
+          <div className="bg-blue-900 rounded-2xl p-8 text-white text-center">
             <h2 className="text-2xl font-bold mb-8">Наши достижения</h2>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
               <div>

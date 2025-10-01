@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { Card } from '@/shared/ui/card';
+import { Button } from '@/shared/ui/button';
 
 export const FAQPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -101,10 +102,10 @@ export const FAQPage = () => {
               placeholder="Search for answers"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full px-6 py-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent text-lg transition-all"
+              className="w-full px-6 py-4 border border-gray-300 text-black rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent text-lg transition-all"
             />
             <div className="absolute right-4 top-1/2 transform -translate-y-1/2">
-              <span className="text-white">🔍</span>
+              <span className="text-black">🔍</span>
             </div>
           </div>
         </div>
@@ -174,18 +175,20 @@ export const FAQPage = () => {
               Can't find what you're looking for? Our support team is here to help.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <a
-                href="/contacts"
-                className="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+              <Button 
+                variant="primary" 
+                size="lg"
+                onClick={() => window.location.href = '/contacts'}
               >
                 Contact Support
-              </a>
-              <a
-                href="/courses"
-                className="border border-blue-600 text-blue-600 px-6 py-3 rounded-lg font-semibold hover:bg-blue-600 hover:text-white transition-colors"
+              </Button>
+              <Button 
+                variant="secondary" 
+                size="lg"
+                onClick={() => window.location.href = '/courses'}
               >
                 Browse Courses
-              </a>
+              </Button>
             </div>
           </Card>
         </div>
