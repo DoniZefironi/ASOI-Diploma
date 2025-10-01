@@ -21,8 +21,8 @@ export const CourseCard = ({ course, index }: CourseCardProps) => {
       className="bg-gray-800 text-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 animate-fade-in-up"
       style={{ animationDelay: `${index * 0.1}s` }}
     >
-      <div className="p-6">
-        <div className={`inline-block px-3 py-1 rounded-full text-sm font-semibold mb-4 ${course.levelColor}`}>
+      <div className="p-6 flex flex-col justify-between h-full">
+        <div className={`inline-block w-fit px-3 py-1 rounded-full text-sm font-semibold mb-4 ${course.levelColor}`}>
           {course.level}
         </div>
 

@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { Button } from '@/shared/ui/button';
+import Image from 'next/image';
 
 export const AuthPage = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -135,11 +136,25 @@ export const AuthPage = () => {
 
             <div className="grid grid-cols-2 gap-4">
               <button className="flex items-center justify-center text-gray-500 px-4 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
-                <span className="w-5 h-5 mr-2">🎯</span>
+                <span className="w-5 h-5 mr-2 relative">
+                  <Image
+                    src="/icons/google.png"
+                    alt="Google icon"
+                    width={20}
+                    height={20}
+                  />
+                </span>
                 Google
               </button>
               <button className="flex items-center justify-center text-gray-500 px-4 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
-                <span className="w-5 h-5 mr-2">💼</span>
+                <span className="w-5 h-5 mr-2 relative">
+                  <Image
+                    src="/icons/git.png"
+                    alt="GitHub icon"
+                    width={20}
+                    height={20}
+                  />
+                </span>
                 GitHub
               </button>
             </div>
