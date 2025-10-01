@@ -18,19 +18,19 @@ interface CourseCardProps {
 export const CourseCard = ({ course, index }: CourseCardProps) => {
   return (
     <div 
-      className="bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 animate-fade-in-up"
+      className="bg-gray-800 text-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 animate-fade-in-up"
       style={{ animationDelay: `${index * 0.1}s` }}
     >
-      <div className="p-6">
-        <div className={`inline-block px-3 py-1 rounded-full text-sm font-semibold mb-4 ${course.levelColor}`}>
+      <div className="p-6 flex flex-col justify-between h-full">
+        <div className={`inline-block w-fit px-3 py-1 rounded-full text-sm font-semibold mb-4 ${course.levelColor}`}>
           {course.level}
         </div>
 
-        <h3 className="text-xl font-bold text-gray-800 mb-4 line-clamp-2">
+        <h3 className="text-xl font-bold text-white mb-4 line-clamp-2">
           {course.title}
         </h3>
 
-        <p className="text-gray-600 mb-6 line-clamp-3">
+        <p className="text-white mb-6 line-clamp-3">
           {course.description}
         </p>
 
@@ -38,7 +38,7 @@ export const CourseCard = ({ course, index }: CourseCardProps) => {
           <Button variant="primary" className="text-sm px-4 py-2">
             Узнать больше
           </Button>
-          <span className="text-2xl text-gray-400 font-light">–</span>
+          <span className="text-2xl text-white font-light">–</span>
         </div>
       </div>
     </div>

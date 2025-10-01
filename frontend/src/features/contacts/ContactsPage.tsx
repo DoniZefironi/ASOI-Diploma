@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card } from '@/shared/ui/card';
 import { Button } from '@/shared/ui/button';
 
@@ -11,9 +11,49 @@ export const ContactsPage = () => {
     message: ''
   });
 
+  const [mapLoaded, setMapLoaded] = useState(false);
+
+  useEffect(() => {
+    const script = document.createElement('script');
+    script.src = 'https://api-maps.yandex.ru/2.1/?lang=ru_RU';
+    script.async = true;
+    
+    script.onload = () => {
+      // @ts-ignore
+      window.ymaps.ready(() => {
+        setMapLoaded(true);
+        // @ts-ignore
+        const map = new window.ymaps.Map('map', {
+          center: [55.7819, 37.6117], 
+          zoom: 16,
+          controls: ['zoomControl', 'fullscreenControl']
+        });
+
+        // @ts-ignore
+        const placemark = new window.ymaps.Placemark([55.7819, 37.6117], {
+          hintContent: 'EduTech Office',
+          balloonContent: `
+            <strong>EduTech</strong><br/>
+            г. Москва, ул. Образцова, д. 25<br/>
+            Бизнес-центр "ТехноПарк", офис 304
+          `
+        }, {
+          preset: 'islands#blueDotIcon'
+        });
+
+        map.geoObjects.add(placemark);
+      });
+    };
+
+    document.head.appendChild(script);
+
+    return () => {
+      document.head.removeChild(script);
+    };
+  }, []);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Обработка отправки формы
     console.log('Form submitted:', formData);
     alert('Сообщение отправлено! Мы свяжемся с вами в ближайшее время.');
     setFormData({ name: '', email: '', message: '' });
@@ -27,13 +67,13 @@ export const ContactsPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12">
+    <div className="min-h-screen bg-[#0D1117] py-12">
       <div className="container mx-auto px-4">
         <div className="text-center mb-16 animate-fade-in-up">
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-800 mb-6">
+          <h1 className="text-4xl md:text-5xl font-bold text-white mb-6">
             Связаться с нами
           </h1>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+          <p className="text-xl text-white max-w-2xl mx-auto">
             Если у вас есть вопросы, предложения или вам нужна помощь, пожалуйста, 
             свяжитесь с нами, используя информацию ниже или форму обратной связи.
           </p>
@@ -42,13 +82,13 @@ export const ContactsPage = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
           <div className="animate-slide-in-left">
             <Card className="p-8 h-full">
-              <h2 className="text-2xl font-bold text-gray-800 mb-8">
+              <h2 className="text-2xl font-bold text-white mb-8">
                 Контактная информация
               </h2>
 
               <div className="space-y-6">
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-700 mb-2">Электронная почта</h3>
+                  <h3 className="text-lg font-semibold text-white mb-2">Электронная почта</h3>
                   <a 
                     href="mailto:support@edutech.com" 
                     className="text-blue-600 hover:text-blue-700 transition-colors text-lg"
@@ -58,7 +98,7 @@ export const ContactsPage = () => {
                 </div>
 
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-700 mb-2">Телефон</h3>
+                  <h3 className="text-lg font-semibold text-white mb-2">Телефон</h3>
                   <a 
                     href="tel:+74951234567" 
                     className="text-blue-600 hover:text-blue-700 transition-colors text-lg"
@@ -68,15 +108,15 @@ export const ContactsPage = () => {
                 </div>
 
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-700 mb-2">Часы работы</h3>
-                  <p className="text-gray-600">Пн-Пт: 9:00 - 18:00</p>
-                  <p className="text-gray-600">Сб-Вс: 10:00 - 16:00</p>
+                  <h3 className="text-lg font-semibold text-white mb-2">Часы работы</h3>
+                  <p className="text-white">Пн-Пт: 9:00 - 18:00</p>
+                  <p className="text-white">Сб-Вс: 10:00 - 16:00</p>
                 </div>
 
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-700 mb-2">Адрес</h3>
-                  <p className="text-gray-600">г. Москва, ул. Образцова, д. 25</p>
-                  <p className="text-gray-600">Бизнес-центр "ТехноПарк", офис 304</p>
+                  <h3 className="text-lg font-semibold text-white mb-2">Адрес</h3>
+                  <p className="text-white">г. Москва, ул. Образцова, д. 25</p>
+                  <p className="text-white">Бизнес-центр "ТехноПарк", офис 304</p>
                 </div>
               </div>
             </Card>
@@ -84,13 +124,13 @@ export const ContactsPage = () => {
 
           <div className="animate-slide-in-right">
             <Card className="p-8">
-              <h2 className="text-2xl font-bold text-gray-800 mb-8">
+              <h2 className="text-2xl font-bold text-white mb-8">
                 Форма обратной связи
               </h2>
 
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-white mb-2">
                     Ваше имя *
                   </label>
                   <input
@@ -100,12 +140,12 @@ export const ContactsPage = () => {
                     onChange={handleChange}
                     placeholder="Введите ваше имя"
                     required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-black"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-white mb-2">
                     Электронная почта *
                   </label>
                   <input
@@ -115,12 +155,12 @@ export const ContactsPage = () => {
                     onChange={handleChange}
                     placeholder="Введите ваш адрес электронной почты"
                     required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-black"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-white mb-2">
                     Сообщение *
                   </label>
                   <textarea
@@ -130,7 +170,7 @@ export const ContactsPage = () => {
                     placeholder="Введите ваше сообщение"
                     rows={5}
                     required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none text-black"
                   />
                 </div>
 
@@ -148,34 +188,39 @@ export const ContactsPage = () => {
 
         <div className="mt-20 animate-fade-in-up">
           <div className="text-center mb-8">
-            <h2 className="text-3xl font-bold text-gray-800 mb-4">Наш офис</h2>
-            <p className="text-gray-600">Приезжайте к нам в гости для личной консультации</p>
+            <h2 className="text-3xl font-bold text-white mb-4">Наш офис</h2>
+            <p className="text-white">Приезжайте к нам в гости для личной консультации</p>
           </div>
 
           <Card className="p-6">
-            <div className="aspect-video bg-gradient-to-br from-blue-100 to-indigo-200 rounded-lg flex items-center justify-center">
-              <div className="text-center">
-                <div className="text-6xl mb-4">🏢</div>
-                <p className="text-gray-600">Изображение офиса</p>
-                <p className="text-sm text-gray-500">г. Москва, ул. Образцова, д. 25</p>
-              </div>
+            <div 
+              id="map" 
+              className="aspect-video rounded-lg bg-gray-200 flex items-center justify-center"
+              style={{ minHeight: '400px' }}
+            >
+              {!mapLoaded && (
+                <div className="text-center">
+                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+                  <p className="text-gray-600">Загрузка карты...</p>
+                </div>
+              )}
             </div>
             
             <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
               <div>
-                <h4 className="font-semibold text-gray-800 mb-2">Метро</h4>
-                <p className="text-gray-600">м. Достоевская</p>
-                <p className="text-gray-600">5 минут пешком</p>
+                <h4 className="font-semibold text-white mb-2">Метро</h4>
+                <p className="text-white">м. Достоевская</p>
+                <p className="text-white">5 минут пешком</p>
               </div>
               <div>
-                <h4 className="font-semibold text-gray-800 mb-2">Парковка</h4>
-                <p className="text-gray-600">Бесплатная парковка</p>
-                <p className="text-gray-600">для гостей</p>
+                <h4 className="font-semibold text-white mb-2">Парковка</h4>
+                <p className="text-white">Бесплатная парковка</p>
+                <p className="text-white">для гостей</p>
               </div>
               <div>
-                <h4 className="font-semibold text-gray-800 mb-2">Доступность</h4>
-                <p className="text-gray-600">Пандус и лифт</p>
-                <p className="text-gray-600">для маломобильных</p>
+                <h4 className="font-semibold text-white mb-2">Доступность</h4>
+                <p className="text-white">Пандус и лифт</p>
+                <p className="text-white">для маломобильных</p>
               </div>
             </div>
           </Card>

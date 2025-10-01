@@ -119,7 +119,7 @@ export const NotFound = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center px-4 relative overflow-hidden">
+    <div className="min-h-screen bg-[#0D1117] flex items-center justify-center px-4 relative overflow-hidden">
       <div 
         ref={containerRef}
         className="absolute inset-0 pointer-events-none"
@@ -132,11 +132,11 @@ export const NotFound = () => {
           <span className="text-9xl font-bold text-blue-600 animate-bounce inline-block animate-delay-200">4</span>
         </div>
 
-        <h1 className="text-4xl md:text-5xl font-bold text-gray-800 mb-6">
+        <h1 className="text-4xl md:text-5xl font-bold text-white-800 mb-6">
           Страница не найдена
         </h1>
 
-        <p className="text-xl text-gray-600 mb-10 max-w-md mx-auto">
+        <p className="text-xl text-white-600 mb-10 max-w-md mx-auto">
           Извините, мы не смогли найти страницу, которую вы ищете. Возможно, вы ошиблись в адресе или страница была перемещена.
         </p>
 
@@ -154,11 +154,11 @@ export const NotFound = () => {
           </Link>
         </div>
 
-        <div className="mt-12 p-6 bg-white rounded-lg shadow-md animate-fade-in-up animate-delay-300">
-          <h3 className="text-lg font-semibold text-gray-800 mb-2">
+        <div className="mt-12 p-6 bg-gray-800 rounded-lg shadow-md animate-fade-in-up animate-delay-300">
+          <h3 className="text-lg font-semibold text-white-800 mb-2">
             Попробуйте следующее:
           </h3>
-          <ul className="text-gray-600 text-left space-y-1">
+          <ul className="text-white-600 text-left space-y-1">
             <li>• Проверьте правильность URL адреса</li>
             <li>• Воспользуйтесь поиском по сайту</li>
             <li>• Перейдите на главную страницу</li>

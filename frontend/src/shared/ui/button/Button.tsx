@@ -17,8 +17,8 @@ export const Button = ({
   const baseClasses = 'font-semibold transition-all duration-300 transform hover:scale-105 rounded-lg';
   
   const variants = {
-    primary: 'bg-blue-600 text-white hover:bg-blue-700',
-    secondary: 'bg-gray-200 text-gray-800 hover:bg-gray-300'
+    primary: 'bg-[#13A4EC] text-white hover:bg-[#1088C4]',
+    secondary: 'bg-[#374151] text-white hover:bg-[#49505B]'
   };
 
   const sizes = {
