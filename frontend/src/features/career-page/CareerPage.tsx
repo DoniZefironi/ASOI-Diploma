@@ -10,19 +10,58 @@ export const CareerPage = () => {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   const careers = [
-    { name: 'Software Developer', icon: '💻', color: 'from-blue-500 to-blue-600' },
-    { name: 'Data Scientist', icon: '📊', color: 'from-green-500 to-green-600' },
-    { name: 'Cybersecurity Analyst', icon: '🛡️', color: 'from-red-500 to-red-600' },
-    { name: 'IoT Engineer', icon: '📱', color: 'from-purple-500 to-purple-600' },
-    { name: 'Electronics Engineer', icon: '🔌', color: 'from-yellow-500 to-yellow-600' },
-    { name: 'Technical Writer', icon: '✍️', color: 'from-indigo-500 to-indigo-600' },
-    { name: 'AI Engineer', icon: '🤖', color: 'from-pink-500 to-pink-600' },
-    { name: 'DevOps Engineer', icon: '⚙️', color: 'from-teal-500 to-teal-600' },
-    { name: 'UX Designer', icon: '🎨', color: 'from-orange-500 to-orange-600' },
-    { name: 'Product Manager', icon: '📈', color: 'from-cyan-500 to-cyan-600' }
+    { 
+      name: 'Software Developer', 
+      image: '/icons/software-developer.png',
+      color: 'from-blue-500 to-blue-600' 
+    },
+    { 
+      name: 'Data Scientist', 
+      image: '/icons/data-scientist.png',
+      color: 'from-green-500 to-green-600' 
+    },
+    { 
+      name: 'Cybersecurity Analyst', 
+      image: '/icons/cybersecurity.png',
+      color: 'from-red-500 to-red-600' 
+    },
+    { 
+      name: 'IoT Engineer', 
+      image: '/icons/iot-engineer.png',
+      color: 'from-purple-500 to-purple-600' 
+    },
+    { 
+      name: 'Electronics Engineer', 
+      image: '/icons/electronics-engineer.png',
+      color: 'from-yellow-500 to-yellow-600' 
+    },
+    { 
+      name: 'Technical Writer', 
+      image: '/icons/technical-writer.png',
+      color: 'from-indigo-500 to-indigo-600' 
+    },
+    { 
+      name: 'AI Engineer', 
+      image: '/icons/ai-engineer.png',
+      color: 'from-pink-500 to-pink-600' 
+    },
+    { 
+      name: 'DevOps Engineer', 
+      image: '/icons/devops-engineer.png',
+      color: 'from-teal-500 to-teal-600' 
+    },
+    { 
+      name: 'UX Designer', 
+      image: '/icons/ux-designer.png',
+      color: 'from-orange-500 to-orange-600' 
+    },
+    { 
+      name: 'Product Manager', 
+      image: '/icons/product-manager.png',
+      color: 'from-cyan-500 to-cyan-600' 
+    }
   ];
 
-  // Создаем удвоенный массив для бесконечной прокрутки
   const duplicatedCareers = [...careers, ...careers];
 
   useEffect(() => {
@@ -31,13 +70,12 @@ export const CareerPage = () => {
 
     let animationId: number;
     let scrollPosition = 0;
-    const scrollSpeed = 0.5; // Скорость прокрутки
+    const scrollSpeed = 0.5; 
 
     const animateScroll = () => {
       if (!isPaused && scrollContainer) {
         scrollPosition += scrollSpeed;
-        
-        // Если прокрутили половину контента, возвращаемся к началу
+
         if (scrollPosition >= scrollContainer.scrollWidth / 2) {
           scrollPosition = 0;
         }
@@ -92,7 +130,6 @@ export const CareerPage = () => {
             Explore Career Paths
           </h2>
 
-          {/* Карусель профессий */}
           <div 
             ref={scrollContainerRef}
             className="relative mb-12 overflow-hidden"
@@ -105,8 +142,14 @@ export const CareerPage = () => {
                   key={`${career.name}-${index}`}
                   className="flex-shrink-0 w-32 bg-gray-800 rounded-xl p-4 text-center border border-gray-700 hover:scale-110 hover:border-blue-500 transition-all duration-300 cursor-pointer group"
                 >
-                  <div className={`w-16 h-16 bg-gradient-to-br ${career.color} rounded-full flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform duration-300`}>
-                    <span className="text-white text-2xl">{career.icon}</span>
+                  <div className="relative w-16 h-16 rounded-full overflow-hidden mx-auto mb-3 group-hover:scale-110 transition-transform duration-300">
+                    <Image
+                      src={career.image}
+                      alt={career.name}
+                      fill
+                      className="object-cover"
+                    />
+                    <div className="absolute inset-0 bg-black bg-opacity-30 group-hover:bg-opacity-10 transition-all duration-300"></div>
                   </div>
                   <h4 className="text-xs font-semibold text-white leading-tight group-hover:text-blue-300 transition-colors duration-300">
                     {career.name}
