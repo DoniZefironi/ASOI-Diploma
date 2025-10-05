@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { Button } from '@/shared/ui/button';
 import Image from 'next/image';
+import { useAuth } from '@/shared/lib/auth-context';
 
 interface AuthForm {
   username: string;
@@ -12,6 +13,7 @@ interface AuthForm {
 }
 
 export const AuthPage = () => {
+  const { login } = useAuth();
   const [isLogin, setIsLogin] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState<AuthForm>({
@@ -38,14 +40,19 @@ export const AuthPage = () => {
   const validateForm = (): boolean => {
     const newErrors: Partial<AuthForm> = {};
 
-    if (!isLogin && !formData.username.trim()) {
-      newErrors.username = 'Username is required';
-    }
-
-    if (!formData.email.trim()) {
-      newErrors.email = 'Email is required';
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = 'Email is invalid';
+    if (isLogin) {
+      if (!formData.username.trim()) {
+        newErrors.username = 'Username is required';
+      }
+    } else {
+      if (!formData.username.trim()) {
+        newErrors.username = 'Username is required';
+      }
+      if (!formData.email.trim()) {
+        newErrors.email = 'Email is required';
+      } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+        newErrors.email = 'Email is invalid';
+      }
     }
 
     if (!formData.password) {
@@ -61,9 +68,7 @@ export const AuthPage = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!validateForm()) {
-      return;
-    }
+    if (!validateForm()) return;
 
     setIsLoading(true);
 
@@ -73,43 +78,59 @@ export const AuthPage = () => {
         : 'http://localhost:2904/auth/register';
 
       const payload = isLogin
-        ? {
-            email: formData.email,
-            password: formData.password
-          }
-        : {
+        ? { 
             username: formData.username,
-            email: formData.email,
-            password: formData.password
+            password: formData.password 
+          }
+        : { 
+            username: formData.username, 
+            email: formData.email, 
+            password: formData.password 
           };
+
+      console.log('Sending request to:', url);
+      console.log('Payload:', payload);
 
       const response = await fetch(url, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       });
 
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.message || 'Something went wrong');
+        throw new Error(data.message || 'Request failed');
       }
 
-      console.log('Success:', data);
+      if (isLogin) {
+        if (data.access_token) {
+          const token = data.access_token;
+          const userData = {
+            id: data.user?.id?.toString() || '1',
+            username: data.user?.username || formData.username,
+            email: data.user?.email || formData.email || `${formData.username}@example.com`
+          };
 
-      if (data.access_token) {
-        localStorage.setItem('token', data.access_token);
+          localStorage.setItem('token', token);
+          localStorage.setItem('user', JSON.stringify(userData));
+          
+          if (login) login(token, userData);
+          
+          alert('🎉 Welcome back!');
+          window.location.href = '/';
+        } else {
+          throw new Error('No access token received');
+        }
+      } else {
+        alert('✅ Account created successfully! Please sign in.');
+        setIsLogin(true);
+        setFormData({
+          username: formData.username, 
+          email: '',
+          password: ''
+        });
       }
-
-      alert(isLogin ? 'Login successful!' : 'Registration successful!');
-
-      setFormData({
-        username: '',
-        email: '',
-        password: ''
-      });
 
     } catch (error) {
       console.error('Auth error:', error);
@@ -167,45 +188,45 @@ export const AuthPage = () => {
             </p>
 
             <form onSubmit={handleSubmit} className="space-y-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Username
+                </label>
+                <input
+                  type="text"
+                  name="username"
+                  value={formData.username}
+                  onChange={handleChange}
+                  placeholder="Enter your username"
+                  className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-black ${
+                    errors.username ? 'border-red-500' : 'border-gray-300'
+                  }`}
+                />
+                {errors.username && (
+                  <p className="text-red-500 text-sm mt-1">{errors.username}</p>
+                )}
+              </div>
+
               {!isLogin && (
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Username
+                    Email
                   </label>
                   <input
-                    type="text"
-                    name="username"
-                    value={formData.username}
+                    type="email"
+                    name="email"
+                    value={formData.email}
                     onChange={handleChange}
-                    placeholder="Enter your username"
+                    placeholder="Enter your email"
                     className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-black ${
-                      errors.username ? 'border-red-500' : 'border-gray-300'
+                      errors.email ? 'border-red-500' : 'border-gray-300'
                     }`}
                   />
-                  {errors.username && (
-                    <p className="text-red-500 text-sm mt-1">{errors.username}</p>
+                  {errors.email && (
+                    <p className="text-red-500 text-sm mt-1">{errors.email}</p>
                   )}
                 </div>
               )}
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  {isLogin ? 'Email or Username' : 'Email'}
-                </label>
-                <input
-                  type={isLogin ? "text" : "email"}
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  placeholder={isLogin ? "Enter your email or username" : "Enter your email"}
-                  className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-black ${
-                    errors.email ? 'border-red-500' : 'border-gray-300'
-                  }`}
-                />
-                {errors.email && (
-                  <p className="text-red-500 text-sm mt-1">{errors.email}</p>
-                )}
-              </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
