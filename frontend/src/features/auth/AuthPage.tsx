@@ -4,16 +4,148 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { Button } from '@/shared/ui/button';
 import Image from 'next/image';
+import { useAuth } from '@/shared/lib/auth-context';
+
+interface AuthForm {
+  username: string;
+  email: string;
+  password: string;
+}
 
 export const AuthPage = () => {
+  const { login } = useAuth();
   const [isLogin, setIsLogin] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
+  const [formData, setFormData] = useState<AuthForm>({
+    username: '',
+    email: '',
+    password: ''
+  });
+  const [errors, setErrors] = useState<Partial<AuthForm>>({});
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+    if (errors[name as keyof AuthForm]) {
+      setErrors(prev => ({
+        ...prev,
+        [name]: ''
+      }));
+    }
+  };
+
+  const validateForm = (): boolean => {
+    const newErrors: Partial<AuthForm> = {};
+
+    if (isLogin) {
+      if (!formData.username.trim()) {
+        newErrors.username = 'Username is required';
+      }
+    } else {
+      if (!formData.username.trim()) {
+        newErrors.username = 'Username is required';
+      }
+      if (!formData.email.trim()) {
+        newErrors.email = 'Email is required';
+      } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+        newErrors.email = 'Email is invalid';
+      }
+    }
+
+    if (!formData.password) {
+      newErrors.password = 'Password is required';
+    } else if (formData.password.length < 6) {
+      newErrors.password = 'Password must be at least 6 characters';
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!validateForm()) return;
+
+    setIsLoading(true);
+
+    try {
+      const url = isLogin 
+        ? 'http://localhost:2904/auth/login'
+        : 'http://localhost:2904/auth/register';
+
+      const payload = isLogin
+        ? { 
+            username: formData.username,
+            password: formData.password 
+          }
+        : { 
+            username: formData.username, 
+            email: formData.email, 
+            password: formData.password 
+          };
+
+      console.log('Sending request to:', url);
+      console.log('Payload:', payload);
+
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Request failed');
+      }
+
+      if (isLogin) {
+        if (data.access_token) {
+          const token = data.access_token;
+          const userData = {
+            id: data.user?.id?.toString() || '1',
+            username: data.user?.username || formData.username,
+            email: data.user?.email || formData.email || `${formData.username}@example.com`
+          };
+
+          localStorage.setItem('token', token);
+          localStorage.setItem('user', JSON.stringify(userData));
+          
+          if (login) login(token, userData);
+          
+          alert('🎉 Welcome back!');
+          window.location.href = '/';
+        } else {
+          throw new Error('No access token received');
+        }
+      } else {
+        alert('✅ Account created successfully! Please sign in.');
+        setIsLogin(true);
+        setFormData({
+          username: formData.username, 
+          email: '',
+          password: ''
+        });
+      }
+
+    } catch (error) {
+      console.error('Auth error:', error);
+      alert(error instanceof Error ? error.message : 'An error occurred');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-[#0D1117] py-12">
       <div className="container mx-auto px-4">
         <div className="text-center mb-12 animate-fade-in-up">
-          <h1 className="text-4xl font-bold text-white-800 mb-4">TechLearn</h1>
-          <nav className="flex justify-center space-x-6 text-white-600 mb-8">
+          <h1 className="text-4xl font-bold text-white mb-4">TechLearn</h1>
+          <nav className="flex justify-center space-x-6 text-gray-400 mb-8">
             <Link href="/courses" className="hover:text-blue-600 transition-colors">Courses</Link>
             <Link href="/career" className="hover:text-blue-600 transition-colors">Career Paths</Link>
             <Link href="/simulator" className="hover:text-blue-600 transition-colors">Circuit Simulator</Link>
@@ -45,6 +177,7 @@ export const AuthPage = () => {
                 Create Account
               </button>
             </div>
+
             <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">
               {isLogin ? 'Welcome back to TechLearn' : 'Join TechLearn'}
             </h2>
@@ -54,30 +187,46 @@ export const AuthPage = () => {
                 : 'Create your account to start learning'}
             </p>
 
-            <form className="space-y-6">
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Username
+                </label>
+                <input
+                  type="text"
+                  name="username"
+                  value={formData.username}
+                  onChange={handleChange}
+                  placeholder="Enter your username"
+                  className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-black ${
+                    errors.username ? 'border-red-500' : 'border-gray-300'
+                  }`}
+                />
+                {errors.username && (
+                  <p className="text-red-500 text-sm mt-1">{errors.username}</p>
+                )}
+              </div>
+
               {!isLogin && (
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Username
+                    Email
                   </label>
                   <input
-                    type="text"
-                    placeholder="Enter your username"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-black"
+                    type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    placeholder="Enter your email"
+                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-black ${
+                      errors.email ? 'border-red-500' : 'border-gray-300'
+                    }`}
                   />
+                  {errors.email && (
+                    <p className="text-red-500 text-sm mt-1">{errors.email}</p>
+                  )}
                 </div>
-                          )}
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  {isLogin ? 'Email or Username' : 'Email'}
-                </label>
-                <input
-                  type={isLogin ? "text" : "email"}
-                  placeholder={isLogin ? "Enter your email or username" : "Enter your email"}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-black"
-                />
-              </div>
+              )}
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -85,9 +234,17 @@ export const AuthPage = () => {
                 </label>
                 <input
                   type="password"
+                  name="password"
+                  value={formData.password}
+                  onChange={handleChange}
                   placeholder="Enter your password"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-black"
+                  className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-black ${
+                    errors.password ? 'border-red-500' : 'border-gray-300'
+                  }`}
                 />
+                {errors.password && (
+                  <p className="text-red-500 text-sm mt-1">{errors.password}</p>
+                )}
               </div>
 
               {isLogin && (
@@ -123,8 +280,9 @@ export const AuthPage = () => {
                 type="submit"
                 variant="primary"
                 className="w-full py-3 text-lg font-semibold"
+                disabled={isLoading}
               >
-                {isLogin ? 'Sign In' : 'Create Account'}
+                {isLoading ? 'Loading...' : (isLogin ? 'Sign In' : 'Create Account')}
               </Button>
             </form>
 
@@ -160,7 +318,7 @@ export const AuthPage = () => {
             </div>
           </div>
 
-          <div className="text-center mt-8 text-sm text-gray-600">
+          <div className="text-center mt-8 text-sm text-gray-400">
             {isLogin ? (
               <p>
                 Don't have an account?{' '}

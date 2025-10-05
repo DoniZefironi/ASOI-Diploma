@@ -36,13 +36,11 @@ export const CareerSection = () => {
     {
       title: "Interactive Circuit Emulator",
       description: "Experiment with electronic circuits using our powerful emulator. Build, test, and debug your designs in a virtual environment.",
-      icon: "⚡",
       buttonText: "Launch Emulator"
     },
     {
       title: "Find Your Perfect Tech Career",
       description: "Take our career assessment to discover your strengths and interests. Get personalized recommendations for tech roles and learning paths.",
-      icon: "🎯",
       buttonText: "Start Assessment"
     }
   ];
@@ -78,9 +76,6 @@ export const CareerSection = () => {
               <Card className="h-full bg-gray-800 border border-gray-700 transition-all duration-300 overflow-hidden group">
                 <div className="p-8 h-full flex flex-col">
                   <div className="flex items-center mb-6">
-                    <div className="text-4xl mr-4 group-hover:scale-110 transition-transform duration-300">
-                      {item.icon}
-                    </div>
                     <h3 className="text-2xl font-bold text-white">
                       {item.title}
                     </h3>
@@ -107,19 +102,16 @@ export const CareerSection = () => {
             {
               title: "Resume Builder",
               description: "Create professional tech resumes",
-              icon: "📄",
               stat: "500+"
             },
             {
               title: "Mock Interviews",
               description: "Practice with industry experts",
-              icon: "🎙️",
               stat: "95%"
             },
             {
               title: "Job Matches",
               description: "Personalized job recommendations",
-              icon: "💼",
               stat: "2K+"
             }
           ].map((item, index) => (
@@ -138,9 +130,6 @@ export const CareerSection = () => {
               }}
             >
               <Card className="bg-gray-800 border border-gray-700 text-center p-6 transition-colors duration-300">
-                <div className="text-4xl mb-4 group-hover:scale-110 transition-transform duration-300">
-                  {item.icon}
-                </div>
                 <div className="text-3xl font-bold text-white mb-2">{item.stat}</div>
                 <h4 className="font-semibold text-white mb-3 text-lg">{item.title}</h4>
                 <p className="text-gray-300">{item.description}</p>
