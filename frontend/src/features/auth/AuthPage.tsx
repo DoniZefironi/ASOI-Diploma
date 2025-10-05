@@ -69,8 +69,8 @@ export const AuthPage = () => {
 
     try {
       const url = isLogin 
-        ? 'http://localhost:2904/auth/login'
-        : 'http://localhost:2904/auth/register';
+        ? 'http://localhost:3000/auth/login'
+        : 'http://localhost:3000/auth/register';
 
       const payload = isLogin
         ? {
