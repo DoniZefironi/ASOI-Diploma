@@ -1,35 +1,61 @@
-import { Controller, Get, Param, Post, Delete, UseGuards } from '@nestjs/common';
+import { Controller, Get, Param, Put, Body, UseGuards, Query } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { JwtAuthGuard } from '../auth/jwt.guard';
 import { RolesGuard } from '../auth/roles.guard';
 import { Roles } from '../auth/roles.decorator';
 
-@UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('users')
+@UseGuards(JwtAuthGuard, RolesGuard)
 export class UsersController {
-    constructor(private readonly usersService: UsersService) {}
+  constructor(private usersService: UsersService) {}
 
-    @Get()
-    @Roles('admin')
-    findAll() {
-        return this.usersService.findAll();
-    }
+  @Get()
+  @Roles('admin', 'mentor')
+  async findAll() {
+    return this.usersService.findAll();
+  }
 
-    @Get(':id')
-    @Roles('admin')
-    findOne(@Param('id') id: string) {
-        return this.usersService.findOne(+id);
+  @Get('search')
+  async search(@Query('q') query: string) {
+    if (!query) {
+      return [];
     }
+    return this.usersService.searchUsers(query);
+  }
 
-    @Post(':id/roles/:role')
-    @Roles('admin')
-    assignRole(@Param('id') id: string, @Param('role') role: string) {
-        return this.usersService.assignRole(+id, role);
-    }
+  @Get(':id')
+  async findOne(@Param('id') id: string) {
+    return this.usersService.findOne(+id);
+  }
 
-    @Delete('roles/:roleId')
-    @Roles('admin')
-    removeRole(@Param('roleId') roleId: string) {
-        return this.usersService.removeRole(+roleId);
-    }
+  @Get(':id/roles')
+  async getUserRoles(@Param('id') id: string) {
+    return this.usersService.getUserRoles(+id);
+  }
+
+  @Put(':id/profile')
+  async updateProfile(
+    @Param('id') id: string,
+    @Body() updateData: any,
+  ) {
+    return this.usersService.updateProfile(+id, updateData);
+  }
+
+  @Put(':id/roles')
+  @Roles('admin')
+  async assignRole(
+    @Param('id') id: string,
+    @Body() roleData: { role: string },
+  ) {
+    return this.usersService.assignRole(+id, roleData.role);
+  }
+
+  @Put(':id/roles/remove')
+  @Roles('admin')
+  async removeRole(
+    @Param('id') id: string,
+    @Body() roleData: { role: string },
+  ) {
+    return this.usersService.removeRole(+id, roleData.role);
+  }
 }
