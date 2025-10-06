@@ -1,12 +1,13 @@
+// src/auth/auth.service.ts
 import { Injectable, UnauthorizedException, ConflictException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
-import { User } from '../users/users.entity';
-import { UserRole } from '../users/user-role.entity';
-import { RegisterDto } from './dto/register.dto';
+import { User } from '../users/entities/user.entity';
+import { UserRole, UserRoleEnum } from '../users/entities/user-role.entity';
 import { LoginDto } from './dto/login.dto';
+import { RegisterDto } from './dto/register.dto';
 
 @Injectable()
 export class AuthService {
@@ -14,81 +15,33 @@ export class AuthService {
     @InjectRepository(User)
     private usersRepository: Repository<User>,
     @InjectRepository(UserRole)
-    private userRolesRepository: Repository<UserRole>,
+    private userRoleRepository: Repository<UserRole>,
     private jwtService: JwtService,
   ) {}
 
-  async register(registerDto: RegisterDto) {
-    const { email, password, firstName, lastName, username } = registerDto;
-
-    // Check if user exists
-    const existingUser = await this.usersRepository.findOne({
-      where: [{ email }, { username: username || email.split('@')[0] }],
+  async validateUser(email: string, password: string): Promise<any> {
+    const user = await this.usersRepository.findOne({
+      where: { email },
+      relations: ['roles'],
     });
 
-    if (existingUser) {
-      throw new ConflictException('User with this email or username already exists');
+    if (user && await bcrypt.compare(password, user.password)) {
+      const { password, ...result } = user;
+      return result;
     }
-
-    // Hash password
-    const hashedPassword = await bcrypt.hash(password, 12);
-
-    // Create user
-    const user = this.usersRepository.create({
-      email,
-      passwordHash: hashedPassword,
-      firstName,
-      lastName,
-      username: username || email.split('@')[0],
-    });
-
-    await this.usersRepository.save(user);
-
-    // Assign student role
-    const userRole = this.userRolesRepository.create({
-      userId: user.id,
-      role: 'student',
-    });
-    await this.userRolesRepository.save(userRole);
-
-    const roles = ['student'];
-    const payload = { 
-      sub: user.id, 
-      email: user.email, 
-      roles 
-    };
-
-    return {
-      access_token: this.jwtService.sign(payload),
-      user: {
-        id: user.id,
-        email: user.email,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        username: user.username,
-        roles,
-      },
-    };
+    return null;
   }
 
   async login(loginDto: LoginDto) {
-    const { email, password } = loginDto;
-
-    const user = await this.usersRepository.findOne({
-      where: { email },
-      relations: ['userRoles'],
-    });
-
-    if (!user || !(await bcrypt.compare(password, user.passwordHash))) {
+    const user = await this.validateUser(loginDto.email, loginDto.password);
+    if (!user) {
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    const roles = user.userRoles.map(role => role.role);
-
     const payload = { 
-      sub: user.id, 
       email: user.email, 
-      roles 
+      sub: user.id,
+      roles: user.roles.map((role: UserRole) => role.role)
     };
 
     return {
@@ -98,16 +51,38 @@ export class AuthService {
         email: user.email,
         firstName: user.firstName,
         lastName: user.lastName,
-        username: user.username,
-        roles,
-      },
+        roles: user.roles.map((role: UserRole) => role.role)
+      }
     };
   }
 
-  async validateUser(userId: number): Promise<User | null> {
-    return this.usersRepository.findOne({
-      where: { id: userId },
-      relations: ['userRoles'],
+  async register(registerDto: RegisterDto) {
+    const existingUser = await this.usersRepository.findOne({
+      where: { email: registerDto.email }
     });
+
+    if (existingUser) {
+      throw new ConflictException('User with this email already exists');
+    }
+
+    const hashedPassword = await bcrypt.hash(registerDto.password, 12);
+
+    const user = this.usersRepository.create({
+      ...registerDto,
+      password: hashedPassword,
+    });
+
+    const savedUser = await this.usersRepository.save(user);
+
+    // Create default role
+    const userRole = this.userRoleRepository.create({
+      user: savedUser,
+      role: UserRoleEnum.REGISTERED_USER
+    });
+
+    await this.userRoleRepository.save(userRole);
+
+    const { password, ...result } = savedUser;
+    return result;
   }
 }

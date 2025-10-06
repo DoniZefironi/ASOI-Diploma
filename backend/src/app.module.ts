@@ -1,17 +1,31 @@
+// src/app.module.ts
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm'; 
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { AppController } from './app.controller';
+import { AppService } from './app.service';
+
+// Modules
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
+import { CoursesModule } from './courses/courses.module';
+import { CourseGroupsModule } from './course-groups/course-groups.module';
+import { ScheduleModule } from './schedule/schedule.module';
+import { AssignmentsModule } from './assignments/assignments.module';
+import { MaterialsModule } from './materials/materials.module';
+import { ForumModule } from './forum/forum.module';
+import { AchievementsModule } from './achievements/achievements.module';
+import { CompilerModule } from './compiler/compiler.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
+      envFilePath: '.env',
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
-      useFactory: (configService: ConfigService): TypeOrmModuleOptions => ({ 
+      useFactory: (configService: ConfigService) => ({
         type: 'postgres',
         host: configService.get('DB_HOST', 'localhost'),
         port: configService.get<number>('DB_PORT', 4450),
@@ -26,6 +40,16 @@ import { UsersModule } from './users/users.module';
     }),
     AuthModule,
     UsersModule,
+    CoursesModule,
+    CourseGroupsModule,
+    ScheduleModule,
+    AssignmentsModule,
+    MaterialsModule,
+    ForumModule,
+    AchievementsModule,
+    CompilerModule,
   ],
+  controllers: [AppController],
+  providers: [AppService],
 })
 export class AppModule {}

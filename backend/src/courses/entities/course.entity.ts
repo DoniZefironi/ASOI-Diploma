@@ -1,44 +1,54 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, OneToMany, CreateDateColumn } from 'typeorm';
-import { User } from '../../users/users.entity';
+// src/courses/entities/course.entity.ts
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany, CreateDateColumn, UpdateDateColumn } from 'typeorm';
 import { CourseGroup } from '../../course-groups/entities/course-group.entity';
-import { LearningMaterial } from '../../learning-materials/entities/learning-material.entity';
+import { CourseMaterial } from '../../materials/entities/course-material.entity';
+import { ForumSection } from '../../forum/entities/forum-section.entity';
+
+export enum CourseType {
+  ENGLISH = 'english',
+  ELECTRONICS = 'electronics',
+  COMPUTER_SCIENCE = 'computer_science',
+  IOT = 'iot'
+}
 
 @Entity('courses')
 export class Course {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ length: 200 })
+  @Column()
   name: string;
 
-  @Column({ unique: true, length: 20 })
-  code: string;
+  @Column({
+    type: 'enum',
+    enum: CourseType
+  })
+  type: CourseType;
 
-  @Column({ type: 'text', nullable: true })
+  @Column({ type: 'text' })
   description: string;
 
-  @Column({ 
-    type: 'enum', 
-    enum: ['english', 'computer_science', 'electronics', 'iot'] 
-  })
-  category: string;
+  @Column()
+  duration: number;
 
-  @Column({ name: 'created_by', nullable: true })
-  createdBy: number;
-
-  @CreateDateColumn({ name: 'created_at' })
-  createdAt: Date;
-
-  @Column({ name: 'is_active', default: true })
+  @Column({ default: true })
   isActive: boolean;
 
-  @ManyToOne(() => User, { onDelete: 'SET NULL' })
-  @JoinColumn({ name: 'created_by' })
-  creator: User;
+  @Column({ nullable: true })
+  imageUrl: string;
+
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
 
   @OneToMany(() => CourseGroup, group => group.course)
-  courseGroups: CourseGroup[];
+  groups: CourseGroup[];
 
-  @OneToMany(() => LearningMaterial, material => material.course)
-  learningMaterials: LearningMaterial[];
+  @OneToMany(() => CourseMaterial, material => material.course)
+  materials: CourseMaterial[];
+
+  @OneToMany(() => ForumSection, section => section.course)
+  forumSections: ForumSection[];
 }

@@ -1,100 +1,71 @@
-import { 
-  Controller, 
-  Get, 
-  Post, 
-  Put, 
-  Delete, 
-  Param, 
-  Body, 
-  UseGuards, 
-  Query,
-  ParseIntPipe 
-} from '@nestjs/common';
+// src/schedule/schedule.controller.ts
+import { Controller, Get, Post, Body, Param, Put, Delete, UseGuards, Request, Query } from '@nestjs/common';
 import { ScheduleService } from './schedule.service';
-import { JwtAuthGuard } from '../auth/jwt.guard';
-import { RolesGuard } from '../auth/roles.guard';
-import { Roles } from '../auth/roles.decorator';
 import { CreateScheduleItemDto } from './dto/create-schedule-item.dto';
 import { UpdateScheduleItemDto } from './dto/update-schedule-item.dto';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { RolesGuard } from '../auth/guards/roles.guard';
+import { Roles } from '../auth/decorators/roles.decorator';
+import { UserRoleEnum } from '../users/entities/user-role.entity';
 
 @Controller('schedule')
-@UseGuards(JwtAuthGuard, RolesGuard)
+@UseGuards(JwtAuthGuard)
 export class ScheduleController {
-  constructor(private scheduleService: ScheduleService) {}
+  constructor(private readonly scheduleService: ScheduleService) {}
 
   @Get()
-  async findAll(
-    @Query('courseGroupId') courseGroupId?: string,
-    @Query('startDate') startDate?: string,
-    @Query('endDate') endDate?: string,
-    @Query('upcoming') upcoming?: string,
-    @Query('overdue') overdue?: string,
-  ) {
-    if (courseGroupId) {
-      return this.scheduleService.findByCourseGroup(+courseGroupId);
-    }
-    if (startDate && endDate) {
-      return this.scheduleService.findByDateRange(new Date(startDate), new Date(endDate));
-    }
-    if (upcoming === 'true') {
-      const limit = parseInt(upcoming) || 10;
-      return this.scheduleService.findUpcoming(limit);
-    }
-    if (overdue === 'true') {
-      return this.scheduleService.findOverdue();
-    }
+  findAll() {
     return this.scheduleService.findAll();
   }
 
-  @Get('user/:userId')
-  async getUserSchedule(
-    @Param('userId', ParseIntPipe) userId: number,
+  @Get('user')
+  getUserSchedule(
+    @Request() req,
     @Query('startDate') startDate?: string,
     @Query('endDate') endDate?: string,
   ) {
-    const start = startDate ? new Date(startDate) : undefined;
-    const end = endDate ? new Date(endDate) : undefined;
+    const start = startDate ? new Date(startDate) : new Date();
+    const end = endDate ? new Date(endDate) : new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
     
-    return this.scheduleService.getScheduleForUser(userId, start, end);
+    return this.scheduleService.getUserSchedule(req.user.userId, start, end);
   }
 
-  @Get('user/:userId/upcoming-assignments')
-  async getUpcomingAssignments(
-    @Param('userId', ParseIntPipe) userId: number,
-    @Query('limit') limit?: string,
+  @Get('course-group/:groupId')
+  findByCourseGroup(@Param('groupId') groupId: string) {
+    return this.scheduleService.findByCourseGroup(+groupId);
+  }
+
+  @Get('date-range')
+  findByDateRange(
+    @Query('startDate') startDate: string,
+    @Query('endDate') endDate: string,
   ) {
-    return this.scheduleService.getUpcomingAssignments(userId, parseInt(limit) || 5);
+    return this.scheduleService.findByDateRange(new Date(startDate), new Date(endDate));
   }
 
   @Get(':id')
-  async findOne(@Param('id') id: string) {
+  findOne(@Param('id') id: string) {
     return this.scheduleService.findOne(+id);
   }
 
-  @Get(':id/statistics')
-  @Roles('admin', 'mentor')
-  async getStatistics(@Param('id') id: string) {
-    return this.scheduleService.getScheduleStatistics(+id);
-  }
-
   @Post()
-  @Roles('admin', 'mentor')
-  async create(@Body() createScheduleItemDto: CreateScheduleItemDto) {
+  @UseGuards(RolesGuard)
+  @Roles(UserRoleEnum.ADMIN, UserRoleEnum.MENTOR)
+  create(@Body() createScheduleItemDto: CreateScheduleItemDto) {
     return this.scheduleService.create(createScheduleItemDto);
   }
 
   @Put(':id')
-  @Roles('admin', 'mentor')
-  async update(
-    @Param('id') id: string,
-    @Body() updateScheduleItemDto: UpdateScheduleItemDto,
-  ) {
+  @UseGuards(RolesGuard)
+  @Roles(UserRoleEnum.ADMIN, UserRoleEnum.MENTOR)
+  update(@Param('id') id: string, @Body() updateScheduleItemDto: UpdateScheduleItemDto) {
     return this.scheduleService.update(+id, updateScheduleItemDto);
   }
 
   @Delete(':id')
-  @Roles('admin', 'mentor')
-  async remove(@Param('id') id: string) {
+  @UseGuards(RolesGuard)
+  @Roles(UserRoleEnum.ADMIN, UserRoleEnum.MENTOR)
+  remove(@Param('id') id: string) {
     return this.scheduleService.remove(+id);
   }
 }

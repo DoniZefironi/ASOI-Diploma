@@ -1,8 +1,9 @@
-import { Injectable, NotFoundException, BadRequestException, ConflictException } from '@nestjs/common';
+// src/course-groups/course-groups.service.ts
+import { Injectable, NotFoundException, ConflictException, ForbiddenException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, In } from 'typeorm';
+import { Repository } from 'typeorm';
 import { CourseGroup } from './entities/course-group.entity';
-import { CourseRegistration } from './entities/course-registration.entity';
+import { CourseRegistration, RegistrationStatus } from './entities/course-registration.entity';
 import { CreateCourseGroupDto } from './dto/create-course-group.dto';
 import { UpdateCourseGroupDto } from './dto/update-course-group.dto';
 import { RegisterToCourseDto } from './dto/register-to-course.dto';
@@ -11,108 +12,98 @@ import { RegisterToCourseDto } from './dto/register-to-course.dto';
 export class CourseGroupsService {
   constructor(
     @InjectRepository(CourseGroup)
-    private courseGroupsRepository: Repository<CourseGroup>,
+    private courseGroupRepository: Repository<CourseGroup>,
     @InjectRepository(CourseRegistration)
-    private registrationsRepository: Repository<CourseRegistration>,
+    private registrationRepository: Repository<CourseRegistration>,
   ) {}
 
+  async create(createCourseGroupDto: CreateCourseGroupDto): Promise<CourseGroup> {
+    const courseGroup = this.courseGroupRepository.create(createCourseGroupDto);
+    return this.courseGroupRepository.save(courseGroup);
+  }
+
   async findAll(): Promise<CourseGroup[]> {
-    return this.courseGroupsRepository.find({
-      relations: ['course', 'registrations', 'registrations.user'],
-      order: { year: 'DESC', name: 'ASC' },
+    return this.courseGroupRepository.find({
+      relations: ['course', 'registrations'],
     });
   }
 
   async findOne(id: number): Promise<CourseGroup> {
-    const group = await this.courseGroupsRepository.findOne({
+    const courseGroup = await this.courseGroupRepository.findOne({
       where: { id },
-      relations: ['course', 'registrations', 'registrations.user', 'scheduleItems'],
+      relations: ['course', 'registrations', 'registrations.user', 'scheduleItems', 'assignments'],
     });
 
-    if (!group) {
+    if (!courseGroup) {
       throw new NotFoundException('Course group not found');
     }
 
-    return group;
-  }
-
-  async findByCourse(courseId: number): Promise<CourseGroup[]> {
-    return this.courseGroupsRepository.find({
-      where: { courseId },
-      relations: ['course', 'registrations'],
-      order: { year: 'DESC', name: 'ASC' },
-    });
-  }
-
-  async findByYear(year: number): Promise<CourseGroup[]> {
-    return this.courseGroupsRepository.find({
-      where: { year },
-      relations: ['course', 'registrations'],
-    });
-  }
-
-  async create(createCourseGroupDto: CreateCourseGroupDto): Promise<CourseGroup> {
-    // Проверяем, существует ли уже группа с таким названием в этом курсе и году
-    const existingGroup = await this.courseGroupsRepository.findOne({
-      where: {
-        courseId: createCourseGroupDto.courseId,
-        year: createCourseGroupDto.year,
-        name: createCourseGroupDto.name,
-      },
-    });
-
-    if (existingGroup) {
-      throw new ConflictException('Course group with this name already exists for this course and year');
-    }
-
-    const group = this.courseGroupsRepository.create(createCourseGroupDto);
-    return this.courseGroupsRepository.save(group);
+    return courseGroup;
   }
 
   async update(id: number, updateCourseGroupDto: UpdateCourseGroupDto): Promise<CourseGroup> {
-    const group = await this.findOne(id);
-    Object.assign(group, updateCourseGroupDto);
-    return this.courseGroupsRepository.save(group);
+    await this.courseGroupRepository.update(id, updateCourseGroupDto);
+    return this.findOne(id);
   }
 
   async remove(id: number): Promise<void> {
-    await this.courseGroupsRepository.delete(id);
+    await this.courseGroupRepository.softDelete(id);
   }
 
-  async registerStudent(registerDto: RegisterToCourseDto): Promise<CourseRegistration> {
-    const { courseGroupId, userId } = registerDto;
-
-    const group = await this.findOne(courseGroupId);
-
-    // Проверяем, не превышен ли лимит студентов
-    const currentStudents = await this.registrationsRepository.count({
-      where: { courseGroupId, status: In(['pending', 'active']) },
+  async registerToCourse(registerDto: RegisterToCourseDto, userId: number) {
+    const courseGroup = await this.courseGroupRepository.findOne({
+      where: { id: registerDto.courseGroupId },
+      relations: ['registrations'],
     });
 
-    if (currentStudents >= group.maxStudents) {
-      throw new BadRequestException('Course group is full');
+    if (!courseGroup) {
+      throw new NotFoundException('Course group not found');
     }
 
-    // Проверяем, не зарегистрирован ли уже студент
-    const existingRegistration = await this.registrationsRepository.findOne({
-      where: { courseGroupId, userId },
+    // Проверка на уже существующую заявку
+    const existingRegistration = await this.registrationRepository.findOne({
+      where: {
+        userId,
+        courseGroupId: registerDto.courseGroupId,
+      },
     });
 
     if (existingRegistration) {
-      throw new ConflictException('Student is already registered for this course group');
+      throw new ConflictException('You have already applied to this course group');
     }
 
-    const registration = this.registrationsRepository.create({
-      courseGroupId,
+    // Проверка на количество студентов
+    const approvedRegistrations = courseGroup.registrations.filter(
+      (reg: CourseRegistration) => reg.status === RegistrationStatus.APPROVED
+    ).length;
+
+    if (approvedRegistrations >= courseGroup.maxStudents) {
+      throw new ConflictException('Course group is full');
+    }
+
+    const registration = this.registrationRepository.create({
       userId,
-      status: 'pending',
+      courseGroupId: registerDto.courseGroupId,
+      status: RegistrationStatus.PENDING,
     });
 
-    return this.registrationsRepository.save(registration);
+    return this.registrationRepository.save(registration);
   }
 
-  async approveRegistration(registrationId: number): Promise<CourseRegistration> {
-    const registration = await this.registrationsRepository.findOne({
+  async getGroupStudents(groupId: number) {
+    const registrations = await this.registrationRepository.find({
+      where: { 
+        courseGroupId: groupId,
+        status: RegistrationStatus.APPROVED 
+      },
+      relations: ['user'],
+    });
+
+    return registrations.map(reg => reg.user);
+  }
+
+  async approveRegistration(registrationId: number, approvedBy: number) {
+    const registration = await this.registrationRepository.findOne({
       where: { id: registrationId },
       relations: ['courseGroup'],
     });
@@ -121,53 +112,42 @@ export class CourseGroupsService {
       throw new NotFoundException('Registration not found');
     }
 
-    registration.status = 'active';
-    return this.registrationsRepository.save(registration);
-  }
-
-  async getGroupRegistrations(courseGroupId: number): Promise<CourseRegistration[]> {
-    return this.registrationsRepository.find({
-      where: { courseGroupId },
-      relations: ['user', 'user.userRoles'],
-      order: { registeredAt: 'DESC' },
+    // Проверка на количество студентов
+    const approvedCount = await this.registrationRepository.count({
+      where: { 
+        courseGroupId: registration.courseGroupId,
+        status: RegistrationStatus.APPROVED 
+      },
     });
+
+    if (approvedCount >= registration.courseGroup.maxStudents) {
+      throw new ConflictException('Course group is full');
+    }
+
+    registration.status = RegistrationStatus.APPROVED;
+    registration.approvedAt = new Date();
+    registration.approvedBy = approvedBy;
+
+    return this.registrationRepository.save(registration);
   }
 
-  async getUserRegistrations(userId: number): Promise<CourseRegistration[]> {
-    return this.registrationsRepository.find({
+  async rejectRegistration(registrationId: number) {
+    const registration = await this.registrationRepository.findOne({
+      where: { id: registrationId },
+    });
+
+    if (!registration) {
+      throw new NotFoundException('Registration not found');
+    }
+
+    registration.status = RegistrationStatus.REJECTED;
+    return this.registrationRepository.save(registration);
+  }
+
+  async getUserRegistrations(userId: number) {
+    return this.registrationRepository.find({
       where: { userId },
       relations: ['courseGroup', 'courseGroup.course'],
-      order: { registeredAt: 'DESC' },
     });
-  }
-
-  async getActiveGroups(): Promise<CourseGroup[]> {
-    return this.courseGroupsRepository.find({
-      where: { isActive: true },
-      relations: ['course', 'registrations'],
-      order: { year: 'DESC', name: 'ASC' },
-    });
-  }
-
-  async getGroupStatistics(courseGroupId: number) {
-    const group = await this.findOne(courseGroupId);
-    
-    const registrations = await this.registrationsRepository.find({
-      where: { courseGroupId },
-    });
-
-    const statusCount = registrations.reduce((acc, reg) => {
-      acc[reg.status] = (acc[reg.status] || 0) + 1;
-      return acc;
-    }, {});
-
-    return {
-      totalRegistrations: registrations.length,
-      maxStudents: group.maxStudents,
-      availableSpots: group.maxStudents - registrations.filter(r => 
-        ['pending', 'active'].includes(r.status)
-      ).length,
-      statusCount,
-    };
   }
 }

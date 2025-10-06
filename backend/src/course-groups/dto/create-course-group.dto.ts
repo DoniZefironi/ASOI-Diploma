@@ -1,34 +1,30 @@
-import { IsString, IsNumber, IsDateString, IsOptional, IsBoolean } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
+// src/course-groups/dto/create-course-group.dto.ts
+import { IsString, IsNumber, IsDateString, IsBoolean, IsOptional } from 'class-validator';
 
 export class CreateCourseGroupDto {
-  @ApiProperty({ description: 'Course ID' })
-  @IsNumber()
-  courseId: number;
-
-  @ApiProperty({ description: 'Academic year' })
-  @IsNumber()
-  year: number;
-
-  @ApiProperty({ description: 'Group name' })
   @IsString()
   name: string;
 
-  @ApiProperty({ description: 'Start date (ISO string)' })
-  @IsDateString()
-  startDate: string;
+  @IsNumber()
+  year: number;
 
-  @ApiProperty({ description: 'End date (ISO string)' })
-  @IsDateString()
-  endDate: string;
+  @IsNumber()
+  semester: number;
 
-  @ApiProperty({ description: 'Maximum number of students', required: false })
   @IsNumber()
   @IsOptional()
   maxStudents?: number;
 
-  @ApiProperty({ description: 'Is group active', required: false })
   @IsBoolean()
   @IsOptional()
   isActive?: boolean;
+
+  @IsDateString()
+  startDate: string;
+
+  @IsDateString()
+  endDate: string;
+
+  @IsNumber()
+  courseId: number;
 }

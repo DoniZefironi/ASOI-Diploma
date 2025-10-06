@@ -1,3 +1,4 @@
+// src/course-groups/course-groups.module.ts
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CourseGroupsService } from './course-groups.service';
@@ -7,8 +8,8 @@ import { CourseRegistration } from './entities/course-registration.entity';
 
 @Module({
   imports: [TypeOrmModule.forFeature([CourseGroup, CourseRegistration])],
-  providers: [CourseGroupsService],
   controllers: [CourseGroupsController],
+  providers: [CourseGroupsService],
   exports: [CourseGroupsService],
 })
 export class CourseGroupsModule {}

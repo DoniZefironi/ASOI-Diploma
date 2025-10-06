@@ -1,6 +1,7 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+// src/schedule/schedule.service.ts
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, Between, MoreThanOrEqual, LessThanOrEqual } from 'typeorm';
+import { Repository, Between } from 'typeorm';
 import { ScheduleItem } from './entities/schedule-item.entity';
 import { CreateScheduleItemDto } from './dto/create-schedule-item.dto';
 import { UpdateScheduleItemDto } from './dto/update-schedule-item.dto';
@@ -9,158 +10,80 @@ import { UpdateScheduleItemDto } from './dto/update-schedule-item.dto';
 export class ScheduleService {
   constructor(
     @InjectRepository(ScheduleItem)
-    private scheduleItemsRepository: Repository<ScheduleItem>,
+    private scheduleRepository: Repository<ScheduleItem>,
   ) {}
 
+  async create(createScheduleItemDto: CreateScheduleItemDto): Promise<ScheduleItem> {
+    const scheduleItem = this.scheduleRepository.create(createScheduleItemDto);
+    return this.scheduleRepository.save(scheduleItem);
+  }
+
   async findAll(): Promise<ScheduleItem[]> {
-    return this.scheduleItemsRepository.find({
-      relations: ['courseGroup', 'courseGroup.course', 'creator'],
-      order: { scheduledDate: 'ASC' },
+    return this.scheduleRepository.find({
+      relations: ['courseGroup', 'courseGroup.course', 'instructor'],
+      order: { startTime: 'ASC' },
     });
   }
 
   async findOne(id: number): Promise<ScheduleItem> {
-    const item = await this.scheduleItemsRepository.findOne({
+    const scheduleItem = await this.scheduleRepository.findOne({
       where: { id },
-      relations: ['courseGroup', 'courseGroup.course', 'creator', 'assignments'],
+      relations: ['courseGroup', 'courseGroup.course', 'instructor'],
     });
 
-    if (!item) {
+    if (!scheduleItem) {
       throw new NotFoundException('Schedule item not found');
     }
 
-    return item;
+    return scheduleItem;
+  }
+
+  async update(id: number, updateScheduleItemDto: UpdateScheduleItemDto): Promise<ScheduleItem> {
+    await this.scheduleRepository.update(id, updateScheduleItemDto);
+    return this.findOne(id);
+  }
+
+  async remove(id: number): Promise<void> {
+    await this.scheduleRepository.delete(id);
   }
 
   async findByCourseGroup(courseGroupId: number): Promise<ScheduleItem[]> {
-    return this.scheduleItemsRepository.find({
+    return this.scheduleRepository.find({
       where: { courseGroupId },
-      relations: ['courseGroup', 'courseGroup.course', 'creator'],
-      order: { scheduledDate: 'ASC' },
+      relations: ['courseGroup', 'instructor'],
+      order: { startTime: 'ASC' },
     });
   }
 
   async findByDateRange(startDate: Date, endDate: Date): Promise<ScheduleItem[]> {
-    return this.scheduleItemsRepository.find({
+    return this.scheduleRepository.find({
       where: {
-        scheduledDate: Between(startDate, endDate),
-        isActive: true,
+        startTime: Between(startDate, endDate),
       },
-      relations: ['courseGroup', 'courseGroup.course', 'creator'],
-      order: { scheduledDate: 'ASC' },
+      relations: ['courseGroup', 'courseGroup.course', 'instructor'],
+      order: { startTime: 'ASC' },
     });
   }
 
-  async findUpcoming(limit: number = 10): Promise<ScheduleItem[]> {
-    const now = new Date();
-    
-    return this.scheduleItemsRepository.find({
-      where: {
-        scheduledDate: MoreThanOrEqual(now),
-        isActive: true,
-      },
-      relations: ['courseGroup', 'courseGroup.course', 'creator'],
-      order: { scheduledDate: 'ASC' },
-      take: limit,
-    });
-  }
-
-  async findOverdue(): Promise<ScheduleItem[]> {
-    const now = new Date();
-    
-    return this.scheduleItemsRepository.find({
-      where: {
-        dueDate: LessThanOrEqual(now),
-        isActive: true,
-      },
-      relations: ['courseGroup', 'courseGroup.course', 'creator', 'assignments'],
-    });
-  }
-
-  async create(createScheduleItemDto: CreateScheduleItemDto): Promise<ScheduleItem> {
-    const item = this.scheduleItemsRepository.create(createScheduleItemDto);
-    return this.scheduleItemsRepository.save(item);
-  }
-
-  async update(id: number, updateScheduleItemDto: UpdateScheduleItemDto): Promise<ScheduleItem> {
-    const item = await this.findOne(id);
-    Object.assign(item, updateScheduleItemDto);
-    return this.scheduleItemsRepository.save(item);
-  }
-
-  async remove(id: number): Promise<void> {
-    await this.scheduleItemsRepository.delete(id);
-  }
-
-  async getScheduleForUser(userId: number, startDate?: Date, endDate?: Date): Promise<ScheduleItem[]> {
-    let query = this.scheduleItemsRepository
+  async getUserSchedule(userId: number, startDate?: Date, endDate?: Date): Promise<ScheduleItem[]> {
+    let query = this.scheduleRepository
       .createQueryBuilder('schedule')
       .innerJoin('schedule.courseGroup', 'courseGroup')
       .innerJoin('courseGroup.registrations', 'registration')
       .where('registration.userId = :userId', { userId })
-      .andWhere('registration.status = :status', { status: 'active' })
-      .andWhere('schedule.isActive = :isActive', { isActive: true })
+      .andWhere('registration.status = :status', { status: 'approved' })
       .leftJoinAndSelect('schedule.courseGroup', 'cg')
       .leftJoinAndSelect('cg.course', 'course')
-      .leftJoinAndSelect('schedule.creator', 'creator')
-      .orderBy('schedule.scheduledDate', 'ASC');
+      .leftJoinAndSelect('schedule.instructor', 'instructor')
+      .orderBy('schedule.startTime', 'ASC');
 
     if (startDate && endDate) {
-      query = query.andWhere('schedule.scheduledDate BETWEEN :startDate AND :endDate', {
+      query = query.andWhere('schedule.startTime BETWEEN :startDate AND :endDate', {
         startDate,
         endDate,
       });
-    } else if (startDate) {
-      query = query.andWhere('schedule.scheduledDate >= :startDate', { startDate });
     }
 
     return query.getMany();
-  }
-
-  async getUpcomingAssignments(userId: number, limit: number = 5): Promise<ScheduleItem[]> {
-    const now = new Date();
-    
-    return this.scheduleItemsRepository
-      .createQueryBuilder('schedule')
-      .innerJoin('schedule.courseGroup', 'courseGroup')
-      .innerJoin('courseGroup.registrations', 'registration')
-      .where('registration.userId = :userId', { userId })
-      .andWhere('registration.status = :status', { status: 'active' })
-      .andWhere('schedule.isActive = :isActive', { isActive: true })
-      .andWhere('schedule.dueDate > :now', { now })
-      .andWhere('schedule.itemType IN (:...types)', { 
-        types: ['assignment', 'project', 'test'] 
-      })
-      .leftJoinAndSelect('schedule.courseGroup', 'cg')
-      .leftJoinAndSelect('cg.course', 'course')
-      .orderBy('schedule.dueDate', 'ASC')
-      .take(limit)
-      .getMany();
-  }
-
-  async getScheduleStatistics(courseGroupId: number) {
-    const items = await this.scheduleItemsRepository.find({
-      where: { courseGroupId },
-    });
-
-    const typeCount = items.reduce((acc, item) => {
-      acc[item.itemType] = (acc[item.itemType] || 0) + 1;
-      return acc;
-    }, {});
-
-    const upcomingCount = items.filter(item => 
-      item.scheduledDate > new Date() && item.isActive
-    ).length;
-
-    const completedCount = items.filter(item => 
-      item.scheduledDate < new Date()
-    ).length;
-
-    return {
-      totalItems: items.length,
-      upcomingCount,
-      completedCount,
-      typeCount,
-    };
   }
 }

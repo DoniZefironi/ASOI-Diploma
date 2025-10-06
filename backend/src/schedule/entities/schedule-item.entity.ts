@@ -1,66 +1,62 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, OneToMany, CreateDateColumn } from 'typeorm';
+// src/schedule/entities/schedule-item.entity.ts
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, CreateDateColumn, UpdateDateColumn } from 'typeorm';
 import { CourseGroup } from '../../course-groups/entities/course-group.entity';
-import { User } from '../../users/users.entity';
-import { Assignment } from '../../assignments/entities/assignment.entity';
+import { User } from '../../users/entities/user.entity';
 
-export type ScheduleItemType = 'lecture' | 'practice' | 'assignment' | 'project' | 'test' | 'peer_review';
+export enum ScheduleItemType {
+  LECTURE = 'lecture',
+  PRACTICE = 'practice',
+  TEST = 'test',
+  HACKATHON = 'hackathon',
+  OLYMPIAD = 'olympiad',
+  FACULTATIVE = 'facultative',
+  INTERNSHIP = 'internship'
+}
 
 @Entity('schedule_items')
 export class ScheduleItem {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ name: 'course_group_id' })
-  courseGroupId: number;
-
-  @Column({ length: 200 })
+  @Column()
   title: string;
 
-  @Column({ type: 'text', nullable: true })
+  @Column({ type: 'text' })
   description: string;
 
-  @Column({ 
-    name: 'item_type',
-    type: 'enum', 
-    enum: ['lecture', 'practice', 'assignment', 'project', 'test', 'peer_review'] 
+  @Column({
+    type: 'enum',
+    enum: ScheduleItemType
   })
-  itemType: ScheduleItemType;
+  type: ScheduleItemType;
 
-  @Column({ name: 'scheduled_date' })
-  scheduledDate: Date;
+  @Column()
+  startTime: Date;
 
-  @Column({ name: 'due_date', nullable: true })
-  dueDate: Date;
+  @Column()
+  endTime: Date;
 
-  @Column({ name: 'max_score', default: 100 })
-  maxScore: number;
+  @Column({ default: 'online' })
+  location: string;
 
-  @Column({ name: 'content_url', length: 500, nullable: true })
-  contentUrl: string;
-
-  @Column({ name: 'meeting_url', length: 500, nullable: true })
+  @Column({ nullable: true })
   meetingUrl: string;
 
-  @Column({ name: 'duration_minutes', nullable: true })
-  durationMinutes: number;
-
-  @Column({ name: 'created_by', nullable: true })
-  createdBy: number;
-
-  @CreateDateColumn({ name: 'created_at' })
+  @CreateDateColumn()
   createdAt: Date;
 
-  @Column({ default: true })
-  isActive: boolean;
+  @UpdateDateColumn()
+  updatedAt: Date;
 
-  @ManyToOne(() => CourseGroup, group => group.scheduleItems, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'course_group_id' })
+  @ManyToOne(() => CourseGroup, group => group.scheduleItems)
   courseGroup: CourseGroup;
 
-  @ManyToOne(() => User, { onDelete: 'SET NULL' })
-  @JoinColumn({ name: 'created_by' })
-  creator: User;
+  @Column()
+  courseGroupId: number;
 
-  @OneToMany(() => Assignment, assignment => assignment.scheduleItem)
-  assignments: Assignment[];
+  @ManyToOne(() => User, { nullable: true })
+  instructor: User;
+
+  @Column({ nullable: true })
+  instructorId: number;
 }

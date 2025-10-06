@@ -1,61 +1,36 @@
-import { Controller, Get, Param, Put, Body, UseGuards, Query } from '@nestjs/common';
+// src/users/users.controller.ts
+import { Controller, Get, Param, Put, Body, UseGuards, Request } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { JwtAuthGuard } from '../auth/jwt.guard';
-import { RolesGuard } from '../auth/roles.guard';
-import { Roles } from '../auth/roles.decorator';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { RolesGuard } from '../auth/guards/roles.guard';
+import { Roles } from '../auth/decorators/roles.decorator';
+import { UserRoleEnum } from './entities/user-role.entity';
 
 @Controller('users')
 @UseGuards(JwtAuthGuard, RolesGuard)
 export class UsersController {
-  constructor(private usersService: UsersService) {}
+  constructor(private readonly usersService: UsersService) {}
 
   @Get()
-  @Roles('admin', 'mentor')
-  async findAll() {
+  @Roles(UserRoleEnum.ADMIN)
+  findAll() {
     return this.usersService.findAll();
   }
 
-  @Get('search')
-  async search(@Query('q') query: string) {
-    if (!query) {
-      return [];
-    }
-    return this.usersService.searchUsers(query);
+  @Get('profile')
+  getProfile(@Request() req) {
+    return this.usersService.getProfile(req.user.userId);
   }
 
   @Get(':id')
-  async findOne(@Param('id') id: string) {
+  @Roles(UserRoleEnum.ADMIN)
+  findOne(@Param('id') id: string) {
     return this.usersService.findOne(+id);
   }
 
-  @Get(':id/roles')
-  async getUserRoles(@Param('id') id: string) {
-    return this.usersService.getUserRoles(+id);
-  }
-
-  @Put(':id/profile')
-  async updateProfile(
-    @Param('id') id: string,
-    @Body() updateData: any,
-  ) {
-    return this.usersService.updateProfile(+id, updateData);
-  }
-
   @Put(':id/roles')
-  @Roles('admin')
-  async assignRole(
-    @Param('id') id: string,
-    @Body() roleData: { role: string },
-  ) {
-    return this.usersService.assignRole(+id, roleData.role);
-  }
-
-  @Put(':id/roles/remove')
-  @Roles('admin')
-  async removeRole(
-    @Param('id') id: string,
-    @Body() roleData: { role: string },
-  ) {
-    return this.usersService.removeRole(+id, roleData.role);
+  @Roles(UserRoleEnum.ADMIN)
+  updateRoles(@Param('id') id: string, @Body('roles') roles: UserRoleEnum[]) {
+    return this.usersService.updateUserRoles(+id, roles);
   }
 }

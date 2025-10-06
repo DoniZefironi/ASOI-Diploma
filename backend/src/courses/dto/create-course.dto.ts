@@ -1,29 +1,25 @@
-import { IsString, IsEnum, IsOptional, IsNotEmpty } from 'class-validator';
-
-// Определяем enum прямо здесь вместо импорта
-export enum CourseCategory {
-  ENGLISH = 'english',
-  COMPUTER_SCIENCE = 'computer_science',
-  ELECTRONICS = 'electronics',
-  IOT = 'iot'
-}
+// src/courses/dto/create-course.dto.ts
+import { IsEnum, IsString, IsNumber, IsBoolean, IsOptional, IsUrl } from 'class-validator';
+import { CourseType } from '../entities/course.entity';
 
 export class CreateCourseDto {
   @IsString()
-  @IsNotEmpty()
   name: string;
 
-  @IsString()
-  @IsNotEmpty()
-  code: string;
+  @IsEnum(CourseType)
+  type: CourseType;
 
   @IsString()
-  @IsOptional()
-  description?: string;
+  description: string;
 
-  @IsEnum(CourseCategory)
-  category: CourseCategory;
+  @IsNumber()
+  duration: number;
 
+  @IsBoolean()
   @IsOptional()
-  createdBy?: number;
+  isActive?: boolean;
+
+  @IsUrl()
+  @IsOptional()
+  imageUrl?: string;
 }
