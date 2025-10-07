@@ -1,9 +1,11 @@
+// shared/api/auth.ts
 const API_BASE_URL = 'http://localhost:2904';
 
 export interface RegisterData {
-  username: string;
   email: string;
   password: string;
+  firstName: string;
+  lastName: string;
 }
 
 export interface LoginData {
@@ -15,8 +17,10 @@ export interface AuthResponse {
   access_token: string;
   user: {
     id: string;
-    username: string;
     email: string;
+    firstName: string;
+    lastName: string;
+    roles: string[];
   };
 }
 

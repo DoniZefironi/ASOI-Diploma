@@ -26,6 +26,29 @@ export const Header = () => {
     window.location.href = '/';
   };
 
+  // Создаем отображаемое имя пользователя
+  const getDisplayName = () => {
+    if (!user) return '';
+    
+    // Используем firstName и lastName, или email если их нет
+    if (user.firstName && user.lastName) {
+      return `${user.firstName} ${user.lastName}`;
+    }
+    
+    // Или первую часть email до @
+    if (user.email) {
+      return user.email.split('@')[0];
+    }
+    
+    return 'User';
+  };
+
+  // Получаем первую букву для аватара
+  const getAvatarLetter = () => {
+    const displayName = getDisplayName();
+    return displayName.charAt(0).toUpperCase();
+  };
+
   return (
     <header className="bg-[#010409] text-white shadow-sm sticky top-0 z-50 border-b border-[#353C45]">
       <div className="container mx-auto px-4 py-4">
@@ -50,10 +73,10 @@ export const Header = () => {
                 >
                   <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
                     <span className="text-sm font-semibold">
-                      {user.username.charAt(0).toUpperCase()}
+                      {getAvatarLetter()}
                     </span>
                   </div>
-                  <span className="hidden md:block">{user.username}</span>
+                  <span className="hidden md:block">{getDisplayName()}</span>
                   <svg 
                     className={`w-4 h-4 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`}
                     fill="none" 
@@ -67,7 +90,7 @@ export const Header = () => {
                 {isDropdownOpen && (
                   <div className="absolute right-0 mt-2 w-48 bg-[#1C2128] border border-[#353C45] rounded-lg shadow-xl py-2 z-50">
                     <div className="px-4 py-2 border-b border-[#353C45]">
-                      <p className="text-sm font-semibold">{user.username}</p>
+                      <p className="text-sm font-semibold">{getDisplayName()}</p>
                       <p className="text-xs text-gray-400">{user.email}</p>
                     </div>
                     

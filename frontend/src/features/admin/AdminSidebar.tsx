@@ -15,9 +15,9 @@ import {
   LayoutDashboard,
   LogOut
 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { useAuthStore } from '@/lib/store/auth-store';
-import { cn } from '@/lib/utils';
+import { Button } from '@/shared/ui/button';
+import { useAuthStore } from '@/shared/store/auth-store';
+import { cn } from '@/shared/lib/utils';
 
 const menuItems = [
   { href: '/admin', icon: LayoutDashboard, label: 'Дашборд' },

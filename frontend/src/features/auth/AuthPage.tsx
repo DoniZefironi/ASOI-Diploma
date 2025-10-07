@@ -1,3 +1,4 @@
+// components/auth/AuthPage.tsx
 'use client';
 
 import { useState } from 'react';
@@ -7,9 +8,10 @@ import Image from 'next/image';
 import { useAuth } from '@/shared/lib/auth-context';
 
 interface AuthForm {
-  username: string;
   email: string;
   password: string;
+  firstName: string;
+  lastName: string;
 }
 
 export const AuthPage = () => {
@@ -17,9 +19,10 @@ export const AuthPage = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState<AuthForm>({
-    username: '',
     email: '',
-    password: ''
+    password: '',
+    firstName: '',
+    lastName: ''
   });
   const [errors, setErrors] = useState<Partial<AuthForm>>({});
 
@@ -40,25 +43,25 @@ export const AuthPage = () => {
   const validateForm = (): boolean => {
     const newErrors: Partial<AuthForm> = {};
 
-    if (isLogin) {
-      if (!formData.username.trim()) {
-        newErrors.username = 'Username is required';
-      }
-    } else {
-      if (!formData.username.trim()) {
-        newErrors.username = 'Username is required';
-      }
-      if (!formData.email.trim()) {
-        newErrors.email = 'Email is required';
-      } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-        newErrors.email = 'Email is invalid';
-      }
+    if (!formData.email.trim()) {
+      newErrors.email = 'Email is required';
+    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      newErrors.email = 'Email is invalid';
     }
 
     if (!formData.password) {
       newErrors.password = 'Password is required';
     } else if (formData.password.length < 6) {
       newErrors.password = 'Password must be at least 6 characters';
+    }
+
+    if (!isLogin) {
+      if (!formData.firstName.trim()) {
+        newErrors.firstName = 'First name is required';
+      }
+      if (!formData.lastName.trim()) {
+        newErrors.lastName = 'Last name is required';
+      }
     }
 
     setErrors(newErrors);
@@ -79,13 +82,14 @@ export const AuthPage = () => {
 
       const payload = isLogin
         ? { 
-            username: formData.username,
+            email: formData.email,
             password: formData.password 
           }
         : { 
-            username: formData.username, 
-            email: formData.email, 
-            password: formData.password 
+            email: formData.email,
+            password: formData.password,
+            firstName: formData.firstName,
+            lastName: formData.lastName
           };
 
       console.log('Sending request to:', url);
@@ -108,11 +112,13 @@ export const AuthPage = () => {
           const token = data.access_token;
           const userData = {
             id: data.user?.id?.toString() || '1',
-            username: data.user?.username || formData.username,
-            email: data.user?.email || formData.email || `${formData.username}@example.com`
+            email: data.user?.email || formData.email,
+            firstName: data.user?.firstName || '',
+            lastName: data.user?.lastName || '',
+            roles: data.user?.roles || ['REGISTERED_USER']
           };
 
-          localStorage.setItem('token', token);
+          localStorage.setItem('access_token', token);
           localStorage.setItem('user', JSON.stringify(userData));
           
           if (login) login(token, userData);
@@ -126,9 +132,10 @@ export const AuthPage = () => {
         alert('✅ Account created successfully! Please sign in.');
         setIsLogin(true);
         setFormData({
-          username: formData.username, 
-          email: '',
-          password: ''
+          email: formData.email,
+          password: '',
+          firstName: '',
+          lastName: ''
         });
       }
 
@@ -143,7 +150,7 @@ export const AuthPage = () => {
   return (
     <div className="min-h-screen bg-[#0D1117] py-12">
       <div className="container mx-auto px-4">
-        <div className="text-center mb-12 animate-fade-in-up">
+        <div className="text-center mb-12">
           <h1 className="text-4xl font-bold text-white mb-4">TechLearn</h1>
           <nav className="flex justify-center space-x-6 text-gray-400 mb-8">
             <Link href="/courses" className="hover:text-blue-600 transition-colors">Courses</Link>
@@ -153,7 +160,7 @@ export const AuthPage = () => {
           <div className="w-24 h-1 bg-blue-600 mx-auto"></div>
         </div>
 
-        <div className="max-w-md mx-auto animate-fade-in-up animate-delay-100">
+        <div className="max-w-md mx-auto">
           <div className="bg-white rounded-xl shadow-2xl p-8">
             <div className="flex mb-8 border-b border-gray-200">
               <button
@@ -181,52 +188,68 @@ export const AuthPage = () => {
             <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">
               {isLogin ? 'Welcome back to TechLearn' : 'Join TechLearn'}
             </h2>
-            <p className="text-gray-600 mb-8 text-center">
-              {isLogin
-                ? 'Sign in to your account or create a new one'
-                : 'Create your account to start learning'}
-            </p>
 
             <form onSubmit={handleSubmit} className="space-y-6">
+              {!isLogin && (
+                <>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      First Name
+                    </label>
+                    <input
+                      type="text"
+                      name="firstName"
+                      value={formData.firstName}
+                      onChange={handleChange}
+                      placeholder="Enter your first name"
+                      className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-black ${
+                        errors.firstName ? 'border-red-500' : 'border-gray-300'
+                      }`}
+                    />
+                    {errors.firstName && (
+                      <p className="text-red-500 text-sm mt-1">{errors.firstName}</p>
+                    )}
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Last Name
+                    </label>
+                    <input
+                      type="text"
+                      name="lastName"
+                      value={formData.lastName}
+                      onChange={handleChange}
+                      placeholder="Enter your last name"
+                      className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-black ${
+                        errors.lastName ? 'border-red-500' : 'border-gray-300'
+                      }`}
+                    />
+                    {errors.lastName && (
+                      <p className="text-red-500 text-sm mt-1">{errors.lastName}</p>
+                    )}
+                  </div>
+                </>
+              )}
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Username
+                  Email
                 </label>
                 <input
-                  type="text"
-                  name="username"
-                  value={formData.username}
+                  type="email"
+                  name="email"
+                  value={formData.email}
                   onChange={handleChange}
-                  placeholder="Enter your username"
+                  placeholder="Enter your email"
                   className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-black ${
-                    errors.username ? 'border-red-500' : 'border-gray-300'
+                    errors.email ? 'border-red-500' : 'border-gray-300'
                   }`}
                 />
-                {errors.username && (
-                  <p className="text-red-500 text-sm mt-1">{errors.username}</p>
+                {errors.email && (
+                  <p className="text-red-500 text-sm mt-1">{errors.email}</p>
                 )}
               </div>
-
-              {!isLogin && (
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Email
-                  </label>
-                  <input
-                    type="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    placeholder="Enter your email"
-                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-black ${
-                      errors.email ? 'border-red-500' : 'border-gray-300'
-                    }`}
-                  />
-                  {errors.email && (
-                    <p className="text-red-500 text-sm mt-1">{errors.email}</p>
-                  )}
-                </div>
-              )}
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -286,60 +309,29 @@ export const AuthPage = () => {
               </Button>
             </form>
 
-            <div className="my-8 flex items-center">
-              <div className="flex-1 border-t border-gray-300"></div>
-              <span className="px-4 text-sm text-gray-500">Or continue with</span>
-              <div className="flex-1 border-t border-gray-300"></div>
+            <div className="text-center mt-8 text-sm text-gray-400">
+              {isLogin ? (
+                <p>
+                  Don't have an account?{' '}
+                  <button
+                    onClick={() => setIsLogin(false)}
+                    className="text-blue-600 hover:text-blue-700 font-semibold"
+                  >
+                    Sign up
+                  </button>
+                </p>
+              ) : (
+                <p>
+                  Already have an account?{' '}
+                  <button
+                    onClick={() => setIsLogin(true)}
+                    className="text-blue-600 hover:text-blue-700 font-semibold"
+                  >
+                    Sign in
+                  </button>
+                </p>
+              )}
             </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <button className="flex items-center justify-center text-gray-500 px-4 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
-                <span className="w-5 h-5 mr-2 relative">
-                  <Image
-                    src="/icons/google.png"
-                    alt="Google icon"
-                    width={20}
-                    height={20}
-                  />
-                </span>
-                Google
-              </button>
-              <button className="flex items-center justify-center text-gray-500 px-4 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
-                <span className="w-5 h-5 mr-2 relative">
-                  <Image
-                    src="/icons/git.png"
-                    alt="GitHub icon"
-                    width={20}
-                    height={20}
-                  />
-                </span>
-                GitHub
-              </button>
-            </div>
-          </div>
-
-          <div className="text-center mt-8 text-sm text-gray-400">
-            {isLogin ? (
-              <p>
-                Don't have an account?{' '}
-                <button
-                  onClick={() => setIsLogin(false)}
-                  className="text-blue-600 hover:text-blue-700 font-semibold"
-                >
-                  Sign up
-                </button>
-              </p>
-            ) : (
-              <p>
-                Already have an account?{' '}
-                <button
-                  onClick={() => setIsLogin(true)}
-                  className="text-blue-600 hover:text-blue-700 font-semibold"
-                >
-                  Sign in
-                </button>
-              </p>
-            )}
           </div>
         </div>
       </div>

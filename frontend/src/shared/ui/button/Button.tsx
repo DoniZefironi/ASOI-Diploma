@@ -1,9 +1,10 @@
+// shared/ui/button.tsx
 'use client';
 
 import { ButtonHTMLAttributes } from 'react';
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'primary' | 'secondary';
+  variant?: 'primary' | 'secondary' | 'outline';
   size?: 'sm' | 'md' | 'lg';
 }
 
@@ -18,7 +19,8 @@ export const Button = ({
   
   const variants = {
     primary: 'bg-[#13A4EC] text-white hover:bg-[#1088C4]',
-    secondary: 'bg-[#374151] text-white hover:bg-[#49505B]'
+    secondary: 'bg-[#374151] text-white hover:bg-[#49505B]',
+    outline: 'border border-gray-300 text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-800'
   };
 
   const sizes = {
