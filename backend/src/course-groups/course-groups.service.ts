@@ -112,7 +112,6 @@ export class CourseGroupsService {
       throw new NotFoundException('Registration not found');
     }
 
-    // Проверка на количество студентов
     const approvedCount = await this.registrationRepository.count({
       where: { 
         courseGroupId: registration.courseGroupId,

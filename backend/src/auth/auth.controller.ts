@@ -1,9 +1,10 @@
 // src/auth/auth.controller.ts
-import { Controller, Post, Body, UseGuards, Request } from '@nestjs/common';
+import { Controller, Post, Body, UseGuards, Request, Get } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { LocalAuthGuard } from './guards/local-auth.guard';
+import { JwtAuthGuard } from './guards/jwt-auth.guard'
 
 @Controller('auth')
 export class AuthController {
@@ -18,5 +19,14 @@ export class AuthController {
   @Post('register')
   async register(@Body() registerDto: RegisterDto) {
     return this.authService.register(registerDto);
+  }
+
+  @Get('debug')
+  @UseGuards(JwtAuthGuard)
+  debug(@Request() req) {
+    return {
+      user: req.user,
+      roles: req.user?.roles
+    };
   }
 }
