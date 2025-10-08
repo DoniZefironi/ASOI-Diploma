@@ -1,4 +1,3 @@
-// features/admin/AssignmentForm.tsx
 'use client';
 
 import { useState } from 'react';
@@ -7,7 +6,6 @@ import { Card } from '@/shared/ui/card';
 import { Loader2 } from 'lucide-react';
 import { useCourseGroups } from '@/shared/api/admin';
 
-// UI компоненты
 const Label = ({ children, htmlFor, className = '' }: { 
   children: React.ReactNode; 
   htmlFor?: string;
@@ -18,7 +16,6 @@ const Label = ({ children, htmlFor, className = '' }: {
   </label>
 );
 
-// Обновленный Input с поддержкой всех HTML атрибутов
 interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   value: string | number;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
@@ -46,7 +43,6 @@ const Input = ({
   />
 );
 
-// Обновленный Textarea с поддержкой всех HTML атрибутов
 interface TextareaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
   value: string;
   onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;

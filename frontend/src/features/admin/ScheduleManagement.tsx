@@ -1,4 +1,3 @@
-// features/admin/ScheduleManagement.tsx
 'use client';
 
 import { useState } from 'react';
@@ -8,7 +7,6 @@ import { Plus, Edit, Trash2, Loader2, Calendar, Clock, MapPin, Video } from 'luc
 import ScheduleForm from './ScheduleForm';
 import { useSchedule } from '@/shared/api/admin';
 
-// UI компоненты
 type BadgeVariant = 'default' | 'secondary' | 'outline' | 'destructive';
 
 const Badge = ({
@@ -24,7 +22,7 @@ const Badge = ({
   const variants: Record<BadgeVariant, string> = {
     default: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300',
     secondary: 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300',
-    outline: 'border border-gray-300 text-gray-700 dark:border-gray-600 dark:text-gray-300',
+    outline: 'border border-gray-300 text-gray-400 dark:border-gray-600 dark:text-gray-300',
     destructive: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300',
   };
   return (
@@ -37,7 +35,7 @@ const Badge = ({
 const Dialog = ({ open, onClose, children }: any) =>
   !open ? null : (
     <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
-      <div className="bg-white dark:bg-gray-800 rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+      <div className="bg-gray-800 rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
         {children}
       </div>
     </div>
@@ -211,7 +209,7 @@ export default function ScheduleManagement() {
         <CardContent>
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-gray-50 dark:bg-gray-800">
+              <thead className="bg-gray-800 border-b-2 border-b-white">
                 <tr>
                   <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                     ID
@@ -242,7 +240,7 @@ export default function ScheduleManagement() {
                   const endTime = formatDateTime(item.endTime);
                   
                   return (
-                    <tr key={item.id} className="hover:bg-gray-50 dark:hover:bg-gray-800">
+                    <tr key={item.id} className="bg-gray-800 border-b-2 border-b-white">
                       <td className="px-4 py-3 text-sm text-white">{item.id}</td>
                       <td className="px-4 py-3">
                         <div className="flex flex-col">

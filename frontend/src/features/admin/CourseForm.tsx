@@ -1,4 +1,3 @@
-// components/admin/CourseForm.tsx
 'use client';
 
 import { useState } from 'react';
@@ -6,7 +5,6 @@ import { Button } from '@/shared/ui/button';
 import { Card } from '@/shared/ui/card';
 import { Loader2 } from 'lucide-react';
 
-// Создаем недостающие UI компоненты
 const Label = ({ children, htmlFor, className = '' }: { 
   children: React.ReactNode; 
   htmlFor?: string;
@@ -17,7 +15,6 @@ const Label = ({ children, htmlFor, className = '' }: {
   </label>
 );
 
-// Обновленный Input с поддержкой разных типов
 const Input = ({ 
   type = 'text', 
   value, 
@@ -194,8 +191,7 @@ export default function CourseForm({ course, onSave, onCancel, isSubmitting = fa
       ...prev,
       [field]: value
     }));
-    
-    // Очищаем ошибку при изменении поля
+
     if (errors[field]) {
       setErrors(prev => ({
         ...prev,
@@ -204,7 +200,6 @@ export default function CourseForm({ course, onSave, onCancel, isSubmitting = fa
     }
   };
 
-  // Функции для обработки разных типов полей
   const handleNumberChange = (field: keyof CourseFormData, value: string) => {
     const numValue = value === '' ? 0 : parseInt(value, 10);
     handleChange(field, isNaN(numValue) ? 0 : numValue);

@@ -1,4 +1,3 @@
-// shared/ui/button.tsx
 'use client';
 
 import { ButtonHTMLAttributes } from 'react';

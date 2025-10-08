@@ -1,4 +1,3 @@
-// features/admin/ScheduleForm.tsx
 'use client';
 
 import { useState } from 'react';
@@ -7,7 +6,6 @@ import { Card } from '@/shared/ui/card';
 import { Loader2 } from 'lucide-react';
 import { useCourseGroups, useUsers } from '@/shared/api/admin';
 
-// UI компоненты
 const Label = ({ children, htmlFor, className = '' }: { 
   children: React.ReactNode; 
   htmlFor?: string;

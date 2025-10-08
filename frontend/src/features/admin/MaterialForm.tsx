@@ -1,4 +1,3 @@
-// features/admin/MaterialForm.tsx
 'use client';
 
 import { useState } from 'react';
@@ -7,7 +6,6 @@ import { Card } from '@/shared/ui/card';
 import { Loader2 } from 'lucide-react';
 import { useCourses } from '@/shared/api/admin';
 
-// UI компоненты (используем те же, что и для AssignmentForm)
 const Label = ({ children, htmlFor, className = '' }: { 
   children: React.ReactNode; 
   htmlFor?: string;

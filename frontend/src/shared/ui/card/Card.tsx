@@ -1,4 +1,3 @@
-// shared/ui/card.tsx
 'use client';
 
 import { HTMLAttributes, ReactNode } from 'react';

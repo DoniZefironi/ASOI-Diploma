@@ -1,4 +1,3 @@
-// components/admin/UserManagement.tsx
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -7,7 +6,6 @@ import { Button } from '@/shared/ui/button';
 import { User, Shield, Loader2 } from 'lucide-react';
 import { useUsers } from '@/shared/api/admin';
 
-// Создаем локальные компоненты для отсутствующих UI элементов
 const Badge = ({ children, variant = 'default', className = '' }: { 
   children: React.ReactNode; 
   variant?: 'default' | 'secondary' | 'outline' | 'destructive';
@@ -28,7 +26,6 @@ const Badge = ({ children, variant = 'default', className = '' }: {
   );
 };
 
-// Простой диалог компонент
 const Dialog = ({ 
   open, 
   onOpenChange, 
@@ -67,7 +64,6 @@ const DialogTitle = ({ children, className = '' }: { children: React.ReactNode; 
   </h3>
 );
 
-// Простая таблица
 const Table = ({ children, className = '' }: { children: React.ReactNode; className?: string }) => (
   <div className={`w-full border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden ${className}`}>
     <table className="w-full">
@@ -89,7 +85,7 @@ const TableBody = ({ children }: { children: React.ReactNode }) => (
 );
 
 const TableRow = ({ children, className = '' }: { children: React.ReactNode; className?: string }) => (
-  <tr className={`hover:bg-gray-50 dark:hover:bg-gray-800 ${className}`}>
+  <tr className={`bg-gray-800 border-b-white border-b-2 ${className}`}>
     {children}
   </tr>
 );
@@ -107,7 +103,7 @@ const TableCell = ({ children, className = '' }: { children: React.ReactNode; cl
 );
 
 export default function UserManagement() {
-  const { users, isLoading, isError, updateUserRoles, mutate, isUpdating } = useUsers(); // Используем updateUserRoles
+  const { users, isLoading, isError, updateUserRoles, mutate, isUpdating } = useUsers();  
   const [selectedUser, setSelectedUser] = useState<any>(null);
   const [isRoleDialogOpen, setIsRoleDialogOpen] = useState(false);
   const [localUpdating, setLocalUpdating] = useState(false);
@@ -142,13 +138,11 @@ export default function UserManagement() {
     
     setLocalUpdating(true);
     try {
-      // Используем правильный метод для обновления ролей
       await updateUserRoles({ 
         id: selectedUser.id, 
         roles 
       });
-      
-      // Обновляем локальные данные
+
       mutate();
       
       setIsRoleDialogOpen(false);
@@ -162,11 +156,9 @@ export default function UserManagement() {
     }
   };
 
-  // Функция для получения ролей пользователя в правильном формате
   const getUserRoles = (user: any) => {
     if (!user.roles) return [];
-    
-    // Обрабатываем разные форматы ролей
+
     return user.roles.map((role: any) => {
       if (typeof role === 'string') return role;
       return role.role || role;
@@ -287,14 +279,11 @@ export default function UserManagement() {
   );
 }
 
-// Компонент диалога редактирования ролей
 function RoleDialog({ user, isOpen, onClose, onSave, isUpdating }: any) {
   const [selectedRoles, setSelectedRoles] = useState<string[]>([]);
 
-  // Инициализируем роли когда диалог открывается
   useEffect(() => {
     if (user && isOpen) {
-      // Обрабатываем разные форматы ролей
       const userRoles = user.roles?.map((r: any) => {
         if (typeof r === 'string') return r;
         return r.role || r;
@@ -353,7 +342,7 @@ function RoleDialog({ user, isOpen, onClose, onSave, isUpdating }: any) {
               {availableRoles.map((role) => (
                 <label 
                   key={role.value} 
-                  className="flex items-center space-x-3 p-2 rounded-lg border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer transition-colors"
+                  className="flex items-center space-x-3 p-2 rounded-lg border border-gray-300 dark:border-gray-600 hover:bg-gray-700 dark:hover:bg-gray-700 cursor-pointer transition-colors"
                 >
                   <input
                     type="checkbox"

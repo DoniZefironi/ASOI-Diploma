@@ -7,7 +7,6 @@ import { useCourses } from '@/shared/api/admin';
 import { BookOpen, Plus, Edit, Trash2, Loader2 } from 'lucide-react';
 import CourseForm from './CourseForm';
 
-// Badge — визуальный ярлык
 const Badge = ({
   children,
   variant = 'default',
@@ -25,7 +24,7 @@ const Badge = ({
     secondary:
       'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300',
     outline:
-      'border border-gray-300 text-gray-700 dark:border-gray-600 dark:text-gray-300',
+      'border border-gray-300 text-gray-300 dark:border-gray-600 dark:text-gray-300',
     destructive:
       'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300',
   };
@@ -37,7 +36,6 @@ const Badge = ({
   );
 };
 
-// Простой диалог
 const Dialog = ({
   open,
   onOpenChange,
@@ -50,7 +48,7 @@ const Dialog = ({
   if (!open) return null;
   return (
     <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center p-4">
-      <div className="bg-white dark:bg-gray-800 rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+      <div className="bg-gray-800 rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
         {children}
       </div>
     </div>
@@ -83,7 +81,6 @@ const DialogTitle = ({
   </h3>
 );
 
-// Таблица
 const Table = ({
   children,
   className = '',
@@ -97,7 +94,7 @@ const Table = ({
 );
 
 const TableHeader = ({ children }: { children: React.ReactNode }) => (
-  <thead className="bg-gray-50 dark:bg-gray-800">{children}</thead>
+  <thead className="bg-gray-800 border-b-2 border-b-white">{children}</thead>
 );
 const TableBody = ({ children }: { children: React.ReactNode }) => (
   <tbody className="divide-y divide-gray-200 dark:divide-gray-700">{children}</tbody>
@@ -108,7 +105,7 @@ const TableRow = ({
 }: {
   children: React.ReactNode;
   className?: string;
-}) => <tr className={`hover:bg-gray-50 dark:hover:bg-gray-800 ${className}`}>{children}</tr>;
+}) => <tr className={`bg-gray-800 ${className}`}>{children}</tr>;
 const TableHead = ({
   children,
   className = '',
@@ -165,7 +162,7 @@ export default function CourseManagement() {
     if (!confirm('Вы уверены, что хотите удалить этот курс?')) return;
     try {
       await deleteCourse(courseId);
-      mutate(); // обновляем список после удаления
+      mutate();
     } catch (error) {
       console.error('Error deleting course:', error);
     }
@@ -178,7 +175,7 @@ export default function CourseManagement() {
       } else {
         await createCourse(data);
       }
-      mutate(); // обновляем список
+      mutate();
       setIsDialogOpen(false);
       setEditingCourse(null);
     } catch (error) {
@@ -324,7 +321,6 @@ export default function CourseManagement() {
   );
 }
 
-// Диалог создания/редактирования курса
 function CourseDialog({
   course,
   isOpen,

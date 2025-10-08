@@ -1,4 +1,3 @@
-// components/admin/AdminSidebar.tsx
 'use client';
 
 import { usePathname, useRouter } from 'next/navigation';
@@ -15,7 +14,6 @@ import {
   LayoutDashboard,
   LogOut
 } from 'lucide-react';
-import { Button } from '@/shared/ui/button';
 import { useAuthStore } from '@/shared/store/auth-store';
 import { cn } from '@/shared/lib/utils';
 
@@ -27,8 +25,6 @@ const menuItems = [
   { href: '/admin/schedule', icon: Calendar, label: 'Расписание' },
   { href: '/admin/assignments', icon: FileText, label: 'Задания' },
   { href: '/admin/materials', icon: FolderOpen, label: 'Материалы' },
-  { href: '/admin/forum', icon: MessageSquare, label: 'Форум' },
-  { href: '/admin/achievements', icon: Award, label: 'Достижения' },
 ];
 
 export default function AdminSidebar() {
@@ -75,18 +71,6 @@ export default function AdminSidebar() {
           })}
         </ul>
       </nav>
-
-      {/* Footer */}
-      <div className="p-4 border-t">
-        <Button
-          variant="outline"
-          onClick={handleLogout}
-          className="w-full justify-start"
-        >
-          <LogOut size={18} className="mr-2" />
-          Выйти
-        </Button>
-      </div>
     </div>
   );
 }

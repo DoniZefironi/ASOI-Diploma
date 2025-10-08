@@ -24,7 +24,7 @@ const Badge = ({
     default: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300',
     secondary: 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300',
     outline:
-      'border border-gray-300 text-gray-700 dark:border-gray-600 dark:text-gray-300',
+      'border border-gray-300 text-gray-300 dark:border-gray-600 dark:text-gray-300',
     destructive: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300',
   };
   return (
@@ -37,7 +37,7 @@ const Badge = ({
 const Dialog = ({ open, onOpenChange, children }: any) =>
   !open ? null : (
     <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
-      <div className="bg-white dark:bg-gray-800 rounded-lg max-w-3xl w-full max-h-[90vh] overflow-y-auto">
+      <div className="bg-gray-800 rounded-lg max-w-3xl w-full max-h-[90vh] overflow-y-auto">
         {children}
       </div>
     </div>
@@ -59,7 +59,7 @@ const Table = ({ children }: any) => (
   </div>
 );
 const TableHeader = ({ children }: any) => (
-  <thead className="bg-gray-50 dark:bg-gray-800">{children}</thead>
+  <thead className="bg-gray-800 border-b-2 border-b-white">{children}</thead>
 );
 const TableBody = ({ children }: any) => (
   <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
@@ -67,7 +67,7 @@ const TableBody = ({ children }: any) => (
   </tbody>
 );
 const TableRow = ({ children }: any) => (
-  <tr className="hover:bg-gray-50 dark:hover:bg-gray-800">{children}</tr>
+  <tr className="bg-gray-800">{children}</tr>
 );
 const TableHead = ({ children }: any) => (
   <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
@@ -102,7 +102,6 @@ export default function GroupManagement() {
   };
 
     const handleSave = async (data: any) => {
-    // Преобразуем courseId в число
     const payload = {
         ...data,
         courseId: Number(data.courseId),
