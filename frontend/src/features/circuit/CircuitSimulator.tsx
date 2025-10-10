@@ -1,385 +1,416 @@
-// features/circuit/CircuitSimulator.tsx
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
-import { Card, CardHeader, CardTitle, CardContent } from '@/shared/ui/card';
-import { Button } from '@/shared/ui/button';
-import { 
-  Save, Download, Upload, RotateCcw, Play, Square, 
-  ZoomIn, ZoomOut, Grid, HelpCircle, Settings 
-} from 'lucide-react';
+import React, { useEffect, useRef, useState } from 'react';
+import { create } from 'zustand';
 
-// Типы для компонентов схемы
-interface CircuitComponent {
-  id: string;
-  type: 'gate' | 'input' | 'output';
+// =========================
+// Types
+// =========================
+
+type ID = string;
+
+type NodeType = 'INPUT' | 'OUTPUT' | 'AND' | 'OR' | 'NOT' | 'LED' | 'COUNTER' | 'CLOCK' | 'DISPLAY' | 'CUSTOM';
+
+type NodeDef = {
+  id: ID;
+  type: NodeType;
   x: number;
   y: number;
-  properties: any;
+  label?: string;
+  inputs: Array<{ id: string | null }>;
+  value?: boolean;
+  counter?: number;
+  clockSpeed?: number;
+  clockActive?: boolean;
+};
+
+type Wire = {
+  id: ID;
+  from: { nodeId: ID; slot: number };
+  to: { nodeId: ID; slot: number };
+};
+
+// =========================
+// Utilities
+// =========================
+
+const uid = (p = '') => `${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 9)}${p}`;
+
+function evaluateNode(node: NodeDef, inputsValues: boolean[]): boolean {
+  switch (node.type) {
+    case 'INPUT':
+      return !!node.value;
+    case 'OUTPUT':
+      return !!inputsValues[0];
+    case 'LED':
+      return !!inputsValues[0];
+    case 'NOT':
+      return !inputsValues[0];
+    case 'AND':
+      return inputsValues.every(Boolean);
+    case 'OR':
+      return inputsValues.some(Boolean);
+    case 'COUNTER':
+      // Counts rising edges on first input
+      return !!inputsValues[0];
+    case 'CLOCK':
+      return !!node.clockActive;
+    case 'DISPLAY':
+      return !!inputsValues[0];
+    case 'CUSTOM':
+      return inputsValues.some(Boolean);
+    default:
+      return false;
+  }
 }
 
-interface CircuitState {
-  components: CircuitComponent[];
-  wires: any[];
-  zoom: number;
-  pan: { x: number; y: number };
-}
+// =========================
+// Zustand store
+// =========================
 
-export default function CircuitSimulator() {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const [circuit, setCircuit] = useState<CircuitState>({
-    components: [],
-    wires: [],
-    zoom: 1,
-    pan: { x: 0, y: 0 }
-  });
-  const [isSimulating, setIsSimulating] = useState(false);
-  const [selectedTool, setSelectedTool] = useState<'select' | 'wire' | 'gate' | 'input' | 'output'>('select');
-  const [showGrid, setShowGrid] = useState(true);
+type SimulatorState = {
+  nodes: Record<ID, NodeDef>;
+  wires: Record<ID, Wire>;
+  addNode: (node: Partial<NodeDef> & { type: NodeType }) => ID;
+  removeNode: (id: ID) => void;
+  updateNodePos: (id: ID, x: number, y: number) => void;
+  toggleInputValue: (id: ID) => void;
+  toggleClock: (id: ID) => void;
+  startConnection: (fromNodeId: ID, fromSlot: number) => void;
+  completeConnection: (toNodeId: ID, toSlot: number) => void;
+  cancelConnection: () => void;
+  connectionInProgress: null | { fromNodeId: ID; fromSlot: number };
+  connectWire: (w: Wire) => void;
+  removeWire: (id: ID) => void;
+  runSimulation: () => void;
+  exportJSON: () => string;
+  importJSON: (s: string) => void;
+  clear: () => void;
+};
 
-  const [selectedComponent, setSelectedComponent] = useState<string | null>(null);
-  const [isDragging, setIsDragging] = useState(false);
-  const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
-  const [cursor, setCursor] = useState<'default' | 'grab' | 'grabbing'>('default');
+const useStore = create<SimulatorState>((set, get) => ({
+  nodes: {},
+  wires: {},
+  connectionInProgress: null,
 
-  // Базовые логические элементы
-  const logicGates = [
-    { type: 'AND', symbol: '&', inputs: 2, outputs: 1 },
-    { type: 'OR', symbol: '≥1', inputs: 2, outputs: 1 },
-    { type: 'NOT', symbol: '1', inputs: 1, outputs: 1 },
-    { type: 'XOR', symbol: '=1', inputs: 2, outputs: 1 },
-  ];
+  addNode: (node) => {
+    const id = uid(node.type);
+    let defaultSlots = 1;
+    let initialValues: Partial<NodeDef> = {};
 
-  // Упрощенная функция для преобразования координат
-  const getWorldCoords = (screenX: number, screenY: number) => {
-    return {
-      x: (screenX / circuit.zoom) - circuit.pan.x,
-      y: (screenY / circuit.zoom) - circuit.pan.y
+    switch (node.type) {
+      case 'INPUT':
+        defaultSlots = 0;
+        initialValues = { value: false };
+        break;
+      case 'NOT':
+        defaultSlots = 1;
+        break;
+      case 'AND':
+      case 'OR':
+        defaultSlots = 2;
+        break;
+      case 'COUNTER':
+        defaultSlots = 1;
+        initialValues = { counter: 0 };
+        break;
+      case 'CLOCK':
+        defaultSlots = 0;
+        initialValues = { clockSpeed: 1000, clockActive: false };
+        break;
+      case 'DISPLAY':
+        defaultSlots = 4; // 4-bit display
+        break;
+      default:
+        defaultSlots = 1;
+    }
+
+    const inputs = new Array(defaultSlots).fill(0).map(() => ({ id: null }));
+    const nodeDef: NodeDef = {
+      id,
+      type: node.type,
+      x: node.x ?? 100,
+      y: node.y ?? 100,
+      label: node.label ?? node.type,
+      inputs,
+      value: node.type === 'INPUT' ? false : undefined,
+      ...initialValues,
     };
-  };
+    set((state) => ({ nodes: { ...state.nodes, [id]: nodeDef } }));
+    return id;
+  },
 
-  const getScreenCoords = (worldX: number, worldY: number) => {
-    return {
-      x: (worldX + circuit.pan.x) * circuit.zoom,
-      y: (worldY + circuit.pan.y) * circuit.zoom
-    };
-  };
-
-  // Простая проверка попадания
-  const isPointInComponent = (worldX: number, worldY: number, comp: CircuitComponent) => {
-    const screenPos = getScreenCoords(comp.x, comp.y);
-    const compWidth = comp.type === 'gate' ? 60 * circuit.zoom : 30 * circuit.zoom;
-    const compHeight = comp.type === 'gate' ? 40 * circuit.zoom : 30 * circuit.zoom;
-    
-    const screenX = (worldX + circuit.pan.x) * circuit.zoom;
-    const screenY = (worldY + circuit.pan.y) * circuit.zoom;
-    
-    const left = screenPos.x - compWidth / 2;
-    const right = screenPos.x + compWidth / 2;
-    const top = screenPos.y - compHeight / 2;
-    const bottom = screenPos.y + compHeight / 2;
-
-    return screenX >= left && screenX <= right && screenY >= top && screenY <= bottom;
-  };
-
-  const findComponentAt = (worldX: number, worldY: number) => {
-    // Ищем с конца (последние добавленные элементы сверху)
-    for (let i = circuit.components.length - 1; i >= 0; i--) {
-      const comp = circuit.components[i];
-      if (isPointInComponent(worldX, worldY, comp)) {
-        return comp;
-      }
-    }
-    return null;
-  };
-
-  const handleMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-
-    const rect = canvas.getBoundingClientRect();
-    const screenX = e.clientX - rect.left;
-    const screenY = e.clientY - rect.top;
-    
-    const worldPos = getWorldCoords(screenX, screenY);
-    
-    console.log('=== MOUSE DOWN ===');
-    console.log('Screen:', screenX, screenY);
-    console.log('World:', worldPos.x, worldPos.y);
-    console.log('Pan:', circuit.pan.x, circuit.pan.y);
-    console.log('Zoom:', circuit.zoom);
-
-    const component = findComponentAt(worldPos.x, worldPos.y);
-
-    if (component && selectedTool === 'select') {
-      console.log('FOUND COMPONENT:', component.id, 'at', component.x, component.y);
-      setSelectedComponent(component.id);
-      setIsDragging(true);
-      setCursor('grabbing');
-      setDragStart({ x: worldPos.x, y: worldPos.y });
-    } else {
-      console.log('NO COMPONENT FOUND');
-      setSelectedComponent(null);
-      if (selectedTool !== 'select') {
-        handleCanvasClick(e);
-      }
-    }
-  };
-
-  const handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-
-    const rect = canvas.getBoundingClientRect();
-    const screenX = e.clientX - rect.left;
-    const screenY = e.clientY - rect.top;
-    const worldPos = getWorldCoords(screenX, screenY);
-
-    // Hover эффект
-    if (!isDragging && selectedTool === 'select') {
-      const component = findComponentAt(worldPos.x, worldPos.y);
-      setCursor(component ? 'grab' : 'default');
-    }
-
-    // Перетаскивание
-    if (isDragging && selectedComponent) {
-      const deltaX = worldPos.x - dragStart.x;
-      const deltaY = worldPos.y - dragStart.y;
-      
-      setCircuit(prev => ({
-        ...prev,
-        components: prev.components.map(comp => 
-          comp.id === selectedComponent 
-            ? { 
-                ...comp, 
-                x: comp.x + deltaX,
-                y: comp.y + deltaY
-              }
-            : comp
+  removeNode: (id) => {
+    set((state) => {
+      const newNodes = { ...state.nodes };
+      delete newNodes[id];
+      const newWires = Object.fromEntries(
+        Object.entries(state.wires).filter(([, w]) => 
+          (w as Wire).from.nodeId !== id && (w as Wire).to.nodeId !== id
         )
-      }));
-      
-      setDragStart({ x: worldPos.x, y: worldPos.y });
-    }
-  };
+      );
+      return { nodes: newNodes, wires: newWires };
+    });
+  },
 
-  const handleMouseUp = () => {
-    console.log('=== MOUSE UP ===');
-    setIsDragging(false);
-    setCursor('default');
-  };
+  updateNodePos: (id, x, y) => set((state) => ({ 
+    nodes: { ...state.nodes, [id]: { ...state.nodes[id], x, y } } 
+  })),
 
-  const handleDeleteSelected = () => {
-    if (!selectedComponent) return;
-    
-    setCircuit(prev => ({
-      ...prev,
-      components: prev.components.filter(comp => comp.id !== selectedComponent)
+  toggleInputValue: (id) => set((state) => {
+    const n = state.nodes[id];
+    if (!n || n.type !== 'INPUT') return state;
+    const newNode = { ...n, value: !n.value };
+    return { nodes: { ...state.nodes, [id]: newNode } };
+  }),
+
+  toggleClock: (id) => set((state) => {
+    const n = state.nodes[id];
+    if (!n || n.type !== 'CLOCK') return state;
+    const newNode = { ...n, clockActive: !n.clockActive };
+    return { nodes: { ...state.nodes, [id]: newNode } };
+  }),
+
+  startConnection: (fromNodeId, fromSlot) => set(() => ({ 
+    connectionInProgress: { fromNodeId, fromSlot } 
+  })),
+
+  completeConnection: (toNodeId, toSlot) => {
+    const prog = get().connectionInProgress;
+    if (!prog) return;
+    const newWire: Wire = { 
+      id: uid('w'), 
+      from: { nodeId: prog.fromNodeId, slot: prog.fromSlot }, 
+      to: { nodeId: toNodeId, slot: toSlot } 
+    };
+    set((state) => ({ 
+      wires: { ...state.wires, [newWire.id]: newWire }, 
+      connectionInProgress: null 
     }));
-    setSelectedComponent(null);
-  };
+  },
 
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.key === 'Delete' || e.key === 'Backspace') && selectedComponent) {
-        handleDeleteSelected();
-      }
-    };
+  cancelConnection: () => set(() => ({ connectionInProgress: null })),
 
-    document.addEventListener('keydown', handleKeyDown);
-    return () => {
-      document.removeEventListener('keydown', handleKeyDown);
-    };
-  }, [selectedComponent]);
+  connectWire: (w) => set((state) => ({ 
+    wires: { ...state.wires, [w.id]: w } 
+  })),
 
-  // Отрисовка
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
+  removeWire: (id) => set((state) => ({ 
+    wires: Object.fromEntries(
+      Object.entries(state.wires).filter(([, w]) => (w as Wire).id !== id)
+    ) 
+  })),
 
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
+  runSimulation: () => {
+    const state = get();
+    const nodes = JSON.parse(JSON.stringify(state.nodes)) as Record<ID, NodeDef>;
+    const wires = Object.values(state.wires) as Wire[];
 
-    // Очистка
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    // Сетка
-    if (showGrid) {
-      drawGrid(ctx, canvas.width, canvas.height);
-    }
-
-    // Компоненты
-    circuit.components.forEach(component => {
-      drawComponent(ctx, component);
+    const incoming: Record<ID, Wire[]> = {};
+    Object.keys(nodes).forEach((id) => (incoming[id] = []));
+    wires.forEach((w) => {
+      if (!incoming[w.to.nodeId]) incoming[w.to.nodeId] = [];
+      incoming[w.to.nodeId].push(w);
     });
 
-  }, [circuit, showGrid]);
-
-  const drawGrid = (ctx: CanvasRenderingContext2D, width: number, height: number) => {
-    ctx.strokeStyle = '#374151';
-    ctx.lineWidth = 0.5;
-    
-    const gridSize = 20 * circuit.zoom;
-    const offsetX = (circuit.pan.x * circuit.zoom) % gridSize;
-    const offsetY = (circuit.pan.y * circuit.zoom) % gridSize;
-
-    for (let x = offsetX; x < width; x += gridSize) {
-      ctx.beginPath();
-      ctx.moveTo(x, 0);
-      ctx.lineTo(x, height);
-      ctx.stroke();
-    }
-
-    for (let y = offsetY; y < height; y += gridSize) {
-      ctx.beginPath();
-      ctx.moveTo(0, y);
-      ctx.lineTo(width, y);
-      ctx.stroke();
-    }
-  };
-
-  const drawComponent = (ctx: CanvasRenderingContext2D, component: CircuitComponent) => {
-    const { type, x, y, properties } = component;
-    
-    const screenPos = getScreenCoords(x, y);
-
-    // Выделение
-    if (component.id === selectedComponent) {
-      ctx.strokeStyle = '#3B82F6';
-      ctx.lineWidth = 3;
-      ctx.setLineDash([5, 5]);
-      
-      if (type === 'gate') {
-        ctx.strokeRect(
-          screenPos.x - 35, 
-          screenPos.y - 25, 
-          70, 
-          50
-        );
-      } else {
-        ctx.beginPath();
-        ctx.arc(screenPos.x, screenPos.y, 20, 0, 2 * Math.PI);
-        ctx.stroke();
-      }
-      
-      ctx.setLineDash([]);
-    }
-
-    // Основная отрисовка
-    ctx.fillStyle = '#1F2937';
-    ctx.strokeStyle = '#4B5563';
-    ctx.lineWidth = 2;
-
-    switch (type) {
-      case 'gate':
-        ctx.fillRect(screenPos.x - 30, screenPos.y - 20, 60, 40);
-        ctx.strokeRect(screenPos.x - 30, screenPos.y - 20, 60, 40);
-        
-        ctx.fillStyle = '#FFFFFF';
-        ctx.font = '16px Arial';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText(properties.symbol, screenPos.x, screenPos.y);
-        break;
-
-      case 'input':
-        ctx.beginPath();
-        ctx.arc(screenPos.x, screenPos.y, 15, 0, 2 * Math.PI);
-        ctx.fill();
-        ctx.stroke();
-        
-        ctx.fillStyle = '#FFFFFF';
-        ctx.font = '12px Arial';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText('IN', screenPos.x, screenPos.y);
-        break;
-
-      case 'output':
-        ctx.beginPath();
-        ctx.arc(screenPos.x, screenPos.y, 15, 0, 2 * Math.PI);
-        ctx.fill();
-        ctx.stroke();
-        
-        ctx.fillStyle = '#FFFFFF';
-        ctx.font = '12px Arial';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText('OUT', screenPos.x, screenPos.y);
-        break;
-    }
-
-    // Отладочная информация - координаты компонента
-    ctx.fillStyle = '#FF0000';
-    ctx.font = '10px Arial';
-    ctx.textAlign = 'left';
-    ctx.fillText(`${component.id.slice(0, 4)}: ${Math.round(x)},${Math.round(y)}`, screenPos.x - 30, screenPos.y - 30);
-  };
-
-  const handleAddComponent = (type: string, properties: any) => {
-    const newComponent: CircuitComponent = {
-      id: `comp-${Date.now()}`,
-      type: type as any,
-      x: 200,
-      y: 200,
-      properties
+    const getInputValue = (nodeId: ID, slot: number): boolean => {
+      const ins = incoming[nodeId].filter((w) => w.to.slot === slot);
+      if (ins.length === 0) return false;
+      return ins.some((w) => {
+        const fromNode = nodes[w.from.nodeId];
+        return !!fromNode?.value;
+      });
     };
 
-    console.log('Adding component at:', newComponent.x, newComponent.y);
+    // Handle counters and special nodes
+    Object.values(nodes).forEach((node) => {
+      if (node.type === 'COUNTER') {
+        const currentInput = getInputValue(node.id, 0);
+        const prevInput = state.nodes[node.id]?.value;
+        // Count on rising edge
+        if (currentInput && !prevInput) {
+          node.counter = (node.counter || 0) + 1;
+        }
+      }
+    });
 
-    setCircuit(prev => ({
-      ...prev,
-      components: [...prev.components, newComponent]
-    }));
+    const MAX = 50;
+    let it = 0;
+    let changed = true;
+    while (changed && it < MAX) {
+      changed = false;
+      it++;
+      Object.values(nodes).forEach((node) => {
+        const inputVals = node.inputs.map((_, idx) => getInputValue(node.id, idx));
+        const newVal = evaluateNode(node, inputVals);
+        if (node.value !== newVal) {
+          node.value = newVal;
+          changed = true;
+        }
+      });
+    }
+
+    set(() => ({ nodes }));
+  },
+
+  exportJSON: () => {
+    const { nodes, wires } = get();
+    return JSON.stringify({ nodes, wires }, null, 2);
+  },
+
+  importJSON: (s: string) => {
+    try {
+      const parsed = JSON.parse(s) as { nodes: Record<ID, NodeDef>; wires: Record<ID, Wire> };
+      const nodes = parsed.nodes ?? {};
+      const wires = parsed.wires ?? {};
+      set(() => ({ nodes, wires }));
+    } catch (e) {
+      console.error('Import JSON failed', e);
+    }
+  },
+
+  clear: () => set(() => ({ nodes: {}, wires: {} })),
+}));
+
+// =========================
+// React Component: CircuitSimulator
+// =========================
+
+export default function CircuitSimulator() {
+  const svgRef = useRef<SVGSVGElement | null>(null);
+  const [scale, setScale] = useState(1);
+  const [offset, setOffset] = useState({ x: 0, y: 0 });
+  const panRef = useRef<{ dragging: boolean; lastX: number; lastY: number }>({ 
+    dragging: false, 
+    lastX: 0, 
+    lastY: 0 
+  });
+
+  const nodes = useStore((s) => s.nodes);
+  const wires = useStore((s) => s.wires);
+  const addNode = useStore((s) => s.addNode);
+  const removeNode = useStore((s) => s.removeNode);
+  const updateNodePos = useStore((s) => s.updateNodePos);
+  const startConnection = useStore((s) => s.startConnection);
+  const completeConnection = useStore((s) => s.completeConnection);
+  const cancelConnection = useStore((s) => s.cancelConnection);
+  const connectionInProgress = useStore((s) => s.connectionInProgress);
+  const toggleInputValue = useStore((s) => s.toggleInputValue);
+  const toggleClock = useStore((s) => s.toggleClock);
+  const runSimulation = useStore((s) => s.runSimulation);
+  const exportJSON = useStore((s) => s.exportJSON);
+  const importJSON = useStore((s) => s.importJSON);
+  const clear = useStore((s) => s.clear);
+  const removeWire = useStore((s) => s.removeWire);
+
+  const nodeDrag = useRef<{ 
+    id: ID | null; 
+    startX: number; 
+    startY: number; 
+    sx: number; 
+    sy: number 
+  }>({ 
+    id: null, 
+    startX: 0, 
+    startY: 0, 
+    sx: 0, 
+    sy: 0 
+  });
+
+  // Clock simulation
+  useEffect(() => {
+    const clockNodes = Object.values(nodes).filter(node => node.type === 'CLOCK' && node.clockActive);
+    if (clockNodes.length === 0) return;
+
+    const interval = setInterval(() => {
+      runSimulation();
+    }, 500); // Fixed clock speed for simplicity
+
+    return () => clearInterval(interval);
+  }, [nodes, runSimulation]);
+
+  useEffect(() => {
+    const svg = svgRef.current;
+    if (!svg) return;
+
+    const onWheel = (e: WheelEvent) => {
+      e.preventDefault();
+      const delta = -e.deltaY;
+      const factor = delta > 0 ? 1.1 : 0.9;
+      setScale((s) => Math.max(0.2, Math.min(4, s * factor)));
+    };
+    svg.addEventListener('wheel', onWheel, { passive: false });
+    return () => svg.removeEventListener('wheel', onWheel);
+  }, []);
+
+  const screenToWorld = (clientX: number, clientY: number) => {
+    const rect = svgRef.current!.getBoundingClientRect();
+    const x = (clientX - rect.left - offset.x) / scale;
+    const y = (clientY - rect.top - offset.y) / scale;
+    return { x, y };
   };
 
-  const handleCanvasClick = (e: React.MouseEvent<HTMLCanvasElement>) => {
-    if (selectedTool === 'select') return;
+  const onPointerDownCanvas = (e: React.PointerEvent) => {
+    if ((e.target as HTMLElement).closest('.node')) return;
+    panRef.current.dragging = true;
+    panRef.current.lastX = e.clientX;
+    panRef.current.lastY = e.clientY;
+  };
 
-    const canvas = canvasRef.current;
-    if (!canvas) return;
+  const onPointerMoveCanvas = (e: React.PointerEvent) => {
+    if (!panRef.current.dragging) return;
+    const dx = e.clientX - panRef.current.lastX;
+    const dy = e.clientY - panRef.current.lastY;
+    panRef.current.lastX = e.clientX;
+    panRef.current.lastY = e.clientY;
+    setOffset((o) => ({ x: o.x + dx, y: o.y + dy }));
+  };
 
-    const rect = canvas.getBoundingClientRect();
-    const screenX = e.clientX - rect.left;
-    const screenY = e.clientY - rect.top;
-    const worldPos = getWorldCoords(screenX, screenY);
+  const onPointerUpCanvas = () => {
+    panRef.current.dragging = false;
+  };
 
-    console.log('Adding component at world pos:', worldPos.x, worldPos.y);
+  const onNodePointerDown = (e: React.PointerEvent, id: ID) => {
+    e.stopPropagation();
+    const world = screenToWorld(e.clientX, e.clientY);
+    const node = nodes[id];
+    nodeDrag.current = { 
+      id, 
+      startX: world.x, 
+      startY: world.y, 
+      sx: node.x, 
+      sy: node.y 
+    };
+  };
 
-    switch (selectedTool) {
-      case 'gate':
-        handleAddComponent('gate', { type: 'AND', symbol: '&', inputs: 2, outputs: 1 });
-        break;
-      case 'input':
-        handleAddComponent('input', { value: false });
-        break;
-      case 'output':
-        handleAddComponent('output', { value: false });
-        break;
+  const onPointerMoveRoot = (e: React.PointerEvent) => {
+    if (nodeDrag.current.id) {
+      const world = screenToWorld(e.clientX, e.clientY);
+      const dx = world.x - nodeDrag.current.startX;
+      const dy = world.y - nodeDrag.current.startY;
+      updateNodePos(nodeDrag.current.id, nodeDrag.current.sx + dx, nodeDrag.current.sy + dy);
     }
   };
 
-  const handleZoomIn = () => {
-    setCircuit(prev => ({ ...prev, zoom: Math.min(prev.zoom * 1.2, 3) }));
+  const onRootPointerUp = () => {
+    nodeDrag.current.id = null;
   };
 
-  const handleZoomOut = () => {
-    setCircuit(prev => ({ ...prev, zoom: Math.max(prev.zoom / 1.2, 0.5) }));
+  const [preview, setPreview] = useState<{ x: number; y: number } | null>(null);
+  
+  useEffect(() => {
+    if (!connectionInProgress) setPreview(null);
+  }, [connectionInProgress]);
+
+  const onMouseMoveForPreview = (e: React.MouseEvent) => {
+    if (!connectionInProgress) return;
+    const world = screenToWorld(e.clientX, e.clientY);
+    setPreview(world);
   };
 
-  const handleResetView = () => {
-    setCircuit(prev => ({ ...prev, zoom: 1, pan: { x: 0, y: 0 } }));
-  };
-
-  const handleSimulate = () => {
-    setIsSimulating(true);
-    setTimeout(() => setIsSimulating(false), 1000);
-  };
-
-  const handleSaveCircuit = () => {
-    const circuitData = JSON.stringify(circuit, null, 2);
-    const blob = new Blob([circuitData], { type: 'application/json' });
+  const handleExport = () => {
+    const s = exportJSON();
+    const blob = new Blob([s], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
@@ -388,178 +419,478 @@ export default function CircuitSimulator() {
     URL.revokeObjectURL(url);
   };
 
-  const handleLoadCircuit = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
+  const handleImport = (file: File | null) => {
     if (!file) return;
-
     const reader = new FileReader();
-    reader.onload = (e) => {
-      try {
-        const circuitData = JSON.parse(e.target?.result as string);
-        setCircuit(circuitData);
-      } catch (error) {
-        console.error('Error loading circuit:', error);
-        alert('Ошибка загрузки файла схемы');
-      }
+    reader.onload = (ev) => {
+      const txt = String(ev.target?.result ?? '');
+      importJSON(txt);
     };
     reader.readAsText(file);
   };
 
-  const handleUploadClick = () => {
-    fileInputRef.current?.click();
+  const Palette = () => {
+    const add = (type: NodeType) => {
+      addNode({ type, x: 200 + Math.random() * 200, y: 100 + Math.random() * 200 });
+    };
+
+    const nodeTypes: { type: NodeType; label: string; color: string }[] = [
+      { type: 'INPUT', label: 'Input', color: 'bg-blue-600' },
+      { type: 'OUTPUT', label: 'Output', color: 'bg-green-600' },
+      { type: 'AND', label: 'AND', color: 'bg-purple-600' },
+      { type: 'OR', label: 'OR', color: 'bg-purple-600' },
+      { type: 'NOT', label: 'NOT', color: 'bg-purple-600' },
+      { type: 'LED', label: 'LED', color: 'bg-yellow-600' },
+      { type: 'CLOCK', label: 'Clock', color: 'bg-orange-600' },
+      { type: 'COUNTER', label: 'Counter', color: 'bg-cyan-600' },
+      { type: 'DISPLAY', label: 'Display', color: 'bg-pink-600' },
+    ];
+
+    return (
+      <div className="p-2 flex gap-2 flex-wrap">
+        {nodeTypes.map(({ type, label, color }) => (
+          <button 
+            key={type} 
+            className={`${color} text-white rounded px-3 py-2 text-sm hover:opacity-80 transition-opacity border border-gray-600`}
+            onClick={() => add(type)}
+          >
+            {label}
+          </button>
+        ))}
+        <button 
+          className="bg-red-600 text-white rounded px-3 py-2 text-sm hover:opacity-80 transition-opacity border border-gray-600" 
+          onClick={() => { clear(); }}
+        >
+          Clear All
+        </button>
+      </div>
+    );
+  };
+
+  const NodeView: React.FC<{ node: NodeDef }> = ({ node }) => {
+    const width = 120;
+    const height = 60;
+    const inputCount = node.inputs.length;
+    const portY = (i: number) => -height / 2 + 15 + (i * 15);
+
+    const getNodeColor = () => {
+      switch (node.type) {
+        case 'INPUT': return '#2563eb';
+        case 'OUTPUT': return '#16a34a';
+        case 'LED': return '#ca8a04';
+        case 'CLOCK': return '#ea580c';
+        case 'COUNTER': return '#0891b2';
+        case 'DISPLAY': return '#db2777';
+        default: return '#7c3aed';
+      }
+    };
+
+    const getActiveColor = () => {
+      switch (node.type) {
+        case 'INPUT': return '#3b82f6';
+        case 'OUTPUT': return '#22c55e';
+        case 'LED': return '#eab308';
+        case 'CLOCK': return '#f97316';
+        case 'COUNTER': return '#06b6d4';
+        case 'DISPLAY': return '#ec4899';
+        default: return '#8b5cf6';
+      }
+    };
+
+    const nodeColor = getNodeColor();
+    const activeColor = getActiveColor();
+
+    return (
+      <g 
+        transform={`translate(${node.x}, ${node.y})`} 
+        className="node" 
+        onPointerDown={(e) => onNodePointerDown(e, node.id)}
+      >
+        {/* Node body with glow effect when active */}
+        <rect 
+          x={-width/2} 
+          y={-height/2} 
+          width={width} 
+          height={height} 
+          rx={12} 
+          ry={12} 
+          fill="#1f2937" 
+          stroke={node.value ? activeColor : nodeColor}
+          strokeWidth={2}
+          filter={node.value ? "url(#glow)" : "none"}
+        />
+
+        {/* Node label */}
+        <text 
+          x={0} 
+          y={-height/2 + 16} 
+          fontSize={11} 
+          fontFamily="Inter, sans-serif"
+          fill="#f3f4f6"
+          textAnchor="middle"
+          fontWeight="500"
+        >
+          {node.label ?? node.type}
+        </text>
+
+        {/* Input ports */}
+        {Array.from({ length: inputCount }).map((_, idx) => {
+          const py = portY(idx);
+          return (
+            <g key={idx}>
+              <circle 
+                cx={-width/2} 
+                cy={py} 
+                r={5} 
+                fill="#374151" 
+                stroke="#6b7280" 
+                strokeWidth={1}
+                onClick={(e) => { 
+                  e.stopPropagation(); 
+                  completeConnection(node.id, idx); 
+                }} 
+              />
+            </g>
+          );
+        })}
+
+        {/* Output port */}
+        <circle 
+          cx={width/2} 
+          cy={0} 
+          r={7} 
+          fill={node.value ? activeColor : '#374151'} 
+          stroke={node.value ? activeColor : '#6b7280'}
+          strokeWidth={1}
+          onClick={(e) => { 
+            e.stopPropagation(); 
+            startConnection(node.id, 0); 
+          }} 
+        />
+
+        {/* Special node controls and displays */}
+        {node.type === 'INPUT' && (
+          <g 
+            onClick={(e) => { 
+              e.stopPropagation(); 
+              toggleInputValue(node.id); 
+            }} 
+            style={{ cursor: 'pointer' }}
+          >
+            <rect 
+              x={-width/2 + 10} 
+              y={-height/2 + 25} 
+              width={40} 
+              height={20} 
+              rx={6} 
+              fill={node.value ? activeColor : '#374151'} 
+              stroke={node.value ? activeColor : '#6b7280'}
+            />
+            <text 
+              x={-width/2 + 30} 
+              y={-height/2 + 38} 
+              fontSize={10} 
+              textAnchor="middle"
+              fill="#f3f4f6"
+              fontWeight="bold"
+            >
+              {node.value ? 'ON' : 'OFF'}
+            </text>
+          </g>
+        )}
+
+        {node.type === 'LED' && (
+          <g>
+            <circle 
+              cx={0} 
+              cy={5} 
+              r={12} 
+              fill={node.value ? '#fef08a' : '#4b5563'} 
+              stroke={node.value ? '#fef08a' : '#6b7280'}
+              strokeWidth={2}
+              filter={node.value ? "url(#ledGlow)" : "none"}
+            />
+          </g>
+        )}
+
+        {node.type === 'CLOCK' && (
+          <g 
+            onClick={(e) => { 
+              e.stopPropagation(); 
+              toggleClock(node.id); 
+            }} 
+            style={{ cursor: 'pointer' }}
+          >
+            <rect 
+              x={-width/2 + 10} 
+              y={-height/2 + 25} 
+              width={40} 
+              height={20} 
+              rx={6} 
+              fill={node.clockActive ? activeColor : '#374151'} 
+              stroke={node.clockActive ? activeColor : '#6b7280'}
+            />
+            <text 
+              x={-width/2 + 30} 
+              y={-height/2 + 38} 
+              fontSize={9} 
+              textAnchor="middle"
+              fill="#f3f4f6"
+              fontWeight="bold"
+            >
+              {node.clockActive ? 'RUN' : 'STOP'}
+            </text>
+          </g>
+        )}
+
+        {node.type === 'COUNTER' && (
+          <g>
+            <rect 
+              x={-width/2 + 10} 
+              y={-height/2 + 25} 
+              width={40} 
+              height={20} 
+              rx={6} 
+              fill="#111827" 
+              stroke="#6b7280"
+            />
+            <text 
+              x={-width/2 + 30} 
+              y={-height/2 + 38} 
+              fontSize={10} 
+              textAnchor="middle"
+              fill="#f3f4f6"
+              fontWeight="bold"
+            >
+              {node.counter || 0}
+            </text>
+          </g>
+        )}
+
+        {node.type === 'DISPLAY' && (
+          <g>
+            <rect 
+              x={-width/2 + 10} 
+              y={-height/2 + 25} 
+              width={40} 
+              height={20} 
+              rx={4} 
+              fill="#000" 
+              stroke="#6b7280"
+            />
+            <text 
+              x={-width/2 + 30} 
+              y={-height/2 + 38} 
+              fontSize={10} 
+              textAnchor="middle"
+              fill="#00ff00"
+              fontWeight="bold"
+            >
+              {node.value ? '1' : '0'}
+            </text>
+          </g>
+        )}
+
+        {/* Delete button */}
+        <g 
+          transform={`translate(${width/2 - 15}, ${-height/2 + 15})`} 
+          onClick={(e) => { 
+            e.stopPropagation(); 
+            removeNode(node.id); 
+          }} 
+          style={{ cursor: 'pointer' }}
+        >
+          <circle r={8} fill="#ef4444" stroke="#dc2626" />
+          <text x={0} y={3} fontSize={10} textAnchor="middle" fill="#fef2f2" fontWeight="bold">×</text>
+        </g>
+      </g>
+    );
+  };
+
+  function wirePath(from: { x: number; y: number }, to: { x: number; y: number }) {
+    const dx = Math.abs(to.x - from.x);
+    const hx = Math.max(20, dx / 2);
+    return `M ${from.x} ${from.y} C ${from.x + hx} ${from.y} ${to.x - hx} ${to.y} ${to.x} ${to.y}`;
+  }
+
+  const WireView: React.FC<{ wire: Wire }> = ({ wire }) => {
+    const fromNode = nodes[wire.from.nodeId];
+    const toNode = nodes[wire.to.nodeId];
+    if (!fromNode || !toNode) return null;
+    const from = { x: fromNode.x + 60, y: fromNode.y + 0 };
+    const to = { x: toNode.x - 60, y: toNode.y + (-30 + wire.to.slot * 15) };
+    return (
+      <g>
+        <path 
+          d={wirePath(from, to)} 
+          stroke={fromNode.value ? '#60a5fa' : '#4b5563'} 
+          strokeWidth={fromNode.value ? 3 : 2}
+          fill="none" 
+          onClick={(e) => { 
+            e.stopPropagation(); 
+            removeWire(wire.id); 
+          }} 
+        />
+      </g>
+    );
+  };
+
+  const PreviewWire: React.FC = () => {
+    if (!connectionInProgress || !preview) return null;
+    const fromNode = nodes[connectionInProgress.fromNodeId];
+    if (!fromNode) return null;
+    const from = { x: fromNode.x + 60, y: fromNode.y + 0 };
+    const to = { x: preview.x, y: preview.y };
+    return (
+      <path 
+        d={wirePath(from, to)} 
+        stroke="#9ca3af" 
+        strokeDasharray="6 6" 
+        strokeWidth={2} 
+        fill="none" 
+      />
+    );
   };
 
   return (
-    <div className="h-full flex flex-col">
-      <Card className="mb-4">
-        <CardContent className="p-4">
-          <div className="flex flex-wrap gap-2 items-center">
-            <div className="flex gap-1">
-              <Button
-                variant={selectedTool === 'select' ? 'primary' : 'secondary'}
-                size="sm"
-                onClick={() => setSelectedTool('select')}
-              >
-                Выбор
-              </Button>
-              <Button
-                variant={selectedTool === 'wire' ? 'primary' : 'secondary'}
-                size="sm"
-                onClick={() => setSelectedTool('wire')}
-              >
-                Провод
-              </Button>
-            </div>
-
-            <div className="border-l border-gray-600 pl-2 ml-2">
-              <span className="text-sm text-gray-400 mr-2">Элементы:</span>
-              <div className="flex gap-1">
-                {logicGates.slice(0, 4).map(gate => (
-                  <Button
-                    key={gate.type}
-                    variant={selectedTool === 'gate' ? 'primary' : 'secondary'}
-                    size="sm"
-                    onClick={() => {
-                      setSelectedTool('gate');
-                      handleAddComponent('gate', gate);
-                    }}
-                    title={gate.type}
-                  >
-                    {gate.symbol}
-                  </Button>
-                ))}
-                <Button
-                  variant={selectedTool === 'input' ? 'primary' : 'secondary'}
-                  size="sm"
-                  onClick={() => setSelectedTool('input')}
-                >
-                  Вход
-                </Button>
-                <Button
-                  variant={selectedTool === 'output' ? 'primary' : 'secondary'}
-                  size="sm"
-                  onClick={() => setSelectedTool('output')}
-                >
-                  Выход
-                </Button>
-              </div>
-            </div>
-
-            <div className="border-l border-gray-600 pl-2 ml-2 flex gap-1">
-              <Button variant="secondary" size="sm" onClick={handleZoomIn}>
-                <ZoomIn className="h-4 w-4" />
-              </Button>
-              <Button variant="secondary" size="sm" onClick={handleZoomOut}>
-                <ZoomOut className="h-4 w-4" />
-              </Button>
-              <Button variant="secondary" size="sm" onClick={handleResetView}>
-                <RotateCcw className="h-4 w-4" />
-              </Button>
-              <Button
-                variant={showGrid ? 'primary' : 'secondary'}
-                size="sm"
-                onClick={() => setShowGrid(!showGrid)}
-              >
-                <Grid className="h-4 w-4" />
-              </Button>
-            </div>
-
-            <div className="border-l border-gray-600 pl-2 ml-2 flex gap-1">
-              <Button
-                variant={isSimulating ? 'primary' : 'secondary'}
-                size="sm"
-                onClick={handleSimulate}
-                disabled={isSimulating}
-              >
-                {isSimulating ? <Square className="h-4 w-4" /> : <Play className="h-4 w-4" />}
-                {isSimulating ? 'Стоп' : 'Симуляция'}
-              </Button>
-            </div>
-
-            <div className="border-l border-gray-600 pl-2 ml-2 flex gap-1">
-              <Button variant="secondary" size="sm" onClick={handleSaveCircuit}>
-                <Save className="h-4 w-4 mr-1" />
-                Сохранить
-              </Button>
-              <Button variant="secondary" size="sm" onClick={handleUploadClick}>
-                <Upload className="h-4 w-4 mr-1" />
-                Загрузить
-              </Button>
-              <input
-                type="file"
-                ref={fileInputRef}
-                accept=".json"
-                onChange={handleLoadCircuit}
-                className="hidden"
-              />
-              <Button variant="secondary" size="sm">
-                <Download className="h-4 w-4 mr-1" />
-                Экспорт
-              </Button>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      <Card className="flex-1">
-        <CardContent className="p-0 h-full">
-          <div className="relative w-full h-full bg-gray-900 rounded-lg overflow-hidden">
-            <canvas
-              ref={canvasRef}
-              width={1200}
-              height={800}
-              onClick={handleCanvasClick}
-              onMouseDown={handleMouseDown}
-              onMouseMove={handleMouseMove}
-              onMouseUp={handleMouseUp}
-              className={`w-full h-full ${
-                cursor === 'grab' ? 'cursor-grab' : 
-                cursor === 'grabbing' ? 'cursor-grabbing' : 
-                'cursor-crosshair'
-              }`}
-              style={{
-                background: 'linear-gradient(45deg, #111827 25%, transparent 25%), linear-gradient(-45deg, #111827 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #111827 75%), linear-gradient(-45deg, transparent 75%, #111827 75%)',
-                backgroundSize: '20px 20px',
-                backgroundPosition: '0 0, 0 10px, 10px -10px, -10px 0px'
-              }}
+    <div className="w-full h-[720px] border border-gray-700 rounded-lg overflow-hidden flex flex-col bg-gray-900">
+      <div className="flex items-center justify-between p-3 bg-gray-800 border-b border-gray-700">
+        <div className="flex items-center gap-2">
+          <Palette />
+          <button 
+            className="bg-green-600 text-white rounded px-4 py-2 text-sm hover:bg-green-700 transition-colors border border-green-500" 
+            onClick={() => runSimulation()}
+          >
+            ▶ Run Simulation
+          </button>
+          <button 
+            className="bg-blue-600 text-white rounded px-4 py-2 text-sm hover:bg-blue-700 transition-colors border border-blue-500" 
+            onClick={() => { 
+              const s = exportJSON(); 
+              navigator.clipboard.writeText(s); 
+            }}
+          >
+            📋 Copy JSON
+          </button>
+          <button 
+            className="bg-purple-600 text-white rounded px-4 py-2 text-sm hover:bg-purple-700 transition-colors border border-purple-500" 
+            onClick={handleExport}
+          >
+            💾 Download
+          </button>
+          <label className="bg-amber-600 text-white rounded px-4 py-2 text-sm hover:bg-amber-700 transition-colors border border-amber-500 cursor-pointer">
+            📁 Upload
+            <input 
+              type="file" 
+              className="hidden" 
+              onChange={(e) => handleImport(e.target.files?.[0] ?? null)} 
             />
-            
-            <div className="absolute bottom-0 left-0 right-0 bg-black/80 text-white p-2 text-sm">
-              <div className="flex justify-between items-center">
-                <div>
-                  Масштаб: {Math.round(circuit.zoom * 100)}% | 
-                  Элементов: {circuit.components.length} | 
-                  Проводов: {circuit.wires.length}
-                  {selectedComponent && ' | Выбран элемент'}
-                </div>
-                <div className="flex gap-4">
-                  <span>Pan: {Math.round(circuit.pan.x)},{Math.round(circuit.pan.y)}</span>
-                </div>
-              </div>
-            </div>
+          </label>
+        </div>
+        <div className="text-sm text-gray-300 font-mono">
+          Zoom: {scale.toFixed(2)} | Nodes: {Object.keys(nodes).length} | Wires: {Object.keys(wires).length}
+        </div>
+      </div>
+
+      <div 
+        className="flex-1 relative" 
+        onPointerMove={onPointerMoveRoot} 
+        onPointerUp={onRootPointerUp} 
+        onPointerLeave={onRootPointerUp}
+      >
+        <svg 
+          ref={svgRef} 
+          className="w-full h-full bg-gray-900" 
+          onPointerDown={onPointerDownCanvas} 
+          onPointerMove={onPointerMoveCanvas} 
+          onPointerUp={onPointerUpCanvas} 
+          onMouseMove={onMouseMoveForPreview}
+        >
+          <defs>
+            <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+              <feGaussianBlur in="SourceGraphic" stdDeviation="3" result="blur" />
+              <feColorMatrix in="blur" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 18 -7" result="glow" />
+              <feComposite in="SourceGraphic" in2="glow" operator="over" />
+            </filter>
+            <filter id="ledGlow" x="-50%" y="-50%" width="200%" height="200%">
+              <feGaussianBlur in="SourceGraphic" stdDeviation="5" result="blur" />
+              <feColorMatrix in="blur" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 20 -8" result="glow" />
+              <feComposite in="SourceGraphic" in2="glow" operator="over" />
+            </filter>
+          </defs>
+
+          <g transform={`translate(${offset.x}, ${offset.y}) scale(${scale})`}>
+            {/* Dark grid */}
+            <g>
+              {Array.from({ length: 40 }).map((_, i) => (
+                <line 
+                  key={`v_${i}`} 
+                  x1={i*50} 
+                  y1={0} 
+                  x2={i*50} 
+                  y2={4000} 
+                  stroke="#374151" 
+                  strokeWidth={1}
+                />
+              ))}
+              {Array.from({ length: 40 }).map((_, i) => (
+                <line 
+                  key={`h_${i}`} 
+                  x1={0} 
+                  y1={i*50} 
+                  x2={4000} 
+                  y2={i*50} 
+                  stroke="#374151" 
+                  strokeWidth={1}
+                />
+              ))}
+            </g>
+
+            {/* wires */}
+            <g>
+              {Object.values(wires).map((w) => (
+                <WireView key={w.id} wire={w as Wire} />
+              ))}
+            </g>
+
+            {/* preview */}
+            <g>
+              <PreviewWire />
+            </g>
+
+            {/* nodes */}
+            <g>
+              {Object.values(nodes).map((n) => (
+                <NodeView key={n.id} node={n as NodeDef} />
+              ))}
+            </g>
+          </g>
+        </svg>
+
+        {/* Dark overlay controls */}
+        <div className="absolute right-3 bottom-3 bg-gray-800 border border-gray-700 rounded-lg p-3 shadow-xl">
+          <div className="flex flex-col gap-2 text-sm">
+            <button 
+              className="px-3 py-2 bg-gray-700 text-gray-200 rounded hover:bg-gray-600 transition-colors border border-gray-600" 
+              onClick={() => { setScale((s) => Math.min(4, s * 1.2)); }}
+            >
+              Zoom +
+            </button>
+            <button 
+              className="px-3 py-2 bg-gray-700 text-gray-200 rounded hover:bg-gray-600 transition-colors border border-gray-600" 
+              onClick={() => { setScale((s) => Math.max(0.2, s / 1.2)); }}
+            >
+              Zoom -
+            </button>
+            <button 
+              className="px-3 py-2 bg-gray-700 text-gray-200 rounded hover:bg-gray-600 transition-colors border border-gray-600" 
+              onClick={() => { setOffset({ x: 0, y: 0 }); setScale(1); }}
+            >
+              Reset View
+            </button>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   );
 }
