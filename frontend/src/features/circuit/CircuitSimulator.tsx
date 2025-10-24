@@ -9,7 +9,8 @@ import { create } from 'zustand';
 
 type ID = string;
 
-type NodeType = 'INPUT' | 'OUTPUT' | 'AND' | 'OR' | 'NOT' | 'LED' | 'COUNTER' | 'CLOCK' | 'DISPLAY' | 'CUSTOM';
+// Added new node types
+type NodeType = 'INPUT' | 'OUTPUT' | 'AND' | 'OR' | 'NOT' | 'LED' | 'COUNTER' | 'CLOCK' | 'DISPLAY' | 'CUSTOM' | 'NAND' | 'NOR' | 'XOR' | 'XNOR' | 'DFF' | 'TFF' | 'MUX';
 
 type NodeDef = {
   id: ID;
@@ -22,6 +23,10 @@ type NodeDef = {
   counter?: number;
   clockSpeed?: number;
   clockActive?: boolean;
+  // Added for flip-flops
+  state?: boolean;
+  // Added for MUX
+  select?: number;
 };
 
 type Wire = {
@@ -50,6 +55,14 @@ function evaluateNode(node: NodeDef, inputsValues: boolean[]): boolean {
       return inputsValues.every(Boolean);
     case 'OR':
       return inputsValues.some(Boolean);
+    case 'NAND':
+      return !inputsValues.every(Boolean); // NOT (A AND B)
+    case 'NOR':
+      return !inputsValues.some(Boolean); // NOT (A OR B)
+    case 'XOR':
+      return inputsValues.filter(Boolean).length === 1; // Exactly one true
+    case 'XNOR':
+      return inputsValues.filter(Boolean).length !== 1; // NOT (A XOR B)
     case 'COUNTER':
       // Counts rising edges on first input
       return !!inputsValues[0];
@@ -57,6 +70,18 @@ function evaluateNode(node: NodeDef, inputsValues: boolean[]): boolean {
       return !!node.clockActive;
     case 'DISPLAY':
       return !!inputsValues[0];
+    case 'DFF':
+      // D Flip-Flop: Q = D on clock rising edge
+      // This is handled in the simulation loop
+      return !!node.state;
+    case 'TFF':
+      // T Flip-Flop: Q toggles on clock rising edge
+      // This is handled in the simulation loop
+      return !!node.state;
+    case 'MUX':
+      // Multiplexer: output depends on select line
+      const selectIndex = node.select || 0;
+      return inputsValues[selectIndex] || false;
     case 'CUSTOM':
       return inputsValues.some(Boolean);
     default:
@@ -107,7 +132,11 @@ const useStore = create<SimulatorState>((set, get) => ({
         defaultSlots = 1;
         break;
       case 'AND':
+      case 'NAND':
       case 'OR':
+      case 'NOR':
+      case 'XOR':
+      case 'XNOR':
         defaultSlots = 2;
         break;
       case 'COUNTER':
@@ -120,6 +149,21 @@ const useStore = create<SimulatorState>((set, get) => ({
         break;
       case 'DISPLAY':
         defaultSlots = 4; // 4-bit display
+        break;
+      case 'DFF':
+        // D input, Clock input
+        defaultSlots = 2;
+        initialValues = { state: false };
+        break;
+      case 'TFF':
+        // T input, Clock input
+        defaultSlots = 2;
+        initialValues = { state: false };
+        break;
+      case 'MUX':
+        // Data inputs (2 for 2:1 MUX), Select input
+        defaultSlots = 3;
+        initialValues = { select: 0 };
         break;
       default:
         defaultSlots = 1;
@@ -232,6 +276,31 @@ const useStore = create<SimulatorState>((set, get) => ({
           node.counter = (node.counter || 0) + 1;
         }
       }
+      // Handle D Flip-Flop
+      else if (node.type === 'DFF') {
+        const dInput = getInputValue(node.id, 0);
+        const clockInput = getInputValue(node.id, 1);
+        const prevClock = state.nodes[node.id]?.value; // Previous clock state
+        // Update state on rising clock edge
+        if (clockInput && !prevClock) {
+          node.state = dInput;
+        }
+      }
+      // Handle T Flip-Flop
+      else if (node.type === 'TFF') {
+        const tInput = getInputValue(node.id, 0);
+        const clockInput = getInputValue(node.id, 1);
+        const prevClock = state.nodes[node.id]?.value; // Previous clock state
+        // Toggle state on rising clock edge if T is high
+        if (clockInput && !prevClock && tInput) {
+          node.state = !(node.state || false);
+        }
+      }
+      // Handle MUX
+      else if (node.type === 'MUX') {
+        const selectInput = getInputValue(node.id, 2); // Third input is select
+        node.select = selectInput ? 1 : 0;
+      }
     });
 
     const MAX = 50;
@@ -249,6 +318,13 @@ const useStore = create<SimulatorState>((set, get) => ({
         }
       });
     }
+
+    // Update flip-flop values based on their state
+    Object.values(nodes).forEach((node) => {
+      if (node.type === 'DFF' || node.type === 'TFF') {
+        node.value = node.state;
+      }
+    });
 
     set(() => ({ nodes }));
   },
@@ -434,16 +510,24 @@ export default function CircuitSimulator() {
       addNode({ type, x: 200 + Math.random() * 200, y: 100 + Math.random() * 200 });
     };
 
+    // Updated node types list with new components
     const nodeTypes: { type: NodeType; label: string; color: string }[] = [
       { type: 'INPUT', label: 'Input', color: 'bg-blue-600' },
       { type: 'OUTPUT', label: 'Output', color: 'bg-green-600' },
       { type: 'AND', label: 'AND', color: 'bg-purple-600' },
       { type: 'OR', label: 'OR', color: 'bg-purple-600' },
       { type: 'NOT', label: 'NOT', color: 'bg-purple-600' },
+      { type: 'NAND', label: 'NAND', color: 'bg-purple-600' },
+      { type: 'NOR', label: 'NOR', color: 'bg-purple-600' },
+      { type: 'XOR', label: 'XOR', color: 'bg-purple-600' },
+      { type: 'XNOR', label: 'XNOR', color: 'bg-purple-600' },
       { type: 'LED', label: 'LED', color: 'bg-yellow-600' },
       { type: 'CLOCK', label: 'Clock', color: 'bg-orange-600' },
       { type: 'COUNTER', label: 'Counter', color: 'bg-cyan-600' },
       { type: 'DISPLAY', label: 'Display', color: 'bg-pink-600' },
+      { type: 'DFF', label: 'D-FF', color: 'bg-indigo-600' },
+      { type: 'TFF', label: 'T-FF', color: 'bg-indigo-600' },
+      { type: 'MUX', label: 'MUX', color: 'bg-teal-600' },
     ];
 
     return (
@@ -470,8 +554,14 @@ export default function CircuitSimulator() {
   const NodeView: React.FC<{ node: NodeDef }> = ({ node }) => {
     const width = 120;
     const height = 60;
+    // Adjust port positions based on node type
     const inputCount = node.inputs.length;
-    const portY = (i: number) => -height / 2 + 15 + (i * 15);
+    let portY = (i: number) => -height / 2 + 15 + (i * 15);
+    
+    // For flip-flops and MUX, adjust port positions
+    if (node.type === 'DFF' || node.type === 'TFF' || node.type === 'MUX') {
+      portY = (i: number) => -height / 2 + 20 + (i * 20);
+    }
 
     const getNodeColor = () => {
       switch (node.type) {
@@ -481,7 +571,10 @@ export default function CircuitSimulator() {
         case 'CLOCK': return '#ea580c';
         case 'COUNTER': return '#0891b2';
         case 'DISPLAY': return '#db2777';
-        default: return '#7c3aed';
+        case 'DFF': 
+        case 'TFF': return '#4f46e5';
+        case 'MUX': return '#0d9488';
+        default: return '#7c3aed'; // For AND, OR, NOT, etc.
       }
     };
 
@@ -493,6 +586,9 @@ export default function CircuitSimulator() {
         case 'CLOCK': return '#f97316';
         case 'COUNTER': return '#06b6d4';
         case 'DISPLAY': return '#ec4899';
+        case 'DFF': 
+        case 'TFF': return '#6366f1';
+        case 'MUX': return '#14b8a6';
         default: return '#8b5cf6';
       }
     };
@@ -691,6 +787,81 @@ export default function CircuitSimulator() {
           </g>
         )}
 
+        {/* D Flip-Flop state display */}
+        {node.type === 'DFF' && (
+          <g>
+            <rect 
+              x={-width/2 + 10} 
+              y={-height/2 + 25} 
+              width={40} 
+              height={20} 
+              rx={6} 
+              fill="#111827" 
+              stroke="#6b7280"
+            />
+            <text 
+              x={-width/2 + 30} 
+              y={-height/2 + 38} 
+              fontSize={10} 
+              textAnchor="middle"
+              fill="#f3f4f6"
+              fontWeight="bold"
+            >
+              {node.state ? '1' : '0'}
+            </text>
+          </g>
+        )}
+
+        {/* T Flip-Flop state display */}
+        {node.type === 'TFF' && (
+          <g>
+            <rect 
+              x={-width/2 + 10} 
+              y={-height/2 + 25} 
+              width={40} 
+              height={20} 
+              rx={6} 
+              fill="#111827" 
+              stroke="#6b7280"
+            />
+            <text 
+              x={-width/2 + 30} 
+              y={-height/2 + 38} 
+              fontSize={10} 
+              textAnchor="middle"
+              fill="#f3f4f6"
+              fontWeight="bold"
+            >
+              {node.state ? '1' : '0'}
+            </text>
+          </g>
+        )}
+
+        {/* MUX select display */}
+        {node.type === 'MUX' && (
+          <g>
+            <rect 
+              x={-width/2 + 10} 
+              y={-height/2 + 25} 
+              width={40} 
+              height={20} 
+              rx={6} 
+              fill="#111827" 
+              stroke="#6b7280"
+            />
+            <text 
+              x={-width/2 + 30} 
+              y={-height/2 + 38} 
+              fontSize={10} 
+              textAnchor="middle"
+              fill="#f3f4f6"
+              fontWeight="bold"
+            >
+              S:{node.select || 0}
+            </text>
+          </g>
+        )}
+
         {/* Delete button */}
         <g 
           transform={`translate(${width/2 - 15}, ${-height/2 + 15})`} 
@@ -717,12 +888,29 @@ export default function CircuitSimulator() {
     const fromNode = nodes[wire.from.nodeId];
     const toNode = nodes[wire.to.nodeId];
     if (!fromNode || !toNode) return null;
-    const from = { x: fromNode.x + 60, y: fromNode.y + 0 };
-    const to = { x: toNode.x - 60, y: toNode.y + (-30 + wire.to.slot * 15) };
+    // Adjust wire connections based on node type
+    let fromX, fromY, toX, toY;
+    
+    if (fromNode.type === 'DFF' || fromNode.type === 'TFF' || fromNode.type === 'MUX') {
+      fromX = fromNode.x + 60;
+      fromY = fromNode.y + 0; // Output is at center
+    } else {
+      fromX = fromNode.x + 60;
+      fromY = fromNode.y + 0;
+    }
+    
+    if (toNode.type === 'DFF' || toNode.type === 'TFF' || toNode.type === 'MUX') {
+      toX = toNode.x - 60;
+      toY = toNode.y + (-25 + wire.to.slot * 20); // Adjust for port positions
+    } else {
+      toX = toNode.x - 60;
+      toY = toNode.y + (-30 + wire.to.slot * 15);
+    }
+    
     return (
       <g>
         <path 
-          d={wirePath(from, to)} 
+          d={wirePath({x: fromX, y: fromY}, {x: toX, y: toY})} 
           stroke={fromNode.value ? '#60a5fa' : '#4b5563'} 
           strokeWidth={fromNode.value ? 3 : 2}
           fill="none" 

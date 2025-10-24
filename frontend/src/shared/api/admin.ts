@@ -20,6 +20,46 @@ const updateRolesMutation = (url: string, { arg }: { arg: { id: number; roles: s
 const deleteMutation = (url: string, { arg }: { arg: number }) => 
   apiClient.delete(`${url}/${arg}`);
 
+// --- НОВОЕ: Интерфейсы для курсов, групп, регистрации ---
+
+export interface Course {
+  id: number;
+  name: string;
+  type: string;
+  description: string;
+  duration: number;
+  imageUrl: string;
+  isActive: boolean;
+  // Добавьте другие поля, если они есть в API
+}
+
+interface CourseGroup {
+  id: number;
+  name: string;
+  courseId: number;
+  maxStudents: number;
+  currentStudents?: number; // Может быть вычислено на фронте или прилетать с бэка
+  startDate: string; // или Date, в зависимости от формата API
+  endDate: string;
+  // Добавьте другие поля, если есть
+}
+
+interface CourseRegistration {
+  id: number;
+  userId: number;
+  courseGroupId: number;
+  status: 'PENDING' | 'APPROVED' | 'REJECTED';
+  createdAt: string; // или Date
+  courseGroup: CourseGroup;
+  // Добавьте другие поля, если есть
+}
+
+interface RegisterToCourseDto {
+  courseGroupId: number;
+}
+
+// --- КОНЕЦ НОВОГО ---
+
 // Хуки для пользователей
 export function useUsers() {
   const { data, error, isLoading, mutate } = useSWR(
@@ -67,7 +107,7 @@ export function useUsers() {
 
 // Хуки для курсов
 export function useCourses() {
-  const { data, error, isLoading, mutate } = useSWR(
+  const { data, error, isLoading, mutate } = useSWR<Course[] | undefined>( // Указываем тип данных
     '/courses',
     fetcher
   );
@@ -101,45 +141,68 @@ export function useCourses() {
   };
 }
 
-// Хуки для групп
-export function useCourseGroups() {
-  const { data, error, isLoading, mutate } = useSWR(
-    '/course-groups',
+// --- НОВОЕ: Хуки для групп курсов и регистрации ---
+// Хуки для групп курсов
+export function useCourseGroups(courseId?: number) { // Добавляем возможность фильтрации по courseId
+  const url = courseId ? `/course-groups?courseId=${courseId}` : '/course-groups';
+  const { data, error, isLoading, mutate } = useSWR<CourseGroup[]>(
+    url,
     fetcher
-  );
-
-  const { trigger: createGroup } = useSWRMutation(
-    '/course-groups',
-    createMutation
-  );
-
-  const { trigger: updateGroup } = useSWRMutation(
-    '/course-groups',
-    updateMutation
-  );
-
-  const { trigger: deleteGroup } = useSWRMutation(
-    '/course-groups',
-    deleteMutation
-  );
-
-  const { trigger: approveRegistration } = useSWRMutation(
-    '/course-groups/registrations',
-    (url, { arg }: { arg: number }) => 
-      apiClient.patch(`${url}/${arg}/approve`, {})
   );
 
   return {
     groups: data,
     isLoading,
-    isError: error,
+    error, // <-- Добавляем error
+    isError: error, // <-- Сохраняем и isError для совместимости, если используется где-то ещё
     mutate,
-    createGroup,
-    updateGroup,
-    deleteGroup,
-    approveRegistration,
   };
 }
+
+// Хук для регистрации на курс
+export function useRegisterToCourse() {
+  const { mutate: mutateRegistrations } = useUserRegistrations();
+  
+  const { trigger, isMutating } = useSWRMutation(
+    '/course-groups/register',
+    async (url, { arg }: { arg: RegisterToCourseDto }) => {
+      const result = await apiClient.post(url, arg);
+      return result;
+    },
+    {
+      onSuccess: () => {
+        // Принудительно обновляем список регистраций пользователя
+        mutateRegistrations();
+      },
+    }
+  );
+
+  return {
+    register: trigger,
+    isRegistering: isMutating,
+  };
+}
+
+// Хук для получения регистраций пользователя
+export function useUserRegistrations() {
+  const { data, error, isLoading, mutate } = useSWR<CourseRegistration[]>(
+    '/course-groups/user/registrations',
+    fetcher,
+    {
+      revalidateOnFocus: true,
+      dedupingInterval: 5000,
+    }
+  );
+
+  return {
+    registrations: data,
+    isLoading,
+    error,
+    isError: error,
+    mutate,
+  };
+}
+// --- КОНЕЦ НОВОГО ---
 
 // Хуки для заданий
 export function useAssignments() {

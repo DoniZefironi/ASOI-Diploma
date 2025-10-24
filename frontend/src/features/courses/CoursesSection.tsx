@@ -1,46 +1,26 @@
+// features/courses/CoursesSection.tsx
 'use client';
 
 import { Card } from '@/shared/ui/card';
 import { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import { Button } from '@/shared/ui/button';
+import { useCourses, Course } from '@/shared/api/admin'; // Импортируем хук и интерфейс Course из admin.ts
 
-const courses = [
-  {
-    title: "Computer Science Fundamentals",
-    description: "Learn the basics of programming, data structures, and algorithms.",
-    category: "Computer Science",
-    icon: "/images/ComputerScience.jpg", 
-    type: "image" 
-  },
-  {
-    title: "Electronics and Circuit Design",
-    description: "Design and simulate electronic circuits with our interactive emulator.",
-    category: "Electronics",
-    icon: "/images/Electronics.jpg", 
-    type: "image"
-  },
-  {
-    title: "English for Tech Professionals",
-    description: "Improve your communication skills for the global tech industry.",
-    category: "Language",
-    icon: "/images/Language.webp",
-    type: "image"
-  },
-  {
-    title: "Introduction to IoT",
-    description: "Explore the world of connected devices and smart systems.",
-    category: "IoT",
-    icon: "/images/IoT.jpg", 
-    type: "image"
-  }
-];
+// Тип для курса теперь импортируется из shared/api/admin.ts
+// interface Course { ... } - удаляем это определение
 
 export const CoursesSection = () => {
   const [visibleCards, setVisibleCards] = useState<number[]>([]);
   const sectionRef = useRef<HTMLElement>(null);
 
+  // Используем хук для получения курсов
+  const { courses, isLoading, isError } = useCourses();
+
+  // Обработка анимации при загрузке курсов
   useEffect(() => {
+    if (!courses || courses.length === 0) return;
+
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -62,7 +42,40 @@ export const CoursesSection = () => {
     return () => {
       cards?.forEach(card => observer.unobserve(card));
     };
-  }, []);
+  }, [courses]); // Добавляем courses в зависимости
+
+  // Показываем индикатор загрузки
+  if (isLoading) {
+    return (
+      <section id="courses" className="py-20">
+        <div className="container mx-auto px-4 text-center">
+          <p className="text-gray-300">Loading courses...</p>
+        </div>
+      </section>
+    );
+  }
+
+  // Показываем ошибку
+  if (isError) {
+    return (
+      <section id="courses" className="py-20">
+        <div className="container mx-auto px-4 text-center">
+          <p className="text-red-500">Failed to load courses</p>
+        </div>
+      </section>
+    );
+  }
+
+  // Если курсов нет
+  if (!courses || courses.length === 0) {
+    return (
+      <section id="courses" className="py-20">
+        <div className="container mx-auto px-4 text-center">
+          <p className="text-gray-300">No courses available</p>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section id="courses" className="py-20" ref={sectionRef}>
@@ -77,9 +90,9 @@ export const CoursesSection = () => {
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          {courses.map((course, index) => (
+          {courses.map((course, index) => ( // Убираем явную типизацию, TypeScript выведет её из useCourses
             <div
-              key={index}
+              key={course.id} // Используем id курса как ключ
               data-index={index}
               className={`
                 transform transition-all duration-1000 ease-out
@@ -95,29 +108,25 @@ export const CoursesSection = () => {
             >
               <Card className="h-full bg-gray-800 border-gray-700 hover:border-blue-500 transition-colors duration-300 overflow-hidden group">
                 <div className="relative h-48 overflow-hidden bg-gray-700 flex items-center justify-center">
-                  {course.type === "image" ? (
-                    <Image
-                      src={course.icon}
-                      alt={course.title}
-                      fill
-                      className="object-cover group-hover:scale-110 transition-transform duration-500"
-                    />
-                  ) : (
-                    <div className="text-6xl group-hover:scale-110 transition-transform duration-500">
-                      {course.icon}
-                    </div>
-                  )}
+                  {/* Используем imageUrl вместо icon */}
+                  <Image
+                    src={course.imageUrl?.trim() ? course.imageUrl.trim() : '/images/default-course.png'} // Убираем лишние пробелы и проверяем
+                    alt={course.name}
+                    fill
+                    className="object-cover group-hover:scale-110 transition-transform duration-500"
+                  />
                   <div className="absolute inset-0 bg-black bg-opacity-20 group-hover:bg-opacity-10 transition-all duration-300"></div>
                   <div className="absolute top-4 left-4">
+                    {/* Используем type вместо category */}
                     <span className="inline-block px-3 py-1 bg-blue-600 text-white text-xs font-medium rounded-full">
-                      {course.category}
+                      {course.type}
                     </span>
                   </div>
                 </div>
                 
                 <div className="p-6 h-full flex flex-col">
                   <h3 className="font-bold text-white mb-3 text-lg leading-tight">
-                    {course.title}
+                    {course.name}
                   </h3>
                   <p className="text-gray-300 leading-relaxed mb-5">
                     {course.description}
