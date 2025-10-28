@@ -9,11 +9,9 @@ export const VideoBackground = () => {
     const video = videoRef.current;
     if (!video) return;
 
-    // Просто запускаем бесконечное видео
     video.loop = true;
     video.play().catch(error => {
       console.log('Autoplay prevented:', error);
-      // Если autoplay заблокирован, можно добавить кнопку воспроизведения
     });
   }, []);
 

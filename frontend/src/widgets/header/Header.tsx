@@ -26,16 +26,13 @@ export const Header = () => {
     window.location.href = '/';
   };
 
-  // Создаем отображаемое имя пользователя
   const getDisplayName = () => {
     if (!user) return '';
-    
-    // Используем firstName и lastName, или email если их нет
+
     if (user.firstName && user.lastName) {
       return `${user.firstName} ${user.lastName}`;
     }
-    
-    // Или первую часть email до @
+
     if (user.email) {
       return user.email.split('@')[0];
     }
@@ -43,7 +40,6 @@ export const Header = () => {
     return 'User';
   };
 
-  // Получаем первую букву для аватара
   const getAvatarLetter = () => {
     const displayName = getDisplayName();
     return displayName.charAt(0).toUpperCase();
@@ -62,6 +58,8 @@ export const Header = () => {
             <Link href="/courses" className="hover:text-blue-600 transition-colors">Courses</Link>
             <Link href="/career" className="hover:text-blue-600 transition-colors">Career</Link>
             <Link href="/forum" className="hover:text-blue-600 transition-colors">Forum</Link>
+            <Link href="/complilier" className="hover:text-blue-600 transition-colors">Сompiler</Link>
+            <Link href="/circuit" className="hover:text-blue-600 transition-colors">Emulator</Link>
           </nav>
 
           <div className="flex items-center space-x-4">
@@ -130,7 +128,6 @@ export const Header = () => {
                 )}
               </div>
             ) : (
-              // Кнопки для неавторизованного пользователя
               <div className="flex items-center space-x-3">
                 <Link 
                   href="/auth" 

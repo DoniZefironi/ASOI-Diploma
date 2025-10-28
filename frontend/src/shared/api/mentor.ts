@@ -7,7 +7,6 @@ const fetcher = (url: string) => apiClient.get(url);
 const createMutation = (url: string, { arg }: { arg: any }) => 
   apiClient.post(url, arg);
 
-// Мои группы
 export function useMyGroups() {
   const { data, error, isLoading, mutate } = useSWR(
     '/course-groups',
@@ -25,7 +24,6 @@ export function useMyGroups() {
   };
 }
 
-// Задания группы
 export function useGroupAssignments(groupId: number) {
   const { data, error, isLoading, mutate } = useSWR(
     groupId ? `/assignments/course-group/${groupId}` : null,
@@ -47,7 +45,6 @@ export function useGroupAssignments(groupId: number) {
   };
 }
 
-// Отправленные работы
 export function useAssignmentSubmissions(assignmentId: number) {
   const { data, error, isLoading, mutate } = useSWR(
     assignmentId ? `/assignments/submissions/assignment/${assignmentId}` : null,
@@ -75,7 +72,6 @@ export function useAssignmentSubmissions(assignmentId: number) {
   };
 }
 
-// Оценки группы
 export function useGroupGrades(groupId: number) {
   const { data, error, isLoading } = useSWR(
     groupId ? `/assignments/course-group/${groupId}/grades` : null,

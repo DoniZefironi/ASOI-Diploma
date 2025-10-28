@@ -11,7 +11,6 @@ interface SubmissionManagementProps {
   assignmentId: number;
 }
 
-// Создаем локальные компоненты для отсутствующих UI элементов
 const Badge = ({ children, variant = 'default', className = '' }: { 
   children: React.ReactNode; 
   variant?: 'default' | 'secondary' | 'outline';
@@ -56,8 +55,8 @@ const Input = ({
   onChange: (e: ChangeEvent<HTMLInputElement>) => void;
   placeholder?: string;
   id?: string;
-  min?: string; // Изменено с number на string
-  max?: string; // Изменено с number на string
+  min?: string;
+  max?: string; 
   className?: string;
 }) => (
   <input
@@ -66,8 +65,8 @@ const Input = ({
     value={value}
     onChange={onChange}
     placeholder={placeholder}
-    min={min} // HTML атрибуты min/max принимают строки
-    max={max} // HTML атрибуты min/max принимают строки
+    min={min} 
+    max={max} 
     className={`w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:border-gray-600 dark:text-white ${className}`}
   />
 );
@@ -97,7 +96,6 @@ const Textarea = ({
   />
 );
 
-// Простой диалог компонент
 const Dialog = ({ 
   open, 
   onOpenChange, 
@@ -137,7 +135,7 @@ const DialogTitle = ({ children, className = '' }: { children: React.ReactNode; 
 );
 
 export default function SubmissionManagement({ assignmentId }: SubmissionManagementProps) {
-  // Временно заглушка для хука, пока не создан реальный API
+
   const { submissions, isLoading, isError, createReview, calculateGrade } = useAssignmentSubmissions(assignmentId);
   const [selectedSubmission, setSelectedSubmission] = useState<any>(null);
   const [isReviewDialogOpen, setIsReviewDialogOpen] = useState(false);
@@ -333,7 +331,6 @@ export default function SubmissionManagement({ assignmentId }: SubmissionManagem
   );
 }
 
-// Диалог добавления рецензии
 function ReviewDialog({ submission, isOpen, onClose, onSubmit }: any) {
   const [score, setScore] = useState('');
   const [feedback, setFeedback] = useState('');
@@ -368,8 +365,8 @@ function ReviewDialog({ submission, isOpen, onClose, onSubmit }: any) {
             <Input
               id="score"
               type="number"
-              min="0"  // Теперь это строка
-              max="100" // Теперь это строка
+              min="0" 
+              max="100" 
               value={score}
               onChange={(e: ChangeEvent<HTMLInputElement>) => setScore(e.target.value)}
               placeholder="Введите оценку"

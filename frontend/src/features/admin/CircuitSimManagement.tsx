@@ -8,7 +8,6 @@ import { Plus, Edit, Trash2, Loader2, Code, Play, Settings } from 'lucide-react'
 import CircuitSimulator from '../circuit/CircuitSimulator';
 import CircuitSimForm from './CircuitSimForm';
 
-// UI компоненты
 type BadgeVariant = 'default' | 'secondary' | 'outline' | 'destructive';
 
 const Badge = ({
@@ -66,7 +65,6 @@ interface CircuitProject {
   updatedAt: string;
 }
 
-// Моковые данные для демонстрации
 const mockCircuits: CircuitProject[] = [
   {
     id: 1,

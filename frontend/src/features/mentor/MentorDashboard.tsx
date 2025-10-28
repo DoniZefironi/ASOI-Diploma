@@ -32,14 +32,13 @@ export default function MentorDashboard() {
     );
   }
 
-  // Статистика
   const stats = {
     totalGroups: groups?.length || 0,
     totalStudents: groups?.reduce((acc: number, group: any) => {
       return acc + (group.registrations?.filter((r: any) => r.status === 'approved').length || 0);
     }, 0) || 0,
-    activeAssignments: 0, // Можно добавить API для этого
-    upcomingClasses: 0, // Можно добавить API для этого
+    activeAssignments: 0, 
+    upcomingClasses: 0,
   };
 
   return (
@@ -51,7 +50,6 @@ export default function MentorDashboard() {
         </p>
       </div>
 
-      {/* Статистика */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <StatCard
           title="Мои группы"

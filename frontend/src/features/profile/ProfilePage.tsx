@@ -10,8 +10,7 @@ export const ProfilePage = () => {
   const { user, login } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  
-  // Создаем отображаемое имя пользователя
+
   const getDisplayName = () => {
     if (!user) return '';
     
@@ -32,7 +31,6 @@ export const ProfilePage = () => {
     email: '',
   });
 
-  // Инициализируем форму данными пользователя
   useEffect(() => {
     if (user) {
       setEditForm({
@@ -43,7 +41,6 @@ export const ProfilePage = () => {
     }
   }, [user]);
 
-  // Проверка ролей
   const isAdmin = user?.roles?.includes('admin') || false;
   const isMentor = user?.roles?.includes('mentor') || false;
   const isStudent = user?.roles?.includes('student') || false;
@@ -65,21 +62,17 @@ export const ProfilePage = () => {
   const handleSave = async () => {
     setIsLoading(true);
     try {
-      // Здесь должен быть API запрос для обновления профиля
       console.log('Saving profile:', editForm);
-      
-      // Имитация API запроса
+
       await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Обновляем данные в контексте и localStorage
+
       const updatedUser = {
         ...user,
         firstName: editForm.firstName,
         lastName: editForm.lastName,
         email: editForm.email,
       };
-      
-      // Обновляем данные в контексте
+
       const token = localStorage.getItem('access_token');
       if (token) {
         login(token, updatedUser);
@@ -104,13 +97,11 @@ export const ProfilePage = () => {
     setIsEditing(false);
   };
 
-  // Получаем первую букву для аватара
   const getAvatarLetter = () => {
     const displayName = getDisplayName();
     return displayName.charAt(0).toUpperCase();
   };
 
-  // Компонент для полей ввода
   const InputField = ({ label, value, onChange, type = 'text' }: {
     label: string;
     value: string;

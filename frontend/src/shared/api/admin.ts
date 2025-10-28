@@ -3,24 +3,19 @@ import useSWR from 'swr';
 import useSWRMutation from 'swr/mutation';
 import { apiClient } from './client';
 
-// Фетчер для SWR
 const fetcher = (url: string) => apiClient.get(url);
 
-// Мутации для POST/PUT/DELETE
 const createMutation = (url: string, { arg }: { arg: any }) => 
   apiClient.post(url, arg);
 
 const updateMutation = (url: string, { arg }: { arg: { id: number; data: any } }) => 
   apiClient.put(`${url}/${arg.id}`, arg.data);
 
-// Специальная мутация для обновления ролей
 const updateRolesMutation = (url: string, { arg }: { arg: { id: number; roles: string[] } }) => 
   apiClient.put(`${url}/${arg.id}/roles`, { roles: arg.roles });
 
 const deleteMutation = (url: string, { arg }: { arg: number }) => 
   apiClient.delete(`${url}/${arg}`);
-
-// --- НОВОЕ: Интерфейсы для курсов, групп, регистрации ---
 
 export interface Course {
   id: number;
@@ -30,7 +25,6 @@ export interface Course {
   duration: number;
   imageUrl: string;
   isActive: boolean;
-  // Добавьте другие поля, если они есть в API
 }
 
 interface CourseGroup {
@@ -38,10 +32,9 @@ interface CourseGroup {
   name: string;
   courseId: number;
   maxStudents: number;
-  currentStudents?: number; // Может быть вычислено на фронте или прилетать с бэка
-  startDate: string; // или Date, в зависимости от формата API
+  currentStudents?: number; 
+  startDate: string; 
   endDate: string;
-  // Добавьте другие поля, если есть
 }
 
 interface CourseRegistration {
@@ -49,18 +42,14 @@ interface CourseRegistration {
   userId: number;
   courseGroupId: number;
   status: 'PENDING' | 'APPROVED' | 'REJECTED';
-  createdAt: string; // или Date
+  createdAt: string; 
   courseGroup: CourseGroup;
-  // Добавьте другие поля, если есть
 }
 
 interface RegisterToCourseDto {
   courseGroupId: number;
 }
 
-// --- КОНЕЦ НОВОГО ---
-
-// Хуки для пользователей
 export function useUsers() {
   const { data, error, isLoading, mutate } = useSWR(
     '/users',
@@ -81,12 +70,10 @@ export function useUsers() {
     updateRolesMutation
   );
 
-  // Фильтруем менторов на клиенте
   const mentors = data?.filter((user: any) => {
-    // Проверяем разные возможные структуры ролей
+
     const roles = user.roles || user.userRoles || [];
-    
-    // Ищем роль MENTOR в разных форматах
+
     return roles.some((role: any) => {
       const roleName = role.name || role.role || role.roleName || '';
       return roleName.toUpperCase() === 'MENTOR';
@@ -95,7 +82,7 @@ export function useUsers() {
 
   return {
     users: data,
-    mentors, // Добавляем отдельный список менторов
+    mentors, 
     isLoading,
     isError: error,
     mutate,
@@ -105,9 +92,8 @@ export function useUsers() {
   };
 }
 
-// Хуки для курсов
 export function useCourses() {
-  const { data, error, isLoading, mutate } = useSWR<Course[] | undefined>( // Указываем тип данных
+  const { data, error, isLoading, mutate } = useSWR<Course[] | undefined>(
     '/courses',
     fetcher
   );
@@ -141,9 +127,7 @@ export function useCourses() {
   };
 }
 
-// --- НОВОЕ: Хуки для групп курсов и регистрации ---
-// Хуки для групп курсов
-export function useCourseGroups(courseId?: number) { // Добавляем возможность фильтрации по courseId
+export function useCourseGroups(courseId?: number) { 
   const url = courseId ? `/course-groups?courseId=${courseId}` : '/course-groups';
   const { data, error, isLoading, mutate } = useSWR<CourseGroup[]>(
     url,
@@ -153,13 +137,12 @@ export function useCourseGroups(courseId?: number) { // Добавляем во�
   return {
     groups: data,
     isLoading,
-    error, // <-- Добавляем error
-    isError: error, // <-- Сохраняем и isError для совместимости, если используется где-то ещё
+    error, 
+    isError: error, 
     mutate,
   };
 }
 
-// Хук для регистрации на курс
 export function useRegisterToCourse() {
   const { mutate: mutateRegistrations } = useUserRegistrations();
   
@@ -171,7 +154,6 @@ export function useRegisterToCourse() {
     },
     {
       onSuccess: () => {
-        // Принудительно обновляем список регистраций пользователя
         mutateRegistrations();
       },
     }
@@ -183,7 +165,6 @@ export function useRegisterToCourse() {
   };
 }
 
-// Хук для получения регистраций пользователя
 export function useUserRegistrations() {
   const { data, error, isLoading, mutate } = useSWR<CourseRegistration[]>(
     '/course-groups/user/registrations',
@@ -202,9 +183,7 @@ export function useUserRegistrations() {
     mutate,
   };
 }
-// --- КОНЕЦ НОВОГО ---
 
-// Хуки для заданий
 export function useAssignments() {
   const { data, error, isLoading, mutate } = useSWR(
     '/assignments',
@@ -262,7 +241,6 @@ export function useAssignments() {
   };
 }
 
-// Хуки для материалов
 export function useMaterials() {
   const { data, error, isLoading, mutate } = useSWR(
     '/materials',
@@ -320,7 +298,6 @@ export function useMaterials() {
   };
 }
 
-// Хуки для расписания
 export function useSchedule() {
   const { data, error, isLoading, mutate } = useSWR(
     '/schedule',
@@ -378,7 +355,6 @@ export function useSchedule() {
   };
 }
 
-// Хуки для статистики
 export function useAdminStats() {
   const { data, error, isLoading } = useSWR(
     '/admin/stats',

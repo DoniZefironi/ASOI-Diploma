@@ -1,30 +1,25 @@
 // features/courses-page/CoursesPage.tsx
 'use client';
 
-import { CourseCardWithRegistration } from '@/shared/ui/card'; // Импортируем новый компонент
+import { CourseCardWithRegistration } from '@/shared/ui/card';
 import { useCourses } from '@/shared/api/admin';
 
-// Тип для курса, основанный на ваших полях
 interface Course {
   id: number;
-  name: string; // соответствует course?.name
-  type: string; // соответствует course?.type
-  description: string; // соответствует course?.description
-  duration: number; // соответствует course?.duration
-  imageUrl: string; // соответствует course?.imageUrl
-  isActive: boolean; // соответствует course?.isActive
-  // Добавьте другие поля, если они есть в API
+  name: string; 
+  type: string; 
+  description: string; 
+  duration: number; 
+  imageUrl: string; 
+  isActive: boolean; 
 }
 
-// Функция для преобразования серверного курса в формат, подходящий для CourseCardWithRegistration
 function mapCourseToCardFormat(course: Course) {
-  // Карта типов курса к категориям и уровням
   const typeToCategoryMap: Record<string, { category: string; level: string; levelColor: string }> = {
     'computer_science': { category: 'computer-science', level: 'НАЧИНАЮЩИЙ', levelColor: 'bg-green-100 text-green-800' },
     'electronics': { category: 'electronics', level: 'НАЧИНАЮЩИЙ', levelColor: 'bg-green-100 text-green-800' },
     'language': { category: 'language', level: 'ВСЕ УРОВНИ', levelColor: 'bg-blue-100 text-blue-800' },
     'iot': { category: 'iot', level: 'СРЕДНИЙ', levelColor: 'bg-yellow-100 text-yellow-800' },
-    // Добавьте другие типы по необходимости
   };
 
   const mapped = typeToCategoryMap[course.type] || { category: course.type, level: 'НАЧИНАЮЩИЙ', levelColor: 'bg-gray-100 text-gray-800' };
@@ -36,7 +31,6 @@ function mapCourseToCardFormat(course: Course) {
     level: mapped.level,
     levelColor: mapped.levelColor,
     category: mapped.category,
-    // Можно добавить и другие поля, если CourseCardWithRegistration их использует
     duration: course.duration,
     imageUrl: course.imageUrl,
     isActive: course.isActive,
@@ -46,7 +40,6 @@ function mapCourseToCardFormat(course: Course) {
 export const CoursesPage = () => {
   const { courses, isLoading, isError } = useCourses();
 
-  // Показываем индикатор загрузки
   if (isLoading) {
     return (
       <div className="min-h-screen bg-[#0D1117] py-12">
@@ -57,7 +50,6 @@ export const CoursesPage = () => {
     );
   }
 
-  // Показываем ошибку
   if (isError) {
     return (
       <div className="min-h-screen bg-[#0D1117] py-12">
@@ -68,7 +60,6 @@ export const CoursesPage = () => {
     );
   }
 
-  // Преобразуем данные с сервера в формат, который ожидает CourseCardWithRegistration
   const mappedCourses = courses?.map(mapCourseToCardFormat) || [];
 
   return (

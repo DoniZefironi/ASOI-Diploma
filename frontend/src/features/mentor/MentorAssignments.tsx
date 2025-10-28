@@ -139,7 +139,6 @@ export default function MentorAssignments() {
                           size="sm"
                           variant="outline"
                           onClick={() => {
-                            // Навигация к странице с работами
                             window.location.href = `/mentor/assignments/${assignment.id}/submissions`;
                           }}
                         >

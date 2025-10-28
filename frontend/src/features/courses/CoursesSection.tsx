@@ -5,19 +5,14 @@ import { Card } from '@/shared/ui/card';
 import { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import { Button } from '@/shared/ui/button';
-import { useCourses, Course } from '@/shared/api/admin'; // Импортируем хук и интерфейс Course из admin.ts
-
-// Тип для курса теперь импортируется из shared/api/admin.ts
-// interface Course { ... } - удаляем это определение
+import { useCourses, Course } from '@/shared/api/admin'; 
 
 export const CoursesSection = () => {
   const [visibleCards, setVisibleCards] = useState<number[]>([]);
   const sectionRef = useRef<HTMLElement>(null);
 
-  // Используем хук для получения курсов
   const { courses, isLoading, isError } = useCourses();
 
-  // Обработка анимации при загрузке курсов
   useEffect(() => {
     if (!courses || courses.length === 0) return;
 
@@ -42,9 +37,8 @@ export const CoursesSection = () => {
     return () => {
       cards?.forEach(card => observer.unobserve(card));
     };
-  }, [courses]); // Добавляем courses в зависимости
+  }, [courses]); 
 
-  // Показываем индикатор загрузки
   if (isLoading) {
     return (
       <section id="courses" className="py-20">
@@ -55,7 +49,6 @@ export const CoursesSection = () => {
     );
   }
 
-  // Показываем ошибку
   if (isError) {
     return (
       <section id="courses" className="py-20">
@@ -66,7 +59,6 @@ export const CoursesSection = () => {
     );
   }
 
-  // Если курсов нет
   if (!courses || courses.length === 0) {
     return (
       <section id="courses" className="py-20">
@@ -90,9 +82,9 @@ export const CoursesSection = () => {
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          {courses.map((course, index) => ( // Убираем явную типизацию, TypeScript выведет её из useCourses
+          {courses.map((course, index) => ( 
             <div
-              key={course.id} // Используем id курса как ключ
+              key={course.id} 
               data-index={index}
               className={`
                 transform transition-all duration-1000 ease-out
@@ -108,16 +100,14 @@ export const CoursesSection = () => {
             >
               <Card className="h-full bg-gray-800 border-gray-700 hover:border-blue-500 transition-colors duration-300 overflow-hidden group">
                 <div className="relative h-48 overflow-hidden bg-gray-700 flex items-center justify-center">
-                  {/* Используем imageUrl вместо icon */}
                   <Image
-                    src={course.imageUrl?.trim() ? course.imageUrl.trim() : '/images/default-course.png'} // Убираем лишние пробелы и проверяем
+                    src={course.imageUrl?.trim() ? course.imageUrl.trim() : '/images/default-course.png'} 
                     alt={course.name}
                     fill
                     className="object-cover group-hover:scale-110 transition-transform duration-500"
                   />
                   <div className="absolute inset-0 bg-black bg-opacity-20 group-hover:bg-opacity-10 transition-all duration-300"></div>
                   <div className="absolute top-4 left-4">
-                    {/* Используем type вместо category */}
                     <span className="inline-block px-3 py-1 bg-blue-600 text-white text-xs font-medium rounded-full">
                       {course.type}
                     </span>

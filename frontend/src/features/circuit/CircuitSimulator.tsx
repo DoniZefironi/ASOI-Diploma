@@ -3,13 +3,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { create } from 'zustand';
 
-// =========================
-// Types
-// =========================
-
 type ID = string;
 
-// Added new node types
 type NodeType = 'INPUT' | 'OUTPUT' | 'AND' | 'OR' | 'NOT' | 'LED' | 'COUNTER' | 'CLOCK' | 'DISPLAY' | 'CUSTOM' | 'NAND' | 'NOR' | 'XOR' | 'XNOR' | 'DFF' | 'TFF' | 'MUX';
 
 type NodeDef = {
@@ -23,9 +18,7 @@ type NodeDef = {
   counter?: number;
   clockSpeed?: number;
   clockActive?: boolean;
-  // Added for flip-flops
   state?: boolean;
-  // Added for MUX
   select?: number;
 };
 
@@ -34,10 +27,6 @@ type Wire = {
   from: { nodeId: ID; slot: number };
   to: { nodeId: ID; slot: number };
 };
-
-// =========================
-// Utilities
-// =========================
 
 const uid = (p = '') => `${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 9)}${p}`;
 
@@ -56,30 +45,24 @@ function evaluateNode(node: NodeDef, inputsValues: boolean[]): boolean {
     case 'OR':
       return inputsValues.some(Boolean);
     case 'NAND':
-      return !inputsValues.every(Boolean); // NOT (A AND B)
+      return !inputsValues.every(Boolean); 
     case 'NOR':
-      return !inputsValues.some(Boolean); // NOT (A OR B)
+      return !inputsValues.some(Boolean); 
     case 'XOR':
-      return inputsValues.filter(Boolean).length === 1; // Exactly one true
+      return inputsValues.filter(Boolean).length === 1;
     case 'XNOR':
-      return inputsValues.filter(Boolean).length !== 1; // NOT (A XOR B)
+      return inputsValues.filter(Boolean).length !== 1; 
     case 'COUNTER':
-      // Counts rising edges on first input
       return !!inputsValues[0];
     case 'CLOCK':
       return !!node.clockActive;
     case 'DISPLAY':
       return !!inputsValues[0];
     case 'DFF':
-      // D Flip-Flop: Q = D on clock rising edge
-      // This is handled in the simulation loop
       return !!node.state;
     case 'TFF':
-      // T Flip-Flop: Q toggles on clock rising edge
-      // This is handled in the simulation loop
       return !!node.state;
     case 'MUX':
-      // Multiplexer: output depends on select line
       const selectIndex = node.select || 0;
       return inputsValues[selectIndex] || false;
     case 'CUSTOM':
@@ -88,10 +71,6 @@ function evaluateNode(node: NodeDef, inputsValues: boolean[]): boolean {
       return false;
   }
 }
-
-// =========================
-// Zustand store
-// =========================
 
 type SimulatorState = {
   nodes: Record<ID, NodeDef>;
@@ -148,20 +127,17 @@ const useStore = create<SimulatorState>((set, get) => ({
         initialValues = { clockSpeed: 1000, clockActive: false };
         break;
       case 'DISPLAY':
-        defaultSlots = 4; // 4-bit display
+        defaultSlots = 4; 
         break;
       case 'DFF':
-        // D input, Clock input
         defaultSlots = 2;
         initialValues = { state: false };
         break;
       case 'TFF':
-        // T input, Clock input
         defaultSlots = 2;
         initialValues = { state: false };
         break;
       case 'MUX':
-        // Data inputs (2 for 2:1 MUX), Select input
         defaultSlots = 3;
         initialValues = { select: 0 };
         break;
@@ -266,39 +242,32 @@ const useStore = create<SimulatorState>((set, get) => ({
       });
     };
 
-    // Handle counters and special nodes
     Object.values(nodes).forEach((node) => {
       if (node.type === 'COUNTER') {
         const currentInput = getInputValue(node.id, 0);
         const prevInput = state.nodes[node.id]?.value;
-        // Count on rising edge
         if (currentInput && !prevInput) {
           node.counter = (node.counter || 0) + 1;
         }
       }
-      // Handle D Flip-Flop
       else if (node.type === 'DFF') {
         const dInput = getInputValue(node.id, 0);
         const clockInput = getInputValue(node.id, 1);
-        const prevClock = state.nodes[node.id]?.value; // Previous clock state
-        // Update state on rising clock edge
+        const prevClock = state.nodes[node.id]?.value; 
         if (clockInput && !prevClock) {
           node.state = dInput;
         }
       }
-      // Handle T Flip-Flop
       else if (node.type === 'TFF') {
         const tInput = getInputValue(node.id, 0);
         const clockInput = getInputValue(node.id, 1);
-        const prevClock = state.nodes[node.id]?.value; // Previous clock state
-        // Toggle state on rising clock edge if T is high
+        const prevClock = state.nodes[node.id]?.value; 
         if (clockInput && !prevClock && tInput) {
           node.state = !(node.state || false);
         }
       }
-      // Handle MUX
       else if (node.type === 'MUX') {
-        const selectInput = getInputValue(node.id, 2); // Third input is select
+        const selectInput = getInputValue(node.id, 2); 
         node.select = selectInput ? 1 : 0;
       }
     });
@@ -319,7 +288,6 @@ const useStore = create<SimulatorState>((set, get) => ({
       });
     }
 
-    // Update flip-flop values based on their state
     Object.values(nodes).forEach((node) => {
       if (node.type === 'DFF' || node.type === 'TFF') {
         node.value = node.state;
@@ -347,10 +315,6 @@ const useStore = create<SimulatorState>((set, get) => ({
 
   clear: () => set(() => ({ nodes: {}, wires: {} })),
 }));
-
-// =========================
-// React Component: CircuitSimulator
-// =========================
 
 export default function CircuitSimulator() {
   const svgRef = useRef<SVGSVGElement | null>(null);
@@ -393,14 +357,13 @@ export default function CircuitSimulator() {
     sy: 0 
   });
 
-  // Clock simulation
   useEffect(() => {
     const clockNodes = Object.values(nodes).filter(node => node.type === 'CLOCK' && node.clockActive);
     if (clockNodes.length === 0) return;
 
     const interval = setInterval(() => {
       runSimulation();
-    }, 500); // Fixed clock speed for simplicity
+    }, 500); 
 
     return () => clearInterval(interval);
   }, [nodes, runSimulation]);
@@ -510,7 +473,6 @@ export default function CircuitSimulator() {
       addNode({ type, x: 200 + Math.random() * 200, y: 100 + Math.random() * 200 });
     };
 
-    // Updated node types list with new components
     const nodeTypes: { type: NodeType; label: string; color: string }[] = [
       { type: 'INPUT', label: 'Input', color: 'bg-blue-600' },
       { type: 'OUTPUT', label: 'Output', color: 'bg-green-600' },
@@ -554,11 +516,9 @@ export default function CircuitSimulator() {
   const NodeView: React.FC<{ node: NodeDef }> = ({ node }) => {
     const width = 120;
     const height = 60;
-    // Adjust port positions based on node type
     const inputCount = node.inputs.length;
     let portY = (i: number) => -height / 2 + 15 + (i * 15);
-    
-    // For flip-flops and MUX, adjust port positions
+
     if (node.type === 'DFF' || node.type === 'TFF' || node.type === 'MUX') {
       portY = (i: number) => -height / 2 + 20 + (i * 20);
     }
@@ -574,7 +534,7 @@ export default function CircuitSimulator() {
         case 'DFF': 
         case 'TFF': return '#4f46e5';
         case 'MUX': return '#0d9488';
-        default: return '#7c3aed'; // For AND, OR, NOT, etc.
+        default: return '#7c3aed';
       }
     };
 
@@ -888,12 +848,11 @@ export default function CircuitSimulator() {
     const fromNode = nodes[wire.from.nodeId];
     const toNode = nodes[wire.to.nodeId];
     if (!fromNode || !toNode) return null;
-    // Adjust wire connections based on node type
     let fromX, fromY, toX, toY;
     
     if (fromNode.type === 'DFF' || fromNode.type === 'TFF' || fromNode.type === 'MUX') {
       fromX = fromNode.x + 60;
-      fromY = fromNode.y + 0; // Output is at center
+      fromY = fromNode.y + 0; 
     } else {
       fromX = fromNode.x + 60;
       fromY = fromNode.y + 0;
@@ -901,7 +860,7 @@ export default function CircuitSimulator() {
     
     if (toNode.type === 'DFF' || toNode.type === 'TFF' || toNode.type === 'MUX') {
       toX = toNode.x - 60;
-      toY = toNode.y + (-25 + wire.to.slot * 20); // Adjust for port positions
+      toY = toNode.y + (-25 + wire.to.slot * 20); 
     } else {
       toX = toNode.x - 60;
       toY = toNode.y + (-30 + wire.to.slot * 15);

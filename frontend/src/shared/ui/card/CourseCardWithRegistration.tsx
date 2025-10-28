@@ -32,23 +32,20 @@ export const CourseCardWithRegistration = ({ course, index }: CourseCardWithRegi
   const handleRegisterClick = async (courseGroupId: number, groupName: string) => {
     if (isRegistering) return;
 
-    // Сбрасываем сообщения
     setRegistrationError(null);
     setSuccessMessage(null);
 
     try {
       await register({ courseGroupId });
       setSuccessMessage(`Заявка на группу "${groupName}" успешно подана!`);
-      
-      // Скрываем сообщение через 3 секунды
+
       setTimeout(() => {
         setSuccessMessage(null);
       }, 3000);
       
     } catch (error: any) {
       console.error('Registration failed:', error);
-      
-      // Детальная обработка ошибок
+
       if (error.message?.includes('already applied')) {
         setRegistrationError('Вы уже подали заявку на эту группу');
       } else if (error.message?.includes('Course group is full')) {
@@ -60,15 +57,13 @@ export const CourseCardWithRegistration = ({ course, index }: CourseCardWithRegi
       } else {
         setRegistrationError('Ошибка при регистрации. Попробуйте позже.');
       }
-      
-      // Скрываем ошибку через 5 секунд
+
       setTimeout(() => {
         setRegistrationError(null);
       }, 5000);
     }
   };
 
-  // Функция для получения статуса заявки пользователя на группу
   const getUserRegistrationStatus = (groupId: number) => {
     const userRegistration = registrations?.find(
       reg => reg.courseGroupId === groupId
@@ -76,7 +71,6 @@ export const CourseCardWithRegistration = ({ course, index }: CourseCardWithRegi
     return userRegistration ? userRegistration.status : null;
   };
 
-  // Функция для получения текста и стиля кнопки в зависимости от статуса
   const getRegistrationButtonProps = (groupId: number) => {
     const status = getUserRegistrationStatus(groupId);
     
@@ -96,7 +90,7 @@ export const CourseCardWithRegistration = ({ course, index }: CourseCardWithRegi
       case 'REJECTED':
         return {
           text: 'Заявка отклонена',
-          disabled: false, // Можно подать заново
+          disabled: false, 
           variant: 'secondary' as const,
         };
       default:
@@ -108,7 +102,6 @@ export const CourseCardWithRegistration = ({ course, index }: CourseCardWithRegi
     }
   };
 
-  // Фильтруем группы, показывая все, но с разными состояниями кнопок
   const displayGroups = groups || [];
 
   return (
