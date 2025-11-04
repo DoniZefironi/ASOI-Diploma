@@ -1,45 +1,28 @@
-// components/SandboxControls.tsx
+// frontend/src/features/compel/components/SandboxControls.tsx
 'use client';
 
 import { useCodeStore } from '../stores/useCodeStore';
+import { apiClient } from '../../../shared/api/client';
 
 export default function SandboxControls() {
-  const { code, setOutput } = useCodeStore();
+  const { code, setOutput, language } = useCodeStore();
 
-  const runCode = () => {
-    setOutput('');
-
-    let originalLog: ((...data: any[]) => void) | undefined;
-    let originalError: ((...data: any[]) => void) | undefined;
-    let originalWarn: ((...data: any[]) => void) | undefined;
-
+  const runCode = async () => {
+    setOutput('Выполняю код...');
     try {
-      new Function(code);
-    } catch (syntaxError: any) {
-      setOutput(`[Синтаксическая ошибка]\n${syntaxError.name}: ${syntaxError.message}`);
-      return;
-    }
+      const result = await apiClient.post('/compiler/execute', {
+        code,
+        language,
+      });
 
-    try {
-      const capturedLogs: string[] = [];
-
-      originalLog = console.log;
-      originalError = console.error;
-      originalWarn = console.warn;
-
-      console.log = (...args) => capturedLogs.push(args.join(' '));
-      console.error = (...args) => capturedLogs.push('ERROR: ' + args.join(' '));
-      console.warn = (...args) => capturedLogs.push('WARN: ' + args.join(' '));
-
-      new Function(code)();
-
-      setOutput(capturedLogs.join('\n'));
-    } catch (runtimeError: any) {
-      setOutput(`[Ошибка выполнения]\n${runtimeError.name}: ${runtimeError.message}`);
-    } finally {
-      if (originalLog) console.log = originalLog;
-      if (originalError) console.error = originalError;
-      if (originalWarn) console.warn = originalWarn;
+      if (result.status === 'success') {
+        setOutput(result.output || 'Код выполнен успешно');
+      } else {
+        setOutput(`Ошибка: ${result.error}`);
+      }
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Неизвестная ошибка';
+      setOutput(`Сетевая ошибка: ${errorMessage}`);
     }
   };
 
@@ -66,17 +49,33 @@ export default function SandboxControls() {
   };
 
   return (
-    <div className="flex gap-2 mb-4">
-      <button onClick={runCode} className="px-4 py-2 bg-blue-500 text-white rounded">
-        Выполнить
-      </button>
-      <button onClick={downloadCode} className="px-4 py-2 bg-green-500 text-white rounded">
-        Скачать
-      </button>
-      <label className="px-4 py-2 bg-gray-500 text-white rounded cursor-pointer">
-        Загрузить
-        <input type="file" accept=".js" onChange={loadCode} className="hidden" />
-      </label>
+    <div className="flex flex-col gap-2 mb-4">
+      <div className="flex gap-2">
+        <label>Язык: </label>
+        <select
+          value={language}
+          onChange={(e) => useCodeStore.getState().setLanguage(e.target.value)} 
+          className="border rounded p-1 bg-gray-950"
+        >
+          <option value="js">JavaScript</option>
+          <option value="python">Python</option>
+          <option value="cpp">C++</option>
+          <option value="java">Java</option>
+        </select>
+      </div>
+
+      <div className="flex gap-2">
+        <button onClick={runCode} className="px-4 py-2 bg-blue-500 text-white rounded">
+          Выполнить
+        </button>
+        <button onClick={downloadCode} className="px-4 py-2 bg-green-500 text-white rounded">
+          Скачать
+        </button>
+        <label className="px-4 py-2 bg-gray-500 text-white rounded cursor-pointer">
+          Загрузить
+          <input type="file" accept=".js" onChange={loadCode} className="hidden" />
+        </label>
+      </div>
     </div>
   );
 }

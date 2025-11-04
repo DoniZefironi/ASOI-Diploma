@@ -55,4 +55,7 @@ export class Assignment {
 
   @OneToMany(() => AssignmentSubmission, submission => submission.assignment)
   submissions: AssignmentSubmission[];
+
+  @Column({ type: 'json', nullable: true })
+  testCases: any; 
 }

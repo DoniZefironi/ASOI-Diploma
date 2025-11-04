@@ -1,4 +1,4 @@
-// lib/api/client.ts
+// shared/api/client.ts
 class ApiClient {
   private baseURL: string;
 

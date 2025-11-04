@@ -5,11 +5,13 @@ import SandboxControls from '../components/SandboxControls';
 
 export default function Home() {
   return (
-    <div className="p-4 max-w-4xl mx-auto">
+    <div className="p-4 w-4/5 mx-auto">
       <h1 className="text-2xl font-bold mb-4">JS Sandbox</h1>
       <SandboxControls />
-      <CodeEditor />
-      <OutputDisplay />
+      <div className='flex gap-10'>
+        <CodeEditor />
+        <OutputDisplay />
+      </div>
     </div>
   );
 }
