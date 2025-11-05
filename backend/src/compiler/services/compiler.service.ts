@@ -78,8 +78,6 @@ export class CompilerService {
     }
 
     const filePath = path.join(dir, fileName);
-    console.log('Writing to file:', filePath);
-    console.log('Code content:\n', code);
 
     fs.writeFileSync(filePath, code);
   }
@@ -89,10 +87,6 @@ export class CompilerService {
     tempDir: string,
     stdin?: string,
   ): Promise<{ stdout: string; stderr: string }> {
-    console.log('=== runInSandbox called ===');
-    console.log('Command:', command);
-    console.log('TempDir:', tempDir);
-    console.log('Stdin:', stdin);
 
     return new Promise((resolve, reject) => {
       const process = childProcess.exec(command, {
@@ -120,9 +114,6 @@ export class CompilerService {
       }
 
       process.on('close', (code) => {
-        console.log('Process exited with code:', code);
-        console.log('Final stdout:', stdout);
-        console.log('Final stderr:', stderr);
 
         if (code === 0 || stdout) {
           resolve({ stdout, stderr });
