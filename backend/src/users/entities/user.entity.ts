@@ -6,6 +6,7 @@ import { AssignmentSubmission } from '../../assignments/entities/assignment-subm
 import { ForumPost } from '../../forum/entities/forum-post.entity';
 import { UserAchievement } from '../../achievements/entities/user-achievement.entity';
 import { PeerReview } from '../../assignments/entities/peer-review.entity';
+import { CircuitSubmission } from '../../circuit/entities/circuit-submission.entity'
 
 @Entity('users')
 export class User {
@@ -53,4 +54,7 @@ export class User {
 
   @OneToMany(() => PeerReview, peerReview => peerReview.reviewer)
   peerReviews: PeerReview[];
+
+  @OneToMany(() => CircuitSubmission, submission => submission.user)
+  circuitSubmissions: CircuitSubmission[];
 }
