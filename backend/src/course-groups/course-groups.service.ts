@@ -102,6 +102,14 @@ export class CourseGroupsService {
     return registrations.map(reg => reg.user);
   }
 
+  async getAllRegistrations() {
+    // Загружаем все заявки, включая информацию о пользователе и группе
+    return this.registrationRepository.find({
+      relations: ['user', 'courseGroup', 'courseGroup.course'], // Загрузка связанных данных
+      order: { registeredAt: 'DESC' }, // Сортировка по дате подачи
+    });
+  }
+
   async approveRegistration(registrationId: number, approvedBy: number) {
     const registration = await this.registrationRepository.findOne({
       where: { id: registrationId },

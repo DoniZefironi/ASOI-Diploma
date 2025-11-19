@@ -16,6 +16,8 @@ import { MaterialsModule } from './materials/materials.module';
 import { ForumModule } from './forum/forum.module';
 import { AchievementsModule } from './achievements/achievements.module';
 import { CompilerModule } from './compiler/compiler.module';
+import { HackathonsModule } from './hackathons/hackathons.module';
+import { ProfessionalOrientationModule } from './professional-orientation/professional-orientation.module';
 
 @Module({
   imports: [
@@ -48,6 +50,8 @@ import { CompilerModule } from './compiler/compiler.module';
     ForumModule,
     AchievementsModule,
     CompilerModule,
+    ProfessionalOrientationModule,
+    HackathonsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

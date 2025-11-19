@@ -117,6 +117,7 @@ function QuickActions() {
     { href: '/admin/users', label: 'Управление пользователями', description: 'Назначение ролей' },
     { href: '/admin/groups', label: 'Создать группу', description: 'Новая учебная группа' },
     { href: '/admin/schedule', label: 'Расписание', description: 'Добавить занятие' },
+    { href: '/admin/course-registrations', label: 'Новый студент?', description: 'Новая заявка в группу' },
   ];
 
   return (

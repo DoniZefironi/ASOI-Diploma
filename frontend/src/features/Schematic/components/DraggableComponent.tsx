@@ -16,7 +16,7 @@ export function DraggableComponent({ component, children }: DraggableComponentPr
 
   const { attributes, listeners, setNodeRef, transform } = useDraggable({
     id: `component-${component.id}`,
-     { type: 'component', id: component.id },
+    data: { type: 'component', id: component.id }, // ✅ Исправлено
     disabled: !isDraggable,
   });
 

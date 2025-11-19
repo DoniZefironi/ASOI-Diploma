@@ -1,345 +1,443 @@
-'use client';
-
 import React from 'react';
-import { NodeDef, ID, NodeType } from '../types';
-import { useCircuitStore } from '../hooks/useCircuitStore';
+import { NodeDef, ID } from '../types/circuit.types';
+import { useCircuitStore } from '../store/circuit.store';
+import { getNodeColor, getActiveColor } from './utils';
 
 interface NodeViewProps {
   node: NodeDef;
-  onPointerDown: (e: React.PointerEvent, id: string) => void; // Принимаем обработчик
+  onPointerDown: (e: React.PointerEvent, id: ID) => void;
 }
 
-const NodeView: React.FC<NodeViewProps> = ({ node, onPointerDown }) => { // Принимаем props
-  const width = 120;
-  const height = 60;
-  
-  // Adjust port positions based on node type
+export const NodeView: React.FC<NodeViewProps> = ({ node, onPointerDown }) => {
+  const width = (node.type === 'DISPLAY' || node.type === 'SEVEN_SEGMENT') ? 160 : 120;
+  const height = (node.type === 'DISPLAY' || node.type === 'SEVEN_SEGMENT') ? 80 : 60;
   const inputCount = node.inputs.length;
-  let portY = (i: number) => -height / 2 + 15 + (i * 15);
-  
-  if (node.type === 'DFF' || node.type === 'TFF' || node.type === 'MUX') {
-    portY = (i: number) => -height / 2 + 20 + (i * 20);
-  }
+  const inputPortY = (i: number) => -height / 2 + (i + 1) * (height / (inputCount + 1));
+  const outputPortY = 0;
 
-  const getNodeColor = () => {
-    switch (node.type) {
-      case 'INPUT': return '#2563eb';
-      case 'OUTPUT': return '#16a34a';
-      case 'LED': return '#ca8a04';
-      case 'CLOCK': return '#ea580c';
-      case 'COUNTER': return '#0891b2';
-      case 'DISPLAY': return '#db2777';
-      case 'DFF': 
-      case 'TFF': return '#4f46e5';
-      case 'MUX': return '#0d9488';
-      default: return '#7c3aed'; // For AND, OR, NOT, etc.
-    }
-  };
+  const nodeColor = getNodeColor(node.type);
+  const activeColor = getActiveColor(node.type);
 
-  const getActiveColor = () => {
-    switch (node.type) {
-      case 'INPUT': return '#3b82f6';
-      case 'OUTPUT': return '#22c55e';
-      case 'LED': return '#eab308';
-      case 'CLOCK': return '#f97316';
-      case 'COUNTER': return '#06b6d4';
-      case 'DISPLAY': return '#ec4899';
-      case 'DFF': 
-      case 'TFF': return '#6366f1';
-      case 'MUX': return '#14b8a6';
-      default: return '#8b5cf6';
-    }
-  };
-
-  const nodeColor = getNodeColor();
-  const activeColor = getActiveColor();
-
-  const startConnection = useCircuitStore((s) => s.startConnection);
-  const completeConnection = useCircuitStore((s) => s.completeConnection);
-  const removeNode = useCircuitStore((s) => s.removeNode);
   const toggleInputValue = useCircuitStore((s) => s.toggleInputValue);
   const toggleClock = useCircuitStore((s) => s.toggleClock);
+  const removeNode = useCircuitStore((s) => s.removeNode);
+  const startConnection = useCircuitStore((s) => s.startConnection);
+  const completeConnection = useCircuitStore((s) => s.completeConnection);
+  const resetCounter = useCircuitStore((s) => s.resetCounter);
+
+  const renderSevenSegment = () => {
+    const segments = [
+      { a: 1, b: 1, c: 1, d: 1, e: 1, f: 1, g: 0 }, // 0
+      { a: 0, b: 1, c: 1, d: 0, e: 0, f: 0, g: 0 }, // 1
+      { a: 1, b: 1, c: 0, d: 1, e: 1, f: 0, g: 1 }, // 2
+      { a: 1, b: 1, c: 1, d: 1, e: 0, f: 0, g: 1 }, // 3
+      { a: 0, b: 1, c: 1, d: 0, e: 0, f: 1, g: 1 }, // 4
+      { a: 1, b: 0, c: 1, d: 1, e: 0, f: 1, g: 1 }, // 5
+      { a: 1, b: 0, c: 1, d: 1, e: 1, f: 1, g: 1 }, // 6
+      { a: 1, b: 1, c: 1, d: 0, e: 0, f: 0, g: 0 }, // 7
+      { a: 1, b: 1, c: 1, d: 1, e: 1, f: 1, g: 1 }, // 8
+      { a: 1, b: 1, c: 1, d: 1, e: 0, f: 1, g: 1 }, // 9
+    ];
+    const activeSegments = segments[node.displayValue || 0] || segments[0];
+    return (
+      <g style={{ pointerEvents: 'none' }}>
+        <rect
+          x={-width / 2 + 15}
+          y={-height / 2 + 20}
+          width={width - 30}
+          height={45}
+          rx={6}
+          fill="#1e293b"
+          stroke="#475569"
+        />
+        <rect x={-width / 2 + 30} y={-height / 2 + 25} width={30} height={5} rx={2} fill={activeSegments.a ? '#fbbf24' : '#374151'} />
+        <rect x={-width / 2 + 60} y={-height / 2 + 30} width={5} height={15} rx={2} fill={activeSegments.b ? '#fbbf24' : '#374151'} />
+        <rect x={-width / 2 + 60} y={-height / 2 + 50} width={5} height={15} rx={2} fill={activeSegments.c ? '#fbbf24' : '#374151'} />
+        <rect x={-width / 2 + 30} y={-height / 2 + 65} width={30} height={5} rx={2} fill={activeSegments.d ? '#fbbf24' : '#374151'} />
+        <rect x={-width / 2 + 25} y={-height / 2 + 50} width={5} height={15} rx={2} fill={activeSegments.e ? '#fbbf24' : '#374151'} />
+        <rect x={-width / 2 + 25} y={-height / 2 + 30} width={5} height={15} rx={2} fill={activeSegments.f ? '#fbbf24' : '#374151'} />
+        <rect x={-width / 2 + 30} y={-height / 2 + 45} width={30} height={5} rx={2} fill={activeSegments.g ? '#fbbf24' : '#374151'} />
+      </g>
+    );
+  };
+
+  const renderDisplay = () => (
+    <g style={{ pointerEvents: 'none' }}>
+      <rect
+        x={-width / 2 + 10}
+        y={-height / 2 + 20}
+        width={width - 20}
+        height={45}
+        rx={8}
+        fill="#1e293b"
+        stroke="#475569"
+        strokeWidth={2}
+      />
+      <text
+        x={0}
+        y={-height / 2 + 45}
+        fontSize={18}
+        textAnchor="middle"
+        fill="#fbbf24"
+        fontWeight="bold"
+        fontFamily="monospace"
+      >
+        {node.displayValue || 0}
+      </text>
+      <text
+        x={0}
+        y={-height / 2 + 60}
+        fontSize={10}
+        textAnchor="middle"
+        fill="#94a3b8"
+      >
+        BIN: {(node.displayValue || 0).toString(2).padStart(4, '0')}
+      </text>
+    </g>
+  );
+
+  const renderCounter = () => (
+    <g style={{ pointerEvents: 'none' }}>
+      <rect
+        x={-width / 2 + 10}
+        y={-height / 2 + 20}
+        width={width - 20}
+        height={35}
+        rx={6}
+        fill="#111827"
+        stroke="#6b7280"
+      />
+      <text
+        x={0}
+        y={-height / 2 + 35}
+        fontSize={12}
+        textAnchor="middle"
+        fill="#f3f4f6"
+        fontWeight="bold"
+        fontFamily="monospace"
+      >
+        Count: {node.counter || 0}
+      </text>
+      <text
+        x={0}
+        y={-height / 2 + 50}
+        fontSize={10}
+        textAnchor="middle"
+        fill="#9ca3af"
+      >
+        Max: {node.maxCount || 15}
+      </text>
+      <g
+        onPointerDown={(e) => {
+          e.stopPropagation();
+          resetCounter(node.id);
+        }}
+        style={{ cursor: 'pointer' }}
+      >
+        <rect
+          x={-20}
+          y={-height / 2 + 55}
+          width={40}
+          height={16}
+          rx={4}
+          fill="#ef4444"
+          stroke="#dc2626"
+        />
+        <text
+          x={0}
+          y={-height / 2 + 66}
+          fontSize={9}
+          textAnchor="middle"
+          fill="#fef2f2"
+          fontWeight="bold"
+        >
+          RESET
+        </text>
+      </g>
+    </g>
+  );
+
+  const renderShiftRegister = () => (
+    <g style={{ pointerEvents: 'none' }}>
+      <rect
+        x={-width / 2 + 10}
+        y={-height / 2 + 20}
+        width={width - 20}
+        height={35}
+        rx={6}
+        fill="#111827"
+        stroke="#6b7280"
+      />
+      <text
+        x={0}
+        y={-height / 2 + 35}
+        fontSize={10}
+        textAnchor="middle"
+        fill="#f3f4f6"
+        fontWeight="bold"
+      >
+        Shift Reg
+      </text>
+      <text
+        x={0}
+        y={-height / 2 + 48}
+        fontSize={9}
+        textAnchor="middle"
+        fill="#9ca3af"
+        fontFamily="monospace"
+      >
+        {node.values?.map(v => v ? '1' : '0').join('') || '0000'}
+      </text>
+    </g>
+  );
+
+  const renderOutput = () => (
+    <g style={{ pointerEvents: 'none' }}>
+      <rect
+        x={-width / 2 + 10}
+        y={-height / 2 + 25}
+        width={40}
+        height={20}
+        rx={6}
+        fill={node.value ? activeColor : '#374151'}
+        stroke={node.value ? activeColor : '#6b7280'}
+      />
+      <text
+        x={-width / 2 + 30}
+        y={-height / 2 + 38}
+        fontSize={10}
+        textAnchor="middle"
+        fill="#f3f4f6"
+        fontWeight="bold"
+      >
+        {node.value ? 'ON' : 'OFF'}
+      </text>
+    </g>
+  );
+
+  const renderGenericValueElement = () => (
+    <g style={{ pointerEvents: 'none' }}>
+      <rect
+        x={-width / 2 + 10}
+        y={-height / 2 + 25}
+        width={40}
+        height={20}
+        rx={6}
+        fill="#111827"
+        stroke="#6b7280"
+      />
+      <text
+        x={-width / 2 + 30}
+        y={-height / 2 + 38}
+        fontSize={10}
+        textAnchor="middle"
+        fill="#f3f4f6"
+        fontWeight="bold"
+      >
+        {node.value ? '1' : '0'}
+      </text>
+    </g>
+  );
 
   return (
-    <g 
-      transform={`translate(${node.x}, ${node.y})`} 
-      className="node" 
-      onPointerDown={(e) => onPointerDown(e, node.id)} // Вызываем переданный обработчик
+    <g
+      transform={`translate(${node.x}, ${node.y})`}
+      className="node"
+      onPointerDown={(e) => onPointerDown(e, node.id)}
     >
-      {/* Node body with glow effect when active */}
-      <rect 
-        x={-width/2} 
-        y={-height/2} 
-        width={width} 
-        height={height} 
-        rx={12} 
-        ry={12} 
-        fill="#1f2937" 
+      <rect
+        x={-width / 2}
+        y={-height / 2}
+        width={width}
+        height={height}
+        rx={8}
+        fill="#1f2937"
         stroke={node.value ? activeColor : nodeColor}
         strokeWidth={2}
-        filter={node.value ? "url(#glow)" : "none"}
+        filter={node.value ? 'url(#glow)' : 'none'}
+        style={{ cursor: 'move' }}
       />
 
-      {/* Node label */}
-      <text 
-        x={0} 
-        y={-height/2 + 16} 
-        fontSize={11} 
-        fontFamily="Inter, sans-serif"
+      <text
+        x={0}
+        y={-height / 2 + 14}
+        fontSize={node.type === 'DISPLAY' ? 10 : 12}
+        fontFamily="monospace"
         fill="#f3f4f6"
         textAnchor="middle"
-        fontWeight="500"
+        fontWeight="bold"
+        style={{ pointerEvents: 'none' }}
       >
-        {node.label ?? node.type}
+        {node.type === 'AND' && 'AND'}
+        {node.type === 'OR' && 'OR'}
+        {node.type === 'NOT' && 'NOT'}
+        {node.type === 'NAND' && 'NAND'}
+        {node.type === 'NOR' && 'NOR'}
+        {node.type === 'XOR' && 'XOR'}
+        {node.type === 'XNOR' && 'XNOR'}
+        {node.type === 'MUX' && 'MUX'}
+        {node.type === 'DFF' && 'D'}
+        {node.type === 'TFF' && 'T'}
+        {node.type === 'DECODER' && '2-4'}
+        {node.type === 'ENCODER' && '4-2'}
+        {node.type === 'COMPARATOR' && 'CMP'}
+        {!['AND', 'OR', 'NOT', 'NAND', 'NOR', 'XOR', 'XNOR', 'MUX', 'DFF', 'TFF', 'DECODER', 'ENCODER', 'COMPARATOR'].includes(node.type) && (node.label ?? node.type)}
       </text>
 
-      {/* Input ports */}
-      {Array.from({ length: inputCount }).map((_, idx) => {
-        const py = portY(idx);
-        return (
-          <g key={idx}>
-            <circle 
-              cx={-width/2} 
-              cy={py} 
-              r={5} 
-              fill="#374151" 
-              stroke="#6b7280" 
-              strokeWidth={1}
-              onClick={(e) => { 
-                e.stopPropagation(); 
-                completeConnection(node.id, idx); 
-              }} 
-            />
-          </g>
-        );
-      })}
+      {Array.from({ length: inputCount }).map((_, idx) => (
+        <circle
+          key={idx}
+          cx={-width / 2}
+          cy={inputPortY(idx)}
+          r={6}
+          fill="#374151"
+          stroke="#6b7280"
+          strokeWidth={1}
+          style={{ cursor: 'crosshair' }}
+          onPointerDown={(e) => {
+            e.stopPropagation();
+            completeConnection(node.id, idx);
+          }}
+        />
+      ))}
 
-      {/* Output port */}
-      <circle 
-        cx={width/2} 
-        cy={0} 
-        r={7} 
-        fill={node.value ? activeColor : '#374151'} 
+      <circle
+        cx={width / 2}
+        cy={outputPortY}
+        r={7}
+        fill={node.value ? activeColor : '#374151'}
         stroke={node.value ? activeColor : '#6b7280'}
         strokeWidth={1}
-        onClick={(e) => { 
-          e.stopPropagation(); 
-          startConnection(node.id, 0); 
-        }} 
+        style={{ cursor: 'crosshair' }}
+        onPointerDown={(e) => {
+          e.stopPropagation();
+          startConnection(node.id, 0);
+        }}
       />
 
-      {/* Special node controls and displays */}
       {node.type === 'INPUT' && (
-        <g 
-          onClick={(e) => { 
-            e.stopPropagation(); 
-            toggleInputValue(node.id); 
-          }} 
+        <g
+          onPointerDown={(e) => {
+            e.stopPropagation();
+            toggleInputValue(node.id);
+          }}
           style={{ cursor: 'pointer' }}
         >
-          <rect 
-            x={-width/2 + 10} 
-            y={-height/2 + 25} 
-            width={40} 
-            height={20} 
-            rx={6} 
-            fill={node.value ? activeColor : '#374151'} 
+          <rect
+            x={-width / 2 + 10}
+            y={-height / 2 + 25}
+            width={40}
+            height={20}
+            rx={6}
+            fill={node.value ? activeColor : '#374151'}
             stroke={node.value ? activeColor : '#6b7280'}
           />
-          <text 
-            x={-width/2 + 30} 
-            y={-height/2 + 38} 
-            fontSize={10} 
+          <text
+            x={-width / 2 + 30}
+            y={-height / 2 + 38}
+            fontSize={10}
             textAnchor="middle"
             fill="#f3f4f6"
             fontWeight="bold"
+            style={{ pointerEvents: 'none' }}
           >
             {node.value ? 'ON' : 'OFF'}
           </text>
         </g>
       )}
-
-      {node.type === 'LED' && (
-        <g>
-          <circle 
-            cx={0} 
-            cy={5} 
-            r={12} 
-            fill={node.value ? '#fef08a' : '#4b5563'} 
-            stroke={node.value ? '#fef08a' : '#6b7280'}
-            strokeWidth={2}
-            filter={node.value ? "url(#ledGlow)" : "none"}
-          />
-        </g>
-      )}
-
       {node.type === 'CLOCK' && (
-        <g 
-          onClick={(e) => { 
-            e.stopPropagation(); 
-            toggleClock(node.id); 
-          }} 
+        <g
+          onPointerDown={(e) => {
+            e.stopPropagation();
+            toggleClock(node.id);
+          }}
           style={{ cursor: 'pointer' }}
         >
-          <rect 
-            x={-width/2 + 10} 
-            y={-height/2 + 25} 
-            width={40} 
-            height={20} 
-            rx={6} 
-            fill={node.clockActive ? activeColor : '#374151'} 
+          <rect
+            x={-width / 2 + 10}
+            y={-height / 2 + 25}
+            width={40}
+            height={20}
+            rx={6}
+            fill={node.clockActive ? activeColor : '#374151'}
             stroke={node.clockActive ? activeColor : '#6b7280'}
           />
-          <text 
-            x={-width/2 + 30} 
-            y={-height/2 + 38} 
-            fontSize={9} 
+          <text
+            x={-width / 2 + 30}
+            y={-height / 2 + 38}
+            fontSize={9}
             textAnchor="middle"
             fill="#f3f4f6"
             fontWeight="bold"
+            style={{ pointerEvents: 'none' }}
           >
             {node.clockActive ? 'RUN' : 'STOP'}
           </text>
         </g>
       )}
-
-      {node.type === 'COUNTER' && (
-        <g>
-          <rect 
-            x={-width/2 + 10} 
-            y={-height/2 + 25} 
-            width={40} 
-            height={20} 
-            rx={6} 
-            fill="#111827" 
+      {node.type === 'LED' && (
+        <circle
+          cx={0}
+          cy={5}
+          r={12}
+          fill={node.value ? '#fef08a' : '#4b5563'}
+          stroke={node.value ? '#fef08a' : '#6b7280'}
+          strokeWidth={2}
+          filter={node.value ? 'url(#ledGlow)' : 'none'}
+          style={{ pointerEvents: 'none' }}
+        />
+      )}
+      {node.type === 'COUNTER' && renderCounter()}
+      {node.type === 'DISPLAY' && renderDisplay()}
+      {node.type === 'SEVEN_SEGMENT' && renderSevenSegment()}
+      {node.type === 'SHIFT_REGISTER' && renderShiftRegister()}
+      {node.type === 'OUTPUT' && renderOutput()}
+      {(node.type === 'DECODER' || node.type === 'ENCODER' || node.type === 'COMPARATOR') && renderGenericValueElement()}
+      {['DFF', 'TFF', 'MUX'].includes(node.type) && (
+        <g style={{ pointerEvents: 'none' }}>
+          <rect
+            x={-width / 2 + 10}
+            y={-height / 2 + 25}
+            width={40}
+            height={20}
+            rx={6}
+            fill="#111827"
             stroke="#6b7280"
           />
-          <text 
-            x={-width/2 + 30} 
-            y={-height/2 + 38} 
-            fontSize={10} 
+          <text
+            x={-width / 2 + 30}
+            y={-height / 2 + 38}
+            fontSize={10}
             textAnchor="middle"
             fill="#f3f4f6"
             fontWeight="bold"
           >
-            {node.counter || 0}
+            {node.type === 'MUX' ? `S:${node.select || 0}` : (node.state ? '1' : '0')}
           </text>
         </g>
       )}
 
-      {node.type === 'DISPLAY' && (
-        <g>
-          <rect 
-            x={-width/2 + 10} 
-            y={-height/2 + 25} 
-            width={40} 
-            height={20} 
-            rx={4} 
-            fill="#000" 
-            stroke="#6b7280"
-          />
-          <text 
-            x={-width/2 + 30} 
-            y={-height/2 + 38} 
-            fontSize={10} 
-            textAnchor="middle"
-            fill="#00ff00"
-            fontWeight="bold"
-          >
-            {node.value ? '1' : '0'}
-          </text>
-        </g>
-      )}
-
-      {/* D Flip-Flop state display */}
-      {node.type === 'DFF' && (
-        <g>
-          <rect 
-            x={-width/2 + 10} 
-            y={-height/2 + 25} 
-            width={40} 
-            height={20} 
-            rx={6} 
-            fill="#111827" 
-            stroke="#6b7280"
-          />
-          <text 
-            x={-width/2 + 30} 
-            y={-height/2 + 38} 
-            fontSize={10} 
-            textAnchor="middle"
-            fill="#f3f4f6"
-            fontWeight="bold"
-          >
-            {node.state ? '1' : '0'}
-          </text>
-        </g>
-      )}
-
-      {/* T Flip-Flop state display */}
-      {node.type === 'TFF' && (
-        <g>
-          <rect 
-            x={-width/2 + 10} 
-            y={-height/2 + 25} 
-            width={40} 
-            height={20} 
-            rx={6} 
-            fill="#111827" 
-            stroke="#6b7280"
-          />
-          <text 
-            x={-width/2 + 30} 
-            y={-height/2 + 38} 
-            fontSize={10} 
-            textAnchor="middle"
-            fill="#f3f4f6"
-            fontWeight="bold"
-          >
-            {node.state ? '1' : '0'}
-          </text>
-        </g>
-      )}
-
-      {/* MUX select display */}
-      {node.type === 'MUX' && (
-        <g>
-          <rect 
-            x={-width/2 + 10} 
-            y={-height/2 + 25} 
-            width={40} 
-            height={20} 
-            rx={6} 
-            fill="#111827" 
-            stroke="#6b7280"
-          />
-          <text 
-            x={-width/2 + 30} 
-            y={-height/2 + 38} 
-            fontSize={10} 
-            textAnchor="middle"
-            fill="#f3f4f6"
-            fontWeight="bold"
-          >
-            S:{node.select || 0}
-          </text>
-        </g>
-      )}
-
-      {/* Delete button */}
-      <g 
-        transform={`translate(${width/2 - 15}, ${-height/2 + 15})`} 
-        onClick={(e) => { 
-          e.stopPropagation(); 
-          removeNode(node.id); 
-        }} 
+      <g
+        transform={`translate(${width / 2 - 15}, ${-height / 2 + 15})`}
+        onPointerDown={(e) => {
+          e.stopPropagation();
+          removeNode(node.id);
+        }}
         style={{ cursor: 'pointer' }}
       >
         <circle r={8} fill="#ef4444" stroke="#dc2626" />
-        <text x={0} y={3} fontSize={10} textAnchor="middle" fill="#fef2f2" fontWeight="bold">×</text>
+        <text 
+          x={0} 
+          y={3} 
+          fontSize={10} 
+          textAnchor="middle" 
+          fill="#fef2f2" 
+          fontWeight="bold"
+          style={{ pointerEvents: 'none' }}
+        >
+          ×
+        </text>
       </g>
     </g>
   );
 };
-
-export default NodeView;

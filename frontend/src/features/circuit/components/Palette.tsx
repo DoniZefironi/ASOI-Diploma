@@ -1,64 +1,56 @@
-'use client';
-
 import React from 'react';
-import { useCircuitStore } from '../hooks/useCircuitStore';
-import { NodeDef, NodeType } from '../types'
+import { NodeType } from '../types/circuit.types';
+import { useCircuitStore } from '../store/circuit.store';
 
-interface NodeTypeInfo {
-  type: NodeType;
-  label: string;
-  color: string;
+interface PaletteProps {
+  addNode: (type: NodeType) => void;
 }
 
-const Palette: React.FC = () => {
-  const addNode = useCircuitStore((s) => s.addNode);
-
-  const nodeTypes: NodeTypeInfo[] = [
-    { type: 'INPUT', label: 'Input', color: 'bg-blue-600' },
-    { type: 'OUTPUT', label: 'Output', color: 'bg-green-600' },
-    { type: 'AND', label: 'AND', color: 'bg-purple-600' },
-    { type: 'OR', label: 'OR', color: 'bg-purple-600' },
-    { type: 'NOT', label: 'NOT', color: 'bg-purple-600' },
-    { type: 'NAND', label: 'NAND', color: 'bg-purple-600' },
-    { type: 'NOR', label: 'NOR', color: 'bg-purple-600' },
-    { type: 'XOR', label: 'XOR', color: 'bg-purple-600' },
-    { type: 'XNOR', label: 'XNOR', color: 'bg-purple-600' },
-    { type: 'LED', label: 'LED', color: 'bg-yellow-600' },
-    { type: 'CLOCK', label: 'Clock', color: 'bg-orange-600' },
-    { type: 'COUNTER', label: 'Counter', color: 'bg-cyan-600' },
-    { type: 'DISPLAY', label: 'Display', color: 'bg-pink-600' },
-    { type: 'DFF', label: 'D-FF', color: 'bg-indigo-600' },
-    { type: 'TFF', label: 'T-FF', color: 'bg-indigo-600' },
-    { type: 'MUX', label: 'MUX', color: 'bg-teal-600' },
+export const Palette: React.FC<PaletteProps> = ({ addNode }) => {
+  const nodeTypes: { type: NodeType; label: string; category: string }[] = [
+    { type: 'INPUT', label: 'Input', category: 'Basic' },
+    { type: 'OUTPUT', label: 'Output', category: 'Basic' },
+    { type: 'LED', label: 'LED', category: 'Basic' },
+    { type: 'CLOCK', label: 'Clock', category: 'Basic' },
+    { type: 'AND', label: 'AND', category: 'Gates' },
+    { type: 'OR', label: 'OR', category: 'Gates' },
+    { type: 'NOT', label: 'NOT', category: 'Gates' },
+    { type: 'NAND', label: 'NAND', category: 'Gates' },
+    { type: 'NOR', label: 'NOR', category: 'Gates' },
+    { type: 'XOR', label: 'XOR', category: 'Gates' },
+    { type: 'XNOR', label: 'XNOR', category: 'Gates' },
+    { type: 'DFF', label: 'D-FF', category: 'Sequential' },
+    { type: 'TFF', label: 'T-FF', category: 'Sequential' },
+    { type: 'COUNTER', label: 'Counter', category: 'Sequential' },
+    { type: 'SHIFT_REGISTER', label: 'Shift Reg', category: 'Sequential' },
+    { type: 'MUX', label: 'MUX', category: 'MSI' },
+    { type: 'DECODER', label: 'Decoder', category: 'MSI' },
+    { type: 'ENCODER', label: 'Encoder', category: 'MSI' },
+    { type: 'COMPARATOR', label: 'Comparator', category: 'MSI' },
+    { type: 'DISPLAY', label: 'Display', category: 'Output' },
+    { type: 'SEVEN_SEGMENT', label: '7-Segment', category: 'Output' },
   ];
 
-  const handleAdd = (type: NodeType) => {
-    addNode({ type, x: 200 + Math.random() * 200, y: 100 + Math.random() * 200 });
-  };
-
-  const handleClear = () => {
-    useCircuitStore.getState().clear();
-  };
+  const categories = Array.from(new Set(nodeTypes.map(n => n.category)));
 
   return (
-    <div className="p-2 flex gap-2 flex-wrap">
-      {nodeTypes.map(({ type, label, color }) => (
-        <button 
-          key={type} 
-          className={`${color} text-white rounded px-3 py-2 text-sm hover:opacity-80 transition-opacity border border-gray-600`}
-          onClick={() => handleAdd(type)}
-        >
-          {label}
-        </button>
+    <div className="flex flex-row gap-2">
+      {categories.map(category => (
+        <div key={category} className="flex flex-wrap gap-1">
+          <div className="w-full text-xs text-gray-400 mb-1">{category}:</div>
+          {nodeTypes
+            .filter(n => n.category === category)
+            .map(({ type, label }) => (
+              <button
+                key={type}
+                className="bg-gray-700 text-white rounded px-2 py-1 text-xs hover:bg-gray-600 transition-colors border border-gray-600"
+                onClick={() => addNode(type)}
+              >
+                {label}
+              </button>
+            ))}
+        </div>
       ))}
-      <button 
-        className="bg-red-600 text-white rounded px-3 py-2 text-sm hover:opacity-80 transition-opacity border border-gray-600" 
-        onClick={handleClear}
-      >
-        Clear All
-      </button>
     </div>
   );
 };
-
-export default Palette;

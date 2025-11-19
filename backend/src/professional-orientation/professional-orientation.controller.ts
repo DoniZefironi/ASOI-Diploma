@@ -1,0 +1,32 @@
+// src/professional-orientation/professional-orientation.controller.ts
+import { Controller, Get, Post, Body, UseGuards, Request } from '@nestjs/common';
+import { ProfessionalOrientationService } from './professional-orientation.service';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { CreateProfessionalOrientationDto } from './dto/create-professional-orientation.dto';
+import { RolesGuard } from '../auth/guards/roles.guard'; // Убедитесь, что импортирован
+import { Roles } from '../auth/decorators/roles.decorator'; // Убедитесь, что импортирован
+import { UserRoleEnum } from '../users/entities/user-role.entity'; // Или где у вас определён UserRoleEnum
+
+@Controller('professional-orientation')
+export class ProfessionalOrientationController {
+  constructor(private readonly professionalOrientationService: ProfessionalOrientationService) {}
+
+  @Get()
+  @UseGuards(JwtAuthGuard)
+  getUserResult(@Request() req) {
+    return this.professionalOrientationService.findByUserId(req.user.userId);
+  }
+
+  @Post()
+  @UseGuards(JwtAuthGuard)
+  submitTestResult(@Body() dto: CreateProfessionalOrientationDto, @Request() req) {
+    return this.professionalOrientationService.updateOrCreate(req.user.userId, dto);
+  }
+
+    @Get('admin/stats')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRoleEnum.ADMIN) // Только админ
+  getStats() {
+    return this.professionalOrientationService.getStats();
+  }
+}

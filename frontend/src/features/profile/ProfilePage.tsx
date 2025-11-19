@@ -1,3 +1,4 @@
+// src/features/profile/ProfilePage.tsx
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -5,11 +6,30 @@ import { useAuth } from '@/shared/lib/auth-context';
 import { Card } from '@/shared/ui/card';
 import { Button } from '@/shared/ui/button';
 import Link from 'next/link';
+import { MyCoursesModal } from './components/MyCoursesModal';
+import { useInformaticsCourseRegistration } from '@/shared/api/admin/registrations';
+import { useProfessionalOrientation } from '@/shared/api/admin/professional-orientation';
+import { ProfOrientationTestModal } from './components/ProfOrientationTestModal';
 
 export const ProfilePage = () => {
   const { user, login } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isCoursesModalOpen, setIsCoursesModalOpen] = useState(false);
+  const [isProfOrientationModalOpen, setIsProfOrientationModalOpen] = useState(false);
+
+  // Используем хуки
+  const { data: profOrientationResult } = useProfessionalOrientation();
+  
+  // Проверяем регистрацию на курс информатики
+  const { 
+    registration: informaticsRegistration, 
+    hasAccess: hasInformaticsAccess,
+    isPending: isInformaticsPending,
+    isRejected: isInformaticsRejected,
+    currentUserId,
+    isLoading: registrationsLoading 
+  } = useInformaticsCourseRegistration();
 
   const getDisplayName = () => {
     if (!user) return '';
@@ -44,6 +64,9 @@ export const ProfilePage = () => {
   const isAdmin = user?.roles?.includes('admin') || false;
   const isMentor = user?.roles?.includes('mentor') || false;
   const isStudent = user?.roles?.includes('student') || false;
+
+  // Проверяем, может ли пользователь пройти профориентацию
+  const canShowProfOrientationTab = isStudent && hasInformaticsAccess && !profOrientationResult;
 
   if (!user) {
     return (
@@ -146,7 +169,7 @@ export const ProfilePage = () => {
                 <h2 className="text-xl font-bold text-white">{getDisplayName()}</h2>
                 <p className="text-white">{user.email}</p>
                 <div className="mt-2 text-sm text-gray-500">
-                  Member since 2024
+                  User ID: {currentUserId || 'N/A'}
                 </div>
                 
                 {/* Бейджи ролей */}
@@ -168,15 +191,59 @@ export const ProfilePage = () => {
                     </span>
                   ))}
                 </div>
+
+                {/* Статус регистрации на информатику */}
+                {isStudent && informaticsRegistration && (
+                  <div className="mt-4 p-3 rounded-lg bg-gray-800">
+                    <p className="text-sm font-medium text-white mb-1">
+                      Курс информатики:
+                    </p>
+                    <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                      informaticsRegistration.status === 'approved' 
+                        ? 'bg-green-100 text-green-800' 
+                        : informaticsRegistration.status === 'pending'
+                        ? 'bg-yellow-100 text-yellow-800'
+                        : 'bg-red-100 text-red-800'
+                    }`}>
+                      {informaticsRegistration.status === 'approved' ? 'Одобрено' :
+                       informaticsRegistration.status === 'pending' ? 'Ожидает' : 'Отклонено'}
+                    </span>
+                  </div>
+                )}
+
+                {/* Показываем загрузку */}
+                {registrationsLoading && (
+                  <div className="mt-4 p-3 rounded-lg bg-gray-800">
+                    <p className="text-sm text-white">Загрузка данных о курсах...</p>
+                  </div>
+                )}
+
+                {/* Сообщение если нет заявки на информатику */}
+                {isStudent && !registrationsLoading && !informaticsRegistration && (
+                  <div className="mt-4 p-3 rounded-lg bg-gray-800">
+                    <p className="text-sm text-white">Не зарегистрирован на курс информатики</p>
+                  </div>
+                )}
               </div>
 
               <nav className="space-y-2">
                 <button className="w-full text-left p-3 rounded-lg bg-gray-800 text-blue-600 font-semibold">
                   👤 Profile Information
                 </button>
-                <button className="w-full text-left p-3 rounded-lg hover:bg-gray-800 transition-colors text-white">
+                <button 
+                  className="w-full text-left p-3 rounded-lg hover:bg-gray-800 transition-colors text-white"
+                  onClick={() => setIsCoursesModalOpen(true)}
+                >
                   📚 My Courses
                 </button>
+                {canShowProfOrientationTab && (
+                  <button 
+                    className="w-full text-left p-3 rounded-lg hover:bg-gray-800 transition-colors text-white"
+                    onClick={() => setIsProfOrientationModalOpen(true)}
+                  >
+                    🧭 Профессиональная ориентация
+                  </button>
+                )}
                 <button className="w-full text-left p-3 rounded-lg hover:bg-gray-800 transition-colors text-white">
                   🎓 Certificates
                 </button>
@@ -292,12 +359,24 @@ export const ProfilePage = () => {
                   Your learning journey and course progress
                 </p>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  <Link href="/my-courses">
-                    <Button variant="secondary" className="w-full p-4">
-                      <span className="text-2xl mb-2">📚</span>
-                      <span>My Courses</span>
+                  <Button 
+                    variant="secondary" 
+                    className="w-full p-4"
+                    onClick={() => setIsCoursesModalOpen(true)}
+                  >
+                    <span className="text-2xl mb-2">📚</span>
+                    <span>My Courses</span>
+                  </Button>
+                  {canShowProfOrientationTab && (
+                    <Button 
+                      variant="secondary" 
+                      className="w-full p-4"
+                      onClick={() => setIsProfOrientationModalOpen(true)}
+                    >
+                      <span className="text-2xl mb-2">🧭</span>
+                      <span>Профориентация</span>
                     </Button>
-                  </Link>
+                  )}
                   <Link href="/progress">
                     <Button variant="secondary" className="w-full p-4">
                       <span className="text-2xl mb-2">📈</span>
@@ -317,6 +396,47 @@ export const ProfilePage = () => {
                     </Button>
                   </Link>
                 </div>
+              </Card>
+            )}
+
+            {/* Панель профориентации */}
+            {isStudent && hasInformaticsAccess && !profOrientationResult && (
+              <Card className="p-6 border-l-4 border-l-blue-500">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-2xl font-bold text-white flex items-center gap-2">
+                    🧭 Доступно тестирование
+                  </h3>
+                  <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
+                    Новая возможность
+                  </span>
+                </div>
+                <p className="text-white mb-4">
+                  Поздравляем! Вы зарегистрированы на курс информатики и можете пройти профессиональную ориентацию.
+                </p>
+                <Button 
+                  variant="primary" 
+                  onClick={() => setIsProfOrientationModalOpen(true)}
+                  className="gap-2"
+                >
+                  <span>🧭</span>
+                  <span>Пройти профориентацию</span>
+                </Button>
+              </Card>
+            )}
+
+            {isStudent && profOrientationResult && (
+              <Card className="p-6 border-l-4 border-l-green-500">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-2xl font-bold text-white flex items-center gap-2">
+                    🧭 Результат профориентации
+                  </h3>
+                  <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">
+                    Завершён
+                  </span>
+                </div>
+                <p className="text-white">
+                  Ваша рекомендуемая профессия: <strong>{profOrientationResult.recommendedProfession}</strong>
+                </p>
               </Card>
             )}
 
@@ -452,7 +572,6 @@ export const ProfilePage = () => {
               )}
             </Card>
 
-            {/* Остальные карточки остаются без изменений */}
             <Card className="p-6">
               <h3 className="text-2xl font-bold text-white mb-6">Learning Statistics</h3>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
@@ -520,10 +639,32 @@ export const ProfilePage = () => {
             <Card className="p-6">
               <h3 className="text-2xl font-bold text-white mb-6">Quick Actions</h3>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <Button variant="secondary" className="p-4">
+                <Button 
+                  variant="secondary" 
+                  className="p-4"
+                  onClick={() => setIsCoursesModalOpen(true)}
+                >
                   <span className="text-2xl mb-2">📚</span>
                   <span>My Courses</span>
                 </Button>
+                {canShowProfOrientationTab && (
+                  <Button 
+                    variant="secondary" 
+                    className="p-4"
+                    onClick={() => setIsProfOrientationModalOpen(true)}
+                  >
+                    <span className="text-2xl mb-2">🧭</span>
+                    <span>Профориентация</span>
+                  </Button>
+                )}
+                  <Button 
+                    variant="secondary" 
+                    className="p-4"
+                    onClick={() => setIsProfOrientationModalOpen(true)}
+                  >
+                    <span className="text-2xl mb-2">🧭</span>
+                    <span>Профориентация</span>
+                  </Button>
                 <Button variant="secondary" className="p-4">
                   <span className="text-2xl mb-2">🎓</span>
                   <span>Certificates</span>
@@ -541,6 +682,16 @@ export const ProfilePage = () => {
           </div>
         </div>
       </div>
+
+      <MyCoursesModal 
+        isOpen={isCoursesModalOpen}
+        onClose={() => setIsCoursesModalOpen(false)}
+      />
+      
+      <ProfOrientationTestModal 
+        isOpen={isProfOrientationModalOpen}
+        onClose={() => setIsProfOrientationModalOpen(false)}
+      />
     </div>
   );
 };
