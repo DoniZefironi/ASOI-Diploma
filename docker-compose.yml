@@ -1,0 +1,64 @@
+# docker-compose.yml
+version: '3.8' # Можно удалить, как предупреждал Docker
+
+services:
+  # --- PostgreSQL ---
+  db:
+    image: postgres:15
+    container_name: asoi_diploma_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-asoi_diploma}
+      POSTGRES_USER: ${POSTGRES_USER:-asoi_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-asoi_pass}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - app-network
+
+  # --- Backend NestJS ---
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.nestjs # Убедитесь, что это имя файла, которое вы используете (например, Dockerfile.nestjs)
+    container_name: asoi_diploma_backend
+    restart: unless-stopped
+    environment:
+      # Ключевая строка: подключение к сервису 'db' на порт 5432, используя переменные из .env
+      # Если в .env POSTGRES_DB=asoi_diploma, POSTGRES_USER=asoi_user, POSTGRES_PASSWORD=asoi_pass,
+      # то строка подключения будет: postgresql://asoi_user:asoi_pass@db:5432/asoi_diploma
+      DATABASE_URL: postgresql://${POSTGRES_USER:-asoi_user}:${POSTGRES_PASSWORD:-asoi_pass}@db:5432/${POSTGRES_DB:-asoi_diploma}
+    ports:
+      - "2904:2904" # Хост:3001 -> Контейнер:2904
+    depends_on:
+      - db
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:2904/health"] # Обновлено на 2904
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # --- Frontend Next.js ---
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: asoi_diploma_frontend
+    restart: unless-stopped
+    # environment: # Убрано, так как не используется
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    networks:
+      - app-network
+
+volumes:
+  postgres_data:
+
+networks:
+  app-network:
+    driver: bridge

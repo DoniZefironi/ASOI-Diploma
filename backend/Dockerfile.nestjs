@@ -1,0 +1,47 @@
+# --- Stage 1: Build ---
+FROM node:18 AS builder 
+
+WORKDIR /app
+
+# Копируем package*.json
+COPY package*.json ./
+
+# Устанавливаем все зависимости (включая devDependencies, так как нужен build)
+RUN npm install
+
+# Копируем исходный код
+COPY . .
+
+# Запускаем сборку
+RUN npm run build
+
+# --- Stage 2: Run ---
+FROM node:18 AS runner 
+
+WORKDIR /app
+
+# Устанавливаем зависимости только для production
+COPY package*.json ./
+RUN npm install --only=production
+
+# Копируем собранный код из builder stage
+COPY --from=builder /app/dist ./dist
+
+# --- ПАТЧИМ @nestjs/typeorm ---
+# Редактируем файл node_modules/@nestjs/typeorm/dist/common/typeorm.utils.js
+# Вставляем строку 'const crypto = require("crypto");' перед строкой, содержащей 'crypto.randomUUID()'
+# Файл может быть сжат или минимизирован, но строка generateString = () => crypto.randomUUID(); должна быть найдена.
+# Проверим, как именно выглядит строка. В логах ошибка указывает на: const generateString = () => crypto.randomUUID();
+# Используем sed для вставки строки импорта перед строкой, содержащей 'crypto.randomUUID()'.
+# Формат sed: sed -i '/шаблон_для_поиска/i\вставляемый_текст' файл
+# Учтем, что строка может быть в строке кода, например, ...generateString = () => crypto.randomUUID();...
+# Найдем строку, содержащую 'generateString = () => crypto.randomUUID();'
+RUN sed -i '/generateString = () => crypto.randomUUID();/i\const crypto = require("crypto");' ./node_modules/@nestjs/typeorm/dist/common/typeorm.utils.js
+
+# (Опционально) Создаем пользователя
+# RUN useradd --create-home --shell /bin/bash nestjs
+# USER nestjs
+
+EXPOSE 2904
+
+CMD ["sh", "-c", "PORT=2904 node dist/main"]

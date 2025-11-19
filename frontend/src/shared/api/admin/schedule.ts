@@ -18,10 +18,28 @@ export interface ScheduleItem {
   id: number;
   title: string;
   description: string;
-  startDateTime: string; // ISO string
-  endDateTime: string;   // ISO string
-  courseId: number;
-  groupId?: number;
+  type: string; // Добавлено
+  startTime: string; // Изменено с startDateTime
+  endTime: string;   // Изменено с endDateTime
+  location: string;  // Добавлено
+  meetingUrl?: string; // Добавлено
+  courseGroupId: number; // Добавлено (или courseId/groupId)
+  courseGroup?: { // Добавлено
+    id: number;
+    name: string;
+    course?: {
+      id: number;
+      name: string;
+    };
+  };
+  instructor?: { // Добавлено
+    id: number;
+    firstName: string;
+    lastName: string;
+  };
+  instructorId?: number; // Добавлено
+  createdAt: string; // Добавлено
+  updatedAt: string; // Добавлено
 }
 
 export function useSchedule() {

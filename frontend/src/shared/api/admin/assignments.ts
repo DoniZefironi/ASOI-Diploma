@@ -18,8 +18,16 @@ export interface Assignment {
   id: number;
   title: string;
   description: string;
-  dueDate: string; // ISO string
-  courseId: number;
+  type: string; // Добавлено
+  maxScore: number; // Добавлено
+  deadline: string; // Заменено dueDate на deadline
+  isActive: boolean; // Добавлено
+  courseGroupId: number; // Добавлено (или courseId, в зависимости от вашей логики)
+  courseGroup?: { // Добавлено
+    id: number;
+    name: string;
+  };
+  createdAt: string; // Добавлено
 }
 
 export function useAssignments() {
@@ -57,7 +65,6 @@ export function useAssignments() {
     deleteMutation,
     {
       onSuccess: (deletedId) => {
-        // Проверяем, что currentData не undefined перед фильтрацией
         mutate((currentData: Assignment[] | undefined) =>
           currentData ? currentData.filter((assignment: Assignment) => assignment.id !== deletedId) : [],
           false

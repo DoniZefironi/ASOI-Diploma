@@ -14,7 +14,6 @@ const updateMutation = (url: string, { arg }: { arg: { id: number; data: any } }
 const deleteMutation = (url: string, { arg }: { arg: number }) =>
   apiClient.delete(`${url}/${arg}`);
 
-// Переименовано для избежания конфликта
 export interface GroupCourse {
   id: number;
   name: string;
@@ -24,11 +23,15 @@ export interface CourseGroup {
   id: number;
   name: string;
   courseId: number;
+  year: number; // Добавлено
+  semester: number; // Добавлено
+  isActive: boolean; // Добавлено
   maxStudents: number;
   currentStudents?: number;
   startDate: string; // ISO string
   endDate: string;   // ISO string
-  course: GroupCourse; // Используем переименованный тип
+  course: GroupCourse;
+  registrations?: any[]; // Добавлено для отображения количества студентов
 }
 
 export interface RegisterToCourseDto {
@@ -37,17 +40,58 @@ export interface RegisterToCourseDto {
 
 export function useCourseGroups(courseId?: number) {
   const url = courseId ? `/course-groups?courseId=${courseId}` : '/course-groups';
+  
   const { data, error, isLoading, mutate } = useSWR<CourseGroup[]>(
     url,
     fetcher
   );
 
+  // Мутация для создания группы
+  const { trigger: createGroup, isMutating: isCreating } = useSWRMutation(
+    '/course-groups',
+    createMutation,
+    {
+      onSuccess: () => {
+        mutate(); // Перезапрашиваем данные после создания
+      },
+    }
+  );
+
+  // Мутация для обновления группы
+  const { trigger: updateGroup, isMutating: isUpdating } = useSWRMutation(
+    '/course-groups',
+    updateMutation,
+    {
+      onSuccess: () => {
+        mutate(); // Перезапрашиваем данные после обновления
+      },
+    }
+  );
+
+  // Мутация для удаления группы
+  const { trigger: deleteGroup, isMutating: isDeleting } = useSWRMutation(
+    '/course-groups',
+    deleteMutation,
+    {
+      onSuccess: () => {
+        mutate(); // Перезапрашиваем данные после удаления
+      },
+    }
+  );
+
   return {
-    groups: data,
+    groups: data || [],
     isLoading,
     error,
     isError: error,
     mutate,
+    // Добавляем функции мутаций
+    createGroup,
+    updateGroup,
+    deleteGroup,
+    isCreating,
+    isUpdating,
+    isDeleting,
   };
 }
 

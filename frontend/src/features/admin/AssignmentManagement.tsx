@@ -5,7 +5,7 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/shared/ui/card';
 import { Button } from '@/shared/ui/button';
 import { Plus, Edit, Trash2, Loader2 } from 'lucide-react';
 import AssignmentForm from './AssignmentForm';
-import { useAssignments } from '@/shared/api/admin';
+import { useAssignments, type Assignment } from '@/shared/api/admin'; // Импортируем тип из API
 
 type BadgeVariant = 'default' | 'secondary' | 'outline' | 'destructive';
 
@@ -61,21 +61,7 @@ const getAssignmentTypeLabel = (type: string) => {
   return types[type] || type;
 };
 
-interface Assignment {
-  id: number;
-  title: string;
-  description: string;
-  type: string;
-  maxScore: number;
-  deadline: string;
-  isActive: boolean;
-  courseGroupId: number;
-  courseGroup?: {
-    id: number;
-    name: string;
-  };
-  createdAt: string;
-}
+// УДАЛИТЕ локальный интерфейс Assignment и используйте импортированный из API
 
 export default function AssignmentManagement() {
   const { 
@@ -201,7 +187,7 @@ export default function AssignmentManagement() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
-                {(assignments as Assignment[]).map((assignment: Assignment) => (
+                {assignments?.map((assignment: Assignment) => (
                   <tr key={assignment.id} className="bg-gray-800 border-b-2 border-b-white">
                     <td className="px-4 py-3 text-sm text-white">{assignment.id}</td>
                     <td className="px-4 py-3">
