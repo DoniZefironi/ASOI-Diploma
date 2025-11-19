@@ -2,7 +2,6 @@
 
 import { useDraggable } from '@dnd-kit/core';
 import { CSS } from '@dnd-kit/utilities';
-import { useSchematicStore } from '../store/useSchematicStore';
 import { Component } from '../types';
 
 interface DraggableComponentProps {
@@ -11,18 +10,20 @@ interface DraggableComponentProps {
 }
 
 export function DraggableComponent({ component, children }: DraggableComponentProps) {
-  // Arduino Uno нельзя двигать
   const isDraggable = component.type !== 'arduino-un';
 
-  const { attributes, listeners, setNodeRef, transform } = useDraggable({
+  const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
     id: `component-${component.id}`,
-     { type: 'component', id: component.id },
+    data: { 
+      type: 'component',
+      componentId: component.id // ✅ Добавляем ID компонента
+    },
     disabled: !isDraggable,
   });
 
   const style = {
     transform: CSS.Translate.toString(transform),
-    touchAction: 'none', // улучшает поведение на тач-устройствах
+    zIndex: isDragging ? 1000 : 1, // ✅ Только z-index при перетаскивании
   };
 
   return (
@@ -30,7 +31,9 @@ export function DraggableComponent({ component, children }: DraggableComponentPr
       ref={setNodeRef}
       style={style}
       {...(isDraggable ? { ...listeners, ...attributes } : {})}
-      className="cursor-grab active:cursor-grabbing"
+      className={`${isDraggable ? 'cursor-grab active:cursor-grabbing' : 'cursor-default'} ${
+        isDragging ? 'shadow-2xl' : ''
+      }`}
     >
       {children}
     </div>

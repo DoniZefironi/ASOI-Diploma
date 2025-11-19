@@ -25,12 +25,14 @@ export interface SchematicState {
   hoveredPin: { compId: string; pinId: string } | null;
   draggingWireFrom: { compId: string; pinId: string } | null;
 
+  // ✅ Обязательно добавьте эту функцию в интерфейс
   addComponent: (type: ComponentType, x: number, y: number) => void;
   startWireFrom: (compId: string, pinId: string) => void;
   completeWireTo: (compId: string, pinId: string) => void;
   setHoveredPin: (pin: { compId: string; pinId: string } | null) => void;
   updateCode: (code: string) => void;
   setSimulationRunning: (running: boolean) => void;
+  updateComponentPosition: (componentId: string, x: number, y: number) => void; // ✅ ДОБАВЬТЕ ЭТУ СТРОКУ
 }
 
 export const useSchematicStore = create<SchematicState>((set, get) => ({
@@ -92,4 +94,13 @@ void loop() {
 
   updateCode: (code) => set({ arduinoCode: code }),
   setSimulationRunning: (running) => set({ simulationRunning: running }),
+
+  // ✅ Добавьте реализацию функции
+  updateComponentPosition: (componentId: string, x: number, y: number) => {
+    set((state) => ({
+      components: state.components.map(comp =>
+        comp.id === componentId ? { ...comp, x, y } : comp
+      ),
+    }));
+  },
 }));

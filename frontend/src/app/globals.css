@@ -155,3 +155,19 @@ body {
 .animate-pulse {
   animation: pulse 2s infinite;
 }
+/* В ваши глобальные стили */
+.absolute {
+  position: absolute;
+}
+
+.cursor-grab {
+  cursor: grab;
+}
+
+.cursor-grabbing {
+  cursor: grabbing;
+}
+
+.cursor-default {
+  cursor: default;
+}

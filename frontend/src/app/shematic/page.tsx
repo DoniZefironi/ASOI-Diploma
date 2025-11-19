@@ -1,4 +1,3 @@
-// src/app/shematic/page.tsx
 'use client';
 
 import { DndContext, type DragEndEvent } from '@dnd-kit/core';
@@ -9,17 +8,36 @@ import { CodeEditor } from '@/features/Schematic/components/CodeEditor';
 import { ControlPanel } from '@/features/Schematic/components/ControlPanel';
 
 export default function SimulatorPage() {
-  const addComponent = useSchematicStore((state) => state.addComponent);
+  const { addComponent, updateComponentPosition } = useSchematicStore();
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
 
-    // Проверяем, что бросили в рабочую область
-    if (over?.id === 'workspace') {
+    console.log('DRAG END:', { 
+      active: active.id, 
+      over: over?.id,
+      data: active.data.current 
+    });
+
+    // Добавление из палитры
+    if (active.id.toString().startsWith('palette-') && over?.id === 'workspace') {
       const type = active.data.current?.type;
-      if (typeof type === 'string' && type !== 'arduino-un') {
-        // ✅ Добавляем в фиксированную позицию (можно улучшить позже)
-        addComponent(type as any, 400, 300);
+      console.log('Adding component:', type);
+      
+      if (type && type !== 'arduino-un') {
+        addComponent(type, over.rect.left, over.rect.top);
+      }
+    }
+
+    // Перемещение существующего компонента
+    if (active.id.toString().startsWith('component-') && over?.id === 'workspace') {
+      const componentId = active.data.current?.componentId;
+      console.log('Moving component:', componentId);
+      
+      if (componentId) {
+        const newX = active.rect.current.translated?.left || 0;
+        const newY = active.rect.current.translated?.top || 0;
+        updateComponentPosition(componentId, newX, newY);
       }
     }
   };

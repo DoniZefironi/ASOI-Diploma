@@ -12,7 +12,7 @@ const ITEMS: { type: ComponentType; label: string }[] = [
 
 export function ComponentPalette() {
   return (
-    <div className="w-48 p-4 bg-gray-950 border-r">
+    <div className="w-48 p-4 bg-gray-800 border-r border-gray-700">
       <h3 className="font-bold mb-3 text-white">Components</h3>
       <div className="space-y-2">
         {ITEMS.map((item) => (
@@ -25,17 +25,21 @@ export function ComponentPalette() {
 
 function DraggableItem({ type, label }: { type: ComponentType; label: string }) {
   const { attributes, listeners, setNodeRef, transform } = useDraggable({
-    id: `comp-${type}`,
-    data: { type },
+    id: `palette-${type}`,
+    data: { type }, // ✅ ПРОСТО type, без сложностей
   });
+
+  const style = {
+    transform: CSS.Translate.toString(transform),
+  };
 
   return (
     <div
       ref={setNodeRef}
-      style={{ transform: CSS.Translate.toString(transform) }}
+      style={style}
       {...listeners}
       {...attributes}
-      className="p-2 bg-gray-800 border border-gray-700 rounded cursor-move text-white"
+      className="p-3 bg-gray-700 border border-gray-600 rounded cursor-move text-white hover:bg-gray-600 transition-colors"
     >
       {label}
     </div>

@@ -3,6 +3,7 @@ import { Footer } from '@/widgets/footer';
 import './globals.css';
 import { Metadata } from 'next'
 import { AuthProvider } from '@/shared/lib/auth-context';
+import { DndProvider } from '@/features/Schematic/components/DndProvider'; // ✅ Добавьте этот импорт
 
 export const metadata: Metadata = {
   title: 'EduTech',
@@ -18,11 +19,13 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <AuthProvider>
-          <Header />
-          <main className="min-h-screen">
-            {children}
-          </main>
-          <Footer />
+          <DndProvider> {/* ✅ Оберните всё в DndProvider */}
+            <Header />
+            <main className="min-h-screen">
+              {children}
+            </main>
+            <Footer />
+          </DndProvider>
         </AuthProvider>
       </body>
     </html>
