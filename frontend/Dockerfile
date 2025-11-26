@@ -1,23 +1,30 @@
-# Используем официальный образ Node.js
-FROM node:18-alpine
-
-# Устанавливаем рабочую директорию
+FROM node:18-alpine AS deps
 WORKDIR /app
+COPY package.json package-lock.json* ./
+RUN npm ci
 
-# Копируем package*.json
-COPY package*.json ./
-
-# Устанавливаем зависимости
-RUN npm install
-
-# Копируем исходный код
+FROM node:18-alpine AS builder
+WORKDIR /app
+COPY --from=deps /app/node_modules ./node_modules
 COPY . .
-
-# Собираем Next.js приложение (создает .next)
+RUN npm install critters typescript-eslint
 RUN npm run build
 
-# Экспортируем порт (Next.js по умолчанию слушает 3000)
+FROM node:18-alpine AS production
+WORKDIR /app
+
+ENV NODE_ENV=production
+ENV PORT=3000
+
+RUN addgroup -g 1001 -S nodejs
+RUN adduser -S nextjs -u 1001
+
+COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+COPY --from=builder --chown=nextjs:nodejs /app/public ./public
+
+USER nextjs
+
 EXPOSE 3000
 
-# Команда запуска (запускает production-сервер)
-CMD ["npm", "start"]
+CMD ["node", "server.js"]

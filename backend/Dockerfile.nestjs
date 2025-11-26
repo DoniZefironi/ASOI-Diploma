@@ -1,47 +1,41 @@
-# --- Stage 1: Build ---
-FROM node:18 AS builder 
-
+# Stage 1: Builder
+FROM node:18-alpine AS builder
 WORKDIR /app
-
-# Копируем package*.json
-COPY package*.json ./
-
-# Устанавливаем все зависимости (включая devDependencies, так как нужен build)
-RUN npm install
-
-# Копируем исходный код
+COPY package.json package-lock.json* ./
+RUN npm ci
 COPY . .
-
-# Запускаем сборку
 RUN npm run build
 
-# --- Stage 2: Run ---
-FROM node:18 AS runner 
-
+# Stage 2: Production
+FROM node:18-alpine AS production
 WORKDIR /app
 
-# Устанавливаем зависимости только для production
-COPY package*.json ./
-RUN npm install --only=production
+ENV NODE_ENV=production
+ENV PORT=2904
 
-# Копируем собранный код из builder stage
-COPY --from=builder /app/dist ./dist
+RUN addgroup -g 1001 -S nodejs
+RUN adduser -S nestjs -u 1001
 
-# --- ПАТЧИМ @nestjs/typeorm ---
-# Редактируем файл node_modules/@nestjs/typeorm/dist/common/typeorm.utils.js
-# Вставляем строку 'const crypto = require("crypto");' перед строкой, содержащей 'crypto.randomUUID()'
-# Файл может быть сжат или минимизирован, но строка generateString = () => crypto.randomUUID(); должна быть найдена.
-# Проверим, как именно выглядит строка. В логах ошибка указывает на: const generateString = () => crypto.randomUUID();
-# Используем sed для вставки строки импорта перед строкой, содержащей 'crypto.randomUUID()'.
-# Формат sed: sed -i '/шаблон_для_поиска/i\вставляемый_текст' файл
-# Учтем, что строка может быть в строке кода, например, ...generateString = () => crypto.randomUUID();...
-# Найдем строку, содержащую 'generateString = () => crypto.randomUUID();'
-RUN sed -i '/generateString = () => crypto.randomUUID();/i\const crypto = require("crypto");' ./node_modules/@nestjs/typeorm/dist/common/typeorm.utils.js
+# Копируем package files для production зависимостей
+COPY package.json package-lock.json* ./
+RUN npm ci --only=production --omit=dev
 
-# (Опционально) Создаем пользователя
-# RUN useradd --create-home --shell /bin/bash nestjs
-# USER nestjs
+# Копируем собранное приложение
+COPY --from=builder --chown=nestjs:nodejs /app/dist ./dist
+
+# Фикс для crypto в Alpine - устанавливаем необходимые пакеты
+RUN apk add --no-cache curl
+
+# Явный фикс для crypto.randomUUID() в Alpine
+RUN echo "const crypto = require('crypto');" > crypto-fix.js && \
+    echo "global.crypto = { randomUUID: () => crypto.randomUUID() };" >> crypto-fix.js
+
+USER nestjs
 
 EXPOSE 2904
 
-CMD ["sh", "-c", "PORT=2904 node dist/main"]
+HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
+  CMD curl -f http://localhost:2904/health || exit 1
+
+# Запускаем с фиксом для crypto
+CMD ["node", "-r", "./crypto-fix.js", "dist/main"]

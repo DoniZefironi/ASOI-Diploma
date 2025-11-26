@@ -1,20 +1,24 @@
 #!/bin/bash
-# Скрипт для создания резервной копии базы данных
 
-DB_NAME=${POSTGRES_DB:-asoi_diploma}
-DB_USER=${POSTGRES_USER:-asoi_user}
 CONTAINER_NAME=asoi_diploma_db
+POSTGRES_DB=Curs
+POSTGRES_USER=postgres  
 
 TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
-BACKUP_FILE="backup_${DB_NAME}_${TIMESTAMP}.sql"
+BACKUP_FILE="backup_${POSTGRES_DB}_${TIMESTAMP}.sql"
 
-echo "Creating backup of database '$DB_NAME' to $BACKUP_FILE..."
+echo "--- Создание резервной копии БД '${POSTGRES_DB}' ---"
 
-docker exec $CONTAINER_NAME pg_dump -U $DB_USER -d $DB_NAME > $BACKUP_FILE
+if ! docker ps | grep -q $CONTAINER_NAME; then
+    echo "Ошибка: Контейнер $CONTAINER_NAME не запущен"
+    exit 1
+fi
+
+docker exec $CONTAINER_NAME pg_dump -U $POSTGRES_USER -d $POSTGRES_DB > $BACKUP_FILE
 
 if [ $? -eq 0 ]; then
-    echo "Backup successful: $BACKUP_FILE"
+    echo "Успешно. Дамп сохранён: $BACKUP_FILE"
 else
-    echo "Backup failed!"
+    echo "Ошибка при выполнении pg_dump."
     exit 1
 fi

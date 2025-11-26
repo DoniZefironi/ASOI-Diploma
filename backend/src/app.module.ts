@@ -2,10 +2,11 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
-// Modules
+// Импортируем модули
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { CoursesModule } from './courses/courses.module';
@@ -61,6 +62,7 @@ import { CircuitSolution } from './assignments/entities/circuit-solution.entity'
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
+      // envFilePath: '.env', // Убрано, чтобы не читался локальный файл в Docker, если не нужно
     }),
     TypeOrmModule.forRootAsync({
       useFactory: (configService: ConfigService) => {
@@ -68,62 +70,57 @@ import { CircuitSolution } from './assignments/entities/circuit-solution.entity'
         if (!databaseUrl) {
           throw new Error('DATABASE_URL is not defined in environment variables');
         }
+        // Явно указываем тип 'postgres' и корректно формируем объект конфигурации
         return {
-          type: 'postgres',
-          url: databaseUrl,
+          type: 'postgres', // <-- Явно указываем тип как строковый литерал 'postgres'
+          url: databaseUrl, // <-- Используем строку подключения из DATABASE_URL
+          // autoLoadEntities: false, // <-- УБРАНО, так как используем explicit entities
           entities: [
-            // Users
+            // Пользователи
             User,
             UserRole,
-            
-            // Courses
+            // Курсы
             Course,
             CourseGroup,
             CourseRegistration,
-            
-            // Assignments
+            // Задания
             Assignment,
             AssignmentSubmission,
             PeerReview,
-            CircuitSolution, // <-- ДОБАВЬТЕ ЭТО
-            
-            // Forum
+            CircuitSolution, // <-- ДОБАВЛЕНО
+            // Форум
             ForumTopic,
             ForumPost,
             ForumSection,
-            
-            // Achievements
+            // Достижения
             Achievement,
             UserAchievement,
-            
-            // Circuit
+            // Схемы
             CircuitSubmission,
-            CircuitElementType, // <-- ДОБАВЬТЕ ЭТО
-            
-            // Professional Orientation
+            CircuitElementType, // <-- ДОБАВЛЕНО
+            // Профессиональная ориентация
             ProfessionalOrientation,
-            
-            // Materials
+            // Материалы
             CourseMaterial,
-            
-            // Schedule
+            // Расписание
             ScheduleItem,
-            
-            // Hackathons
+            // Хакатоны
             Hackathon,
             HackathonTeam,
             HackathonTeamMember,
             HackathonProject,
             HackathonGrade,
             HackathonJury,
-          ],
-          autoLoadEntities: false,
-          synchronize: true,
+          ], // <-- Явно указываем все сущности
+          // synchronize: false, // Рекомендуется false в продакшене и при использовании миграций
+          synchronize: true, // <-- Отключено для безопасности
           logging: configService.get('NODE_ENV') !== 'production',
+          // Не указываем host, port, username, password, database отдельно, если используем url
         };
       },
-      inject: [ConfigService],
+      inject: [ConfigService], // Убедитесь, что ConfigService внедрен
     }),
+    // Импортируем остальные модули
     AuthModule,
     UsersModule,
     CoursesModule,

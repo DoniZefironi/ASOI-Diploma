@@ -64,7 +64,7 @@ export const CoursesPage = () => {
 
   return (
     <div className="min-h-screen bg-[#0D1117] py-12">
-      <div className="container mx-auto px-4">
+      <div className="container px-4">
         <div className="text-center mb-16 animate-fade-in-up">
           <h1 className="text-4xl md:text-5xl font-bold text-white mb-6">
             Наши курсы
