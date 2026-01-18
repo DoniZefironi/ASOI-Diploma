@@ -42,7 +42,7 @@ export const ProfilePage = () => {
       return user.email.split('@')[0];
     }
     
-    return 'User';
+    return 'Пользователь';
   };
 
   const [editForm, setEditForm] = useState({
@@ -72,10 +72,10 @@ export const ProfilePage = () => {
     return (
       <div className="min-h-screen bg-gray-800 flex items-center justify-center">
         <Card className="p-8 text-center">
-          <h1 className="text-2xl font-bold text-white mb-4">Access Denied</h1>
-          <p className="text-white mb-6">Please log in to view your profile.</p>
+          <h1 className="text-2xl font-bold text-white mb-4">Доступ запрещён</h1>
+          <p className="text-white mb-6">Пожалуйста, войдите в систему, чтобы просмотреть свой профиль.</p>
           <Button variant="primary" onClick={() => window.location.href = '/auth'}>
-            Sign In
+            Войти
           </Button>
         </Card>
       </div>
@@ -85,7 +85,7 @@ export const ProfilePage = () => {
   const handleSave = async () => {
     setIsLoading(true);
     try {
-      console.log('Saving profile:', editForm);
+      console.log('Сохранение профиля:', editForm);
 
       await new Promise(resolve => setTimeout(resolve, 1000));
 
@@ -102,10 +102,10 @@ export const ProfilePage = () => {
       }
       
       setIsEditing(false);
-      alert('Profile updated successfully!');
+      alert('Профиль успешно обновлён!');
     } catch (error) {
-      console.error('Error updating profile:', error);
-      alert('Error updating profile');
+      console.error('Ошибка при обновлении профиля:', error);
+      alert('Ошибка при обновлении профиля');
     } finally {
       setIsLoading(false);
     }
@@ -150,10 +150,10 @@ export const ProfilePage = () => {
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
           <h1 className="text-4xl md:text-5xl font-bold text-white mb-6">
-            User Profile
+            Профиль пользователя
           </h1>
           <p className="text-xl text-white">
-            Manage your account settings and preferences
+            Управление настройками и предпочтениями аккаунта
           </p>
         </div>
 
@@ -169,7 +169,7 @@ export const ProfilePage = () => {
                 <h2 className="text-xl font-bold text-white">{getDisplayName()}</h2>
                 <p className="text-white">{user.email}</p>
                 <div className="mt-2 text-sm text-gray-500">
-                  User ID: {currentUserId || 'N/A'}
+                  ID пользователя: {currentUserId || 'Н/Д'}
                 </div>
                 
                 {/* Бейджи ролей */}
@@ -228,13 +228,13 @@ export const ProfilePage = () => {
 
               <nav className="space-y-2">
                 <button className="w-full text-left p-3 rounded-lg bg-gray-800 text-blue-600 font-semibold">
-                  👤 Profile Information
+                  👤 Информация профиля
                 </button>
                 <button 
                   className="w-full text-left p-3 rounded-lg hover:bg-gray-800 transition-colors text-white"
                   onClick={() => setIsCoursesModalOpen(true)}
                 >
-                  📚 My Courses
+                  📚 Мои курсы
                 </button>
                 {canShowProfOrientationTab && (
                   <button 
@@ -245,13 +245,13 @@ export const ProfilePage = () => {
                   </button>
                 )}
                 <button className="w-full text-left p-3 rounded-lg hover:bg-gray-800 transition-colors text-white">
-                  🎓 Certificates
+                  🎓 Сертификаты
                 </button>
                 <button className="w-full text-left p-3 rounded-lg hover:bg-gray-800 transition-colors text-white">
-                  ⚙️ Settings
+                  ⚙️ Настройки
                 </button>
                 <button className="w-full text-left p-3 rounded-lg hover:bg-gray-800 transition-colors text-white">
-                  🔒 Privacy & Security
+                  🔒 Приватность и безопасность
                 </button>
               </nav>
             </Card>
@@ -263,38 +263,38 @@ export const ProfilePage = () => {
               <Card className="p-6 border-l-4 border-l-red-500">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-2xl font-bold text-white flex items-center gap-2">
-                    🛡️ Admin Panel
+                    🛡️ Панель администратора
                   </h3>
                   <span className="bg-red-100 text-red-800 px-3 py-1 rounded-full text-sm font-medium">
-                    Administrator
+                    Администратор
                   </span>
                 </div>
                 <p className="text-white mb-4">
-                  System administration and management tools
+                  Инструменты управления и администрирования системы
                 </p>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   <Link href="/admin">
                     <Button variant="secondary" className="w-full p-4">
                       <span className="text-2xl mb-2">📊</span>
-                      <span>Dashboard</span>
+                      <span>Дашборд</span>
                     </Button>
                   </Link>
                   <Link href="/admin/users">
                     <Button variant="secondary" className="w-full p-4">
                       <span className="text-2xl mb-2">👥</span>
-                      <span>Users</span>
+                      <span>Пользователи</span>
                     </Button>
                   </Link>
                   <Link href="/admin/courses">
                     <Button variant="secondary" className="w-full p-4">
                       <span className="text-2xl mb-2">📚</span>
-                      <span>Courses</span>
+                      <span>Курсы</span>
                     </Button>
                   </Link>
                   <Link href="/admin/groups">
                     <Button variant="secondary" className="w-full p-4">
                       <span className="text-2xl mb-2">👨‍🏫</span>
-                      <span>Groups</span>
+                      <span>Группы</span>
                     </Button>
                   </Link>
                 </div>
@@ -306,38 +306,38 @@ export const ProfilePage = () => {
               <Card className="p-6 border-l-4 border-l-purple-500">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-2xl font-bold text-white flex items-center gap-2">
-                    🎯 Mentor Panel
+                    🎯 Панель ментора
                   </h3>
                   <span className="bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm font-medium">
-                    Mentor
+                    Ментор
                   </span>
                 </div>
                 <p className="text-white mb-4">
-                  Course management and student mentoring tools
+                  Инструменты управления курсами и наставничества
                 </p>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   <Link href="/mentor">
                     <Button variant="secondary" className="w-full p-4">
                       <span className="text-2xl mb-2">📊</span>
-                      <span>Dashboard</span>
+                      <span>Дашборд</span>
                     </Button>
                   </Link>
                   <Link href="/mentor/courses">
                     <Button variant="secondary" className="w-full p-4">
                       <span className="text-2xl mb-2">📚</span>
-                      <span>My Courses</span>
+                      <span>Мои курсы</span>
                     </Button>
                   </Link>
                   <Link href="/mentor/students">
                     <Button variant="secondary" className="w-full p-4">
                       <span className="text-2xl mb-2">👨‍🎓</span>
-                      <span>Students</span>
+                      <span>Студенты</span>
                     </Button>
                   </Link>
                   <Link href="/mentor/assignments">
                     <Button variant="secondary" className="w-full p-4">
                       <span className="text-2xl mb-2">📝</span>
-                      <span>Assignments</span>
+                      <span>Задания</span>
                     </Button>
                   </Link>
                 </div>
@@ -349,14 +349,14 @@ export const ProfilePage = () => {
               <Card className="p-6 border-l-4 border-l-green-500">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-2xl font-bold text-white flex items-center gap-2">
-                    🎓 Student Panel
+                    🎓 Панель студента
                   </h3>
                   <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">
-                    Student
+                    Студент
                   </span>
                 </div>
                 <p className="text-white mb-4">
-                  Your learning journey and course progress
+                  Ваш путь обучения и прогресс по курсам
                 </p>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   <Button 
@@ -365,7 +365,7 @@ export const ProfilePage = () => {
                     onClick={() => setIsCoursesModalOpen(true)}
                   >
                     <span className="text-2xl mb-2">📚</span>
-                    <span>My Courses</span>
+                    <span>Мои курсы</span>
                   </Button>
                   {canShowProfOrientationTab && (
                     <Button 
@@ -380,19 +380,19 @@ export const ProfilePage = () => {
                   <Link href="/progress">
                     <Button variant="secondary" className="w-full p-4">
                       <span className="text-2xl mb-2">📈</span>
-                      <span>Progress</span>
+                      <span>Прогресс</span>
                     </Button>
                   </Link>
                   <Link href="/assignments">
                     <Button variant="secondary" className="w-full p-4">
                       <span className="text-2xl mb-2">📝</span>
-                      <span>Assignments</span>
+                      <span>Задания</span>
                     </Button>
                   </Link>
                   <Link href="/certificates">
                     <Button variant="secondary" className="w-full p-4">
                       <span className="text-2xl mb-2">🏆</span>
-                      <span>Certificates</span>
+                      <span>Сертификаты</span>
                     </Button>
                   </Link>
                 </div>
@@ -442,14 +442,14 @@ export const ProfilePage = () => {
 
             <Card className="p-6">
               <div className="flex justify-between items-center mb-6">
-                <h3 className="text-2xl font-bold text-white">Profile Information</h3>
+                <h3 className="text-2xl font-bold text-white">Информация профиля</h3>
                 {!isEditing && (
                   <Button 
                     variant="secondary" 
                     onClick={() => setIsEditing(true)}
                     disabled={isLoading}
                   >
-                    Edit Profile
+                    Редактировать профиль
                   </Button>
                 )}
               </div>
@@ -458,18 +458,18 @@ export const ProfilePage = () => {
                 <div className="space-y-4">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <InputField
-                      label="First Name"
+                      label="Имя"
                       value={editForm.firstName}
                       onChange={(value) => setEditForm(prev => ({ ...prev, firstName: value }))}
                     />
                     <InputField
-                      label="Last Name"
+                      label="Фамилия"
                       value={editForm.lastName}
                       onChange={(value) => setEditForm(prev => ({ ...prev, lastName: value }))}
                     />
                   </div>
                   <InputField
-                    label="Email"
+                    label="Электронная почта"
                     value={editForm.email}
                     onChange={(value) => setEditForm(prev => ({ ...prev, email: value }))}
                     type="email"
@@ -480,14 +480,14 @@ export const ProfilePage = () => {
                       onClick={handleSave}
                       disabled={isLoading}
                     >
-                      {isLoading ? 'Saving...' : 'Save Changes'}
+                      {isLoading ? 'Сохранение...' : 'Сохранить изменения'}
                     </Button>
                     <Button 
                       variant="secondary" 
                       onClick={handleCancel}
                       disabled={isLoading}
                     >
-                      Cancel
+                      Отмена
                     </Button>
                   </div>
                 </div>
@@ -496,13 +496,13 @@ export const ProfilePage = () => {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-sm font-medium text-white mb-1">
-                        Display Name
+                        Отображаемое имя
                       </label>
                       <p className="text-lg font-semibold text-white">{getDisplayName()}</p>
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-white mb-1">
-                        Email
+                        Электронная почта
                       </label>
                       <p className="text-lg font-semibold text-white">{user.email}</p>
                     </div>
@@ -512,7 +512,7 @@ export const ProfilePage = () => {
                       {user.firstName && (
                         <div>
                           <label className="block text-sm font-medium text-white mb-1">
-                            First Name
+                            Имя
                           </label>
                           <p className="text-lg font-semibold text-white">{user.firstName}</p>
                         </div>
@@ -520,7 +520,7 @@ export const ProfilePage = () => {
                       {user.lastName && (
                         <div>
                           <label className="block text-sm font-medium text-white mb-1">
-                            Last Name
+                            Фамилия
                           </label>
                           <p className="text-lg font-semibold text-white">{user.lastName}</p>
                         </div>
@@ -530,23 +530,23 @@ export const ProfilePage = () => {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-sm font-medium text-white mb-1">
-                        User ID
+                        ID пользователя
                       </label>
                       <p className="text-lg font-semibold text-white">{user.id}</p>
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-white mb-1">
-                        Status
+                        Статус
                       </label>
                       <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
-                        Active
+                        Активен
                       </span>
                     </div>
                   </div>
                   {user.roles && (
                     <div>
                       <label className="block text-sm font-medium text-white mb-1">
-                        Roles
+                        Роли
                       </label>
                       <div className="flex flex-wrap gap-2">
                         {user.roles.map((role: string, index: number) => (
@@ -573,40 +573,40 @@ export const ProfilePage = () => {
             </Card>
 
             <Card className="p-6">
-              <h3 className="text-2xl font-bold text-white mb-6">Learning Statistics</h3>
+              <h3 className="text-2xl font-bold text-white mb-6">Статистика обучения</h3>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                 <div className="text-center">
                   <div className="text-3xl font-bold text-blue-600 mb-2">12</div>
-                  <div className="text-sm text-white">Courses Enrolled</div>
+                  <div className="text-sm text-white">Записано курсов</div>
                 </div>
                 <div className="text-center">
                   <div className="text-3xl font-bold text-green-600 mb-2">8</div>
-                  <div className="text-sm text-white">Courses Completed</div>
+                  <div className="text-sm text-white">Завершено курсов</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-3xl font-bold text-purple-600 mb-2">45h</div>
-                  <div className="text-sm text-white">Learning Time</div>
+                  <div className="text-3xl font-bold text-purple-600 mb-2">45ч</div>
+                  <div className="text-sm text-white">Время обучения</div>
                 </div>
                 <div className="text-center">
                   <div className="text-3xl font-bold text-orange-600 mb-2">3</div>
-                  <div className="text-sm text-white">Certificates</div>
+                  <div className="text-sm text-white">Сертификаты</div>
                 </div>
               </div>
             </Card>
 
             <Card className="p-6">
-              <h3 className="text-2xl font-bold text-white mb-6">Recent Activity</h3>
+              <h3 className="text-2xl font-bold text-white mb-6">Недавняя активность</h3>
               <div className="space-y-4">
                 <div className="flex items-center space-x-4 p-3 bg-gray-800 rounded-lg">
                   <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
                     <span className="text-blue-600">📚</span>
                   </div>
                   <div className="flex-1">
-                    <p className="font-semibold text-white">Completed: Python Basics</p>
-                    <p className="text-sm text-white">2 days ago</p>
+                    <p className="font-semibold text-white">Завершено: Основы Python</p>
+                    <p className="text-sm text-white">2 дня назад</p>
                   </div>
                   <span className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm">
-                    Completed
+                    Завершено
                   </span>
                 </div>
                 <div className="flex items-center space-x-4 p-3 bg-gray-800 rounded-lg">
@@ -614,11 +614,11 @@ export const ProfilePage = () => {
                     <span className="text-green-600">🎯</span>
                   </div>
                   <div className="flex-1">
-                    <p className="font-semibold text-white">Started: Web Development</p>
-                    <p className="text-sm text-white">1 week ago</p>
+                    <p className="font-semibold text-white">Начат: Веб-разработка</p>
+                    <p className="text-sm text-white">1 неделю назад</p>
                   </div>
                   <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">
-                    In Progress
+                    В процессе
                   </span>
                 </div>
                 <div className="flex items-center space-x-4 p-3 bg-gray-800 rounded-lg">
@@ -626,18 +626,18 @@ export const ProfilePage = () => {
                     <span className="text-purple-600">📜</span>
                   </div>
                   <div className="flex-1">
-                    <p className="font-semibold text-white">Earned Certificate: JavaScript</p>
-                    <p className="text-sm text-white">2 weeks ago</p>
+                    <p className="font-semibold text-white">Получен сертификат: JavaScript</p>
+                    <p className="text-sm text-white">2 недели назад</p>
                   </div>
                   <span className="px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm">
-                    Certificate
+                    Сертификат
                   </span>
                 </div>
               </div>
             </Card>
 
             <Card className="p-6">
-              <h3 className="text-2xl font-bold text-white mb-6">Quick Actions</h3>
+              <h3 className="text-2xl font-bold text-white mb-6">Быстрые действия</h3>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <Button 
                   variant="secondary" 
@@ -645,7 +645,7 @@ export const ProfilePage = () => {
                   onClick={() => setIsCoursesModalOpen(true)}
                 >
                   <span className="text-2xl mb-2">📚</span>
-                  <span>My Courses</span>
+                  <span>Мои курсы</span>
                 </Button>
                 {canShowProfOrientationTab && (
                   <Button 
@@ -667,15 +667,15 @@ export const ProfilePage = () => {
                   </Button>
                 <Button variant="secondary" className="p-4">
                   <span className="text-2xl mb-2">🎓</span>
-                  <span>Certificates</span>
+                  <span>Сертификаты</span>
                 </Button>
                 <Button variant="secondary" className="p-4">
                   <span className="text-2xl mb-2">⚙️</span>
-                  <span>Settings</span>
+                  <span>Настройки</span>
                 </Button>
                 <Button variant="secondary" className="p-4">
                   <span className="text-2xl mb-2">🔒</span>
-                  <span>Privacy</span>
+                  <span>Приватность</span>
                 </Button>
               </div>
             </Card>

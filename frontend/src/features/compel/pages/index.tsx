@@ -6,7 +6,7 @@ import SandboxControls from '../components/SandboxControls';
 export default function Home() {
   return (
     <div className="p-4 w-4/5 mx-auto">
-      <h1 className="text-2xl font-bold mb-4">JS Sandbox</h1>
+      <h1 className="text-2xl font-bold mb-4">Песочница JavaScript</h1>
       <SandboxControls />
       <div className='flex gap-10'>
         <CodeEditor />

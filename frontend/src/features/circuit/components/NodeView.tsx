@@ -116,7 +116,7 @@ export const NodeView: React.FC<NodeViewProps> = ({ node, onPointerDown }) => {
         fontWeight="bold"
         fontFamily="monospace"
       >
-        Count: {node.counter || 0}
+        Счёт: {node.counter || 0}
       </text>
       <text
         x={0}
@@ -125,7 +125,7 @@ export const NodeView: React.FC<NodeViewProps> = ({ node, onPointerDown }) => {
         textAnchor="middle"
         fill="#9ca3af"
       >
-        Max: {node.maxCount || 15}
+        Макс: {node.maxCount || 15}
       </text>
       <g
         onPointerDown={(e) => {
@@ -151,7 +151,7 @@ export const NodeView: React.FC<NodeViewProps> = ({ node, onPointerDown }) => {
           fill="#fef2f2"
           fontWeight="bold"
         >
-          RESET
+          СБРОС
         </text>
       </g>
     </g>
@@ -176,7 +176,7 @@ export const NodeView: React.FC<NodeViewProps> = ({ node, onPointerDown }) => {
         fill="#f3f4f6"
         fontWeight="bold"
       >
-        Shift Reg
+        Сдвиг. регистр
       </text>
       <text
         x={0}
@@ -210,7 +210,7 @@ export const NodeView: React.FC<NodeViewProps> = ({ node, onPointerDown }) => {
         fill="#f3f4f6"
         fontWeight="bold"
       >
-        {node.value ? 'ON' : 'OFF'}
+        {node.value ? 'ВКЛ' : 'ВЫКЛ'}
       </text>
     </g>
   );
@@ -268,19 +268,19 @@ export const NodeView: React.FC<NodeViewProps> = ({ node, onPointerDown }) => {
         fontWeight="bold"
         style={{ pointerEvents: 'none' }}
       >
-        {node.type === 'AND' && 'AND'}
-        {node.type === 'OR' && 'OR'}
-        {node.type === 'NOT' && 'NOT'}
-        {node.type === 'NAND' && 'NAND'}
-        {node.type === 'NOR' && 'NOR'}
-        {node.type === 'XOR' && 'XOR'}
-        {node.type === 'XNOR' && 'XNOR'}
+        {node.type === 'AND' && 'И'}
+        {node.type === 'OR' && 'ИЛИ'}
+        {node.type === 'NOT' && 'НЕ'}
+        {node.type === 'NAND' && 'И-НЕ'}
+        {node.type === 'NOR' && 'ИЛИ-НЕ'}
+        {node.type === 'XOR' && 'искл. ИЛИ'}
+        {node.type === 'XNOR' && 'искл. ИЛИ-НЕ'}
         {node.type === 'MUX' && 'MUX'}
-        {node.type === 'DFF' && 'D'}
-        {node.type === 'TFF' && 'T'}
-        {node.type === 'DECODER' && '2-4'}
-        {node.type === 'ENCODER' && '4-2'}
-        {node.type === 'COMPARATOR' && 'CMP'}
+        {node.type === 'DFF' && 'D триггер'}
+        {node.type === 'TFF' && 'T триггер'}
+        {node.type === 'DECODER' && '2-4 декод.'}
+        {node.type === 'ENCODER' && '4-2 кодир.'}
+        {node.type === 'COMPARATOR' && 'компаратор'}
         {!['AND', 'OR', 'NOT', 'NAND', 'NOR', 'XOR', 'XNOR', 'MUX', 'DFF', 'TFF', 'DECODER', 'ENCODER', 'COMPARATOR'].includes(node.type) && (node.label ?? node.type)}
       </text>
 
@@ -341,7 +341,7 @@ export const NodeView: React.FC<NodeViewProps> = ({ node, onPointerDown }) => {
             fontWeight="bold"
             style={{ pointerEvents: 'none' }}
           >
-            {node.value ? 'ON' : 'OFF'}
+            {node.value ? 'ВКЛ' : 'ВЫКЛ'}
           </text>
         </g>
       )}
@@ -371,7 +371,7 @@ export const NodeView: React.FC<NodeViewProps> = ({ node, onPointerDown }) => {
             fontWeight="bold"
             style={{ pointerEvents: 'none' }}
           >
-            {node.clockActive ? 'RUN' : 'STOP'}
+            {node.clockActive ? 'ЗАПУСК' : 'СТОП'}
           </text>
         </g>
       )}

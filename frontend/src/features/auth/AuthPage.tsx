@@ -44,23 +44,23 @@ export const AuthPage = () => {
     const newErrors: Partial<AuthForm> = {};
 
     if (!formData.email.trim()) {
-      newErrors.email = 'Email is required';
+      newErrors.email = 'Электронная почта обязательна для заполнения.';
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = 'Email is invalid';
+      newErrors.email = 'Электронная почта недействительна.';
     }
 
     if (!formData.password) {
-      newErrors.password = 'Password is required';
+      newErrors.password = 'Пароль обязателен для заполнения.';
     } else if (formData.password.length < 6) {
-      newErrors.password = 'Password must be at least 6 characters';
+      newErrors.password = 'Пароль должен содержать не менее 6 символов.';
     }
 
     if (!isLogin) {
       if (!formData.firstName.trim()) {
-        newErrors.firstName = 'First name is required';
+        newErrors.firstName = 'Имя обязательно для заполнения.';
       }
       if (!formData.lastName.trim()) {
-        newErrors.lastName = 'Last name is required';
+        newErrors.lastName = 'Фамилия обязательна для заполнения.';
       }
     }
 
@@ -92,8 +92,8 @@ export const AuthPage = () => {
             lastName: formData.lastName
           };
 
-      console.log('Sending request to:', url);
-      console.log('Payload:', payload);
+      console.log('Отправка запроса на:', url);
+      console.log('Тело запроса:', payload);
 
       const response = await fetch(url, {
         method: 'POST',
@@ -104,7 +104,7 @@ export const AuthPage = () => {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.message || 'Request failed');
+        throw new Error(data.message || 'Запрос не удался.');
       }
 
       if (isLogin) {
@@ -123,13 +123,13 @@ export const AuthPage = () => {
           
           if (login) login(token, userData);
           
-          alert('🎉 Welcome back!');
+          alert('🎉 С возвращением!');
           window.location.href = '/';
         } else {
-          throw new Error('No access token received');
+          throw new Error('Маркер доступа не получен.');
         }
       } else {
-        alert('✅ Account created successfully! Please sign in.');
+        alert('✅ Аккаунт успешно создан! Пожалуйста, войдите в систему.');
         setIsLogin(true);
         setFormData({
           email: formData.email,
@@ -140,8 +140,8 @@ export const AuthPage = () => {
       }
 
     } catch (error) {
-      console.error('Auth error:', error);
-      alert(error instanceof Error ? error.message : 'An error occurred');
+      console.error('Ошибка аутентификации.:', error);
+      alert(error instanceof Error ? error.message : 'Произошла ошибка.');
     } finally {
       setIsLoading(false);
     }
@@ -151,11 +151,11 @@ export const AuthPage = () => {
     <div className="min-h-screen bg-[#0D1117] py-12">
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-white mb-4">TechLearn</h1>
+          <h1 className="text-4xl font-bold text-white mb-4">EduTech</h1>
           <nav className="flex justify-center space-x-6 text-gray-400 mb-8">
-            <Link href="/courses" className="hover:text-blue-600 transition-colors">Courses</Link>
-            <Link href="/career" className="hover:text-blue-600 transition-colors">Career Paths</Link>
-            <Link href="/simulator" className="hover:text-blue-600 transition-colors">Circuit Simulator</Link>
+            <Link href="/courses" className="hover:text-blue-600 transition-colors">Курсы</Link>
+            <Link href="/career" className="hover:text-blue-600 transition-colors">Карьерные пути</Link>
+            <Link href="/simulator" className="hover:text-blue-600 transition-colors">Симулятор схем</Link>
           </nav>
           <div className="w-24 h-1 bg-blue-600 mx-auto"></div>
         </div>
@@ -171,7 +171,7 @@ export const AuthPage = () => {
                     : 'text-gray-500 hover:text-gray-700'
                 }`}
               >
-                Sign In
+                Войти
               </button>
               <button
                 onClick={() => setIsLogin(false)}
@@ -181,12 +181,12 @@ export const AuthPage = () => {
                     : 'text-gray-500 hover:text-gray-700'
                 }`}
               >
-                Create Account
+                Создать аккаунт
               </button>
             </div>
 
             <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">
-              {isLogin ? 'Welcome back to TechLearn' : 'Join TechLearn'}
+              {isLogin ? 'С возвращением в EduTech!' : 'Присоединиться к EduTech'}
             </h2>
 
             <form onSubmit={handleSubmit} className="space-y-6">
@@ -194,14 +194,14 @@ export const AuthPage = () => {
                 <>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      First Name
+                      Имя
                     </label>
                     <input
                       type="text"
                       name="firstName"
                       value={formData.firstName}
                       onChange={handleChange}
-                      placeholder="Enter your first name"
+                      placeholder="Введите ваше имя"
                       className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-black ${
                         errors.firstName ? 'border-red-500' : 'border-gray-300'
                       }`}
@@ -213,14 +213,14 @@ export const AuthPage = () => {
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Last Name
+                      Фамилия
                     </label>
                     <input
                       type="text"
                       name="lastName"
                       value={formData.lastName}
                       onChange={handleChange}
-                      placeholder="Enter your last name"
+                      placeholder="Введите вашу фамилию"
                       className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-black ${
                         errors.lastName ? 'border-red-500' : 'border-gray-300'
                       }`}
@@ -241,7 +241,7 @@ export const AuthPage = () => {
                   name="email"
                   value={formData.email}
                   onChange={handleChange}
-                  placeholder="Enter your email"
+                  placeholder="Введите ваш email"
                   className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-black ${
                     errors.email ? 'border-red-500' : 'border-gray-300'
                   }`}
@@ -253,14 +253,14 @@ export const AuthPage = () => {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Password
+                  Пароль
                 </label>
                 <input
                   type="password"
                   name="password"
                   value={formData.password}
                   onChange={handleChange}
-                  placeholder="Enter your password"
+                  placeholder="Введите ваш пароль"
                   className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-black ${
                     errors.password ? 'border-red-500' : 'border-gray-300'
                   }`}
@@ -277,10 +277,10 @@ export const AuthPage = () => {
                       type="checkbox"
                       className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
                     />
-                    <span className="ml-2 text-sm text-gray-600">Remember me</span>
+                    <span className="ml-2 text-sm text-gray-600">Запомнить меня</span>
                   </label>
                   <Link href="/forgot-password" className="text-sm text-blue-600 hover:text-blue-700">
-                    Forgot your password?
+                    Забыли пароль?
                   </Link>
                 </div>
               )}
@@ -293,7 +293,7 @@ export const AuthPage = () => {
                       className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
                     />
                     <span className="ml-2 text-sm text-gray-600">
-                      I agree to the Terms of Service and Privacy Policy
+                      Я согласен(на) с Условиями обслуживания и Политикой конфиденциальности.
                     </span>
                   </label>
                 </div>
@@ -312,22 +312,22 @@ export const AuthPage = () => {
             <div className="text-center mt-8 text-sm text-gray-400">
               {isLogin ? (
                 <p>
-                  Don't have an account?{' '}
+                  Нет аккаунта?{' '}
                   <button
                     onClick={() => setIsLogin(false)}
                     className="text-blue-600 hover:text-blue-700 font-semibold"
                   >
-                    Sign up
+                    Зарегистрироваться
                   </button>
                 </p>
               ) : (
                 <p>
-                  Already have an account?{' '}
+                  Уже есть аккаунт?{' '}
                   <button
                     onClick={() => setIsLogin(true)}
                     className="text-blue-600 hover:text-blue-700 font-semibold"
                   >
-                    Sign in
+                    Войти
                   </button>
                 </p>
               )}

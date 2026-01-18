@@ -7,29 +7,6 @@ import { Plus, Edit, Trash2, Loader2, FileText, Video, Image, Code, FolderGit } 
 import MaterialForm from './MaterialForm';
 import { useMaterials } from '@/shared/api/admin';
 
-// Удаляем локальное определение интерфейса Material
-// interface Material {
-//   id: number;
-//   title: string;
-//   description: string;
-//   type: string;
-//   fileUrl: string;
-//   thumbnailUrl?: string;
-//   isPublic: boolean;
-//   courseId: number;
-//   course?: {
-//     id: number;
-//     name: string;
-//   };
-//   uploadedBy?: {
-//     id: number;
-//     firstName: string;
-//     lastName: string;
-//   };
-//   createdAt: string;
-//   updatedAt: string;
-// }
-
 type BadgeVariant = 'default' | 'secondary' | 'outline' | 'destructive';
 
 const Badge = ({
@@ -111,14 +88,14 @@ export default function MaterialManagement() {
   } = useMaterials();
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [editingMaterial, setEditingMaterial] = useState<any | null>(null); // Можно изменить на Material | null, если тип Material импортируется корректно
+  const [editingMaterial, setEditingMaterial] = useState<any | null>(null); 
 
   const handleCreate = () => {
     setEditingMaterial(null);
     setIsDialogOpen(true);
   };
 
-  const handleEdit = (material: any) => { // Можно изменить на Material, если тип Material импортируется корректно
+  const handleEdit = (material: any) => { 
     setEditingMaterial(material);
     setIsDialogOpen(true);
   };
@@ -128,7 +105,7 @@ export default function MaterialManagement() {
     try {
       await deleteMaterial(id);
     } catch (error) {
-      console.error('Error deleting material:', error);
+      console.error('Ошибка при удалении материала:', error);
     }
   };
 
@@ -142,7 +119,7 @@ export default function MaterialManagement() {
       setIsDialogOpen(false);
       setEditingMaterial(null);
     } catch (error) {
-      console.error('Error saving material:', error);
+      console.error('Ошибка при сохранении материала:', error);
     }
   };
 
@@ -217,8 +194,7 @@ export default function MaterialManagement() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
-                {/* Исправленная строка: убрано приведение типа (as Material[]) */}
-                {materials?.map((material: any) => ( // Можно изменить на Material, если тип Material импортируется корректно
+                {materials?.map((material: any) => ( 
                   <tr key={material.id} className="bg-gray-800 border-b-2 border-b-white">
                     <td className="px-4 py-3 text-sm text-white">{material.id}</td>
                     <td className="px-4 py-3">

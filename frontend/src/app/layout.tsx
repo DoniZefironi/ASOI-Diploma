@@ -6,7 +6,7 @@ import { AuthProvider } from '@/shared/lib/auth-context';
 
 export const metadata: Metadata = {
   title: 'EduTech',
-  description: 'EduTech description',
+  description: 'EduTech описание',
 }
 
 export default function RootLayout({

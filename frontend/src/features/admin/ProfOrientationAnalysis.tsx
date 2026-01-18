@@ -21,7 +21,6 @@ import { useProfessionStats, ProfessionStat } from '@/shared/api/admin';
 import { Loader2, Users, TrendingUp, PieChart as PieChartIcon } from 'lucide-react';
 import { useState } from 'react';
 
-// Цветовая палитра для графиков
 const COLORS = [
   '#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8',
   '#82CA9D', '#FFC658', '#8DD1E1', '#D084D0', '#FF6B6B',
@@ -30,7 +29,6 @@ const COLORS = [
 
 const RADIAN = Math.PI / 180;
 
-// Кастомный лейбл для круговой диаграммы
 const renderCustomizedLabel = ({
   cx, cy, midAngle, innerRadius, outerRadius, percent, index
 }: any) => {
@@ -53,7 +51,6 @@ const renderCustomizedLabel = ({
   );
 };
 
-// Кастомный тултип
 const CustomTooltip = ({ active, payload, label }: any) => {
   if (active && payload && payload.length) {
     return (
@@ -115,7 +112,6 @@ export default function ProfOrientationAnalysisPage() {
     );
   }
 
-  // Подготавливаем данные с процентами
   const totalUsers = stats.reduce((sum, stat) => sum + stat.count, 0);
   const enhancedStats = stats
     .map(stat => ({
@@ -124,14 +120,12 @@ export default function ProfOrientationAnalysisPage() {
     }))
     .sort((a, b) => b.count - a.count);
 
-  // Данные для тренда (если есть временные метки)
   const trendData = enhancedStats.map((stat, index) => ({
     name: stat.profession,
     value: stat.count,
-    trend: enhancedStats.length - index // Простая имитация тренда
+    trend: enhancedStats.length - index 
   }));
 
-  // Статистика
   const mostPopular = enhancedStats[0];
   const leastPopular = enhancedStats[enhancedStats.length - 1];
   const uniqueProfessions = enhancedStats.length;
@@ -149,7 +143,6 @@ export default function ProfOrientationAnalysisPage() {
         </div>
       </div>
 
-      {/* Статистические карточки */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <Card className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20">
           <CardContent className="p-6">
@@ -203,7 +196,6 @@ export default function ProfOrientationAnalysisPage() {
         </Card>
       </div>
 
-      {/* Переключение типа графика */}
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
           <CardTitle>Распределение по рекомендуемым профессиям</CardTitle>
@@ -318,7 +310,6 @@ export default function ProfOrientationAnalysisPage() {
         </CardContent>
       </Card>
 
-      {/* Детальная таблица */}
       <Card>
         <CardHeader>
           <CardTitle>Детальная статистика</CardTitle>

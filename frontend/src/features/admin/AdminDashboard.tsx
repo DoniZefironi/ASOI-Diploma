@@ -11,7 +11,7 @@ export default function AdminDashboard() {
   const { groups, isLoading: groupsLoading } = useCourseGroups();
 
   if (usersLoading || coursesLoading || groupsLoading) {
-    return <div>Loading...</div>;
+    return <div>Загрузка...</div>;
   }
 
   const stats = {

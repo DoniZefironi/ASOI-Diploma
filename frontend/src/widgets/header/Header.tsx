@@ -37,7 +37,7 @@ export const Header = () => {
       return user.email.split('@')[0];
     }
     
-    return 'User';
+    return 'Пользователь';
   };
 
   const getAvatarLetter = () => {
@@ -54,12 +54,12 @@ export const Header = () => {
           </Link>
           
           <nav className="hidden md:flex space-x-6">
-            <Link href="/" className="hover:text-blue-600 transition-colors">Home</Link>
-            <Link href="/courses" className="hover:text-blue-600 transition-colors">Courses</Link>
-            <Link href="/career" className="hover:text-blue-600 transition-colors">Career</Link>
-            <Link href="/forum" className="hover:text-blue-600 transition-colors">Forum</Link>
-            <Link href="/complilier" className="hover:text-blue-600 transition-colors">Сompiler</Link>
-            <Link href="/circuit" className="hover:text-blue-600 transition-colors">Emulator</Link>
+            <Link href="/" className="hover:text-blue-600 transition-colors">Главная</Link>
+            <Link href="/courses" className="hover:text-blue-600 transition-colors">Курсы</Link>
+            <Link href="/career" className="hover:text-blue-600 transition-colors">Карьера</Link>
+            <Link href="/forum" className="hover:text-blue-600 transition-colors">Форум</Link>
+            <Link href="/complilier" className="hover:text-blue-600 transition-colors">Компилятор</Link>
+            <Link href="/circuit" className="hover:text-blue-600 transition-colors">Эмулятор</Link>
           </nav>
 
           <div className="flex items-center space-x-4">
@@ -97,7 +97,7 @@ export const Header = () => {
                       className="block px-4 py-2 text-sm hover:bg-[#2D333B] transition-colors"
                       onClick={() => setIsDropdownOpen(false)}
                     >
-                      👤 My Profile
+                      👤 Мой профиль
                     </Link>
                     
                     <Link 
@@ -105,7 +105,7 @@ export const Header = () => {
                       className="block px-4 py-2 text-sm hover:bg-[#2D333B] transition-colors"
                       onClick={() => setIsDropdownOpen(false)}
                     >
-                      📚 My Courses
+                      📚 Мои курсы
                     </Link>
                     
                     <Link 
@@ -113,7 +113,7 @@ export const Header = () => {
                       className="block px-4 py-2 text-sm hover:bg-[#2D333B] transition-colors"
                       onClick={() => setIsDropdownOpen(false)}
                     >
-                      ⚙️ Settings
+                      ⚙️ Настройки
                     </Link>
                     
                     <div className="border-t border-[#353C45] my-1"></div>
@@ -122,7 +122,7 @@ export const Header = () => {
                       onClick={handleLogout}
                       className="block w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-[#2D333B] transition-colors"
                     >
-                      🚪 Logout
+                      🚪 Выйти
                     </button>
                   </div>
                 )}
@@ -133,13 +133,13 @@ export const Header = () => {
                   href="/auth" 
                   className="text-gray-300 hover:text-blue-600 transition-colors"
                 >
-                  Sign In
+                  Войти
                 </Link>
                 <Link 
                   href="/auth" 
                   className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg transition-colors"
                 >
-                  Sign Up
+                  Регистрация
                 </Link>
               </div>
             )}

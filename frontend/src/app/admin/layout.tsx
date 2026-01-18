@@ -18,29 +18,29 @@ export default function AdminLayout({
 
   useEffect(() => {
     if (authLoading) {
-      console.log('Auth still loading...');
+      console.log('Авторизация все еще загружается...');
       return;
     }
 
-    console.log('Auth check in layout:', { 
+    console.log('Проверка аутентификации в макете (вёрстке).', { 
       hasUser: !!user, 
       hasToken: !!token,
       userRoles: user?.roles 
     });
 
     if (!token || !user) {
-      console.log('No auth, redirecting to /auth');
+      console.log('Нет аутентификации, перенаправление на /auth');
       router.push('/auth');
       return;
     }
     
     if (!user.roles?.includes('admin')) {
-      console.log('Not admin, redirecting to /');
+      console.log('Не администратор, перенаправление на /');
       router.push('/');
       return;
     }
     
-    console.log('User is admin, allowing access');
+    console.log('Пользователь является администратором, доступ разрешён.');
     setIsAuthorized(true);
     setIsLoading(false);
   }, [user, token, authLoading, router]);
@@ -50,7 +50,7 @@ export default function AdminLayout({
       <div className="min-h-screen flex items-center justify-center bg-[#0D1117]">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-white">Checking permissions...</p>
+          <p className="mt-4 text-white">Проверка прав доступа...</p>
         </div>
       </div>
     );
@@ -60,8 +60,8 @@ export default function AdminLayout({
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#0D1117]">
         <div className="text-center">
-          <p className="text-white text-xl">Access Denied</p>
-          <p className="text-gray-400 mt-2">You don't have permission to access this page</p>
+          <p className="text-white text-xl">Доступ запрещён</p>
+          <p className="text-gray-400 mt-2">У вас нет разрешения на доступ к этой странице.</p>
         </div>
       </div>
     );

@@ -127,7 +127,7 @@ export default function CircuitSimManagement() {
         setSelectedCircuit(circuits[0] || null);
       }
     } catch (error) {
-      console.error('Error deleting circuit:', error);
+      console.error('Ошибка при удалении схемы:', error);
     } finally {
       setIsLoading(false);
     }
@@ -155,7 +155,7 @@ export default function CircuitSimManagement() {
       setIsDialogOpen(false);
       setEditingCircuit(null);
     } catch (error) {
-      console.error('Error saving circuit:', error);
+      console.error('Ошибка при сохранении схемы:', error);
     } finally {
       setIsLoading(false);
     }
@@ -194,7 +194,6 @@ export default function CircuitSimManagement() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-        {/* Список проектов */}
         <div className="lg:col-span-1">
           <Card>
             <CardHeader>
@@ -273,7 +272,6 @@ export default function CircuitSimManagement() {
           </Card>
         </div>
 
-        {/* Симулятор */}
         <div className="lg:col-span-3">
           <Card className="h-full">
             <CardHeader>

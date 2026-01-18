@@ -214,7 +214,7 @@ export default function CircuitSimulator({
             className="bg-green-600 text-white rounded px-4 py-2 text-sm hover:bg-green-700 transition-colors border border-green-500"
             onClick={runSimulation}
           >
-            ▶ Run Simulation
+            ▶ Запустить симуляцию
           </button>
           <button
             className="bg-blue-600 text-white rounded px-4 py-2 text-sm hover:bg-blue-700 transition-colors border border-blue-500"
@@ -222,13 +222,13 @@ export default function CircuitSimulator({
               navigator.clipboard.writeText(JSON.stringify(exportCircuit(), null, 2));
             }}
           >
-            📋 Copy JSON
+            📋 Копировать JSON
           </button>
           <button
             className="bg-purple-600 text-white rounded px-4 py-2 text-sm hover:bg-purple-700 transition-colors border border-purple-500"
             onClick={handleExport}
           >
-            💾 Download
+            💾 Скачать
           </button>
           {onCircuitSubmit && (
             <button
@@ -245,7 +245,7 @@ export default function CircuitSimulator({
           )}
         </div>
         <div className="text-sm text-gray-300 font-mono">
-          Zoom: {scale.toFixed(2)} | Nodes: {Object.keys(nodes).length} | Wires: {Object.keys(wires).length}
+          Масштаб: {scale.toFixed(2)} | Узлы: {Object.keys(nodes).length} | Связи: {Object.keys(wires).length}
         </div>
       </div>
       <div className="flex-1 relative">
@@ -341,13 +341,13 @@ export default function CircuitSimulator({
               className="px-2 py-1 bg-gray-700 text-gray-200 rounded hover:bg-gray-600 transition-colors"
               onClick={() => setScale((s) => Math.min(4, s * 1.2))}
             >
-              Zoom +
+              Приблизить +
             </button>
             <button
               className="px-2 py-1 bg-gray-700 text-gray-200 rounded hover:bg-gray-600 transition-colors"
               onClick={() => setScale((s) => Math.max(0.2, s / 1.2))}
             >
-              Zoom -
+              Отдалить -
             </button>
             <button
               className="px-2 py-1 bg-gray-700 text-gray-200 rounded hover:bg-gray-600 transition-colors"
@@ -356,7 +356,7 @@ export default function CircuitSimulator({
                 setScale(1);
               }}
             >
-              Reset
+              Сброс
             </button>
           </div>
         </div>

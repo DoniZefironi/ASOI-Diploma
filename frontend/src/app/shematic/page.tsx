@@ -14,11 +14,9 @@ export default function SimulatorPage() {
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
 
-    // Проверяем, что бросили в рабочую область
     if (over?.id === 'workspace') {
       const type = active.data.current?.type;
       if (typeof type === 'string' && type !== 'arduino-un') {
-        // ✅ Добавляем в фиксированную позицию (можно улучшить позже)
         addComponent(type as any, 400, 300);
       }
     }

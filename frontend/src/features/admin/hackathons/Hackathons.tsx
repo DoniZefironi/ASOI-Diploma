@@ -144,7 +144,6 @@ export default function HackathonManagement() {
 
   const handleDelete = async (hackathonId: number) => {
     if (!confirm('Вы уверены, что хотите удалить этот хакатон?')) return;
-    // Здесь будет вызов API для удаления
     console.log('Delete hackathon:', hackathonId);
   };
 
@@ -202,7 +201,6 @@ export default function HackathonManagement() {
         </div>
       </div>
 
-      {/* Статистика */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card>
           <CardContent className="p-6">
@@ -355,8 +353,7 @@ export default function HackathonManagement() {
           setEditingHackathon(null);
         }}
         onSave={() => {
-          // Здесь будет вызов API
-          console.log('Save hackathon');
+          console.log('Сохранить хакатон');
           setIsDialogOpen(false);
           mutate();
         }}

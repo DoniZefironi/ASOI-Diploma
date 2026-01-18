@@ -7,23 +7,20 @@ import { Button } from '@/shared/ui/button';
 import { BookOpen, Clock, Check, X, Loader2, Filter, AlertTriangle } from 'lucide-react';
 import { useAdminCourseRegistrations, useApproveRegistration, useRejectRegistration, AdminCourseRegistration as RawAdminCourseRegistration } from '@/shared/api/admin';
 
-// Тип для локальной обработки дат
 interface ProcessedRegistration {
   id: number;
   user: RawAdminCourseRegistration['user'];
   courseGroup: RawAdminCourseRegistration['courseGroup'];
   userId: number;
   courseGroupId: number;
-  status: 'PENDING' | 'APPROVED' | 'REJECTED'; // Приводим к верхнему регистру
+  status: 'PENDING' | 'APPROVED' | 'REJECTED'; 
   registeredAt: Date;
   approvedAt?: Date;
   approvedBy?: number;
 }
 
-// Тип для фильтра статуса
 type StatusFilterType = 'all' | 'PENDING' | 'APPROVED' | 'REJECTED';
 
-// Компонент Badge
 const Badge = ({ children, variant = 'default', className = '' }: {
   children: React.ReactNode;
   variant?: 'default' | 'secondary' | 'outline' | 'destructive' | 'pending';
@@ -50,7 +47,6 @@ export default function CourseRegistrationsPage() {
   const [filteredRegistrations, setFilteredRegistrations] = useState<ProcessedRegistration[]>([]);
   const [statusFilter, setStatusFilter] = useState<StatusFilterType>('all');
 
-  // Состояния для модального окна
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dialogAction, setDialogAction] = useState<'approve' | 'reject' | null>(null);
   const [dialogRegistrationId, setDialogRegistrationId] = useState<number | null>(null);
@@ -63,7 +59,6 @@ export default function CourseRegistrationsPage() {
     if (fetchedRegistrations) {
       const processed: ProcessedRegistration[] = fetchedRegistrations.map(reg => ({
         ...reg,
-        // Приводим статус к верхнему регистру
         status: reg.status.toUpperCase() as 'PENDING' | 'APPROVED' | 'REJECTED',
         registeredAt: new Date(reg.registeredAt),
         approvedAt: reg.approvedAt ? new Date(reg.approvedAt) : undefined,
@@ -131,7 +126,6 @@ export default function CourseRegistrationsPage() {
     );
   }
 
-  // Найдем заявку для модального окна
   const dialogRegistration = registrations.find(r => r.id === dialogRegistrationId);
 
   return (
@@ -153,7 +147,6 @@ export default function CourseRegistrationsPage() {
         </div>
       </div>
 
-      {/* Фильтр по статусу */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-white">
@@ -198,7 +191,6 @@ export default function CourseRegistrationsPage() {
         </CardContent>
       </Card>
 
-      {/* Таблица заявок */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-white">
@@ -303,7 +295,6 @@ export default function CourseRegistrationsPage() {
         </CardContent>
       </Card>
 
-      {/* Модальное окно подтверждения */}
       {dialogOpen && (
         <div 
           className="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center p-4" 

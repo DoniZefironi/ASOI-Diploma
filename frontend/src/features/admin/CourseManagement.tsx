@@ -164,7 +164,7 @@ export default function CourseManagement() {
       await deleteCourse(courseId);
       mutate();
     } catch (error) {
-      console.error('Error deleting course:', error);
+      console.error('Ошибка при удалении курса:', error);
     }
   };
 
@@ -179,7 +179,7 @@ export default function CourseManagement() {
       setIsDialogOpen(false);
       setEditingCourse(null);
     } catch (error) {
-      console.error('Error saving course:', error);
+      console.error('Ошибка при сохранении курса:', error);
     }
   };
 

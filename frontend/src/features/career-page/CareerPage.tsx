@@ -11,7 +11,7 @@ export const CareerPage = () => {
 
   const careers = [
     { 
-      name: 'Software Developer', 
+      name: 'Разработчик ПО', 
       image: '/icons/software-developer.png',
       color: 'from-blue-500 to-blue-600' 
     },
@@ -21,42 +21,42 @@ export const CareerPage = () => {
       color: 'from-green-500 to-green-600' 
     },
     { 
-      name: 'Cybersecurity Analyst', 
+      name: 'Аналитик кибербезопасности', 
       image: '/icons/cybersecurity.png',
       color: 'from-red-500 to-red-600' 
     },
     { 
-      name: 'IoT Engineer', 
+      name: 'Инженер IoT', 
       image: '/icons/iot-engineer.png',
       color: 'from-purple-500 to-purple-600' 
     },
     { 
-      name: 'Electronics Engineer', 
+      name: 'Инженер-электронщик', 
       image: '/icons/electronics-engineer.png',
       color: 'from-yellow-500 to-yellow-600' 
     },
     { 
-      name: 'Technical Writer', 
+      name: 'Технический писатель', 
       image: '/icons/technical-writer.png',
       color: 'from-indigo-500 to-indigo-600' 
     },
     { 
-      name: 'AI Engineer', 
+      name: 'Инженер ИИ', 
       image: '/icons/ai-engineer.png',
       color: 'from-pink-500 to-pink-600' 
     },
     { 
-      name: 'DevOps Engineer', 
+      name: 'DevOps инженер', 
       image: '/icons/devops-engineer.png',
       color: 'from-teal-500 to-teal-600' 
     },
     { 
-      name: 'UX Designer', 
+      name: 'UX/UI дизайнер', 
       image: '/icons/ux-designer.png',
       color: 'from-orange-500 to-orange-600' 
     },
     { 
-      name: 'Product Manager', 
+      name: 'Продуктовый менеджер', 
       image: '/icons/product-manager.png',
       color: 'from-cyan-500 to-cyan-600' 
     }
@@ -100,34 +100,34 @@ export const CareerPage = () => {
       <div className="container mx-auto px-4">
         <div className="text-center mb-16 animate-fade-in-up">
           <h1 className="text-4xl md:text-5xl font-bold text-white mb-6">
-            Career Guidance
+            Карьерное ориентирование
           </h1>
           <p className="text-xl text-white max-w-2xl mx-auto">
-            Explore your potential and find the perfect career path in the tech world.
+            Исследуйте свой потенциал и найдите идеальный карьерный путь в мире технологий.
           </p>
         </div>
 
         <section className="mb-20">
           <h2 className="text-3xl font-bold text-center text-white mb-12 animate-fade-in-up">
-            Assess Your Skills
+            Оцените свои навыки
           </h2>
           
           <Card className="max-w-2xl mx-auto p-8 animate-slide-in-left">
             <h3 className="text-2xl font-semibold text-white mb-4">
-              Career Assessment Test
+              Карьерный диагностический тест
             </h3>
             <p className="text-white mb-6">
-              Take our comprehensive test to discover your strengths and interests in the tech field.
+              Пройдите наш комплексный тест, чтобы определить свои сильные стороны и интересы в IT-сфере.
             </p>
             <Button variant="primary" className="px-8 py-3">
-              Start Test
+              Начать тест
             </Button>
           </Card>
         </section>
 
         <section className="mb-20">
           <h2 className="text-3xl font-bold text-center text-white mb-12 animate-fade-in-up">
-            Explore Career Paths
+            Исследуйте карьерные пути
           </h2>
 
           <div 
@@ -161,7 +161,7 @@ export const CareerPage = () => {
 
           <div className="animate-fade-in-up">
             <h3 className="text-2xl font-bold text-white mb-8 text-center">
-              Featured Articles
+              Рекомендуемые статьи
             </h3>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -169,7 +169,7 @@ export const CareerPage = () => {
                 <div className="relative h-48 bg-gray-700 overflow-hidden flex-shrink-0">
                   <Image
                     src="/images/TechIndustry.jpg"
-                    alt="Top Skills for Tech Professionals in 2024"
+                    alt="Топ-навыки для IT-специалистов в 2024 году"
                     fill
                     className="object-cover"
                   />
@@ -177,13 +177,13 @@ export const CareerPage = () => {
                 </div>
                 <div className="p-6 flex flex-col flex-grow">
                   <h4 className="text-xl font-semibold text-white mb-3">
-                    Top Skills for Tech Professionals in 2024
+                    Топ-навыки для IT-специалистов в 2024 году
                   </h4>
                   <p className="text-gray-300 mb-4 flex-grow">
-                    Stay ahead of the curve with the most in-demand skills in the tech industry.
+                    Будьте впереди всех с самыми востребованными навыками в IT-индустрии.
                   </p>
                   <Button variant="primary" className="w-full">
-                    Read More
+                    Читать далее
                   </Button>
                 </div>
               </Card>
@@ -192,7 +192,7 @@ export const CareerPage = () => {
                 <div className="relative h-48 bg-gray-700 overflow-hidden flex-shrink-0">
                   <Image
                     src="/images/ProgrammingLanguage.png"
-                    alt="Choosing the Right Programming Language"
+                    alt="Выбор подходящего языка программирования"
                     fill
                     className="object-cover"
                   />
@@ -200,13 +200,13 @@ export const CareerPage = () => {
                 </div>
                 <div className="p-6 flex flex-col flex-grow">
                   <h4 className="text-xl font-semibold text-white mb-3">
-                    Choosing the Right Programming Language for Your Career
+                    Выбор подходящего языка программирования для вашей карьеры
                   </h4>
                   <p className="text-gray-300 mb-4 flex-grow">
-                    A guide to selecting the best programming language based on your career goals.
+                    Руководство по выбору лучшего языка программирования в зависимости от ваших карьерных целей.
                   </p>
                   <Button variant="primary" className="w-full">
-                    Read More
+                    Читать далее
                   </Button>
                 </div>
               </Card>
@@ -215,7 +215,7 @@ export const CareerPage = () => {
                 <div className="relative h-48 bg-gray-700 overflow-hidden flex-shrink-0">
                   <Image
                     src="/images/TechProfessionals.png"
-                    alt="The Future of Work in Tech"
+                    alt="Будущее работы в IT-сфере"
                     fill
                     className="object-cover"
                   />
@@ -223,13 +223,13 @@ export const CareerPage = () => {
                 </div>
                 <div className="p-6 flex flex-col flex-grow">
                   <h4 className="text-xl font-semibold text-white mb-3">
-                    The Future of Work in the Tech Industry
+                    Будущее работы в IT-индустрии
                   </h4>
                   <p className="text-gray-300 mb-4 flex-grow">
-                    Insights into emerging trends and future career opportunities in the tech sector.
+                    Анализ новых трендов и перспективных карьерных возможностей в IT-секторе.
                   </p>
                   <Button variant="primary" className="w-full">
-                    Read More
+                    Читать далее
                   </Button>
                 </div>
               </Card>

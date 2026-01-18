@@ -5,7 +5,7 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/shared/ui/card';
 import { Button } from '@/shared/ui/button';
 import { Plus, Edit, Trash2, Loader2 } from 'lucide-react';
 import AssignmentForm from './AssignmentForm';
-import { useAssignments, type Assignment } from '@/shared/api/admin'; // Импортируем тип из API
+import { useAssignments, type Assignment } from '@/shared/api/admin'; 
 
 type BadgeVariant = 'default' | 'secondary' | 'outline' | 'destructive';
 
@@ -61,8 +61,6 @@ const getAssignmentTypeLabel = (type: string) => {
   return types[type] || type;
 };
 
-// УДАЛИТЕ локальный интерфейс Assignment и используйте импортированный из API
-
 export default function AssignmentManagement() {
   const { 
     assignments, 
@@ -95,7 +93,7 @@ export default function AssignmentManagement() {
     try {
       await deleteAssignment(id);
     } catch (error) {
-      console.error('Error deleting assignment:', error);
+      console.error('Ошибка при удалении задания:', error);
     }
   };
 
@@ -109,7 +107,7 @@ export default function AssignmentManagement() {
       setIsDialogOpen(false);
       setEditingAssignment(null);
     } catch (error) {
-      console.error('Error saving assignment:', error);
+      console.error('Ошибка при сохранении задания:', error);
     }
   };
 

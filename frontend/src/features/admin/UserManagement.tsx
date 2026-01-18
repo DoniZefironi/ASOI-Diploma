@@ -149,7 +149,7 @@ export default function UserManagement() {
       setSelectedUser(null);
       alert('Роли успешно обновлены!');
     } catch (error) {
-      console.error('Error updating roles:', error);
+      console.error('Ошибка при обновлении ролей:', error);
       alert('Ошибка при обновлении ролей');
     } finally {
       setLocalUpdating(false);

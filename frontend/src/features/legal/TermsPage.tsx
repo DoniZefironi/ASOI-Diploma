@@ -6,105 +6,104 @@ export const TermsPage = () => {
       <div className="container mx-auto px-4 max-w-4xl">
         <div className="text-center mb-12 animate-fade-in-up">
           <h1 className="text-4xl md:text-5xl font-bold text-white mb-6">
-            Terms of Service & Privacy Policy
+            Условия обслуживания и Политика конфиденциальности
           </h1>
-          <p className="text-gray-600">Last updated: October 26, 2023</p>
+          <p className="text-gray-600">Последнее обновление: 26 октября 2023 г.</p>
         </div>
 
         <div className="bg-gray-800 rounded-xl shadow-lg p-8 animate-fade-in-up">
           <section className="mb-8">
-            <h2 className="text-2xl font-bold text-white mb-4">1. Introduction</h2>
+            <h2 className="text-2xl font-bold text-white mb-4">1. Введение</h2>
             <p className="text-white leading-relaxed mb-4">
-              Welcome to EduTech! These Terms of Service (“Terms”) govern your use of our platform, 
-              including our website, applications, and services (collectively, the “Platform”). 
-              By accessing or using the Platform, you agree to be bound by these Terms and our Privacy Policy. 
-              If you do not agree to these Terms, please do not use the Platform.
+              Добро пожаловать в EduTech! Эти Условия обслуживания («Условия») регулируют использование вами нашей платформы, 
+              включая наш веб-сайт, приложения и услуги (совместно именуемые «Платформа»). 
+              Получая доступ к Платформе или используя её, вы соглашаетесь соблюдать данные Условия и нашу Политику конфиденциальности. 
+              Если вы не согласны с этими Условиями, пожалуйста, не используйте Платформу.
             </p>
           </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-bold text-white mb-4">2. Services</h2>
+            <h2 className="text-2xl font-bold text-white mb-4">2. Услуги</h2>
             <p className="text-white leading-relaxed mb-4">
-              EduTech provides online courses in computer science, electronics, English language, 
-              and the Internet of Things (IoT). We also offer career guidance resources and a circuit 
-              simulator tool. We reserve the right to modify or discontinue any part of the Platform at any time.
+              EduTech предоставляет онлайн-курсы по информатике, электронике, английскому языку 
+              и Интернету вещей (IoT). Мы также предлагаем ресурсы по карьерному ориентированию и инструмент 
+              симулятора схем. Мы оставляем за собой право изменять или прекращать работу любой части Платформы в любое время.
             </p>
           </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-bold text-white mb-4">3. User Accounts</h2>
+            <h2 className="text-2xl font-bold text-white mb-4">3. Пользовательские аккаунты</h2>
             <p className="text-white leading-relaxed mb-4">
-              To access certain features, you may need to create an account. You are responsible for 
-              maintaining the confidentiality of your account information and for all activities that 
-              occur under your account. You agree to notify us immediately of any unauthorized use of your account.
+              Для доступа к определённым функциям вам может потребоваться создать аккаунт. Вы несёте ответственность за 
+              сохранение конфиденциальности информации вашего аккаунта и за все действия, которые происходят под вашим аккаунтом. 
+              Вы соглашаетесь немедленно уведомлять нас о любом несанкционированном использовании вашего аккаунта.
             </p>
           </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-bold text-white mb-4">4. Privacy Policy</h2>
+            <h2 className="text-2xl font-bold text-white mb-4">4. Политика конфиденциальности</h2>
             <p className="text-white leading-relaxed mb-4">
-              Your privacy is important to us. Our Privacy Policy explains how we collect, use, and 
-              protect your personal information. By using the Platform, you consent to our data 
-              practices as described in the Privacy Policy.
+              Ваша конфиденциальность важна для нас. Наша Политика конфиденциальности объясняет, как мы собираем, используем и 
+              защищаем вашу персональную информацию. Используя Платформу, вы соглашаетесь с нашей практикой обработки данных, 
+              как описано в Политике конфиденциальности.
             </p>
           </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-bold text-white mb-4">5. Intellectual Property</h2>
+            <h2 className="text-2xl font-bold text-white mb-4">5. Интеллектуальная собственность</h2>
             <p className="text-white leading-relaxed mb-4">
-              All content on the Platform, including course materials, is protected by copyright and 
-              other intellectual property laws. You may not reproduce, distribute, or create derivative 
-              works from our content without our express permission.
+              Весь контент на Платформе, включая учебные материалы, защищён законами об авторском праве и 
+              других законах об интеллектуальной собственности. Вы не можете воспроизводить, распространять или создавать 
+              производные работы из нашего контента без нашего явного разрешения.
             </p>
           </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-bold text-white mb-4">6. User Conduct</h2>
+            <h2 className="text-2xl font-bold text-white mb-4">6. Поведение пользователей</h2>
             <p className="text-white leading-relaxed mb-4">
-              You agree to use the Platform in a lawful and respectful manner. You may not engage in 
-              any activity that is harmful, offensive, or violates the rights of others. We reserve 
-              the right to suspend or terminate your account for any violation of these Terms.
+              Вы соглашаетесь использовать Платформу законным и уважительным образом. Вы не должны заниматься 
+              какой-либо деятельностью, которая является вредной, оскорбительной или нарушает права других лиц. Мы оставляем 
+              за собой право приостановить или прекратить действие вашего аккаунта за любое нарушение этих Условий.
             </p>
           </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-bold text-white mb-4">7. Disclaimers</h2>
+            <h2 className="text-2xl font-bold text-white mb-4">7. Отказ от гарантий</h2>
             <p className="text-white leading-relaxed mb-4">
-              The Platform is provided “as is” without any warranties, express or implied. We do not 
-              guarantee the accuracy, completeness, or reliability of any content on the Platform. 
-              Your use of the Platform is at your own risk.
+              Платформа предоставляется «как есть» без каких-либо гарантий, явных или подразумеваемых. Мы не 
+              гарантируем точность, полноту или надёжность любого контента на Платформе. 
+              Использование вами Платформы осуществляется на ваш собственный риск.
             </p>
           </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-bold text-white mb-4">8. Limitation of Liability</h2>
+            <h2 className="text-2xl font-bold text-white mb-4">8. Ограничение ответственности</h2>
             <p className="text-white leading-relaxed mb-4">
-              To the fullest extent permitted by law, EduTech shall not be liable for any indirect, 
-              incidental, special, or consequential damages arising out of or in connection with 
-              your use of the Platform.
+              В максимальной степени, разрешённой законом, EduTech не несёт ответственности за любые косвенные, 
+              случайные, специальные или последующие убытки, возникающие в связи с использованием вами Платформы.
             </p>
           </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-bold text-white mb-4">9. Changes to Terms</h2>
+            <h2 className="text-2xl font-bold text-white mb-4">9. Изменения в Условиях</h2>
             <p className="text-white leading-relaxed mb-4">
-              We may update these Terms from time to time. We will notify you of any significant changes. 
-              Your continued use of the Platform after any changes constitutes your acceptance of the new Terms.
+              Мы можем время от времени обновлять эти Условия. Мы уведомим вас о любых значительных изменениях. 
+              Ваше дальнейшее использование Платформы после любых изменений означает ваше принятие новых Условий.
             </p>
           </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-bold text-white mb-4">10. Governing Law</h2>
+            <h2 className="text-2xl font-bold text-white mb-4">10. Применимое право</h2>
             <p className="text-white leading-relaxed mb-4">
-              These Terms shall be governed by and construed in accordance with the laws of the 
-              jurisdiction in which EduTech is established, without regard to its conflict of law principles.
+              Настоящие Условия регулируются и толкуются в соответствии с законодательством 
+              юрисдикции, в которой зарегистрирован EduTech, без учёта принципов коллизионного права.
             </p>
           </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-bold text-white mb-4">11. Contact Us</h2>
+            <h2 className="text-2xl font-bold text-white mb-4">11. Свяжитесь с нами</h2>
             <p className="text-white leading-relaxed">
-              If you have any questions about these Terms, please contact us at{' '}
+              Если у вас есть вопросы относительно этих Условий, пожалуйста, свяжитесь с нами по адресу{' '}
               <a href="mailto:support@edutech.com" className="text-blue-600 hover:text-blue-700">
                 support@edutech.com
               </a>.

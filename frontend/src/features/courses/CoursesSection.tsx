@@ -43,7 +43,7 @@ export const CoursesSection = () => {
     return (
       <section id="courses" className="py-20">
         <div className="container mx-auto px-4 text-center">
-          <p className="text-gray-300">Loading courses...</p>
+          <p className="text-gray-300">Загрузка курсов...</p>
         </div>
       </section>
     );
@@ -53,7 +53,7 @@ export const CoursesSection = () => {
     return (
       <section id="courses" className="py-20">
         <div className="container mx-auto px-4 text-center">
-          <p className="text-red-500">Failed to load courses</p>
+          <p className="text-red-500">Не удалось загрузить курсы</p>
         </div>
       </section>
     );
@@ -63,7 +63,7 @@ export const CoursesSection = () => {
     return (
       <section id="courses" className="py-20">
         <div className="container mx-auto px-4 text-center">
-          <p className="text-gray-300">No courses available</p>
+          <p className="text-gray-300">Нет доступных курсов</p>
         </div>
       </section>
     );
@@ -74,10 +74,10 @@ export const CoursesSection = () => {
       <div className="container mx-auto px-4">
         <div className="text-center mb-16">
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-4 animate-fade-in-up">
-            Featured Courses
+            Рекомендуемые курсы
           </h2>
           <p className="text-xl text-gray-300 max-w-2xl mx-auto animate-fade-in-up">
-            Discover our comprehensive courses designed to boost your skills and career
+            Откройте для себя наши комплексные курсы, разработанные для улучшения ваших навыков и карьеры
           </p>
         </div>
         
@@ -126,7 +126,7 @@ export const CoursesSection = () => {
                     size="sm"
                     className="absolute bottom-6 left-1/2 transform -translate-x-1/2 w-[75%]"
                   >
-                    Learn More
+                    Подробнее
                   </Button>
                 </div>
               </Card>

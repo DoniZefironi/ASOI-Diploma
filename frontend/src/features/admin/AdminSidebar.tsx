@@ -42,13 +42,11 @@ export default function AdminSidebar() {
 
   return (
     <div className="w-64 bg-card border-r flex flex-col h-full">
-      {/* Header */}
       <div className="p-6 border-b">
         <h1 className="text-xl font-bold text-card-foreground">Панель управления</h1>
         <p className="text-sm text-muted-foreground">Администратор</p>
       </div>
       
-      {/* Navigation */}
       <nav className="flex-1 p-4">
         <ul className="space-y-1">
           {menuItems.map((item) => {
