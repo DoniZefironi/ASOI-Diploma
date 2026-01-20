@@ -13,14 +13,13 @@ export interface ElementState {
   value?: boolean;
   clockActive?: boolean;
   state?: boolean;
-  // другие состояния элементов
 }
 
 export interface ElementBehavior {
   minInputs: number;
   maxInputs?: number;
   evaluate(inputs: NodeInputs, state?: ElementState): boolean;
-  hasSideEffects?: boolean; // для CLOCK, COUNTER и т.д.
+  hasSideEffects?: boolean; 
 }
 
 const registry: Record<NodeType, ElementBehavior> = {

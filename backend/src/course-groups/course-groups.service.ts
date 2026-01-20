@@ -60,7 +60,6 @@ export class CourseGroupsService {
       throw new NotFoundException('Course group not found');
     }
 
-    // Проверка на уже существующую заявку
     const existingRegistration = await this.registrationRepository.findOne({
       where: {
         userId,
@@ -72,7 +71,6 @@ export class CourseGroupsService {
       throw new ConflictException('You have already applied to this course group');
     }
 
-    // Проверка на количество студентов
     const approvedRegistrations = courseGroup.registrations.filter(
       (reg: CourseRegistration) => reg.status === RegistrationStatus.APPROVED
     ).length;
@@ -103,10 +101,9 @@ export class CourseGroupsService {
   }
 
   async getAllRegistrations() {
-    // Загружаем все заявки, включая информацию о пользователе и группе
     return this.registrationRepository.find({
-      relations: ['user', 'courseGroup', 'courseGroup.course'], // Загрузка связанных данных
-      order: { registeredAt: 'DESC' }, // Сортировка по дате подачи
+      relations: ['user', 'courseGroup', 'courseGroup.course'], 
+      order: { registeredAt: 'DESC' }, 
     });
   }
 

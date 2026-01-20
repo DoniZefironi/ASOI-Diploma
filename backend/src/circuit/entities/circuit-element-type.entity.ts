@@ -3,7 +3,7 @@ import { Entity, PrimaryColumn, Column } from 'typeorm';
 @Entity('circuit_element_types')
 export class CircuitElementType {
   @PrimaryColumn()
-  type: string; // 'AND', 'OR', ...
+  type: string; 
 
   @Column({ type: 'json' })
   metadata: {

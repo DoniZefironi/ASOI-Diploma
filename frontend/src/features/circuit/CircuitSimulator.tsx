@@ -138,7 +138,6 @@ export default function CircuitSimulator({
       panRef.current.lastX = e.clientX;
       panRef.current.lastY = e.clientY;
 
-      // Ограничиваем смещение, чтобы не уйти слишком далеко
       setOffset((o) => ({
         x: Math.max(-2000, Math.min(2000, o.x + dx)),
         y: Math.max(-2000, Math.min(2000, o.y + dy)),

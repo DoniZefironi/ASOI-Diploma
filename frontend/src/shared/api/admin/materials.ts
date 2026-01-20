@@ -57,7 +57,6 @@ export function useMaterials() {
     deleteMutation,
     {
       onSuccess: (deletedId) => {
-        // Проверяем, что currentData не undefined перед фильтрацией
         mutate((currentData: Material[] | undefined) =>
           currentData ? currentData.filter((material: Material) => material.id !== deletedId) : [],
           false

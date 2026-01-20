@@ -11,18 +11,17 @@ interface DraggableComponentProps {
 }
 
 export function DraggableComponent({ component, children }: DraggableComponentProps) {
-  // Arduino Uno нельзя двигать
   const isDraggable = component.type !== 'arduino-un';
 
   const { attributes, listeners, setNodeRef, transform } = useDraggable({
     id: `component-${component.id}`,
-    data: { type: 'component', id: component.id }, // ✅ Исправлено
+    data: { type: 'component', id: component.id }, 
     disabled: !isDraggable,
   });
 
   const style = {
     transform: CSS.Translate.toString(transform),
-    touchAction: 'none', // улучшает поведение на тач-устройствах
+    touchAction: 'none', 
   };
 
   return (

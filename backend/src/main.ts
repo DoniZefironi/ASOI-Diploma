@@ -8,20 +8,17 @@ import crypto from 'crypto';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  // Global validation
   app.useGlobalPipes(new ValidationPipe({
     whitelist: true,
     forbidNonWhitelisted: true,
     transform: true,
   }));
 
-  // CORS
   app.enableCors({
     origin: process.env.FRONTEND_URL || 'http://localhost:3000',
     credentials: true,
   });
 
-  // Swagger documentation
   const config = new DocumentBuilder()
     .setTitle('Education Platform API')
     .setDescription('API for educational platform with courses in English, Electronics, Computer Science, and IoT')

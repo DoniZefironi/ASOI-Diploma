@@ -4,7 +4,6 @@ import { Button } from '@/shared/ui/button';
 import { useSubmitProfessionalOrientation } from '@/shared/api/admin/professional-orientation';
 import { Loader2 } from 'lucide-react';
 
-// Компонент Dialog
 const Dialog = ({ 
   open, 
   onOpenChange, 
@@ -58,7 +57,6 @@ const DialogFooter = ({ children, className = '' }: { children: React.ReactNode;
   </div>
 );
 
-// Типы для результатов
 interface TestResult {
   type: string;
   title: string;
@@ -67,7 +65,6 @@ interface TestResult {
   skills: string[];
 }
 
-// Расширенные вопросы для теста
 const QUESTIONS = [
   {
     id: 1,
@@ -181,7 +178,6 @@ const QUESTIONS = [
   },
 ];
 
-// Расширенные результаты теста с описаниями
 const RESULTS: Record<string, TestResult> = {
   analytics: {
     type: 'analytics',
@@ -244,7 +240,6 @@ export const ProfOrientationTestModal = ({ isOpen, onClose }: Props) => {
   const calculateResult = (answers: Record<number, string>): TestResult => {
     const counts: Record<string, number> = {};
     
-    // Подсчитываем баллы для каждого типа
     Object.values(answers).forEach(value => {
       const types = value.split('_');
       types.forEach(type => {
@@ -252,14 +247,12 @@ export const ProfOrientationTestModal = ({ isOpen, onClose }: Props) => {
       });
     });
 
-    // Находим тип с максимальным количеством баллов
     const maxScore = Math.max(...Object.values(counts));
     const mainTypes = Object.keys(counts).filter(type => counts[type] === maxScore);
 
     if (mainTypes.length === 1) {
       return RESULTS[mainTypes[0]];
     } else {
-      // Если несколько типов с одинаковым количеством баллов
       return RESULTS.mixed;
     }
   };
@@ -271,11 +264,9 @@ export const ProfOrientationTestModal = ({ isOpen, onClose }: Props) => {
     if (currentQuestionIndex < QUESTIONS.length - 1) {
       setCurrentQuestionIndex(prev => prev + 1);
     } else {
-      // Все вопросы пройдены - вычисляем результат
       const result = calculateResult(newAnswers);
       setTestResult(result);
 
-      // Отправляем только recommendedProfession, так как хук ожидает только это поле
       submit({ recommendedProfession: result.title });
     }
   };
@@ -301,13 +292,11 @@ export const ProfOrientationTestModal = ({ isOpen, onClose }: Props) => {
           </DialogHeader>
           
           <div className="space-y-6">
-            {/* Основной результат */}
             <div className="text-center">
               <h3 className="text-2xl font-bold text-white mb-2">{testResult.title}</h3>
               <p className="text-gray-300 text-lg">{testResult.description}</p>
             </div>
 
-            {/* Подходящие профессии */}
             <div className="bg-gray-800 rounded-lg p-4">
               <h4 className="text-white font-semibold mb-3">Подходящие профессии:</h4>
               <div className="flex flex-wrap gap-2">
@@ -322,7 +311,6 @@ export const ProfOrientationTestModal = ({ isOpen, onClose }: Props) => {
               </div>
             </div>
 
-            {/* Ключевые навыки */}
             <div className="bg-gray-800 rounded-lg p-4">
               <h4 className="text-white font-semibold mb-3">Ваши сильные стороны:</h4>
               <div className="flex flex-wrap gap-2">
@@ -337,7 +325,6 @@ export const ProfOrientationTestModal = ({ isOpen, onClose }: Props) => {
               </div>
             </div>
 
-            {/* Прогресс прохождения */}
             <div className="bg-gray-800 rounded-lg p-4">
               <h4 className="text-white font-semibold mb-2">Статистика теста:</h4>
               <div className="text-gray-300 space-y-1">
@@ -420,7 +407,7 @@ export const ProfOrientationTestModal = ({ isOpen, onClose }: Props) => {
                 onClick={() => handleAnswer(option.value)}
               >
                 <span className="font-medium mr-3 text-blue-400">{option.id}.</span>
-                <span className="flex-1">{option.text}</span>
+                <span className="flex-1 text-white">{option.text}</span>
               </Button>
             ))}
           </div>

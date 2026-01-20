@@ -1,7 +1,6 @@
 import { create } from 'zustand';
 import { Component, ComponentType, Pin, Wire } from '../types';
 
-// Вспомогательные функции
 const createArduinoPins = (): Pin[] => [
   { id: 'D13', type: 'output', x: 120, y: 80 },
   { id: 'GND', type: 'ground', x: 120, y: 100 },
@@ -76,7 +75,7 @@ void loop() {
   completeWireTo: (toCompId, toPinId) => {
     const { draggingWireFrom, wires } = get();
     if (!draggingWireFrom) return;
-    if (draggingWireFrom.compId === toCompId) return; // нельзя соединять один компонент
+    if (draggingWireFrom.compId === toCompId) return; 
 
     const newWire: Wire = {
       id: Date.now().toString(),

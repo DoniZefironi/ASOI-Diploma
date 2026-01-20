@@ -9,7 +9,7 @@ export class CircuitSubmission {
   id: number;
 
   @Column({ type: 'json' })
-  circuitData: any; // { nodes: {}, wires: {} }
+  circuitData: any; 
 
   @Column()
   score: number;

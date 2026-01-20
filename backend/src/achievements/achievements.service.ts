@@ -61,7 +61,6 @@ export class AchievementsService {
   }
 
   async grantAchievement(userId: number, achievementId: number, metadata?: any): Promise<UserAchievement> {
-    // Проверяем, есть ли уже такое достижение у пользователя
     const existingAchievement = await this.userAchievementRepository.findOne({
       where: { userId, achievementId },
     });
@@ -134,7 +133,6 @@ export class AchievementsService {
         return postCount >= conditions.minPosts;
 
       case AchievementType.EARLY_BIRD:
-        // Логика для "ранней пташки" - например, регистрация в первые дни
         const registrationDate = new Date(user.createdAt);
         const courseStartDate = new Date(conditions.courseStartDate);
         const daysDifference = (courseStartDate.getTime() - registrationDate.getTime()) / (1000 * 3600 * 24);
@@ -151,7 +149,6 @@ export class AchievementsService {
     }
   }
 
-// src/achievements/achievements.service.ts
 async getLeaderboard(limit: number = 10): Promise<any[]> {
   const leaderboard = await this.userAchievementRepository
     .createQueryBuilder('userAchievement')
@@ -164,14 +161,12 @@ async getLeaderboard(limit: number = 10): Promise<any[]> {
     .limit(limit)
     .getRawMany();
 
-    // Добавляем информацию о пользователях
     const userIds = leaderboard.map(item => item.userId);
     const users = await this.userRepository.findByIds(userIds);
 
     return leaderboard.map(item => {
         const user = users.find(u => u.id === item.userId);
         
-        // Добавляем проверку на undefined
         if (!user) {
         return {
             user: {

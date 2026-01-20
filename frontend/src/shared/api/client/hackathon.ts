@@ -9,7 +9,6 @@ import {
 } from '../admin/hackathons';
 
 export const hackathonApi = {
-  // Админские методы
   getHackathons: (): Promise<Hackathon[]> =>
     apiClient.get('/hackathons'),
 
@@ -43,7 +42,6 @@ export const hackathonApi = {
   getRankings: (hackathonId: number): Promise<any> =>
     apiClient.get(`/hackathons/${hackathonId}/rankings`),
 
-  // Публичные методы (для пользователей)
   createTeam: (data: CreateTeamDto): Promise<any> =>
     apiClient.post('/hackathons/teams', data),
 

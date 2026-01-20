@@ -31,15 +31,15 @@ export interface NodeDef {
   label?: string;
   inputs: Array<{ id: string | null }>;
   value?: boolean;
-  values?: boolean[]; // Для многобитных элементов
+  values?: boolean[]; 
   counter?: number;
   clockSpeed?: number;
   clockActive?: boolean;
   state?: boolean;
   select?: number;
-  bits?: number; // Разрядность для счетчиков и регистров
-  maxCount?: number; // Максимальное значение для счетчиков
-  displayValue?: number; // Числовое значение для дисплеев
+  bits?: number; 
+  maxCount?: number; 
+  displayValue?: number; 
 }
 
 export interface Wire {

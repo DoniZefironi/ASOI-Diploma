@@ -14,7 +14,7 @@ export const Button = ({
   className = '', 
   ...props 
 }: ButtonProps) => {
-  const baseClasses = 'font-semibold transition-all duration-300 transform hover:scale-105 rounded-lg';
+  const baseClasses = 'font-semibold transition-all duration-300 transform hover:scale-105 rounded-lg flex items-center justify-center';
   
   const variants = {
     primary: 'bg-[#13A4EC] text-white hover:bg-[#1088C4]',

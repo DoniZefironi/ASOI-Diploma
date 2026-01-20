@@ -27,16 +27,16 @@ export const NodeView: React.FC<NodeViewProps> = ({ node, onPointerDown }) => {
 
   const renderSevenSegment = () => {
     const segments = [
-      { a: 1, b: 1, c: 1, d: 1, e: 1, f: 1, g: 0 }, // 0
-      { a: 0, b: 1, c: 1, d: 0, e: 0, f: 0, g: 0 }, // 1
-      { a: 1, b: 1, c: 0, d: 1, e: 1, f: 0, g: 1 }, // 2
-      { a: 1, b: 1, c: 1, d: 1, e: 0, f: 0, g: 1 }, // 3
-      { a: 0, b: 1, c: 1, d: 0, e: 0, f: 1, g: 1 }, // 4
-      { a: 1, b: 0, c: 1, d: 1, e: 0, f: 1, g: 1 }, // 5
-      { a: 1, b: 0, c: 1, d: 1, e: 1, f: 1, g: 1 }, // 6
-      { a: 1, b: 1, c: 1, d: 0, e: 0, f: 0, g: 0 }, // 7
-      { a: 1, b: 1, c: 1, d: 1, e: 1, f: 1, g: 1 }, // 8
-      { a: 1, b: 1, c: 1, d: 1, e: 0, f: 1, g: 1 }, // 9
+      { a: 1, b: 1, c: 1, d: 1, e: 1, f: 1, g: 0 }, 
+      { a: 0, b: 1, c: 1, d: 0, e: 0, f: 0, g: 0 }, 
+      { a: 1, b: 1, c: 0, d: 1, e: 1, f: 0, g: 1 }, 
+      { a: 1, b: 1, c: 1, d: 1, e: 0, f: 0, g: 1 }, 
+      { a: 0, b: 1, c: 1, d: 0, e: 0, f: 1, g: 1 }, 
+      { a: 1, b: 0, c: 1, d: 1, e: 0, f: 1, g: 1 }, 
+      { a: 1, b: 0, c: 1, d: 1, e: 1, f: 1, g: 1 }, 
+      { a: 1, b: 1, c: 1, d: 0, e: 0, f: 0, g: 0 }, 
+      { a: 1, b: 1, c: 1, d: 1, e: 1, f: 1, g: 1 }, 
+      { a: 1, b: 1, c: 1, d: 1, e: 0, f: 1, g: 1 }, 
     ];
     const activeSegments = segments[node.displayValue || 0] || segments[0];
     return (

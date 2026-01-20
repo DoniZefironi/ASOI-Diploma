@@ -13,7 +13,6 @@ export class ProfessionalOrientation {
   @Column()
   userId: number;
 
-  // Добавляем значение по умолчанию для testResult
   @Column({ type: 'json', default: {} })
   testResult: Record<string, any>;
 

@@ -1,7 +1,7 @@
 'use client';
 
 import { useDroppable } from '@dnd-kit/core';
-import { useEffect, useRef, useState } from 'react'; // ← добавили useRef
+import { useEffect, useRef, useState } from 'react'; 
 import { useSchematicStore } from '../store/useSchematicStore';
 import { Component, Pin, Wire } from '../types';
 
@@ -9,7 +9,6 @@ export function Workspace() {
   const droppable = useDroppable({ id: 'workspace' });
   const { setNodeRef: setDndRef, isOver } = droppable;
 
-  // ✅ Создаём свой ref для доступа к DOM
   const workspaceRef = useRef<HTMLDivElement>(null);
 
   const {
@@ -72,13 +71,9 @@ export function Workspace() {
     );
   };
 
-  // ❌ Удали этот обработчик — он не нужен здесь
-  // const handleDropComponent = ...
-
   return (
     <div
       ref={(node) => {
-        // Передаём DOM-элемент и в DnD, и в наш ref
         setDndRef(node);
         workspaceRef.current = node;
       }}
@@ -151,7 +146,6 @@ export function Workspace() {
   );
 }
 
-// PinElement остаётся без изменений
 function PinElement({
   compId,
   pin,

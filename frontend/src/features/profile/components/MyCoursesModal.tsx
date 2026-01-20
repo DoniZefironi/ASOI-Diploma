@@ -3,7 +3,6 @@ import { User, BookOpen, Calendar, Clock, Check, X, Loader2, Filter } from 'luci
 import { Button } from '@/shared/ui/button';
 import { useUserRegistrations } from '@/shared/api/admin';
 
-// Компонент Badge (копия из CourseRegistrationsPage)
 const Badge = ({ children, variant = 'default', className = '' }: {
   children: React.ReactNode;
   variant?: 'default' | 'secondary' | 'outline' | 'destructive' | 'pending';
@@ -25,7 +24,6 @@ const Badge = ({ children, variant = 'default', className = '' }: {
   );
 };
 
-// Компонент Table (копия из CourseRegistrationsPage)
 const Table = ({ children, className = '' }: { children: React.ReactNode; className?: string }) => (
   <div className={`w-full border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden ${className}`}>
     <table className="w-full">
@@ -64,7 +62,6 @@ const TableCell = ({ children, className = '' }: { children: React.ReactNode; cl
   </td>
 );
 
-// Компонент Dialog (улучшенная версия из CourseRegistrationsPage)
 const Dialog = ({ 
   open, 
   onOpenChange, 
@@ -130,7 +127,6 @@ interface Props {
 }
 
 export const MyCoursesModal = ({ isOpen, onClose }: Props) => {
-  // Используем хук для получения регистраций пользователя
   const { registrations: userRegistrations, isLoading, isError } = useUserRegistrations();
 
   if (isError) {

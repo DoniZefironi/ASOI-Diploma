@@ -12,12 +12,10 @@ export interface ProfessionalOrientationResult {
   createdAt: string;
 }
 
-// --- ОПРЕДЕЛЯЕМ интерфейс на фронтенде ---
 export interface ProfessionStat {
   profession: string;
   count: number;
 }
-// --- КОНЕЦ ОПРЕДЕЛЕНИЯ ---
 
 export function useProfessionalOrientation() {
   return useSWR<ProfessionalOrientationResult>('/professional-orientation', fetcher);
@@ -33,7 +31,7 @@ export function useSubmitProfessionalOrientation() {
     },
     {
       onSuccess: () => {
-        mutate(); // Обновить данные после отправки
+        mutate(); 
       },
     }
   );
@@ -44,7 +42,6 @@ export function useSubmitProfessionalOrientation() {
   };
 }
 
-// --- ИСПОЛЬЗУЕМ интерфейс ---
 export function useProfessionStats() {
   const { data, error, isLoading } = useSWR<ProfessionStat[]>('/professional-orientation/admin/stats', fetcher);
 
@@ -54,4 +51,3 @@ export function useProfessionStats() {
     isError: error,
   };
 }
-// --- КОНЕЦ ИСПОЛЬЗОВАНИЯ ---

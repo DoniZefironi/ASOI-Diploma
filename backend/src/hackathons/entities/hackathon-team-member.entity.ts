@@ -19,7 +19,7 @@ export class HackathonTeamMember {
   @Column()
   userId: number;
 
-  @Column({ default: 'member' }) // captain, member
+  @Column({ default: 'member' }) 
   role: string;
 
   @CreateDateColumn()

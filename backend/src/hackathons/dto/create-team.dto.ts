@@ -10,5 +10,5 @@ export class CreateTeamDto {
 
   @IsArray()
   @IsNumber({}, { each: true })
-  memberIds: number[]; // ID пользователей в команде (первый - капитан)
+  memberIds: number[]; 
 }

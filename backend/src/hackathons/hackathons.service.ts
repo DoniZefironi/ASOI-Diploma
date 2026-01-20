@@ -82,22 +82,18 @@ export class HackathonsService {
       throw new NotFoundException('Hackathon not found');
     }
 
-    // Проверяем, не закончилась ли регистрация
     if (new Date() > hackathon.startDate) {
       throw new BadRequestException('Registration for this hackathon has ended');
     }
 
-    // Проверяем размер команды
     if (dto.memberIds.length > hackathon.maxTeamSize) {
       throw new BadRequestException(`Team size cannot exceed ${hackathon.maxTeamSize} members`);
     }
 
-    // Проверяем, что капитан входит в состав команды
     if (!dto.memberIds.includes(captainId)) {
       throw new BadRequestException('Captain must be a member of the team');
     }
 
-    // Проверяем, что все пользователи существуют и не состоят в других командах этого хакатона
     const existingMembers = await this.teamMemberRepo.find({
       where: {
         userId: In(dto.memberIds),
@@ -111,7 +107,6 @@ export class HackathonsService {
       throw new BadRequestException(`Users ${conflictingUsers.join(', ')} are already in another team for this hackathon`);
     }
 
-    // Создаем команду
     const joinCode = this.generateJoinCode();
     const team = this.teamRepo.create({
       name: dto.name,
@@ -122,12 +117,11 @@ export class HackathonsService {
 
     const savedTeam = await this.teamRepo.save(team);
 
-    // Добавляем членов команды
     const teamMembers = dto.memberIds.map((userId, index) => 
       this.teamMemberRepo.create({
         teamId: savedTeam.id,
         userId,
-        role: index === 0 ? 'captain' : 'member' // Первый - капитан
+        role: index === 0 ? 'captain' : 'member' 
       })
     );
 
@@ -155,31 +149,26 @@ export class HackathonsService {
       throw new NotFoundException('Team not found');
     }
 
-    // Проверяем, что пользователь является членом команды
     const isMember = team.members.some(member => member.userId === userId);
     if (!isMember) {
       throw new ForbiddenException('You are not a member of this team');
     }
 
-    // Проверяем, что хакатон еще идет
     if (new Date() > team.hackathon.endDate) {
       throw new BadRequestException('Hackathon has ended');
     }
 
-    // Создаем или обновляем проект
     let project = await this.projectRepo.findOne({
       where: { teamId: dto.teamId }
     });
 
     if (project) {
-      // Используем явное присваивание для nullable полей
       project.name = dto.name;
       project.description = dto.description;
       if (dto.repositoryUrl !== undefined) project.repositoryUrl = dto.repositoryUrl;
       if (dto.presentationUrl !== undefined) project.presentationUrl = dto.presentationUrl;
       if (dto.demoUrl !== undefined) project.demoUrl = dto.demoUrl;
     } else {
-      // Создаем проект через явное присваивание
       project = new HackathonProject();
       project.teamId = dto.teamId;
       project.name = dto.name;
@@ -207,13 +196,11 @@ export class HackathonsService {
       throw new BadRequestException('Project not submitted yet');
     }
 
-    // Проверяем, что пользователь является членом команды
     const isMember = team.members.some(member => member.userId === userId);
     if (!isMember) {
       throw new ForbiddenException('You are not a member of this team');
     }
 
-    // Помечаем проект как отправленный
     team.project.isSubmitted = true;
     team.project.submittedAt = new Date();
 
@@ -230,7 +217,6 @@ export class HackathonsService {
       throw new NotFoundException('Project not found');
     }
 
-    // Проверяем, что жюри имеет право оценивать этот проект
     const isJury = await this.juryRepo.findOne({
       where: {
         hackathonId: project.team.hackathonId,
@@ -242,7 +228,6 @@ export class HackathonsService {
       throw new ForbiddenException('You are not a jury member for this hackathon');
     }
 
-    // Проверяем, не оценивал ли уже этот проект
     const existingGrade = await this.gradeRepo.findOne({
       where: {
         projectId,
@@ -251,7 +236,6 @@ export class HackathonsService {
     });
 
     if (existingGrade) {
-      // Обновляем существующую оценку
       existingGrade.innovationScore = dto.innovationScore;
       existingGrade.technicalScore = dto.technicalScore;
       existingGrade.presentationScore = dto.presentationScore;
@@ -260,7 +244,6 @@ export class HackathonsService {
       existingGrade.gradedAt = new Date();
       return this.gradeRepo.save(existingGrade);
     } else {
-      // Создаем новую оценку через явное присваивание
       const grade = new HackathonGrade();
       grade.projectId = projectId;
       grade.juryId = juryId;
@@ -298,7 +281,7 @@ export class HackathonsService {
             sum + Number(grade.innovationScore) + Number(grade.technicalScore) + 
                  Number(grade.presentationScore) + Number(grade.usabilityScore), 0
           );
-          const averageScore = totalScore / (grades.length * 4); // 4 критерия
+          const averageScore = totalScore / (grades.length * 4); 
 
           rankings.push({
             teamId: team.id,
@@ -390,7 +373,6 @@ async addJury(hackathonId: number, userId: number): Promise<HackathonJury> {
     throw new NotFoundException('Hackathon not found');
   }
 
-  // Проверяем, не добавлен ли уже этот пользователь как жюри
   const existingJury = await this.juryRepo.findOne({
     where: { hackathonId, userId }
   });

@@ -154,7 +154,7 @@ export default function MaterialManagement() {
           <Badge variant="secondary" className="text-sm">
             Всего: {materials?.length || 0}
           </Badge>
-          <Button onClick={handleCreate} className="gap-2">
+          <Button onClick={handleCreate} className="gap-2 flex justify-center">
             <Plus className="h-4 w-4" /> 
             Добавить материал
           </Button>
@@ -257,7 +257,7 @@ export default function MaterialManagement() {
               <p className="text-sm mt-2">
                 Добавьте первый материал в библиотеку
               </p>
-              <Button onClick={handleCreate} className="mt-4">
+              <Button onClick={handleCreate} className="mt-4 flex justify-center">
                 <Plus className="h-4 w-4 mr-2" />
                 Добавить материал
               </Button>

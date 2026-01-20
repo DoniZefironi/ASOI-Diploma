@@ -13,7 +13,6 @@ import { UserRoleEnum } from '../users/entities/user-role.entity';
 export class ForumController {
   constructor(private readonly forumService: ForumService) {}
 
-  // Sections
   @Get('sections')
   findAllSections() {
     return this.forumService.findAllSections();
@@ -36,7 +35,6 @@ export class ForumController {
     return this.forumService.createSection(createSectionDto);
   }
 
-  // Topics
   @Get('topics')
   getRecentTopics(@Query('limit') limit?: string) {
     return this.forumService.getRecentTopics(limit ? +limit : 10);
@@ -86,7 +84,6 @@ export class ForumController {
     return this.forumService.unlockTopic(+id);
   }
 
-  // Posts
   @Get('topics/:topicId/posts')
   getPostsByTopic(@Param('topicId') topicId: string) {
     return this.forumService.getPostsByTopic(+topicId);

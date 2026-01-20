@@ -63,9 +63,9 @@ export class CourseGroupsController {
     return this.courseGroupsService.getUserRegistrations(req.user.userId);
   }
 
-  @Get('registrations/all') // GET /course-groups/registrations/all
+  @Get('registrations/all') 
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRoleEnum.ADMIN, UserRoleEnum.MENTOR) // Доступ для администраторов и менторов
+  @Roles(UserRoleEnum.ADMIN, UserRoleEnum.MENTOR)
   getAllRegistrations() {
     return this.courseGroupsService.getAllRegistrations();
   }

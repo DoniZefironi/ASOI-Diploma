@@ -9,7 +9,6 @@ export interface AdminStats {
   totalCourses: number;
   totalGroups: number;
   pendingRegistrations: number;
-  // Добавьте другие поля статистики по необходимости
 }
 
 export function useAdminStats() {

@@ -1,9 +1,9 @@
 export type ComponentType = 'arduino-un' | 'led' | 'button' | 'resistor';
 
 export interface Pin {
-  id: string;      // 'D13', 'GND', 'anode' и т.д.
+  id: string;      
   type: 'input' | 'output' | 'power' | 'ground';
-  x: number;       // смещение относительно компонента
+  x: number;       
   y: number;
 }
 

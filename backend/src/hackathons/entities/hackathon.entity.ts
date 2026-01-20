@@ -28,7 +28,7 @@ export class Hackathon {
   @Column({ default: true })
   isPublic: boolean;
 
-  @Column({ default: 'pending' }) // pending, active, completed, cancelled
+  @Column({ default: 'pending' }) 
   status: string;
 
   @CreateDateColumn()

@@ -18,13 +18,13 @@ export interface ScheduleItem {
   id: number;
   title: string;
   description: string;
-  type: string; // Добавлено
-  startTime: string; // Изменено с startDateTime
-  endTime: string;   // Изменено с endDateTime
-  location: string;  // Добавлено
-  meetingUrl?: string; // Добавлено
-  courseGroupId: number; // Добавлено (или courseId/groupId)
-  courseGroup?: { // Добавлено
+  type: string; 
+  startTime: string; 
+  endTime: string;  
+  location: string;  
+  meetingUrl?: string; 
+  courseGroupId: number; 
+  courseGroup?: { 
     id: number;
     name: string;
     course?: {
@@ -32,14 +32,14 @@ export interface ScheduleItem {
       name: string;
     };
   };
-  instructor?: { // Добавлено
+  instructor?: { 
     id: number;
     firstName: string;
     lastName: string;
   };
-  instructorId?: number; // Добавлено
-  createdAt: string; // Добавлено
-  updatedAt: string; // Добавлено
+  instructorId?: number; 
+  createdAt: string; 
+  updatedAt: string; 
 }
 
 export function useSchedule() {
@@ -77,7 +77,6 @@ export function useSchedule() {
     deleteMutation,
     {
       onSuccess: (deletedId) => {
-        // Проверяем, что currentData не undefined перед фильтрацией
         mutate((currentData: ScheduleItem[] | undefined) =>
           currentData ? currentData.filter((item: ScheduleItem) => item.id !== deletedId) : [],
           false

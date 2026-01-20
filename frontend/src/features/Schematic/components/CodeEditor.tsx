@@ -3,7 +3,6 @@
 import dynamic from 'next/dynamic';
 import { useSchematicStore } from '../store/useSchematicStore';
 
-// Динамический импорт Monaco (он тяжёлый)
 const Editor = dynamic(() => import('@monaco-editor/react'), { ssr: false });
 
 export function CodeEditor() {

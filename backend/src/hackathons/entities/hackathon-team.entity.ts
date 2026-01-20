@@ -14,11 +14,11 @@ export class HackathonTeam {
   @Column({ unique: true })
   joinCode: string;
 
-  @Column({ default: 'pending' }) // pending, approved, rejected
+  @Column({ default: 'pending' }) 
   status: string;
 
   @Column({ type: 'text', nullable: true })
-  rejectionReason: string | null; // Разрешаем null
+  rejectionReason: string | null; 
 
   @ManyToOne(() => Hackathon, hackathon => hackathon.teams)
   hackathon: Hackathon;

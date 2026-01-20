@@ -75,7 +75,6 @@ export class AssignmentsService {
       throw new NotFoundException('Assignment not found');
     }
 
-    // Проверка, что пользователь зарегистрирован в группе
     const registration = await this.registrationRepository.findOne({
       where: {
         userId,
@@ -88,7 +87,6 @@ export class AssignmentsService {
       throw new ForbiddenException('You are not registered for this course group');
     }
 
-    // Проверка дедлайна
     if (new Date() > assignment.deadline) {
       throw new ConflictException('Assignment deadline has passed');
     }
@@ -147,7 +145,6 @@ export class AssignmentsService {
       throw new NotFoundException('Submission not found');
     }
 
-    // Проверка, что рецензент зарегистрирован в той же группе
     const reviewerRegistration = await this.registrationRepository.findOne({
       where: {
         userId: reviewerId,
@@ -160,12 +157,10 @@ export class AssignmentsService {
       throw new ForbiddenException('You are not registered for this course group');
     }
 
-    // Проверка, что пользователь не рецензирует свою собственную работу
     if (submission.userId === reviewerId) {
       throw new ConflictException('You cannot review your own submission');
     }
 
-    // Проверка на существующую рецензию
     const existingReview = await this.peerReviewRepository.findOne({
       where: {
         submissionId: createPeerReviewDto.submissionId,
@@ -182,7 +177,6 @@ export class AssignmentsService {
       reviewerId,
     });
 
-    // Обновление статуса submission
     submission.status = SubmissionStatus.UNDER_REVIEW;
     await this.submissionRepository.save(submission);
 
@@ -204,7 +198,6 @@ export class AssignmentsService {
       throw new ConflictException('No peer reviews available for this submission');
     }
 
-    // Расчет средней оценки
     const totalScore = reviews.reduce((sum, review) => sum + review.score, 0);
     const averageScore = totalScore / reviews.length;
 

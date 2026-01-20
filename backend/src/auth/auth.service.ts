@@ -74,7 +74,6 @@ export class AuthService {
 
     const savedUser = await this.usersRepository.save(user);
 
-    // Create default role
     const userRole = this.userRoleRepository.create({
       user: savedUser,
       role: UserRoleEnum.REGISTERED_USER

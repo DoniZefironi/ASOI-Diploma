@@ -18,10 +18,8 @@ export const ProfilePage = () => {
   const [isCoursesModalOpen, setIsCoursesModalOpen] = useState(false);
   const [isProfOrientationModalOpen, setIsProfOrientationModalOpen] = useState(false);
 
-  // Используем хуки
   const { data: profOrientationResult } = useProfessionalOrientation();
   
-  // Проверяем регистрацию на курс информатики
   const { 
     registration: informaticsRegistration, 
     hasAccess: hasInformaticsAccess,
@@ -65,7 +63,6 @@ export const ProfilePage = () => {
   const isMentor = user?.roles?.includes('mentor') || false;
   const isStudent = user?.roles?.includes('student') || false;
 
-  // Проверяем, может ли пользователь пройти профориентацию
   const canShowProfOrientationTab = isStudent && hasInformaticsAccess && !profOrientationResult;
 
   if (!user) {
@@ -172,7 +169,6 @@ export const ProfilePage = () => {
                   ID пользователя: {currentUserId || 'Н/Д'}
                 </div>
                 
-                {/* Бейджи ролей */}
                 <div className="flex flex-wrap justify-center gap-2 mt-3">
                   {user.roles?.map((role: string, index: number) => (
                     <span 
@@ -192,7 +188,6 @@ export const ProfilePage = () => {
                   ))}
                 </div>
 
-                {/* Статус регистрации на информатику */}
                 {isStudent && informaticsRegistration && (
                   <div className="mt-4 p-3 rounded-lg bg-gray-800">
                     <p className="text-sm font-medium text-white mb-1">
@@ -211,14 +206,12 @@ export const ProfilePage = () => {
                   </div>
                 )}
 
-                {/* Показываем загрузку */}
                 {registrationsLoading && (
                   <div className="mt-4 p-3 rounded-lg bg-gray-800">
                     <p className="text-sm text-white">Загрузка данных о курсах...</p>
                   </div>
                 )}
 
-                {/* Сообщение если нет заявки на информатику */}
                 {isStudent && !registrationsLoading && !informaticsRegistration && (
                   <div className="mt-4 p-3 rounded-lg bg-gray-800">
                     <p className="text-sm text-white">Не зарегистрирован на курс информатики</p>
@@ -258,7 +251,6 @@ export const ProfilePage = () => {
           </div>
 
           <div className="lg:col-span-2 space-y-6">
-            {/* Админ панель */}
             {isAdmin && (
               <Card className="p-6 border-l-4 border-l-red-500">
                 <div className="flex items-center justify-between mb-4">
@@ -301,7 +293,6 @@ export const ProfilePage = () => {
               </Card>
             )}
 
-            {/* Ментор панель */}
             {isMentor && (
               <Card className="p-6 border-l-4 border-l-purple-500">
                 <div className="flex items-center justify-between mb-4">
@@ -344,7 +335,6 @@ export const ProfilePage = () => {
               </Card>
             )}
 
-            {/* Студент панель */}
             {isStudent && (
               <Card className="p-6 border-l-4 border-l-green-500">
                 <div className="flex items-center justify-between mb-4">
@@ -399,7 +389,6 @@ export const ProfilePage = () => {
               </Card>
             )}
 
-            {/* Панель профориентации */}
             {isStudent && hasInformaticsAccess && !profOrientationResult && (
               <Card className="p-6 border-l-4 border-l-blue-500">
                 <div className="flex items-center justify-between mb-4">
@@ -595,58 +584,8 @@ export const ProfilePage = () => {
             </Card>
 
             <Card className="p-6">
-              <h3 className="text-2xl font-bold text-white mb-6">Недавняя активность</h3>
-              <div className="space-y-4">
-                <div className="flex items-center space-x-4 p-3 bg-gray-800 rounded-lg">
-                  <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                    <span className="text-blue-600">📚</span>
-                  </div>
-                  <div className="flex-1">
-                    <p className="font-semibold text-white">Завершено: Основы Python</p>
-                    <p className="text-sm text-white">2 дня назад</p>
-                  </div>
-                  <span className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm">
-                    Завершено
-                  </span>
-                </div>
-                <div className="flex items-center space-x-4 p-3 bg-gray-800 rounded-lg">
-                  <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
-                    <span className="text-green-600">🎯</span>
-                  </div>
-                  <div className="flex-1">
-                    <p className="font-semibold text-white">Начат: Веб-разработка</p>
-                    <p className="text-sm text-white">1 неделю назад</p>
-                  </div>
-                  <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">
-                    В процессе
-                  </span>
-                </div>
-                <div className="flex items-center space-x-4 p-3 bg-gray-800 rounded-lg">
-                  <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
-                    <span className="text-purple-600">📜</span>
-                  </div>
-                  <div className="flex-1">
-                    <p className="font-semibold text-white">Получен сертификат: JavaScript</p>
-                    <p className="text-sm text-white">2 недели назад</p>
-                  </div>
-                  <span className="px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm">
-                    Сертификат
-                  </span>
-                </div>
-              </div>
-            </Card>
-
-            <Card className="p-6">
               <h3 className="text-2xl font-bold text-white mb-6">Быстрые действия</h3>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <Button 
-                  variant="secondary" 
-                  className="p-4"
-                  onClick={() => setIsCoursesModalOpen(true)}
-                >
-                  <span className="text-2xl mb-2">📚</span>
-                  <span>Мои курсы</span>
-                </Button>
                 {canShowProfOrientationTab && (
                   <Button 
                     variant="secondary" 
@@ -665,14 +604,6 @@ export const ProfilePage = () => {
                     <span className="text-2xl mb-2">🧭</span>
                     <span>Профориентация</span>
                   </Button>
-                <Button variant="secondary" className="p-4">
-                  <span className="text-2xl mb-2">🎓</span>
-                  <span>Сертификаты</span>
-                </Button>
-                <Button variant="secondary" className="p-4">
-                  <span className="text-2xl mb-2">⚙️</span>
-                  <span>Настройки</span>
-                </Button>
                 <Button variant="secondary" className="p-4">
                   <span className="text-2xl mb-2">🔒</span>
                   <span>Приватность</span>

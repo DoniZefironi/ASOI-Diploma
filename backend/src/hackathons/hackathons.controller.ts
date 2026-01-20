@@ -51,7 +51,6 @@ export class HackathonsController {
     return this.hackathonsService.getStats();
   }
 
-  // Дополнительные методы для управления командами
   @Patch('teams/:teamId/approve')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRoleEnum.ADMIN)
@@ -85,7 +84,6 @@ export class HackathonsController {
     return this.hackathonsService.getRankings(id);
   }
 
-  // Публичные методы для пользователей
   @Post('teams')
   @UseGuards(JwtAuthGuard)
   createTeam(@Body() dto: CreateTeamDto, @Request() req) {

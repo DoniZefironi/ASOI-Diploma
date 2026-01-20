@@ -23,7 +23,6 @@ export class ForumService {
     private registrationRepository: Repository<CourseRegistration>,
   ) {}
 
-  // Sections
   async createSection(createSectionDto: CreateForumSectionDto): Promise<ForumSection> {
     const section = this.sectionRepository.create(createSectionDto);
     return this.sectionRepository.save(section);
@@ -57,7 +56,6 @@ export class ForumService {
     });
   }
 
-  // Topics
   async createTopic(createTopicDto: CreateForumTopicDto, authorId: number): Promise<ForumTopic> {
     const section = await this.sectionRepository.findOne({
       where: { id: createTopicDto.sectionId },
@@ -68,7 +66,6 @@ export class ForumService {
       throw new NotFoundException('Forum section not found');
     }
 
-    // Проверка, что пользователь зарегистрирован на курс
     const registration = await this.registrationRepository.findOne({
       where: {
         userId: authorId,
@@ -88,7 +85,6 @@ export class ForumService {
 
     const savedTopic = await this.topicRepository.save(topic);
 
-    // Обновляем счетчик тем в разделе
     await this.sectionRepository.increment({ id: section.id }, 'topicCount', 1);
 
     return savedTopic;
@@ -104,7 +100,6 @@ export class ForumService {
       throw new NotFoundException('Forum topic not found');
     }
 
-    // Увеличиваем счетчик просмотров
     await this.topicRepository.increment({ id }, 'viewCount', 1);
 
     return topic;
@@ -121,7 +116,6 @@ export class ForumService {
     });
   }
 
-  // Posts
   async createPost(createPostDto: CreateForumPostDto, authorId: number): Promise<ForumPost> {
     const topic = await this.topicRepository.findOne({
       where: { id: createPostDto.topicId },
@@ -136,7 +130,6 @@ export class ForumService {
       throw new ForbiddenException('This topic is locked');
     }
 
-    // Проверка, что пользователь зарегистрирован на курс
     const registration = await this.registrationRepository.findOne({
       where: {
         userId: authorId,
@@ -156,11 +149,9 @@ export class ForumService {
 
     const savedPost = await this.postRepository.save(post);
 
-    // Обновляем счетчики
     await this.topicRepository.increment({ id: topic.id }, 'postCount', 1);
     await this.sectionRepository.increment({ id: topic.sectionId }, 'postCount', 1);
 
-    // Обновляем время последнего сообщения в теме
     await this.topicRepository.update(topic.id, {
       lastPostAt: new Date(),
       lastPostById: authorId,

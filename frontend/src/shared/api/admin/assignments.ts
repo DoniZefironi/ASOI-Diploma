@@ -18,16 +18,16 @@ export interface Assignment {
   id: number;
   title: string;
   description: string;
-  type: string; // Добавлено
-  maxScore: number; // Добавлено
-  deadline: string; // Заменено dueDate на deadline
-  isActive: boolean; // Добавлено
-  courseGroupId: number; // Добавлено (или courseId, в зависимости от вашей логики)
-  courseGroup?: { // Добавлено
+  type: string; 
+  maxScore: number; 
+  deadline: string; 
+  isActive: boolean; 
+  courseGroupId: number; 
+  courseGroup?: { 
     id: number;
     name: string;
   };
-  createdAt: string; // Добавлено
+  createdAt: string;
 }
 
 export function useAssignments() {

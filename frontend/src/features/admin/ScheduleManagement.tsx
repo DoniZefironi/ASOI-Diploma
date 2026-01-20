@@ -192,7 +192,7 @@ export default function ScheduleManagement() {
           <Badge variant="secondary" className="text-sm">
             Всего: {schedule?.length || 0}
           </Badge>
-          <Button onClick={handleCreate} className="gap-2">
+          <Button onClick={handleCreate} className="gap-2 flex justify-center">
             <Plus className="h-4 w-4" /> 
             Добавить занятие
           </Button>

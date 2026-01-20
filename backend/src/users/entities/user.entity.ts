@@ -7,8 +7,7 @@ import { ForumPost } from '../../forum/entities/forum-post.entity';
 import { UserAchievement } from '../../achievements/entities/user-achievement.entity';
 import { PeerReview } from '../../assignments/entities/peer-review.entity';
 import { CircuitSubmission } from '../../circuit/entities/circuit-submission.entity'
-// Импортируйте вашу новую сущность
-import { ProfessionalOrientation } from '../../professional-orientation/entities/professional-orientation.entity'; // Убедитесь, что путь правильный
+import { ProfessionalOrientation } from '../../professional-orientation/entities/professional-orientation.entity'; 
 
 @Entity('users')
 export class User {
@@ -60,7 +59,6 @@ export class User {
   @OneToMany(() => CircuitSubmission, submission => submission.user)
   circuitSubmissions: CircuitSubmission[];
 
-  // Добавьте это свойство
   @OneToMany(() => ProfessionalOrientation, professionalOrientation => professionalOrientation.user)
   professionalOrientations: ProfessionalOrientation[];
 }

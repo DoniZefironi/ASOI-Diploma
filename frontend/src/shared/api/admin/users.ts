@@ -16,9 +16,9 @@ export interface User {
   firstName: string;
   lastName: string;
   email: string;
-  roles: any[]; // Или более точный тип для роли
+  roles: any[]; 
   isActive: boolean;
-  createdAt: string; // ISO string
+  createdAt: string; 
 }
 
 export function useUsers() {

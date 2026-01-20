@@ -5,12 +5,10 @@ import { Repository } from 'typeorm';
 import { ProfessionalOrientation } from './entities/professional-orientation.entity';
 import { CreateProfessionalOrientationDto } from './dto/create-professional-orientation.dto';
 
-// --- ЭКСПОРТИРУЕМ интерфейс ---
 export interface ProfessionStat {
   profession: string;
   count: number;
 }
-// --- КОНЕЦ ЭКСПОРТА ---
 
 @Injectable()
 export class ProfessionalOrientationService {
@@ -27,12 +25,11 @@ export class ProfessionalOrientationService {
     const result = this.repo.create({
       userId,
       recommendedProfession: dto.recommendedProfession,
-      testResult: dto.testResult || {}, // Добавляем значение по умолчанию
+      testResult: dto.testResult || {}, 
     });
     return this.repo.save(result);
   }
 
-  // Добавляем метод для обновления существующей записи
   async updateOrCreate(userId: number, dto: CreateProfessionalOrientationDto) {
     const existing = await this.findByUserId(userId);
     
@@ -46,19 +43,17 @@ export class ProfessionalOrientationService {
   }
   
   async getStats(): Promise<ProfessionStat[]> {
-    // Используем TypeORM QueryBuilder для агрегации
     const stats = await this.repo
       .createQueryBuilder('po')
       .select('po.recommendedProfession', 'profession')
       .addSelect('COUNT(po.id)', 'count')
       .groupBy('po.recommendedProfession')
-      .orderBy('count', 'DESC') // Сортируем по убыванию
-      .getRawMany(); // getRawMany возвращает объекты с полями из SELECT
+      .orderBy('count', 'DESC') 
+      .getRawMany(); 
 
-    // Приводим к нужному типу
     return stats.map(row => ({
       profession: row.profession,
-      count: parseInt(row.count, 10), // COUNT возвращает строку, преобразуем в число
+      count: parseInt(row.count, 10), 
     }));
   }
 }
