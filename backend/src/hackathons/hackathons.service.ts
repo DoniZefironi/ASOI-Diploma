@@ -4,8 +4,7 @@ import { Repository, In } from 'typeorm';
 import { Hackathon } from './entities/hackathon.entity';
 import { HackathonTeam } from './entities/hackathon-team.entity';
 import { HackathonTeamMember } from './entities/hackathon-team-member.entity';
-import { HackathonProject } from './entities/hackathon-project.entity';
-import { HackathonJury } from './entities/hackathon-jury.entity';
+import { HackathonSubmission } from './entities/hackathon-submission.entity';
 import { HackathonGrade } from './entities/hackathon-grade.entity';
 import { CreateHackathonDto } from './dto/create-hackathon.dto';
 import { CreateTeamDto } from './dto/create-team.dto';
@@ -16,7 +15,7 @@ export interface HackathonStats {
   totalHackathons: number;
   activeHackathons: number;
   totalParticipants: number;
-  totalProjects: number;
+  totalSubmissions: number;
 }
 
 export interface TeamRanking {
@@ -36,10 +35,8 @@ export class HackathonsService {
     private readonly teamRepo: Repository<HackathonTeam>,
     @InjectRepository(HackathonTeamMember)
     private readonly teamMemberRepo: Repository<HackathonTeamMember>,
-    @InjectRepository(HackathonProject)
-    private readonly projectRepo: Repository<HackathonProject>,
-    @InjectRepository(HackathonJury)
-    private readonly juryRepo: Repository<HackathonJury>,
+    @InjectRepository(HackathonSubmission)
+    private readonly submissionRepo: Repository<HackathonSubmission>,
     @InjectRepository(HackathonGrade)
     private readonly gradeRepo: Repository<HackathonGrade>,
   ) {}
@@ -49,13 +46,14 @@ export class HackathonsService {
       ...dto,
       startDate: new Date(dto.startDate),
       endDate: new Date(dto.endDate),
+      registrationDeadline: dto.registrationDeadline ? new Date(dto.registrationDeadline) : null,
     });
-    return this.hackathonRepo.save(hackathon);
+    return await this.hackathonRepo.save(hackathon);
   }
 
   async findAll(): Promise<Hackathon[]> {
     return this.hackathonRepo.find({
-      relations: ['teams', 'juryMembers'],
+      relations: ['course', 'teams'],
       order: { startDate: 'DESC' }
     });
   }
@@ -63,17 +61,17 @@ export class HackathonsService {
   async findOne(id: number): Promise<Hackathon> {
     const hackathon = await this.hackathonRepo.findOne({
       where: { id },
-      relations: ['teams', 'teams.members', 'teams.members.user', 'juryMembers', 'juryMembers.user']
+      relations: ['course', 'teams', 'teams.members', 'teams.members.user', 'teams.submissions', 'teams.submissions.grades'],
     });
-    
+
     if (!hackathon) {
       throw new NotFoundException('Hackathon not found');
     }
-    
+
     return hackathon;
   }
 
-  async createTeam(dto: CreateTeamDto, captainId: number): Promise<HackathonTeam> {
+  async createTeam(dto: CreateTeamDto, leaderId: number): Promise<HackathonTeam> {
     const hackathon = await this.hackathonRepo.findOne({
       where: { id: dto.hackathonId }
     });
@@ -82,18 +80,30 @@ export class HackathonsService {
       throw new NotFoundException('Hackathon not found');
     }
 
-    if (new Date() > hackathon.startDate) {
-      throw new BadRequestException('Registration for this hackathon has ended');
+    const now = new Date();
+    if (hackathon.registrationDeadline && now > hackathon.registrationDeadline) {
+      throw new BadRequestException('Registration deadline has passed');
     }
 
-    if (dto.memberIds.length > hackathon.maxTeamSize) {
-      throw new BadRequestException(`Team size cannot exceed ${hackathon.maxTeamSize} members`);
+    if (now > hackathon.startDate) {
+      throw new BadRequestException('Hackathon has already started');
     }
 
-    if (!dto.memberIds.includes(captainId)) {
-      throw new BadRequestException('Captain must be a member of the team');
+    // Проверка размера команды
+    const memberCount = dto.memberIds.length;
+    if (memberCount < hackathon.minTeamSize) {
+      throw new BadRequestException(`Minimum team size is ${hackathon.minTeamSize}`);
+    }
+    if (memberCount > hackathon.maxTeamSize) {
+      throw new BadRequestException(`Maximum team size is ${hackathon.maxTeamSize}`);
     }
 
+    // Лидер должен быть в команде
+    if (!dto.memberIds.includes(leaderId)) {
+      throw new BadRequestException('Leader must be a member of the team');
+    }
+
+    // Проверка: пользователь уже в другой команде этого хакатона
     const existingMembers = await this.teamMemberRepo.find({
       where: {
         userId: In(dto.memberIds),
@@ -103,165 +113,165 @@ export class HackathonsService {
     });
 
     if (existingMembers.length > 0) {
-      const conflictingUsers = existingMembers.map(member => member.userId);
-      throw new BadRequestException(`Users ${conflictingUsers.join(', ')} are already in another team for this hackathon`);
+      const conflictingUsers = existingMembers.map(m => m.userId);
+      throw new BadRequestException(`Users ${conflictingUsers.join(', ')} are already in another team`);
     }
 
-    const joinCode = this.generateJoinCode();
-    const team = this.teamRepo.create({
-      name: dto.name,
-      hackathonId: dto.hackathonId,
-      joinCode,
-      status: 'pending'
-    });
+    const team = new HackathonTeam() as HackathonTeam;
+    team.name = dto.name;
+    team.hackathonId = dto.hackathonId;
+    team.leaderId = leaderId;
+    team.status = 'forming';
+    team.projectName = dto.projectName || null;
+    team.projectDescription = dto.projectDescription || null;
 
     const savedTeam = await this.teamRepo.save(team);
 
-    const teamMembers = dto.memberIds.map((userId, index) => 
-      this.teamMemberRepo.create({
-        teamId: savedTeam.id,
-        userId,
-        role: index === 0 ? 'captain' : 'member' 
-      })
-    );
+    // Добавляем участников
+    const teamMembers = dto.memberIds.map((userId, index) => {
+      const member = new HackathonTeamMember() as HackathonTeamMember;
+      member.teamId = savedTeam.id;
+      member.userId = userId;
+      member.role = index === 0 ? 'leader' : 'member';
+      return member;
+    });
 
     await this.teamMemberRepo.save(teamMembers);
 
-    const teamWithMembers = await this.teamRepo.findOne({
+    const result = await this.teamRepo.findOne({
       where: { id: savedTeam.id },
       relations: ['members', 'members.user']
     });
 
-    if (!teamWithMembers) {
+    if (!result) {
       throw new NotFoundException('Team not found after creation');
     }
 
-    return teamWithMembers;
+    return result;
   }
 
-  async submitProject(dto: SubmitProjectDto, userId: number): Promise<HackathonProject> {
+  async joinTeam(teamId: number, userId: number): Promise<HackathonTeam> {
     const team = await this.teamRepo.findOne({
-      where: { id: dto.teamId },
-      relations: ['members', 'hackathon']
+      where: { id: teamId },
+      relations: ['hackathon', 'members']
     });
 
     if (!team) {
       throw new NotFoundException('Team not found');
     }
 
-    const isMember = team.members.some(member => member.userId === userId);
-    if (!isMember) {
-      throw new ForbiddenException('You are not a member of this team');
+    // Проверка: хакатон ещё принимает регистрации
+    const now = new Date();
+    if (team.hackathon.registrationDeadline && now > team.hackathon.registrationDeadline) {
+      throw new BadRequestException('Registration deadline has passed');
     }
 
-    if (new Date() > team.hackathon.endDate) {
+    // Проверка: пользователь ещё не в команде
+    const existingMember = await this.teamMemberRepo.findOne({
+      where: { teamId, userId }
+    });
+
+    if (existingMember) {
+      throw new BadRequestException('User is already in this team');
+    }
+
+    // Проверка: пользователь не в другой команде этого хакатона
+    const otherTeam = await this.teamMemberRepo.findOne({
+      where: {
+        userId,
+        team: { hackathonId: team.hackathonId }
+      }
+    });
+
+    if (otherTeam) {
+      throw new BadRequestException('User is already in another team for this hackathon');
+    }
+
+    // Проверка: размер команды
+    if (team.members.length >= team.hackathon.maxTeamSize) {
+      throw new BadRequestException(`Team is full (max ${team.hackathon.maxTeamSize} members)`);
+    }
+
+    const member = new HackathonTeamMember() as HackathonTeamMember;
+    member.teamId = teamId;
+    member.userId = userId;
+    member.role = 'member';
+
+    await this.teamMemberRepo.save(member);
+
+    const result = await this.teamRepo.findOne({
+      where: { id: teamId },
+      relations: ['members', 'members.user']
+    });
+
+    if (!result) {
+      throw new NotFoundException('Team not found');
+    }
+
+    return result;
+  }
+
+  async submitProject(dto: SubmitProjectDto, teamId: number): Promise<HackathonSubmission> {
+    const team = await this.teamRepo.findOne({
+      where: { id: teamId },
+      relations: ['hackathon']
+    });
+
+    if (!team) {
+      throw new NotFoundException('Team not found');
+    }
+
+    const now = new Date();
+    if (now > team.hackathon.endDate) {
       throw new BadRequestException('Hackathon has ended');
     }
 
-    let project = await this.projectRepo.findOne({
-      where: { teamId: dto.teamId }
-    });
+    const submission = new HackathonSubmission() as HackathonSubmission;
+    submission.teamId = teamId;
+    submission.circuitProjectId = dto.circuitProjectId || null;
+    submission.documentationUrl = dto.documentationUrl || null;
+    submission.presentationUrl = dto.presentationUrl || null;
+    submission.videoDemoUrl = dto.videoDemoUrl || null;
+    submission.sourceCodeUrl = dto.sourceCodeUrl || null;
+    submission.submissionNote = dto.submissionNote || null;
 
-    if (project) {
-      project.name = dto.name;
-      project.description = dto.description;
-      if (dto.repositoryUrl !== undefined) project.repositoryUrl = dto.repositoryUrl;
-      if (dto.presentationUrl !== undefined) project.presentationUrl = dto.presentationUrl;
-      if (dto.demoUrl !== undefined) project.demoUrl = dto.demoUrl;
-    } else {
-      project = new HackathonProject();
-      project.teamId = dto.teamId;
-      project.name = dto.name;
-      project.description = dto.description;
-      project.repositoryUrl = dto.repositoryUrl || null;
-      project.presentationUrl = dto.presentationUrl || null;
-      project.demoUrl = dto.demoUrl || null;
-      project.isSubmitted = false;
-    }
-
-    return this.projectRepo.save(project);
+    return await this.submissionRepo.save(submission);
   }
 
-  async finalizeProjectSubmission(teamId: number, userId: number): Promise<HackathonProject> {
-    const team = await this.teamRepo.findOne({
-      where: { id: teamId },
-      relations: ['members', 'hackathon', 'project']
-    });
-
-    if (!team) {
-      throw new NotFoundException('Team not found');
-    }
-
-    if (!team.project) {
-      throw new BadRequestException('Project not submitted yet');
-    }
-
-    const isMember = team.members.some(member => member.userId === userId);
-    if (!isMember) {
-      throw new ForbiddenException('You are not a member of this team');
-    }
-
-    team.project.isSubmitted = true;
-    team.project.submittedAt = new Date();
-
-    return this.projectRepo.save(team.project);
-  }
-
-  async gradeProject(projectId: number, juryId: number, dto: GradeProjectDto): Promise<HackathonGrade> {
-    const project = await this.projectRepo.findOne({
-      where: { id: projectId },
+  async gradeSubmission(submissionId: number, judgeId: number, dto: GradeProjectDto): Promise<HackathonGrade> {
+    const submission = await this.submissionRepo.findOne({
+      where: { id: submissionId },
       relations: ['team', 'team.hackathon']
     });
 
-    if (!project) {
-      throw new NotFoundException('Project not found');
+    if (!submission) {
+      throw new NotFoundException('Submission not found');
     }
 
-    const isJury = await this.juryRepo.findOne({
-      where: {
-        hackathonId: project.team.hackathonId,
-        userId: juryId
-      }
-    });
+    // Вычисляем общий балл
+    const totalScore = (dto.innovationScore || 0) + 
+                       (dto.functionalityScore || 0) + 
+                       (dto.presentationScore || 0) + 
+                       (dto.teamworkScore || 0);
 
-    if (!isJury) {
-      throw new ForbiddenException('You are not a jury member for this hackathon');
-    }
+    const grade = new HackathonGrade() as HackathonGrade;
+    grade.submissionId = submissionId;
+    grade.judgeId = judgeId;
+    grade.innovationScore = dto.innovationScore;
+    grade.functionalityScore = dto.functionalityScore;
+    grade.presentationScore = dto.presentationScore;
+    grade.teamworkScore = dto.teamworkScore;
+    grade.totalScore = totalScore;
+    grade.feedback = dto.feedback || undefined;
+    grade.judgingCriteriaScores = dto.judgingCriteriaScores || undefined;
 
-    const existingGrade = await this.gradeRepo.findOne({
-      where: {
-        projectId,
-        juryId
-      }
-    });
-
-    if (existingGrade) {
-      existingGrade.innovationScore = dto.innovationScore;
-      existingGrade.technicalScore = dto.technicalScore;
-      existingGrade.presentationScore = dto.presentationScore;
-      existingGrade.usabilityScore = dto.usabilityScore;
-      if (dto.comment !== undefined) existingGrade.comment = dto.comment;
-      existingGrade.gradedAt = new Date();
-      return this.gradeRepo.save(existingGrade);
-    } else {
-      const grade = new HackathonGrade();
-      grade.projectId = projectId;
-      grade.juryId = juryId;
-      grade.innovationScore = dto.innovationScore;
-      grade.technicalScore = dto.technicalScore;
-      grade.presentationScore = dto.presentationScore;
-      grade.usabilityScore = dto.usabilityScore;
-      grade.comment = dto.comment || null;
-      grade.gradedAt = new Date();
-
-      return this.gradeRepo.save(grade);
-    }
+    return await this.gradeRepo.save(grade);
   }
 
   async getRankings(hackathonId: number): Promise<TeamRanking[]> {
     const hackathon = await this.hackathonRepo.findOne({
       where: { id: hackathonId },
-      relations: ['teams', 'teams.project']
+      relations: ['teams', 'teams.submissions', 'teams.submissions.grades']
     });
 
     if (!hackathon) {
@@ -271,133 +281,137 @@ export class HackathonsService {
     const rankings: TeamRanking[] = [];
 
     for (const team of hackathon.teams) {
-      if (team.project && team.project.isSubmitted) {
-        const grades = await this.gradeRepo.find({
-          where: { projectId: team.project.id }
-        });
-
-        if (grades.length > 0) {
-          const totalScore = grades.reduce((sum, grade) => 
-            sum + Number(grade.innovationScore) + Number(grade.technicalScore) + 
-                 Number(grade.presentationScore) + Number(grade.usabilityScore), 0
-          );
-          const averageScore = totalScore / (grades.length * 4); 
+      if (team.submissions && team.submissions.length > 0) {
+        const allGrades = team.submissions.flatMap(s => s.grades || []);
+        
+        if (allGrades.length > 0) {
+          const totalScore = allGrades.reduce((sum, g) => sum + (g.totalScore || 0), 0);
+          const averageScore = totalScore / allGrades.length;
 
           rankings.push({
             teamId: team.id,
             teamName: team.name,
-            projectName: team.project.name,
-            averageScore: Number(averageScore.toFixed(2)),
-            totalScore: Number(totalScore.toFixed(2))
+            projectName: team.projectName || 'Без названия',
+            totalScore: Number(totalScore.toFixed(2)),
+            averageScore: Number(averageScore.toFixed(2))
           });
         }
       }
     }
 
-    return rankings.sort((a, b) => b.averageScore - a.averageScore);
+    return rankings.sort((a, b) => b.totalScore - a.totalScore);
   }
 
   async getStats(): Promise<HackathonStats> {
     const totalHackathons = await this.hackathonRepo.count();
     const activeHackathons = await this.hackathonRepo.count({
-      where: {
-        status: 'active'
-      }
+      where: { isActive: true }
     });
     const totalParticipants = await this.teamMemberRepo.count();
-    const totalProjects = await this.projectRepo.count({
-      where: {
-        isSubmitted: true
-      }
-    });
+    const totalSubmissions = await this.submissionRepo.count();
 
     return {
       totalHackathons,
       activeHackathons,
       totalParticipants,
-      totalProjects
+      totalSubmissions
     };
   }
 
-  private generateJoinCode(): string {
-    return Math.random().toString(36).substring(2, 8).toUpperCase();
-  }
-
   async updateHackathon(id: number, dto: Partial<CreateHackathonDto>): Promise<Hackathon> {
-  const hackathon = await this.hackathonRepo.findOne({ where: { id } });
-  if (!hackathon) {
-    throw new NotFoundException('Hackathon not found');
+    const hackathon = await this.hackathonRepo.findOne({ where: { id } });
+    if (!hackathon) {
+      throw new NotFoundException('Hackathon not found');
+    }
+
+    Object.assign(hackathon, dto);
+    if (dto.startDate) hackathon.startDate = new Date(dto.startDate);
+    if (dto.endDate) hackathon.endDate = new Date(dto.endDate);
+    if (dto.registrationDeadline) hackathon.registrationDeadline = new Date(dto.registrationDeadline);
+
+    return this.hackathonRepo.save(hackathon);
   }
 
-  Object.assign(hackathon, dto);
-  if (dto.startDate) hackathon.startDate = new Date(dto.startDate);
-  if (dto.endDate) hackathon.endDate = new Date(dto.endDate);
-
-  return this.hackathonRepo.save(hackathon);
-}
-
-async deleteHackathon(id: number): Promise<void> {
-  const hackathon = await this.hackathonRepo.findOne({ where: { id } });
-  if (!hackathon) {
-    throw new NotFoundException('Hackathon not found');
+  async deleteHackathon(id: number): Promise<void> {
+    const hackathon = await this.hackathonRepo.findOne({ where: { id } });
+    if (!hackathon) {
+      throw new NotFoundException('Hackathon not found');
+    }
+    await this.hackathonRepo.remove(hackathon);
   }
 
-  await this.hackathonRepo.remove(hackathon);
-}
-
-async approveTeam(teamId: number): Promise<HackathonTeam> {
-  const team = await this.teamRepo.findOne({ where: { id: teamId } });
-  if (!team) {
-    throw new NotFoundException('Team not found');
+  async updateTeamStatus(teamId: number, status: string): Promise<HackathonTeam> {
+    const team = await this.teamRepo.findOne({ where: { id: teamId } });
+    if (!team) {
+      throw new NotFoundException('Team not found');
+    }
+    team.status = status;
+    return this.teamRepo.save(team);
   }
 
-  team.status = 'approved';
-  team.rejectionReason = null;
-  return this.teamRepo.save(team);
-}
+  async leaveTeam(teamId: number, userId: number): Promise<void> {
+    const member = await this.teamMemberRepo.findOne({
+      where: { teamId, userId }
+    });
 
-async rejectTeam(teamId: number, reason: string): Promise<HackathonTeam> {
-  const team = await this.teamRepo.findOne({ where: { id: teamId } });
-  if (!team) {
-    throw new NotFoundException('Team not found');
+    if (!member) {
+      throw new NotFoundException('You are not in this team');
+    }
+
+    if (member.role === 'leader') {
+      throw new BadRequestException('Leader cannot leave the team. Transfer leadership first.');
+    }
+
+    await this.teamMemberRepo.remove(member);
   }
 
-  team.status = 'rejected';
-  team.rejectionReason = reason;
-  return this.teamRepo.save(team);
-}
+  async transferLeadership(teamId: number, newLeaderId: number): Promise<HackathonTeam> {
+    const team = await this.teamRepo.findOne({
+      where: { id: teamId },
+      relations: ['members']
+    });
 
-async addJury(hackathonId: number, userId: number): Promise<HackathonJury> {
-  const hackathon = await this.hackathonRepo.findOne({ where: { id: hackathonId } });
-  if (!hackathon) {
-    throw new NotFoundException('Hackathon not found');
+    if (!team) {
+      throw new NotFoundException('Team not found');
+    }
+
+    const newLeader = await this.teamMemberRepo.findOne({
+      where: { teamId, userId: newLeaderId }
+    });
+
+    if (!newLeader) {
+      throw new NotFoundException('User is not in this team');
+    }
+
+    // Старый лидер становится обычным участником
+    const oldLeader = await this.teamMemberRepo.findOne({
+      where: { teamId, role: 'leader' }
+    });
+
+    if (oldLeader) {
+      oldLeader.role = 'member';
+      await this.teamMemberRepo.save(oldLeader);
+    }
+
+    // Новый лидер
+    newLeader.role = 'leader';
+    await this.teamMemberRepo.save(newLeader);
+
+    team.leaderId = newLeaderId;
+    return this.teamRepo.save(team);
   }
 
-  const existingJury = await this.juryRepo.findOne({
-    where: { hackathonId, userId }
-  });
-
-  if (existingJury) {
-    throw new BadRequestException('This user is already a jury member for this hackathon');
+  async getUserTeams(userId: number): Promise<HackathonTeam[]> {
+    return this.teamRepo.find({
+      where: { members: { userId } },
+      relations: ['hackathon', 'members', 'members.user', 'submissions', 'submissions.grades']
+    });
   }
 
-  const jury = this.juryRepo.create({
-    hackathonId,
-    userId
-  });
-
-  return this.juryRepo.save(jury);
-}
-
-async removeJury(hackathonId: number, userId: number): Promise<void> {
-  const jury = await this.juryRepo.findOne({
-    where: { hackathonId, userId }
-  });
-
-  if (!jury) {
-    throw new NotFoundException('Jury member not found');
+  async getUserSubmissions(userId: number): Promise<HackathonSubmission[]> {
+    return this.submissionRepo.find({
+      where: { team: { members: { userId } } },
+      relations: ['team', 'team.hackathon', 'grades']
+    });
   }
-
-  await this.juryRepo.remove(jury);
-}
 }

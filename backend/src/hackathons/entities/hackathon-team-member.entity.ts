@@ -1,8 +1,9 @@
-import { Entity, PrimaryGeneratedColumn, ManyToOne, Column, CreateDateColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, ManyToOne, Column, CreateDateColumn, Unique } from 'typeorm';
 import { HackathonTeam } from './hackathon-team.entity';
 import { User } from '../../users/entities/user.entity';
 
 @Entity('hackathon_team_members')
+@Unique(['teamId', 'userId'])
 export class HackathonTeamMember {
   @PrimaryGeneratedColumn()
   id: number;
@@ -19,7 +20,7 @@ export class HackathonTeamMember {
   @Column()
   userId: number;
 
-  @Column({ default: 'member' }) 
+  @Column({ default: 'member' })
   role: string;
 
   @CreateDateColumn()

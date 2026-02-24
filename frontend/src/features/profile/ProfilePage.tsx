@@ -10,6 +10,7 @@ import { MyCoursesModal } from './components/MyCoursesModal';
 import { useInformaticsCourseRegistration } from '@/shared/api/admin/registrations';
 import { useProfessionalOrientation } from '@/shared/api/admin/professional-orientation';
 import { ProfOrientationTestModal } from './components/ProfOrientationTestModal';
+import { hackathonsApi, HackathonTeam, HackathonSubmission } from '@/shared/api/hackathons';
 
 export const ProfilePage = () => {
   const { user, login } = useAuth();
@@ -17,6 +18,9 @@ export const ProfilePage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isCoursesModalOpen, setIsCoursesModalOpen] = useState(false);
   const [isProfOrientationModalOpen, setIsProfOrientationModalOpen] = useState(false);
+  const [hackathonTeams, setHackathonTeams] = useState<HackathonTeam[]>([]);
+  const [hackathonSubmissions, setHackathonSubmissions] = useState<HackathonSubmission[]>([]);
+  const [isLoadingHackathons, setIsLoadingHackathons] = useState(false);
 
   const { data: profOrientationResult } = useProfessionalOrientation();
   
@@ -56,8 +60,25 @@ export const ProfilePage = () => {
         lastName: user.lastName || '',
         email: user.email || '',
       });
+      loadHackathons();
     }
   }, [user]);
+
+  const loadHackathons = async () => {
+    setIsLoadingHackathons(true);
+    try {
+      const [teams, submissions] = await Promise.all([
+        hackathonsApi.getUserTeams().catch(() => []),
+        hackathonsApi.getUserSubmissions().catch(() => []),
+      ]);
+      setHackathonTeams(teams || []);
+      setHackathonSubmissions(submissions || []);
+    } catch (error) {
+      console.error('Failed to load hackathons:', error);
+    } finally {
+      setIsLoadingHackathons(false);
+    }
+  };
 
   const isAdmin = user?.roles?.includes('admin') || false;
   const isMentor = user?.roles?.includes('mentor') || false;
@@ -223,14 +244,20 @@ export const ProfilePage = () => {
                 <button className="w-full text-left p-3 rounded-lg bg-gray-800 text-blue-600 font-semibold">
                   👤 Информация профиля
                 </button>
-                <button 
+                <button
                   className="w-full text-left p-3 rounded-lg hover:bg-gray-800 transition-colors text-white"
                   onClick={() => setIsCoursesModalOpen(true)}
                 >
                   📚 Мои курсы
                 </button>
+                <Link
+                  href="/hackathons"
+                  className="w-full text-left p-3 rounded-lg hover:bg-gray-800 transition-colors text-white block"
+                >
+                  🏆 Мои хакатоны
+                </Link>
                 {canShowProfOrientationTab && (
-                  <button 
+                  <button
                     className="w-full text-left p-3 rounded-lg hover:bg-gray-800 transition-colors text-white"
                     onClick={() => setIsProfOrientationModalOpen(true)}
                   >
@@ -428,6 +455,101 @@ export const ProfilePage = () => {
                 </p>
               </Card>
             )}
+
+            {/* Хакатоны */}
+            <Card className="p-6 border-l-4 border-l-yellow-500">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-2xl font-bold text-white flex items-center gap-2">
+                  🏆 Мои хакатоны
+                </h3>
+                <Link href="/hackathons">
+                  <Button variant="secondary" size="sm">
+                    Все хакатоны →
+                  </Button>
+                </Link>
+              </div>
+
+              {isLoadingHackathons ? (
+                <p className="text-white">Загрузка...</p>
+              ) : hackathonTeams.length === 0 ? (
+                <p className="text-muted-foreground">
+                  Вы ещё не участвуете в хакатонах.{' '}
+                  <Link href="/hackathons" className="text-primary hover:underline">
+                    Посмотреть доступные
+                  </Link>
+                </p>
+              ) : (
+                <div className="space-y-4">
+                  <div className="grid gap-4 md:grid-cols-2">
+                    {hackathonTeams.map((team) => (
+                      <div key={team.id} className="p-4 bg-gray-800 rounded-lg">
+                        <div className="flex justify-between items-start mb-2">
+                          <div>
+                            <div className="font-semibold text-white">{team.name}</div>
+                            <div className="text-sm text-muted-foreground">
+                              {team.hackathon?.title}
+                            </div>
+                          </div>
+                          <span className={`px-2 py-1 text-xs rounded-full ${
+                            team.status === 'approved' ? 'bg-green-600 text-white' :
+                            team.status === 'pending' ? 'bg-yellow-600 text-white' :
+                            'bg-red-600 text-white'
+                          }`}>
+                            {team.status === 'approved' ? 'Одобрено' :
+                             team.status === 'pending' ? 'На рассмотрении' : 'Отклонено'}
+                          </span>
+                        </div>
+                        {team.projectName && (
+                          <div className="text-sm text-blue-400 mt-2">
+                            📝 {team.projectName}
+                          </div>
+                        )}
+                        {team.submissions && team.submissions.length > 0 && (
+                          <div className="mt-3 pt-3 border-t border-gray-700">
+                            <div className="text-xs text-gray-400">
+                              📬 Проект отправлен
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+
+                  {hackathonSubmissions.length > 0 && hackathonSubmissions.some(s => s.grades && s.grades.length > 0) && (
+                    <div className="mt-6">
+                      <h4 className="text-lg font-semibold text-white mb-3">🏅 Результаты</h4>
+                      <div className="space-y-3">
+                        {hackathonSubmissions.filter(s => s.grades && s.grades.length > 0).map((submission) => {
+                          const avgScore = submission.grades?.reduce((sum, g) => sum + (g.totalScore || 0), 0) / (submission.grades?.length || 1);
+                          return (
+                            <div key={submission.id} className="p-4 bg-gray-800 rounded-lg">
+                              <div className="flex justify-between items-center">
+                                <div>
+                                  <div className="font-medium text-white">
+                                    {submission.team?.hackathon?.title}
+                                  </div>
+                                  <div className="text-sm text-muted-foreground">
+                                    {submission.team?.name}
+                                  </div>
+                                </div>
+                                <div className="text-2xl font-bold text-green-400">
+                                  {avgScore.toFixed(1)}
+                                </div>
+                              </div>
+                              {submission.grades && submission.grades.length > 0 && submission.grades[0].feedback && (
+                                <div className="mt-3 pt-3 border-t border-gray-700 text-sm text-gray-400">
+                                  💬 {submission.grades[0].feedback}
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+            </Card>
 
             <Card className="p-6">
               <div className="flex justify-between items-center mb-6">

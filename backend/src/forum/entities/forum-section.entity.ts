@@ -1,5 +1,5 @@
 // src/forum/entities/forum-section.entity.ts
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, CreateDateColumn } from 'typeorm';
 import { Course } from '../../courses/entities/course.entity';
 import { ForumTopic } from './forum-topic.entity';
 
@@ -8,32 +8,26 @@ export class ForumSection {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
-  name: string;
-
-  @Column({ type: 'text' })
-  description: string;
-
-  @Column({ default: true })
-  isActive: boolean;
-
-  @Column({ default: 0 })
-  topicCount: number;
-
-  @Column({ default: 0 })
-  postCount: number;
-
-  @CreateDateColumn()
-  createdAt: Date;
-
-  @UpdateDateColumn()
-  updatedAt: Date;
-
-  @ManyToOne(() => Course, course => course.forumSections)
+  @ManyToOne(() => Course, course => course.forumSections, { onDelete: 'CASCADE' })
   course: Course;
 
   @Column()
   courseId: number;
+
+  @Column({ length: 200 })
+  title: string;
+
+  @Column({ type: 'text', nullable: true })
+  description: string;
+
+  @Column({ default: 0 })
+  orderIndex: number;
+
+  @Column({ default: true })
+  isActive: boolean;
+
+  @CreateDateColumn()
+  createdAt: Date;
 
   @OneToMany(() => ForumTopic, topic => topic.section)
   topics: ForumTopic[];

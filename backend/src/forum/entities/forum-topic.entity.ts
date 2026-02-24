@@ -9,51 +9,39 @@ export class ForumTopic {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
-  title: string;
-
-  @Column({ type: 'text' })
-  content: string;
-
-  @Column({ default: true })
-  isActive: boolean;
-
-  @Column({ default: false })
-  isPinned: boolean;
-
-  @Column({ default: false })
-  isLocked: boolean;
-
-  @Column({ default: 0 })
-  viewCount: number;
-
-  @Column({ default: 0 })
-  postCount: number;
-
-  @CreateDateColumn()
-  createdAt: Date;
-
-  @UpdateDateColumn()
-  updatedAt: Date;
-
-  @ManyToOne(() => ForumSection, section => section.topics)
+  @ManyToOne(() => ForumSection, section => section.topics, { onDelete: 'CASCADE' })
   section: ForumSection;
 
   @Column()
   sectionId: number;
 
-  @ManyToOne(() => User)
+  @ManyToOne(() => User, user => user.forumPosts)
   author: User;
 
   @Column()
   authorId: number;
 
-  @OneToMany(() => ForumPost, post => post.topic)
-  posts: ForumPost[];
+  @Column({ length: 200 })
+  title: string;
+
+  @Column({ type: 'text' })
+  content: string;
+
+  @Column({ default: false })
+  isPinned: boolean;
+
+  @Column({ default: false })
+  isClosed: boolean;
+
+  @Column({ default: 0 })
+  viewsCount: number;
 
   @Column({ nullable: true })
   lastPostAt: Date;
 
-  @Column({ nullable: true })
-  lastPostById: number;
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @OneToMany(() => ForumPost, post => post.topic)
+  posts: ForumPost[];
 }

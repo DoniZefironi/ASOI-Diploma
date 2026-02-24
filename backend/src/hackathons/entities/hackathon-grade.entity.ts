@@ -1,5 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, CreateDateColumn } from 'typeorm';
-import { HackathonProject } from './hackathon-project.entity';
+import { HackathonSubmission } from './hackathon-submission.entity';
 import { User } from '../../users/entities/user.entity';
 
 @Entity('hackathon_grades')
@@ -7,33 +7,39 @@ export class HackathonGrade {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => HackathonProject, project => project.grades)
-  project: HackathonProject;
+  @ManyToOne(() => HackathonSubmission, submission => submission.grades)
+  submission: HackathonSubmission;
 
   @Column()
-  projectId: number;
+  submissionId: number;
 
   @ManyToOne(() => User)
-  jury: User;
+  judge: User;
 
   @Column()
-  juryId: number;
+  judgeId: number;
 
-  @Column('decimal', { precision: 5, scale: 2 })
+  @Column({ type: 'decimal', precision: 5, scale: 2, nullable: true })
   innovationScore: number;
 
-  @Column('decimal', { precision: 5, scale: 2 })
-  technicalScore: number;
+  @Column({ type: 'decimal', precision: 5, scale: 2, nullable: true })
+  functionalityScore: number;
 
-  @Column('decimal', { precision: 5, scale: 2 })
+  @Column({ type: 'decimal', precision: 5, scale: 2, nullable: true })
   presentationScore: number;
 
-  @Column('decimal', { precision: 5, scale: 2 })
-  usabilityScore: number;
+  @Column({ type: 'decimal', precision: 5, scale: 2, nullable: true })
+  teamworkScore: number;
 
-  @Column('text', { nullable: true })
-  comment: string | null;
+  @Column({ type: 'decimal', precision: 5, scale: 2, nullable: true })
+  totalScore: number;
+
+  @Column({ type: 'text', nullable: true })
+  feedback: string;
+
+  @Column({ type: 'jsonb', nullable: true })
+  judgingCriteriaScores: any;
 
   @CreateDateColumn()
-  gradedAt: Date;
+  judgedAt: Date;
 }

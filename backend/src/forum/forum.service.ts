@@ -31,7 +31,7 @@ export class ForumService {
   async findAllSections(): Promise<ForumSection[]> {
     return this.sectionRepository.find({
       relations: ['course', 'topics'],
-      order: { createdAt: 'ASC' },
+      order: { orderIndex: 'ASC', createdAt: 'ASC' },
     });
   }
 
@@ -52,7 +52,7 @@ export class ForumService {
     return this.sectionRepository.find({
       where: { courseId },
       relations: ['course', 'topics'],
-      order: { createdAt: 'ASC' },
+      order: { orderIndex: 'ASC', createdAt: 'ASC' },
     });
   }
 
@@ -66,28 +66,12 @@ export class ForumService {
       throw new NotFoundException('Forum section not found');
     }
 
-    const registration = await this.registrationRepository.findOne({
-      where: {
-        userId: authorId,
-        courseGroupId: section.courseId,
-        status: RegistrationStatus.APPROVED,
-      },
-    });
-
-    if (!registration) {
-      throw new ForbiddenException('You are not registered for this course');
-    }
-
     const topic = this.topicRepository.create({
       ...createTopicDto,
       authorId,
     });
 
-    const savedTopic = await this.topicRepository.save(topic);
-
-    await this.sectionRepository.increment({ id: section.id }, 'topicCount', 1);
-
-    return savedTopic;
+    return await this.topicRepository.save(topic);
   }
 
   async findTopicById(id: number): Promise<ForumTopic> {
@@ -100,7 +84,12 @@ export class ForumService {
       throw new NotFoundException('Forum topic not found');
     }
 
-    await this.topicRepository.increment({ id }, 'viewCount', 1);
+    // Сортируем посты по дате создания
+    if (topic.posts) {
+      topic.posts.sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
+    }
+
+    await this.topicRepository.increment({ id }, 'viewsCount', 1);
 
     return topic;
   }
@@ -109,9 +98,9 @@ export class ForumService {
     return this.topicRepository.find({
       where: { sectionId },
       relations: ['author', 'section'],
-      order: { 
+      order: {
         isPinned: 'DESC',
-        lastPostAt: 'DESC' 
+        createdAt: 'DESC',
       },
     });
   }
@@ -119,27 +108,15 @@ export class ForumService {
   async createPost(createPostDto: CreateForumPostDto, authorId: number): Promise<ForumPost> {
     const topic = await this.topicRepository.findOne({
       where: { id: createPostDto.topicId },
-      relations: ['section', 'section.course'],
+      relations: ['section'],
     });
 
     if (!topic) {
       throw new NotFoundException('Forum topic not found');
     }
 
-    if (topic.isLocked) {
-      throw new ForbiddenException('This topic is locked');
-    }
-
-    const registration = await this.registrationRepository.findOne({
-      where: {
-        userId: authorId,
-        courseGroupId: topic.section.courseId,
-        status: RegistrationStatus.APPROVED,
-      },
-    });
-
-    if (!registration) {
-      throw new ForbiddenException('You are not registered for this course');
+    if (topic.isClosed) {
+      throw new ForbiddenException('This topic is closed');
     }
 
     const post = this.postRepository.create({
@@ -149,12 +126,8 @@ export class ForumService {
 
     const savedPost = await this.postRepository.save(post);
 
-    await this.topicRepository.increment({ id: topic.id }, 'postCount', 1);
-    await this.sectionRepository.increment({ id: topic.sectionId }, 'postCount', 1);
-
     await this.topicRepository.update(topic.id, {
       lastPostAt: new Date(),
-      lastPostById: authorId,
     });
 
     return savedPost;
@@ -168,35 +141,95 @@ export class ForumService {
     });
   }
 
-  async getRecentTopics(limit: number = 10): Promise<ForumTopic[]> {
-    return this.topicRepository.find({
-      relations: ['section', 'author'],
-      order: { lastPostAt: 'DESC' },
-      take: limit,
+  async updatePost(postId: number, content: string, authorId: number): Promise<ForumPost> {
+    const post = await this.postRepository.findOne({
+      where: { id: postId },
+      relations: ['topic'],
     });
+
+    if (!post) {
+      throw new NotFoundException('Post not found');
+    }
+
+    if (post.authorId !== authorId) {
+      throw new ForbiddenException('You can only edit your own posts');
+    }
+
+    post.content = content;
+    post.isEdited = true;
+    post.updatedAt = new Date();
+
+    return this.postRepository.save(post);
   }
 
-  async pinTopic(topicId: number): Promise<ForumTopic> {
-    const topic = await this.findTopicById(topicId);
-    topic.isPinned = true;
+  async deletePost(postId: number, authorId: number, isAdmin: boolean): Promise<void> {
+    const post = await this.postRepository.findOne({
+      where: { id: postId },
+    });
+
+    if (!post) {
+      throw new NotFoundException('Post not found');
+    }
+
+    if (post.authorId !== authorId && !isAdmin) {
+      throw new ForbiddenException('You can only delete your own posts');
+    }
+
+    await this.postRepository.remove(post);
+  }
+
+  async toggleTopicPinned(topicId: number): Promise<ForumTopic> {
+    const topic = await this.topicRepository.findOne({ where: { id: topicId } });
+    if (!topic) {
+      throw new NotFoundException('Topic not found');
+    }
+    topic.isPinned = !topic.isPinned;
     return this.topicRepository.save(topic);
   }
 
-  async unpinTopic(topicId: number): Promise<ForumTopic> {
-    const topic = await this.findTopicById(topicId);
-    topic.isPinned = false;
+  async toggleTopicClosed(topicId: number): Promise<ForumTopic> {
+    const topic = await this.topicRepository.findOne({ where: { id: topicId } });
+    if (!topic) {
+      throw new NotFoundException('Topic not found');
+    }
+    topic.isClosed = !topic.isClosed;
     return this.topicRepository.save(topic);
   }
 
-  async lockTopic(topicId: number): Promise<ForumTopic> {
-    const topic = await this.findTopicById(topicId);
-    topic.isLocked = true;
+  async deleteTopic(topicId: number): Promise<void> {
+    const topic = await this.topicRepository.findOne({ where: { id: topicId } });
+    if (!topic) {
+      throw new NotFoundException('Topic not found');
+    }
+    await this.topicRepository.remove(topic);
+  }
+
+  async updateTopic(topicId: number, updates: { title?: string; content?: string }, authorId: number): Promise<ForumTopic> {
+    const topic = await this.topicRepository.findOne({ where: { id: topicId } });
+    if (!topic) {
+      throw new NotFoundException('Topic not found');
+    }
+    if (topic.authorId !== authorId) {
+      throw new ForbiddenException('You can only edit your own topics');
+    }
+    Object.assign(topic, updates);
     return this.topicRepository.save(topic);
   }
 
-  async unlockTopic(topicId: number): Promise<ForumTopic> {
-    const topic = await this.findTopicById(topicId);
-    topic.isLocked = false;
-    return this.topicRepository.save(topic);
+  async deleteSection(sectionId: number): Promise<void> {
+    const section = await this.sectionRepository.findOne({ where: { id: sectionId } });
+    if (!section) {
+      throw new NotFoundException('Section not found');
+    }
+    await this.sectionRepository.remove(section);
+  }
+
+  async updateSection(sectionId: number, updates: Partial<CreateForumSectionDto>): Promise<ForumSection> {
+    await this.sectionRepository.update(sectionId, updates);
+    const section = await this.sectionRepository.findOne({ where: { id: sectionId } });
+    if (!section) {
+      throw new NotFoundException('Section not found');
+    }
+    return section;
   }
 }

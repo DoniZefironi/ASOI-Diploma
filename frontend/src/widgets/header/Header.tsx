@@ -56,6 +56,7 @@ export const Header = () => {
           <nav className="hidden md:flex space-x-6">
             <Link href="/" className="hover:text-blue-600 transition-colors">Главная</Link>
             <Link href="/courses" className="hover:text-blue-600 transition-colors">Курсы</Link>
+            <Link href="/hackathons" className="hover:text-blue-600 transition-colors">Хакатоны</Link>
             <Link href="/career" className="hover:text-blue-600 transition-colors">Карьера</Link>
             <Link href="/forum" className="hover:text-blue-600 transition-colors">Форум</Link>
             <Link href="/complilier" className="hover:text-blue-600 transition-colors">Компилятор</Link>

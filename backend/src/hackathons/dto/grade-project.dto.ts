@@ -1,27 +1,35 @@
-import { IsNumber, IsOptional, IsString, Min, Max } from 'class-validator';
+import { IsNumber, IsOptional, IsString, Min, Max, IsObject } from 'class-validator';
 
 export class GradeProjectDto {
+  @IsOptional()
   @IsNumber()
   @Min(0)
-  @Max(10)
-  innovationScore: number;
+  @Max(100)
+  innovationScore?: number;
 
+  @IsOptional()
   @IsNumber()
   @Min(0)
-  @Max(10)
-  technicalScore: number;
+  @Max(100)
+  functionalityScore?: number;
 
+  @IsOptional()
   @IsNumber()
   @Min(0)
-  @Max(10)
-  presentationScore: number;
+  @Max(100)
+  presentationScore?: number;
 
+  @IsOptional()
   @IsNumber()
   @Min(0)
-  @Max(10)
-  usabilityScore: number;
+  @Max(100)
+  teamworkScore?: number;
 
   @IsOptional()
   @IsString()
-  comment?: string;
+  feedback?: string;
+
+  @IsOptional()
+  @IsObject()
+  judgingCriteriaScores?: any;
 }

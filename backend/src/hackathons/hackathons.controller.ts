@@ -23,16 +23,28 @@ export class HackathonsController {
     return this.hackathonsService.findOne(id);
   }
 
-  @Post()
+  @Get(':id/rankings')
+  getRankings(@Param('id', ParseIntPipe) id: number) {
+    return this.hackathonsService.getRankings(id);
+  }
+
+  @Get('admin/stats')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRoleEnum.ADMIN)
+  getStats() {
+    return this.hackathonsService.getStats();
+  }
+
+  @Post()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRoleEnum.ADMIN, UserRoleEnum.MENTOR)
   create(@Body() dto: CreateHackathonDto) {
     return this.hackathonsService.createHackathon(dto);
   }
 
   @Patch(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRoleEnum.ADMIN)
+  @Roles(UserRoleEnum.ADMIN, UserRoleEnum.MENTOR)
   update(@Param('id', ParseIntPipe) id: number, @Body() dto: Partial<CreateHackathonDto>) {
     return this.hackathonsService.updateHackathon(id, dto);
   }
@@ -44,45 +56,7 @@ export class HackathonsController {
     return this.hackathonsService.deleteHackathon(id);
   }
 
-  @Get('admin/stats')
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRoleEnum.ADMIN)
-  getStats() {
-    return this.hackathonsService.getStats();
-  }
-
-  @Patch('teams/:teamId/approve')
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRoleEnum.ADMIN)
-  approveTeam(@Param('teamId', ParseIntPipe) teamId: number) {
-    return this.hackathonsService.approveTeam(teamId);
-  }
-
-  @Patch('teams/:teamId/reject')
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRoleEnum.ADMIN)
-  rejectTeam(@Param('teamId', ParseIntPipe) teamId: number, @Body() body: { reason: string }) {
-    return this.hackathonsService.rejectTeam(teamId, body.reason);
-  }
-
-  @Post(':hackathonId/jury')
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRoleEnum.ADMIN)
-  addJury(@Param('hackathonId', ParseIntPipe) hackathonId: number, @Body() body: { userId: number }) {
-    return this.hackathonsService.addJury(hackathonId, body.userId);
-  }
-
-  @Delete(':hackathonId/jury/:userId')
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRoleEnum.ADMIN)
-  removeJury(@Param('hackathonId', ParseIntPipe) hackathonId: number, @Param('userId', ParseIntPipe) userId: number) {
-    return this.hackathonsService.removeJury(hackathonId, userId);
-  }
-
-  @Get(':id/rankings')
-  getRankings(@Param('id', ParseIntPipe) id: number) {
-    return this.hackathonsService.getRankings(id);
-  }
+  // ============ Teams ============
 
   @Post('teams')
   @UseGuards(JwtAuthGuard)
@@ -90,25 +64,61 @@ export class HackathonsController {
     return this.hackathonsService.createTeam(dto, req.user.userId);
   }
 
-  @Post('projects/submit')
+  @Post('teams/:teamId/join')
+  @UseGuards(JwtAuthGuard)
+  joinTeam(@Param('teamId', ParseIntPipe) teamId: number, @Request() req) {
+    return this.hackathonsService.joinTeam(teamId, req.user.userId);
+  }
+
+  @Post('teams/:teamId/leave')
+  @UseGuards(JwtAuthGuard)
+  leaveTeam(@Param('teamId', ParseIntPipe) teamId: number, @Request() req) {
+    return this.hackathonsService.leaveTeam(teamId, req.user.userId);
+  }
+
+  @Patch('teams/:teamId/transfer-leadership')
+  @UseGuards(JwtAuthGuard)
+  transferLeadership(@Param('teamId', ParseIntPipe) teamId: number, @Body() body: { newLeaderId: number }) {
+    return this.hackathonsService.transferLeadership(teamId, body.newLeaderId);
+  }
+
+  @Patch('teams/:teamId/status')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRoleEnum.ADMIN, UserRoleEnum.MENTOR)
+  updateTeamStatus(@Param('teamId', ParseIntPipe) teamId: number, @Body() body: { status: string }) {
+    return this.hackathonsService.updateTeamStatus(teamId, body.status);
+  }
+
+  @Get('my-teams')
+  @UseGuards(JwtAuthGuard)
+  getUserTeams(@Request() req) {
+    return this.hackathonsService.getUserTeams(req.user.userId);
+  }
+
+  // ============ Submissions ============
+
+  @Post('submissions')
   @UseGuards(JwtAuthGuard)
   submitProject(@Body() dto: SubmitProjectDto, @Request() req) {
-    return this.hackathonsService.submitProject(dto, req.user.userId);
+    return this.hackathonsService.submitProject(dto, dto.teamId);
   }
 
-  @Post('projects/:teamId/finalize')
+  @Get('my-submissions')
   @UseGuards(JwtAuthGuard)
-  finalizeSubmission(@Param('teamId', ParseIntPipe) teamId: number, @Request() req) {
-    return this.hackathonsService.finalizeProjectSubmission(teamId, req.user.userId);
+  getUserSubmissions(@Request() req) {
+    return this.hackathonsService.getUserSubmissions(req.user.userId);
   }
 
-  @Post('projects/:projectId/grade')
-  @UseGuards(JwtAuthGuard)
-  gradeProject(
-    @Param('projectId', ParseIntPipe) projectId: number,
+  // ============ Grading ============
+
+  @Post('submissions/:submissionId/grade')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRoleEnum.ADMIN, UserRoleEnum.MENTOR)
+  gradeSubmission(
+    @Param('submissionId', ParseIntPipe) submissionId: number,
     @Body() dto: GradeProjectDto,
     @Request() req
   ) {
-    return this.hackathonsService.gradeProject(projectId, req.user.userId, dto);
+    return this.hackathonsService.gradeSubmission(submissionId, req.user.userId, dto);
   }
 }

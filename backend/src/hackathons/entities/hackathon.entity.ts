@@ -1,45 +1,54 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, CreateDateColumn } from 'typeorm';
+import { Course } from '../../courses/entities/course.entity';
 import { HackathonTeam } from './hackathon-team.entity';
-import { HackathonJury } from './hackathon-jury.entity';
 
 @Entity('hackathons')
 export class Hackathon {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
-  name: string;
+  @ManyToOne(() => Course, { nullable: true })
+  course: Course;
 
-  @Column('text')
+  @Column({ nullable: true })
+  courseId: number;
+
+  @Column({ length: 200 })
+  title: string;
+
+  @Column({ type: 'text' })
   description: string;
 
-  @Column()
+  @Column({ length: 200, nullable: true })
+  theme: string;
+
+  @Column({ type: 'timestamp' })
   startDate: Date;
 
-  @Column()
+  @Column({ type: 'timestamp' })
   endDate: Date;
 
-  @Column('text', { nullable: true })
-  rules: string;
+  @Column({ type: 'timestamp', nullable: true })
+  registrationDeadline: Date | null;
 
   @Column({ default: 5 })
   maxTeamSize: number;
 
-  @Column({ default: true })
-  isPublic: boolean;
+  @Column({ default: 3 })
+  minTeamSize: number;
 
-  @Column({ default: 'pending' }) 
-  status: string;
+  @Column({ type: 'decimal', precision: 10, scale: 2, nullable: true })
+  prizePool: number;
+
+  @Column({ default: true })
+  isActive: boolean;
+
+  @Column({ type: 'jsonb', nullable: true })
+  judgingCriteria: any;
 
   @CreateDateColumn()
   createdAt: Date;
 
-  @UpdateDateColumn()
-  updatedAt: Date;
-
   @OneToMany(() => HackathonTeam, team => team.hackathon)
   teams: HackathonTeam[];
-
-  @OneToMany(() => HackathonJury, jury => jury.hackathon)
-  juryMembers: HackathonJury[];
 }

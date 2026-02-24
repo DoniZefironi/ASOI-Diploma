@@ -26,6 +26,7 @@ const menuItems = [
   { href: '/admin/schedule', icon: Calendar, label: 'Расписание' },
   { href: '/admin/assignments', icon: FileText, label: 'Задания' },
   { href: '/admin/materials', icon: FolderOpen, label: 'Материалы' },
+  { href: '/admin/forum', icon: MessageSquare, label: 'Форум' },
   { href: '/admin/hackathons', icon: Award, label: 'Хакатоны' },
   { href: '/admin/prof-orientation-analysis', icon: BarChart3, label: 'Анализ проф. ориентации' },
 ];

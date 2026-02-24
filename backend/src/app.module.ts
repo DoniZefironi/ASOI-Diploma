@@ -39,9 +39,8 @@ import { ScheduleItem } from './schedule/entities/schedule-item.entity';
 import { Hackathon } from './hackathons/entities/hackathon.entity';
 import { HackathonTeam } from './hackathons/entities/hackathon-team.entity';
 import { HackathonTeamMember } from './hackathons/entities/hackathon-team-member.entity';
-import { HackathonProject } from './hackathons/entities/hackathon-project.entity';
+import { HackathonSubmission } from './hackathons/entities/hackathon-submission.entity';
 import { HackathonGrade } from './hackathons/entities/hackathon-grade.entity';
-import { HackathonJury } from './hackathons/entities/hackathon-jury.entity';
 import { CircuitElementType } from './circuit/entities/circuit-element-type.entity';
 import { CircuitSolution } from './assignments/entities/circuit-solution.entity';
 
@@ -68,7 +67,7 @@ import { CircuitSolution } from './assignments/entities/circuit-solution.entity'
             Assignment,
             AssignmentSubmission,
             PeerReview,
-            CircuitSolution, 
+            CircuitSolution,
             ForumTopic,
             ForumPost,
             ForumSection,
@@ -82,10 +81,9 @@ import { CircuitSolution } from './assignments/entities/circuit-solution.entity'
             Hackathon,
             HackathonTeam,
             HackathonTeamMember,
-            HackathonProject,
+            HackathonSubmission,
             HackathonGrade,
-            HackathonJury,
-          ], 
+          ],
           synchronize: true, 
           logging: configService.get('NODE_ENV') !== 'production',
         };

@@ -1,17 +1,24 @@
 // src/forum/dto/create-forum-section.dto.ts
-import { IsString, IsNumber, IsBoolean, IsOptional } from 'class-validator';
+import { IsString, IsNumber, IsBoolean, IsOptional, IsInt, Min } from 'class-validator';
 
 export class CreateForumSectionDto {
-  @IsString()
-  name: string;
+  @IsNumber()
+  courseId: number;
 
   @IsString()
-  description: string;
+  @IsOptional()
+  title?: string;
+
+  @IsString()
+  @IsOptional()
+  description?: string;
+
+  @IsInt()
+  @Min(0)
+  @IsOptional()
+  orderIndex?: number;
 
   @IsBoolean()
   @IsOptional()
   isActive?: boolean;
-
-  @IsNumber()
-  courseId: number;
 }

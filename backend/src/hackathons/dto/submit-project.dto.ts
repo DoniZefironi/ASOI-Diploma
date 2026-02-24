@@ -1,21 +1,17 @@
-import { IsString, IsNotEmpty, IsOptional, IsNumber, IsUrl } from 'class-validator';
+import { IsString, IsOptional, IsNumber, IsUrl } from 'class-validator';
 
 export class SubmitProjectDto {
   @IsNumber()
   teamId: number;
 
-  @IsString()
-  @IsNotEmpty()
-  name: string;
-
-  @IsString()
-  @IsNotEmpty()
-  description: string;
+  @IsOptional()
+  @IsNumber()
+  circuitProjectId?: number;
 
   @IsOptional()
   @IsString()
   @IsUrl()
-  repositoryUrl?: string;
+  documentationUrl?: string;
 
   @IsOptional()
   @IsString()
@@ -25,5 +21,14 @@ export class SubmitProjectDto {
   @IsOptional()
   @IsString()
   @IsUrl()
-  demoUrl?: string;
+  videoDemoUrl?: string;
+
+  @IsOptional()
+  @IsString()
+  @IsUrl()
+  sourceCodeUrl?: string;
+
+  @IsOptional()
+  @IsString()
+  submissionNote?: string;
 }

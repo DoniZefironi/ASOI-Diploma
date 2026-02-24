@@ -2,6 +2,9 @@
 import { IsString, IsNumber, IsBoolean, IsOptional } from 'class-validator';
 
 export class CreateForumTopicDto {
+  @IsNumber()
+  sectionId: number;
+
   @IsString()
   title: string;
 
@@ -12,6 +15,7 @@ export class CreateForumTopicDto {
   @IsOptional()
   isPinned?: boolean;
 
-  @IsNumber()
-  sectionId: number;
+  @IsBoolean()
+  @IsOptional()
+  isClosed?: boolean;
 }

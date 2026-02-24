@@ -1,5 +1,16 @@
 // src/forum/forum.controller.ts
-import { Controller, Get, Post, Body, Param, Put, UseGuards, Request, Query } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Put,
+  Delete,
+  UseGuards,
+  Request,
+  ParseIntPipe,
+} from '@nestjs/common';
 import { ForumService } from './forum.service';
 import { CreateForumSectionDto } from './dto/create-forum-section.dto';
 import { CreateForumTopicDto } from './dto/create-forum-topic.dto';
@@ -13,19 +24,21 @@ import { UserRoleEnum } from '../users/entities/user-role.entity';
 export class ForumController {
   constructor(private readonly forumService: ForumService) {}
 
+  // ============ Sections ============
+
   @Get('sections')
   findAllSections() {
     return this.forumService.findAllSections();
   }
 
   @Get('sections/course/:courseId')
-  getSectionsByCourse(@Param('courseId') courseId: string) {
-    return this.forumService.getSectionsByCourse(+courseId);
+  getSectionsByCourse(@Param('courseId', ParseIntPipe) courseId: number) {
+    return this.forumService.getSectionsByCourse(courseId);
   }
 
   @Get('sections/:id')
-  findSectionById(@Param('id') id: string) {
-    return this.forumService.findSectionById(+id);
+  findSectionById(@Param('id', ParseIntPipe) id: number) {
+    return this.forumService.findSectionById(id);
   }
 
   @Post('sections')
@@ -35,63 +48,107 @@ export class ForumController {
     return this.forumService.createSection(createSectionDto);
   }
 
-  @Get('topics')
-  getRecentTopics(@Query('limit') limit?: string) {
-    return this.forumService.getRecentTopics(limit ? +limit : 10);
+  @Put('sections/:id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRoleEnum.ADMIN, UserRoleEnum.MENTOR)
+  updateSection(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updates: Partial<CreateForumSectionDto>,
+  ) {
+    return this.forumService.updateSection(id, updates);
   }
 
+  @Delete('sections/:id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRoleEnum.ADMIN)
+  deleteSection(@Param('id', ParseIntPipe) id: number) {
+    return this.forumService.deleteSection(id);
+  }
+
+  // ============ Topics ============
+
   @Get('topics/section/:sectionId')
-  getTopicsBySection(@Param('sectionId') sectionId: string) {
-    return this.forumService.getTopicsBySection(+sectionId);
+  getTopicsBySection(@Param('sectionId', ParseIntPipe) sectionId: number) {
+    return this.forumService.getTopicsBySection(sectionId);
   }
 
   @Get('topics/:id')
-  findTopicById(@Param('id') id: string) {
-    return this.forumService.findTopicById(+id);
+  findTopicById(@Param('id', ParseIntPipe) id: number) {
+    return this.forumService.findTopicById(id);
   }
 
   @Post('topics')
   @UseGuards(JwtAuthGuard)
   createTopic(@Body() createTopicDto: CreateForumTopicDto, @Request() req) {
-    return this.forumService.createTopic(createTopicDto, req.user.userId);
+    const authorId = req.user.userId;
+    return this.forumService.createTopic(createTopicDto, authorId);
+  }
+
+  @Put('topics/:id')
+  @UseGuards(JwtAuthGuard)
+  updateTopic(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updates: { title?: string; content?: string },
+    @Request() req,
+  ) {
+    const authorId = req.user.userId;
+    return this.forumService.updateTopic(id, updates, authorId);
   }
 
   @Put('topics/:id/pin')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRoleEnum.ADMIN, UserRoleEnum.MENTOR)
-  pinTopic(@Param('id') id: string) {
-    return this.forumService.pinTopic(+id);
+  toggleTopicPinned(@Param('id', ParseIntPipe) id: number) {
+    return this.forumService.toggleTopicPinned(id);
   }
 
-  @Put('topics/:id/unpin')
+  @Put('topics/:id/close')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRoleEnum.ADMIN, UserRoleEnum.MENTOR)
-  unpinTopic(@Param('id') id: string) {
-    return this.forumService.unpinTopic(+id);
+  toggleTopicClosed(@Param('id', ParseIntPipe) id: number) {
+    return this.forumService.toggleTopicClosed(id);
   }
 
-  @Put('topics/:id/lock')
+  @Delete('topics/:id')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRoleEnum.ADMIN, UserRoleEnum.MENTOR)
-  lockTopic(@Param('id') id: string) {
-    return this.forumService.lockTopic(+id);
+  deleteTopic(@Param('id', ParseIntPipe) id: number) {
+    return this.forumService.deleteTopic(id);
   }
 
-  @Put('topics/:id/unlock')
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRoleEnum.ADMIN, UserRoleEnum.MENTOR)
-  unlockTopic(@Param('id') id: string) {
-    return this.forumService.unlockTopic(+id);
-  }
+  // ============ Posts ============
 
   @Get('topics/:topicId/posts')
-  getPostsByTopic(@Param('topicId') topicId: string) {
-    return this.forumService.getPostsByTopic(+topicId);
+  getPostsByTopic(@Param('topicId', ParseIntPipe) topicId: number) {
+    return this.forumService.getPostsByTopic(topicId);
   }
 
   @Post('posts')
   @UseGuards(JwtAuthGuard)
   createPost(@Body() createPostDto: CreateForumPostDto, @Request() req) {
-    return this.forumService.createPost(createPostDto, req.user.userId);
+    const authorId = req.user.userId;
+    return this.forumService.createPost(createPostDto, authorId);
+  }
+
+  @Put('posts/:id')
+  @UseGuards(JwtAuthGuard)
+  updatePost(
+    @Param('id', ParseIntPipe) id: number,
+    @Body('content') content: string,
+    @Request() req,
+  ) {
+    const authorId = req.user.userId;
+    return this.forumService.updatePost(id, content, authorId);
+  }
+
+  @Delete('posts/:id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  deletePost(
+    @Param('id', ParseIntPipe) id: number,
+    @Request() req,
+  ) {
+    const authorId = req.user.userId;
+    const isAdmin = req.user.roles?.includes(UserRoleEnum.ADMIN);
+    return this.forumService.deletePost(id, authorId, isAdmin);
   }
 }

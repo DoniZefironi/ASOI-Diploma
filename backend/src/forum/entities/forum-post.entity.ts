@@ -8,19 +8,7 @@ export class ForumPost {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'text' })
-  content: string;
-
-  @Column({ default: true })
-  isActive: boolean;
-
-  @CreateDateColumn()
-  createdAt: Date;
-
-  @UpdateDateColumn()
-  updatedAt: Date;
-
-  @ManyToOne(() => ForumTopic, topic => topic.posts)
+  @ManyToOne(() => ForumTopic, topic => topic.posts, { onDelete: 'CASCADE' })
   topic: ForumTopic;
 
   @Column()
@@ -32,6 +20,15 @@ export class ForumPost {
   @Column()
   authorId: number;
 
-  @Column({ nullable: true })
-  parentPostId: number;
+  @Column({ type: 'text' })
+  content: string;
+
+  @Column({ default: false })
+  isEdited: boolean;
+
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @UpdateDateColumn({ nullable: true })
+  updatedAt: Date;
 }

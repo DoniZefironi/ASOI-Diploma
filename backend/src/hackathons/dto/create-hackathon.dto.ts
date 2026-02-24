@@ -1,29 +1,51 @@
-import { IsString, IsNotEmpty, IsDateString, IsOptional, IsBoolean, IsNumber } from 'class-validator';
+import { IsString, IsNotEmpty, IsDateString, IsOptional, IsBoolean, IsNumber, IsObject } from 'class-validator';
 
 export class CreateHackathonDto {
   @IsString()
   @IsNotEmpty()
-  name: string;
+  title: string;
 
   @IsString()
   @IsNotEmpty()
   description: string;
 
+  @IsOptional()
+  @IsString()
+  theme?: string;
+
   @IsDateString()
+  @IsNotEmpty()
   startDate: string;
 
   @IsDateString()
+  @IsNotEmpty()
   endDate: string;
 
   @IsOptional()
-  @IsString()
-  rules?: string;
+  @IsDateString()
+  registrationDeadline?: string;
 
   @IsOptional()
   @IsNumber()
   maxTeamSize?: number;
 
   @IsOptional()
+  @IsNumber()
+  minTeamSize?: number;
+
+  @IsOptional()
+  @IsNumber()
+  prizePool?: number;
+
+  @IsOptional()
   @IsBoolean()
-  isPublic?: boolean;
+  isActive?: boolean;
+
+  @IsOptional()
+  @IsNumber()
+  courseId?: number;
+
+  @IsOptional()
+  @IsObject()
+  judgingCriteria?: any;
 }
