@@ -18,13 +18,13 @@ export interface ScheduleItem {
   id: number;
   title: string;
   description: string;
-  type: string; 
-  startTime: string; 
-  endTime: string;  
-  location: string;  
-  meetingUrl?: string; 
-  courseGroupId: number; 
-  courseGroup?: { 
+  type: string;
+  startTime: string;
+  endTime: string;
+  location: string;
+  meetingUrl?: string;
+  courseGroupId: number;
+  courseGroup?: {
     id: number;
     name: string;
     course?: {
@@ -32,14 +32,14 @@ export interface ScheduleItem {
       name: string;
     };
   };
-  instructor?: { 
+  instructor?: {
     id: number;
     firstName: string;
     lastName: string;
   };
-  instructorId?: number; 
-  createdAt: string; 
-  updatedAt: string; 
+  instructorId?: number;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export function useSchedule() {
@@ -96,5 +96,32 @@ export function useSchedule() {
     isCreating,
     isUpdating,
     isDeleting,
+  };
+}
+
+export function useUserSchedule(startDate?: string, endDate?: string) {
+  const isAuthorized = typeof window !== 'undefined' && !!localStorage.getItem('access_token');
+  
+  const params = new URLSearchParams();
+  if (startDate) params.append('startDate', startDate);
+  if (endDate) params.append('endDate', endDate);
+  
+  const queryString = params.toString();
+  const url = isAuthorized ? `/schedule/user${queryString ? `?${queryString}` : ''}` : null;
+
+  const { data, error, isLoading, mutate } = useSWR<ScheduleItem[]>(
+    url,
+    fetcher,
+    {
+      revalidateOnFocus: false,
+      dedupingInterval: 60000,
+    }
+  );
+
+  return {
+    schedule: data || [],
+    isLoading,
+    isError: error,
+    mutate,
   };
 }

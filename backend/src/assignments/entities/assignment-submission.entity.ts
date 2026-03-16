@@ -17,11 +17,14 @@ export class AssignmentSubmission {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'text' })
+  @Column({ type: 'text', nullable: true })
   content: string;
 
   @Column({ type: 'json', nullable: true })
   attachments: string[];
+
+  @Column({ type: 'text', nullable: true })
+  repositoryUrl: string;
 
   @Column({
     type: 'enum',
@@ -55,5 +58,5 @@ export class AssignmentSubmission {
   assignmentId: number;
 
   @OneToMany(() => PeerReview, peerReview => peerReview.submission)
-  peerReviews: PeerReview[];
+  peerReviewsReceived: PeerReview[];
 }

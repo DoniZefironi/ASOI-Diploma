@@ -27,4 +27,3 @@ if [ $? -eq 0 ]; then
 else
     echo "Ошибка восстановления!"
     exit 1
-fi

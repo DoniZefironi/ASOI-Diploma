@@ -4,8 +4,16 @@ import { useState } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/shared/ui/card';
 import { Button } from '@/shared/ui/button';
 import { useCourseGroups } from '@/shared/api/admin';
+import { useAuth, getCourseTypeFromRole } from '@/shared/lib/auth-context';
 import { Plus, Users2, Edit, Trash2, Loader2, BookOpen } from 'lucide-react';
 import GroupForm from './GroupForm';
+
+const courseTypeLabels: Record<string, string> = {
+  'english': 'Английский язык',
+  'electronics': 'Электроника',
+  'computer_science': 'Информатика',
+  'iot': 'IoT (Интернет вещей)',
+};
 
 type BadgeVariant = 'default' | 'secondary' | 'outline' | 'destructive';
 
@@ -79,11 +87,21 @@ const TableCell = ({ children }: any) => (
 );
 
 export default function GroupManagement() {
+  const { user } = useAuth();
   const { groups, isLoading, isError, createGroup, updateGroup, deleteGroup, mutate } =
     useCourseGroups();
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingGroup, setEditingGroup] = useState<any>(null);
+
+  // Получаем тип курса ментора
+  const userRoles = user?.roles || [];
+  const mentorCourseType = getCourseTypeFromRole(userRoles);
+  
+  // Фильтруем группы по типу курса (если это ментор)
+  const filteredGroups = mentorCourseType
+    ? groups?.filter((g: any) => g.course?.type === mentorCourseType)
+    : groups;
 
   const handleCreate = () => {
     setEditingGroup(null);
@@ -105,6 +123,9 @@ export default function GroupManagement() {
     const payload = {
         ...data,
         courseId: Number(data.courseId),
+        year: Number(data.year),
+        semester: Number(data.semester),
+        maxStudents: Number(data.maxStudents),
     };
 
     if (editingGroup) await updateGroup({ id: editingGroup.id, data: payload });
@@ -138,9 +159,14 @@ export default function GroupManagement() {
         <div>
           <h1 className="text-3xl font-bold text-white">Управление группами</h1>
           <p className="text-gray-400">Создание и редактирование учебных групп</p>
+          {mentorCourseType && (
+            <p className="text-sm text-blue-400 mt-1">
+              📚 Направление: <span className="font-semibold">{courseTypeLabels[mentorCourseType]}</span>
+            </p>
+          )}
         </div>
         <div className="flex items-center space-x-2">
-          <Badge variant="secondary">Всего: {groups?.length || 0}</Badge>
+          <Badge variant="secondary">Всего: {filteredGroups?.length || 0}</Badge>
           <Button onClick={handleCreate} className="gap-2">
             <Plus className="h-4 w-4" />
             Создать группу
@@ -170,7 +196,7 @@ export default function GroupManagement() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {groups?.map((g: any) => (
+              {filteredGroups?.map((g: any) => (
                 <TableRow key={g.id}>
                   <TableCell>{g.id}</TableCell>
                   <TableCell>{g.name}</TableCell>
@@ -207,7 +233,7 @@ export default function GroupManagement() {
             </TableBody>
           </Table>
 
-          {(!groups || groups.length === 0) && (
+          {(!filteredGroups || filteredGroups.length === 0) && (
             <div className="text-center py-8 text-gray-400">
               <Users2 className="h-12 w-12 mx-auto mb-3 opacity-50" />
               <p>Группы не найдены</p>

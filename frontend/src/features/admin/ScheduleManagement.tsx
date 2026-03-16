@@ -6,6 +6,14 @@ import { Button } from '@/shared/ui/button';
 import { Plus, Edit, Trash2, Loader2, Calendar, Clock, MapPin, Video } from 'lucide-react';
 import ScheduleForm from './ScheduleForm';
 import { useSchedule } from '@/shared/api/admin';
+import { useAuth, getCourseTypeFromRole } from '@/shared/lib/auth-context';
+
+const courseTypeLabels: Record<string, string> = {
+  'english': 'Английский язык',
+  'electronics': 'Электроника',
+  'computer_science': 'Информатика',
+  'iot': 'IoT (Интернет вещей)',
+};
 
 type BadgeVariant = 'default' | 'secondary' | 'outline' | 'destructive';
 
@@ -103,21 +111,31 @@ interface ScheduleItem {
 }
 
 export default function ScheduleManagement() {
-  const { 
-    schedule, 
-    isLoading, 
-    isError, 
-    createScheduleItem, 
-    updateScheduleItem, 
-    deleteScheduleItem, 
+  const { user } = useAuth();
+  const {
+    schedule,
+    isLoading,
+    isError,
+    createScheduleItem,
+    updateScheduleItem,
+    deleteScheduleItem,
     isCreating,
     isUpdating,
     isDeleting,
-    mutate 
+    mutate
   } = useSchedule();
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingScheduleItem, setEditingScheduleItem] = useState<ScheduleItem | null>(null);
+
+  // Получаем тип курса ментора
+  const userRoles = user?.roles || [];
+  const mentorCourseType = getCourseTypeFromRole(userRoles);
+  
+  // Фильтруем расписание по типу курса (если это ментор)
+  const filteredSchedule = mentorCourseType
+    ? schedule?.filter((item: any) => item.courseGroup?.course?.type === mentorCourseType)
+    : schedule;
 
   const handleCreate = () => {
     setEditingScheduleItem(null);
@@ -133,6 +151,7 @@ export default function ScheduleManagement() {
     if (!confirm('Удалить занятие из расписания?')) return;
     try {
       await deleteScheduleItem(id);
+      mutate(); // Обновляем данные после удаления
     } catch (error) {
       console.error('Error deleting schedule item:', error);
     }
@@ -140,10 +159,21 @@ export default function ScheduleManagement() {
 
   const handleSave = async (data: any) => {
     try {
+      // Очищаем пустые значения, чтобы не отправлять пустые строки
+      const cleanedData = {
+        ...data,
+        meetingUrl: data.meetingUrl || undefined,
+        videoUrl: data.videoUrl || undefined,
+        materialsUrl: data.materialsUrl || undefined,
+        assignmentDescription: data.assignmentDescription || undefined,
+        content: data.content || undefined,
+        instructorId: data.instructorId || undefined,
+      };
+
       if (editingScheduleItem) {
-        await updateScheduleItem({ id: editingScheduleItem.id, data });
+        await updateScheduleItem({ id: editingScheduleItem.id, data: cleanedData });
       } else {
-        await createScheduleItem(data);
+        await createScheduleItem(cleanedData);
       }
       setIsDialogOpen(false);
       setEditingScheduleItem(null);
@@ -187,13 +217,18 @@ export default function ScheduleManagement() {
           <p className="text-gray-400 mt-2">
             Создание и редактирование учебного расписания
           </p>
+          {mentorCourseType && (
+            <p className="text-sm text-blue-400 mt-1">
+              📚 Направление: <span className="font-semibold">{courseTypeLabels[mentorCourseType]}</span>
+            </p>
+          )}
         </div>
         <div className="flex items-center space-x-2">
           <Badge variant="secondary" className="text-sm">
-            Всего: {schedule?.length || 0}
+            Всего: {filteredSchedule?.length || 0}
           </Badge>
           <Button onClick={handleCreate} className="gap-2 flex justify-center">
-            <Plus className="h-4 w-4" /> 
+            <Plus className="h-4 w-4" />
             Добавить занятие
           </Button>
         </div>
@@ -235,7 +270,7 @@ export default function ScheduleManagement() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
-                {(schedule as ScheduleItem[]).map((item: ScheduleItem) => {
+                {(filteredSchedule as ScheduleItem[]).map((item: ScheduleItem) => {
                   const startTime = formatDateTime(item.startTime);
                   const endTime = formatDateTime(item.endTime);
                   
@@ -321,7 +356,7 @@ export default function ScheduleManagement() {
             </table>
           </div>
 
-          {(!schedule || schedule.length === 0) && (
+          {(!filteredSchedule || filteredSchedule.length === 0) && (
             <div className="text-center py-8 text-gray-400">
               <Calendar className="h-12 w-12 mx-auto mb-4 opacity-50" />
               <p>Занятия не найдены</p>

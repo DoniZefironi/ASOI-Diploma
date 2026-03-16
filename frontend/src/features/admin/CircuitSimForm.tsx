@@ -6,9 +6,17 @@ import { Button } from '@/shared/ui/button';
 import { Card } from '@/shared/ui/card';
 import { Loader2 } from 'lucide-react';
 import { useCourses } from '@/shared/api/admin';
+import { useAuth, getCourseTypeFromRole } from '@/shared/lib/auth-context';
 
-const Label = ({ children, htmlFor, className = '' }: { 
-  children: React.ReactNode; 
+const courseTypeLabels: Record<string, string> = {
+  'english': 'Английский язык',
+  'electronics': 'Электроника',
+  'computer_science': 'Информатика',
+  'iot': 'IoT (Интернет вещей)',
+};
+
+const Label = ({ children, htmlFor, className = '' }: {
+  children: React.ReactNode;
   htmlFor?: string;
   className?: string;
 }) => (
@@ -24,7 +32,7 @@ interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   className?: string;
 }
 
-const Input = ({ 
+const Input = ({
   type = 'text',
   value,
   onChange,
@@ -44,44 +52,19 @@ const Input = ({
   />
 );
 
-interface TextareaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
-  value: string;
-  onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
-  placeholder?: string;
-  className?: string;
-}
-
-const Textarea = ({ 
-  value,
-  onChange,
-  placeholder,
-  id,
-  rows = 4,
-  className = '',
-  ...props
-}: TextareaProps) => (
-  <textarea
-    id={id}
-    value={value}
-    onChange={onChange}
-    placeholder={placeholder}
-    rows={rows}
-    className={`w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-800 text-white ${className}`}
-    {...props}
-  />
-);
-
-const Select = ({ 
-  value, 
-  onChange, 
-  children,
-  className = ''
-}: {
+interface SelectProps {
   value: string;
   onChange: (value: string) => void;
   children: React.ReactNode;
   className?: string;
-}) => (
+}
+
+const Select = ({
+  value,
+  onChange,
+  children,
+  className = ''
+}: SelectProps) => (
   <select
     value={value}
     onChange={(e) => onChange(e.target.value)}
@@ -89,26 +72,6 @@ const Select = ({
   >
     {children}
   </select>
-);
-
-const Checkbox = ({ 
-  checked, 
-  onChange,
-  id,
-  className = ''
-}: {
-  checked: boolean;
-  onChange: (checked: boolean) => void;
-  id?: string;
-  className?: string;
-}) => (
-  <input
-    type="checkbox"
-    id={id}
-    checked={checked}
-    onChange={(e) => onChange(e.target.checked)}
-    className={`w-4 h-4 text-blue-600 rounded focus:ring-blue-500 ${className}`}
-  />
 );
 
 interface CircuitSimFormData {
@@ -126,7 +89,18 @@ interface CircuitSimFormProps {
 }
 
 export default function CircuitSimForm({ circuit, onSave, onCancel, isSubmitting = false }: CircuitSimFormProps) {
+  const { user } = useAuth();
   const { courses, isLoading: coursesLoading } = useCourses();
+  
+  // Получаем тип курса ментора
+  const userRoles = user?.roles || [];
+  const mentorCourseType = getCourseTypeFromRole(userRoles);
+  
+  // Фильтруем курсы по типу курса ментора (если это ментор)
+  const filteredCourses = mentorCourseType
+    ? courses?.filter((c: any) => c.type === mentorCourseType)
+    : courses;
+    
   const [formData, setFormData] = useState<CircuitSimFormData>({
     title: circuit?.title || '',
     description: circuit?.description || '',
@@ -157,7 +131,7 @@ export default function CircuitSimForm({ circuit, onSave, onCancel, isSubmitting
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (validateForm()) {
       onSave(formData);
     }
@@ -168,7 +142,7 @@ export default function CircuitSimForm({ circuit, onSave, onCancel, isSubmitting
       ...prev,
       [field]: value
     }));
-    
+
     if (errors[field]) {
       setErrors(prev => ({
         ...prev,
@@ -188,6 +162,14 @@ export default function CircuitSimForm({ circuit, onSave, onCancel, isSubmitting
   return (
     <Card className="p-6">
       <form onSubmit={handleSubmit} className="space-y-6">
+        {mentorCourseType && (
+          <div className="p-3 bg-blue-900/20 border border-blue-700 rounded-lg">
+            <p className="text-sm text-blue-400">
+              🔬 Доступные курсы: <span className="font-semibold">{courseTypeLabels[mentorCourseType]}</span>
+            </p>
+          </div>
+        )}
+      
         <div className="space-y-2">
           <Label htmlFor="title">Название проекта *</Label>
           <Input
@@ -203,12 +185,13 @@ export default function CircuitSimForm({ circuit, onSave, onCancel, isSubmitting
 
         <div className="space-y-2">
           <Label htmlFor="description">Описание проекта *</Label>
-          <Textarea
+          <textarea
             id="description"
             value={formData.description}
             onChange={(e) => handleChange('description', e.target.value)}
-            placeholder="Опишите назначение и цели проекта..."
-            rows={3}
+            placeholder="Опишите содержание проекта..."
+            rows={4}
+            className={`w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-800 text-white`}
           />
           {errors.description && (
             <p className="text-sm text-red-500">{errors.description}</p>
@@ -222,7 +205,7 @@ export default function CircuitSimForm({ circuit, onSave, onCancel, isSubmitting
             onChange={(value) => handleChange('courseId', parseInt(value))}
           >
             <option value="0">Выберите курс</option>
-            {(courses as any[])?.map((course: any) => (
+            {(filteredCourses as any[])?.map((course: any) => (
               <option key={course.id} value={course.id}>
                 {course.name}
               </option>
@@ -233,18 +216,18 @@ export default function CircuitSimForm({ circuit, onSave, onCancel, isSubmitting
           )}
         </div>
 
-        <div className="flex items-center space-x-2">
-          <Checkbox
+        <div className="flex items-center gap-2">
+          <input
+            type="checkbox"
             id="isActive"
             checked={formData.isActive}
-            onChange={(checked) => handleChange('isActive', checked)}
+            onChange={(e) => handleChange('isActive', e.target.checked)}
+            className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
           />
-          <Label htmlFor="isActive" className="cursor-pointer">
-            Активный проект
-          </Label>
+          <label htmlFor="isActive" className="text-sm text-gray-400">Активен</label>
         </div>
 
-        <div className="flex justify-end space-x-3 pt-4 border-t border-gray-700">
+        <div className="flex justify-end gap-2 pt-4 border-t border-gray-700">
           <Button
             type="button"
             variant="secondary"
@@ -254,8 +237,7 @@ export default function CircuitSimForm({ circuit, onSave, onCancel, isSubmitting
             Отмена
           </Button>
           <Button type="submit" disabled={isSubmitting}>
-            {isSubmitting && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
-            {circuit ? 'Обновить проект' : 'Создать проект'}
+            {isSubmitting ? 'Сохранение...' : 'Сохранить'}
           </Button>
         </div>
       </form>

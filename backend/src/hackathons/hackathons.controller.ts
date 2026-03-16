@@ -4,6 +4,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { UserRoleEnum } from '../users/entities/user-role.entity';
+import { MENTOR_ROLES } from '../common/helpers/role.helper';
 import { CreateHackathonDto } from './dto/create-hackathon.dto';
 import { CreateTeamDto } from './dto/create-team.dto';
 import { SubmitProjectDto } from './dto/submit-project.dto';
@@ -30,21 +31,21 @@ export class HackathonsController {
 
   @Get('admin/stats')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRoleEnum.ADMIN)
+  @Roles(...MENTOR_ROLES, UserRoleEnum.ADMIN)
   getStats() {
     return this.hackathonsService.getStats();
   }
 
   @Post()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRoleEnum.ADMIN, UserRoleEnum.MENTOR)
+  @Roles(...MENTOR_ROLES, UserRoleEnum.ADMIN)
   create(@Body() dto: CreateHackathonDto) {
     return this.hackathonsService.createHackathon(dto);
   }
 
   @Patch(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRoleEnum.ADMIN, UserRoleEnum.MENTOR)
+  @Roles(...MENTOR_ROLES, UserRoleEnum.ADMIN)
   update(@Param('id', ParseIntPipe) id: number, @Body() dto: Partial<CreateHackathonDto>) {
     return this.hackathonsService.updateHackathon(id, dto);
   }
@@ -84,7 +85,7 @@ export class HackathonsController {
 
   @Patch('teams/:teamId/status')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRoleEnum.ADMIN, UserRoleEnum.MENTOR)
+  @Roles(...MENTOR_ROLES, UserRoleEnum.ADMIN)
   updateTeamStatus(@Param('teamId', ParseIntPipe) teamId: number, @Body() body: { status: string }) {
     return this.hackathonsService.updateTeamStatus(teamId, body.status);
   }
@@ -113,7 +114,7 @@ export class HackathonsController {
 
   @Post('submissions/:submissionId/grade')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRoleEnum.ADMIN, UserRoleEnum.MENTOR)
+  @Roles(...MENTOR_ROLES, UserRoleEnum.ADMIN)
   gradeSubmission(
     @Param('submissionId', ParseIntPipe) submissionId: number,
     @Body() dto: GradeProjectDto,

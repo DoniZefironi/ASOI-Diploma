@@ -1,13 +1,22 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/shared/ui/button';
 import { Card } from '@/shared/ui/card';
 import { Loader2 } from 'lucide-react';
-import { useCourseGroups } from '@/shared/api/admin';
+import { useCourseGroups, useAssignments } from '@/shared/api/admin';
+import { useAuth, getCourseTypeFromRole } from '@/shared/lib/auth-context';
+import { apiClient } from '@/shared/api/client';
 
-const Label = ({ children, htmlFor, className = '' }: { 
-  children: React.ReactNode; 
+const courseTypeLabels: Record<string, string> = {
+  'english': 'Английский язык',
+  'electronics': 'Электроника',
+  'computer_science': 'Информатика',
+  'iot': 'IoT (Интернет вещей)',
+};
+
+const Label = ({ children, htmlFor, className = '' }: {
+  children: React.ReactNode;
   htmlFor?: string;
   className?: string;
 }) => (
@@ -23,7 +32,7 @@ interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   className?: string;
 }
 
-const Input = ({ 
+const Input = ({
   type = 'text',
   value,
   onChange,
@@ -50,7 +59,7 @@ interface TextareaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement
   className?: string;
 }
 
-const Textarea = ({ 
+const Textarea = ({
   value,
   onChange,
   placeholder,
@@ -70,9 +79,9 @@ const Textarea = ({
   />
 );
 
-const Select = ({ 
-  value, 
-  onChange, 
+const Select = ({
+  value,
+  onChange,
   children,
   className = ''
 }: {
@@ -90,35 +99,17 @@ const Select = ({
   </select>
 );
 
-const Checkbox = ({ 
-  checked, 
-  onChange,
-  id,
-  className = ''
-}: {
-  checked: boolean;
-  onChange: (checked: boolean) => void;
-  id?: string;
-  className?: string;
-}) => (
-  <input
-    type="checkbox"
-    id={id}
-    checked={checked}
-    onChange={(e) => onChange(e.target.checked)}
-    className={`w-4 h-4 text-blue-600 rounded focus:ring-blue-500 ${className}`}
-  />
-);
-
 interface AssignmentFormData {
   title: string;
   description: string;
-  type: 'lecture' | 'practice' | 'test' | 'hackathon' | 'olympiad' | 'facultative';
+  type: 'practice' | 'test' | 'practice_review';
   maxScore: number;
   deadline: string;
   courseGroupId: number;
   isActive: boolean;
   requirements?: string;
+  // Для типа practice_review - ID задания практики
+  practiceAssignmentId?: number;
 }
 
 interface AssignmentFormProps {
@@ -129,28 +120,43 @@ interface AssignmentFormProps {
 }
 
 export default function AssignmentForm({ assignment, onSave, onCancel, isSubmitting = false }: AssignmentFormProps) {
+  const { user } = useAuth();
   const { groups, isLoading: groupsLoading } = useCourseGroups();
+  const { assignments } = useAssignments();
+
+  // Получаем тип курса ментора
+  const userRoles = user?.roles || [];
+  const mentorCourseType = getCourseTypeFromRole(userRoles);
+
+  // Фильтруем группы по типу курса ментора (если это ментор)
+  const filteredGroups = mentorCourseType
+    ? groups?.filter((g: any) => g.course?.type === mentorCourseType)
+    : groups;
+
   const [formData, setFormData] = useState<AssignmentFormData>({
     title: assignment?.title || '',
     description: assignment?.description || '',
     type: assignment?.type || 'practice',
-    maxScore: assignment?.maxScore || 100,
+    maxScore: assignment?.maxScore ? Number(assignment.maxScore) : 100,
     deadline: assignment?.deadline ? new Date(assignment.deadline).toISOString().slice(0, 16) : '',
-    courseGroupId: assignment?.courseGroupId || 0,
+    courseGroupId: assignment?.courseGroupId ? Number(assignment.courseGroupId) : 0,
     isActive: assignment?.isActive ?? true,
     requirements: assignment?.requirements || '',
+    practiceAssignmentId: assignment?.practiceAssignmentId || undefined,
   });
 
   const [errors, setErrors] = useState<Partial<Record<keyof AssignmentFormData, string>>>({});
 
   const assignmentTypes = [
-    { value: 'lecture', label: 'Лекция' },
-    { value: 'practice', label: 'Практика' },
+    { value: 'practice', label: 'Практика (загрузка работы)' },
     { value: 'test', label: 'Тест' },
-    { value: 'hackathon', label: 'Хакатон' },
-    { value: 'olympiad', label: 'Олимпиада' },
-    { value: 'facultative', label: 'Факультатив' },
+    { value: 'practice_review', label: 'Проверка практики (Peer Review)' },
   ];
+
+  // Фильтруем задания практики для выбора
+  const practiceAssignments = assignments?.filter((a: any) => 
+    a.type === 'practice' && (!mentorCourseType || a.courseGroup?.course?.type === mentorCourseType)
+  ) || [];
 
   const validateForm = (): boolean => {
     const newErrors: Partial<Record<keyof AssignmentFormData, string>> = {};
@@ -175,24 +181,49 @@ export default function AssignmentForm({ assignment, onSave, onCancel, isSubmitt
       newErrors.courseGroupId = 'Выберите учебную группу';
     }
 
+    // Для типа practice_review обязательно задание практики
+    if (formData.type === 'practice_review' && !formData.practiceAssignmentId) {
+      newErrors.practiceAssignmentId = 'Выберите задание практики для проверки';
+    }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (validateForm()) {
-      onSave(formData);
+      const payload: any = { ...formData };
+
+      try {
+        if (assignment) {
+          await onSave(payload);
+        } else {
+          const createdAssignment = await apiClient.post('/assignments', payload);
+          alert('Задание успешно создано!');
+          onCancel();
+        }
+      } catch (error: any) {
+        console.error('Failed to save assignment:', error);
+        alert('Ошибка при сохранении: ' + (error.message || 'Неизвестная ошибка'));
+      }
     }
   };
 
   const handleChange = (field: keyof AssignmentFormData, value: any) => {
+    let newValue: any = value;
+
+    // Конвертируем числовые поля в числа
+    if (['courseGroupId', 'maxScore', 'practiceAssignmentId'].includes(field)) {
+      newValue = value === '' ? 0 : parseInt(value, 10);
+    }
+
     setFormData(prev => ({
       ...prev,
-      [field]: value
+      [field]: newValue
     }));
-    
+
     if (errors[field]) {
       setErrors(prev => ({
         ...prev,
@@ -236,7 +267,7 @@ export default function AssignmentForm({ assignment, onSave, onCancel, isSubmitt
             id="description"
             value={formData.description}
             onChange={(e) => handleChange('description', e.target.value)}
-            placeholder="Опишите задание, требования и критерии оценки..."
+            placeholder="Опишите задание, требования к выполнению..."
             rows={4}
           />
           {errors.description && (
@@ -257,6 +288,9 @@ export default function AssignmentForm({ assignment, onSave, onCancel, isSubmitt
                 </option>
               ))}
             </Select>
+            {errors.type && (
+              <p className="text-sm text-red-500">{errors.type}</p>
+            )}
           </div>
 
           <div className="space-y-2">
@@ -296,7 +330,7 @@ export default function AssignmentForm({ assignment, onSave, onCancel, isSubmitt
               onChange={(value) => handleChange('courseGroupId', parseInt(value))}
             >
               <option value="0">Выберите группу</option>
-              {(groups as any[])?.map((group: any) => (
+              {(filteredGroups as any[])?.map((group: any) => (
                 <option key={group.id} value={group.id}>
                   {group.name}
                 </option>
@@ -308,22 +342,60 @@ export default function AssignmentForm({ assignment, onSave, onCancel, isSubmitt
           </div>
         </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="requirements">Дополнительные требования (JSON)</Label>
-          <Textarea
-            id="requirements"
-            value={formData.requirements || ''}
-            onChange={(e) => handleChange('requirements', e.target.value)}
-            placeholder='{"minLength": 100, "format": "markdown", "attachments": true}'
-            rows={3}
-          />
-        </div>
+        {/* Поля для типа practice_review */}
+        {formData.type === 'practice_review' && (
+          <div className="border-t border-gray-700 pt-6 mt-6">
+            <h3 className="text-lg font-semibold text-white mb-4">🔄 Peer Review</h3>
+            <div className="space-y-2">
+              <Label htmlFor="practiceAssignmentId">Задание практики для проверки *</Label>
+              <Select
+                value={formData.practiceAssignmentId?.toString() || '0'}
+                onChange={(value) => handleChange('practiceAssignmentId', parseInt(value))}
+              >
+                <option value="0">Выберите задание</option>
+                {practiceAssignments.map((a: any) => (
+                  <option key={a.id} value={a.id}>
+                    {a.title} ({a.courseGroup?.name})
+                  </option>
+                ))}
+              </Select>
+              {errors.practiceAssignmentId && (
+                <p className="text-sm text-red-500">{errors.practiceAssignmentId}</p>
+              )}
+              <p className="text-xs text-gray-500">
+                Студенты будут проверять работы из выбранного задания
+              </p>
+            </div>
+          </div>
+        )}
+
+        {/* Поля для типа practice */}
+        {formData.type === 'practice' && (
+          <div className="border-t border-gray-700 pt-6 mt-6">
+            <h3 className="text-lg font-semibold text-white mb-4">📝 Требования к работе</h3>
+            <div className="space-y-2">
+              <Label htmlFor="requirements">Дополнительные требования (JSON)</Label>
+              <Textarea
+                id="requirements"
+                value={formData.requirements || ''}
+                onChange={(e) => handleChange('requirements', e.target.value)}
+                placeholder='{"minLength": 100, "format": "markdown", "attachments": true}'
+                rows={3}
+              />
+              <p className="text-xs text-gray-500">
+                Необязательно. Можно указать требования к формату работы
+              </p>
+            </div>
+          </div>
+        )}
 
         <div className="flex items-center space-x-2">
-          <Checkbox
+          <input
+            type="checkbox"
             id="isActive"
             checked={formData.isActive}
-            onChange={(checked) => handleChange('isActive', checked)}
+            onChange={(e) => handleChange('isActive', e.target.checked)}
+            className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
           />
           <Label htmlFor="isActive" className="cursor-pointer">
             Активное задание

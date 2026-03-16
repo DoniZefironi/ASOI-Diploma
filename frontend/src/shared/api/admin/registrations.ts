@@ -67,12 +67,27 @@ export function useUserCourseRegistrations() {
   };
 }
 
+export function useUserApprovedCourses() {
+  const { registrations, isLoading, isError } = useUserCourseRegistrations();
+
+  // Фильтруем по статусу approved (независимо от регистра)
+  const approvedCourses = registrations?.filter(reg => 
+    reg.status?.toLowerCase() === 'approved'
+  );
+
+  return {
+    courses: approvedCourses,
+    isLoading,
+    isError,
+  };
+}
+
 export function useInformaticsCourseRegistration() {
   const { registrations, isLoading, isError } = useUserCourseRegistrations();
-  
+
   const getCurrentUserId = (): number | null => {
     if (typeof window === 'undefined') return null;
-    
+
     try {
       const userData = localStorage.getItem('user');
       if (userData) {
@@ -86,11 +101,11 @@ export function useInformaticsCourseRegistration() {
   };
 
   const currentUserId = getCurrentUserId();
-  
+
   const informaticsRegistration = registrations?.find(registration => {
     const isCurrentUser = registration.userId === currentUserId;
-    
-    const isInformaticsCourse = 
+
+    const isInformaticsCourse =
       registration.courseGroup.course.name.toLowerCase().includes('информатик') ||
       registration.courseGroup.course.name.toLowerCase().includes('informatics') ||
       registration.courseGroup.course.name.toLowerCase().includes('программирование') ||
@@ -99,13 +114,16 @@ export function useInformaticsCourseRegistration() {
     return isCurrentUser && isInformaticsCourse;
   });
 
+  // Проверяем статус независимо от регистра
+  const status = informaticsRegistration?.status?.toLowerCase();
+
   return {
     registration: informaticsRegistration,
     isLoading,
     isError,
-    hasAccess: informaticsRegistration?.status === 'approved',
-    isPending: informaticsRegistration?.status === 'pending',
-    isRejected: informaticsRegistration?.status === 'rejected',
+    hasAccess: status === 'approved',
+    isPending: status === 'pending',
+    isRejected: status === 'rejected',
     currentUserId
   };
 }

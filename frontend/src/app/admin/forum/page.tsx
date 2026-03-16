@@ -34,7 +34,7 @@ export default function AdminForum() {
       setSections(sectionsData || []);
       setStats({
         totalSections: sectionsData?.length || 0,
-        totalTopics: sectionsData?.reduce((acc, s) => acc + (s.topics?.length || 0), 0) || 0,
+        totalTopics: sectionsData?.reduce((acc: number, s: ForumSection) => acc + (s.topics?.length || 0), 0) || 0,
         totalPosts: 0,
       });
     } catch (error) {

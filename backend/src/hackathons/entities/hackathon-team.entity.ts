@@ -24,11 +24,11 @@ export class HackathonTeam {
   @Column()
   leaderId: number;
 
-  @Column({ length: 200, nullable: true })
-  projectName: string;
+  @Column({ type: 'varchar', length: 200, nullable: true })
+  projectName: string | null;
 
   @Column({ type: 'text', nullable: true })
-  projectDescription: string;
+  projectDescription: string | null;
 
   @Column({ default: 'forming' })
   status: string;

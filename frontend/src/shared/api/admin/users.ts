@@ -21,9 +21,9 @@ export interface User {
   createdAt: string; 
 }
 
-export function useUsers() {
+export function useUsers(endpoint: string = '/users') {
   const { data, error, isLoading, mutate } = useSWR<User[] | undefined>(
-    '/users',
+    endpoint,
     fetcher,
     {
       revalidateOnFocus: false,
@@ -41,13 +41,15 @@ export function useUsers() {
     updateRolesMutation
   );
 
-  const mentors = data?.filter((user: any) => {
-    const roles = user.roles || user.userRoles || [];
-    return roles.some((role: any) => {
-      const roleName = role.name || role.role || role.roleName || '';
-      return roleName.toUpperCase() === 'MENTOR';
-    });
-  }) || [];
+  const mentors = endpoint === '/users/mentors' 
+    ? data 
+    : data?.filter((user: any) => {
+        const roles = user.roles || user.userRoles || [];
+        return roles.some((role: any) => {
+          const roleName = role.name || role.role || role.roleName || '';
+          return roleName.toUpperCase() === 'MENTOR';
+        });
+      }) || [];
 
   return {
     users: data,

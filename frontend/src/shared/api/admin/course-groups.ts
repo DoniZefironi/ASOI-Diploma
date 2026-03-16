@@ -39,11 +39,14 @@ export interface RegisterToCourseDto {
 }
 
 export function useCourseGroups(courseId?: number) {
-  const url = courseId ? `/course-groups?courseId=${courseId}` : '/course-groups';
-  
+  const url = courseId ? `/course-groups/course/${courseId}` : '/course-groups';
+
   const { data, error, isLoading, mutate } = useSWR<CourseGroup[]>(
     url,
-    fetcher
+    fetcher,
+    {
+      fallbackData: [],
+    }
   );
 
   const { trigger: createGroup, isMutating: isCreating } = useSWRMutation(
@@ -97,13 +100,15 @@ export function useRegisterToCourse() {
   const { trigger, isMutating } = useSWRMutation(
     '/course-groups/register',
     async (url, { arg }: { arg: RegisterToCourseDto }) => {
-      const result = await apiClient.post(url, arg);
-      return result;
-    },
-    {
-      onSuccess: () => {
-        mutateUserRegistrations();
-      },
+      try {
+        const result = await apiClient.post(url, arg);
+        // После успешной регистрации обновляем данные
+        await mutateUserRegistrations();
+        return result;
+      } catch (error: any) {
+        // Пробрасываем ошибку дальше для обработки в компоненте
+        throw error;
+      }
     }
   );
 
@@ -117,25 +122,58 @@ interface UserCourseRegistration {
   id: number;
   userId: number;
   courseGroupId: number;
-  status: 'PENDING' | 'APPROVED' | 'REJECTED';
-  createdAt: string;
+  status: 'pending' | 'approved' | 'rejected';
+  registeredAt: string;
   courseGroup: CourseGroup;
 }
 
+export interface StudentRating {
+  id: number;
+  firstName: string;
+  lastName: string;
+  email: string;
+  averageScore: number;
+  completedAssignments: number;
+}
+
 export function useUserRegistrations() {
+  // Проверяем, авторизован ли пользователь
+  const isAuthorized = typeof window !== 'undefined' && !!localStorage.getItem('access_token');
+
   const { data, error, isLoading, mutate } = useSWR<UserCourseRegistration[]>(
-    '/course-groups/user/registrations',
+    isAuthorized ? '/course-groups/user/registrations' : null,
     fetcher,
     {
-      revalidateOnFocus: true,
-      dedupingInterval: 5000,
+      revalidateOnFocus: false,
+      dedupingInterval: 10000,
+      refreshInterval: 0,
+      fallbackData: [],
     }
   );
 
   return {
-    registrations: data,
+    registrations: data || [],
     isLoading,
     error,
+    isError: error,
+    mutate,
+  };
+}
+
+export function useGroupStudentsRating(groupId: number) {
+  const { data, error, isLoading, mutate } = useSWR<StudentRating[]>(
+    groupId ? `/course-groups/${groupId}/students/rating` : null,
+    fetcher,
+    {
+      revalidateOnFocus: false,
+      dedupingInterval: 60000,
+      fallbackData: [],
+    }
+  );
+
+  return {
+    students: data || [],
+    isLoading,
     isError: error,
     mutate,
   };

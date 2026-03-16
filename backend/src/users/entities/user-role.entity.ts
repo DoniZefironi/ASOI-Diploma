@@ -4,8 +4,20 @@ import { User } from './user.entity';
 
 export enum UserRoleEnum {
   REGISTERED_USER = 'registered_user',
-  STUDENT = 'student',
-  MENTOR = 'mentor',
+  
+  // Студенты по направлениям
+  STUDENT_ENGLISH = 'student_english',
+  STUDENT_ELECTRONICS = 'student_electronics',
+  STUDENT_COMPUTER_SCIENCE = 'student_computer_science',
+  STUDENT_IOT = 'student_iot',
+  
+  // Менторы по направлениям
+  MENTOR_ENGLISH = 'mentor_english',
+  MENTOR_ELECTRONICS = 'mentor_electronics',
+  MENTOR_COMPUTER_SCIENCE = 'mentor_computer_science',
+  MENTOR_IOT = 'mentor_iot',
+  
+  // Админ (общий)
   ADMIN = 'admin'
 }
 
@@ -27,4 +39,20 @@ export class UserRole {
     default: UserRoleEnum.REGISTERED_USER
   })
   role: UserRoleEnum;
+}
+
+// Helper функции для проверки ролей
+export function isStudentRole(role: UserRoleEnum): boolean {
+  return role.startsWith('student_');
+}
+
+export function isMentorRole(role: UserRoleEnum): boolean {
+  return role.startsWith('mentor_');
+}
+
+export function getCourseTypeFromRole(role: UserRoleEnum): string | null {
+  const parts = role.split('_');
+  if (parts.length < 2) return null;
+  const type = parts[1];
+  return ['english', 'electronics', 'computer_science', 'iot'].includes(type) ? type : null;
 }

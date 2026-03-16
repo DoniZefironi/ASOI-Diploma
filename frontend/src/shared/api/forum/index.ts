@@ -54,7 +54,7 @@ export interface ForumPost {
 }
 
 export interface CreateSectionDto {
-  courseId: number;
+  courseId?: number;  
   title: string;
   description?: string;
   orderIndex?: number;
@@ -79,38 +79,39 @@ export interface CreatePostDto {
   content: string;
 }
 
+// В forum/index.ts, временно убираем типы в < >
 export const forumApi = {
   // Sections
-  getSections: () => apiClient.get<ForumSection[]>('/forum/sections'),
+  getSections: () => apiClient.get('/forum/sections'),
   getSectionsByCourse: (courseId: number) =>
-    apiClient.get<ForumSection[]>(`/forum/sections/course/${courseId}`),
-  getSection: (id: number) => apiClient.get<ForumSection>(`/forum/sections/${id}`),
+    apiClient.get(`/forum/sections/course/${courseId}`),
+  getSection: (id: number) => apiClient.get(`/forum/sections/${id}`),
   createSection: (data: CreateSectionDto) =>
-    apiClient.post<ForumSection>('/forum/sections', data),
+    apiClient.post('/forum/sections', data),
   updateSection: (id: number, data: Partial<CreateSectionDto>) =>
-    apiClient.put<ForumSection>(`/forum/sections/${id}`, data),
+    apiClient.put(`/forum/sections/${id}`, data),
   deleteSection: (id: number) => apiClient.delete(`/forum/sections/${id}`),
 
   // Topics
   getTopicsBySection: (sectionId: number) =>
-    apiClient.get<ForumTopic[]>(`/forum/topics/section/${sectionId}`),
-  getTopic: (id: number) => apiClient.get<ForumTopic>(`/forum/topics/${id}`),
+    apiClient.get(`/forum/topics/section/${sectionId}`),
+  getTopic: (id: number) => apiClient.get(`/forum/topics/${id}`),
   createTopic: (data: CreateTopicDto) =>
-    apiClient.post<ForumTopic>('/forum/topics', data),
+    apiClient.post('/forum/topics', data),
   updateTopic: (id: number, data: UpdateTopicDto) =>
-    apiClient.put<ForumTopic>(`/forum/topics/${id}`, data),
+    apiClient.put(`/forum/topics/${id}`, data),
   toggleTopicPinned: (id: number) =>
-    apiClient.put<ForumTopic>(`/forum/topics/${id}/pin`, {}),
+    apiClient.put(`/forum/topics/${id}/pin`, {}),
   toggleTopicClosed: (id: number) =>
-    apiClient.put<ForumTopic>(`/forum/topics/${id}/close`, {}),
+    apiClient.put(`/forum/topics/${id}/close`, {}),
   deleteTopic: (id: number) => apiClient.delete(`/forum/topics/${id}`),
 
   // Posts
   getPostsByTopic: (topicId: number) =>
-    apiClient.get<ForumPost[]>(`/forum/topics/${topicId}/posts`),
+    apiClient.get(`/forum/topics/${topicId}/posts`),
   createPost: (data: CreatePostDto) =>
-    apiClient.post<ForumPost>('/forum/posts', data),
+    apiClient.post('/forum/posts', data),
   updatePost: (id: number, content: string) =>
-    apiClient.put<ForumPost>(`/forum/posts/${id}`, { content }),
+    apiClient.put(`/forum/posts/${id}`, { content }),
   deletePost: (id: number) => apiClient.delete(`/forum/posts/${id}`),
 };

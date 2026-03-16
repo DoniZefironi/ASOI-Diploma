@@ -10,22 +10,35 @@ export default function HackathonDetailPage() {
   const params = useParams();
   const router = useRouter();
   const { user } = useAuth();
-  const hackathonId = parseInt(params.id as string);
-
+  
+  const [hackathonId, setHackathonId] = useState<number | null>(null);
   const [hackathon, setHackathon] = useState<Hackathon | null>(null);
   const [teams, setTeams] = useState<HackathonTeam[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [showCreateTeamModal, setShowCreateTeamModal] = useState(false);
   const [showJoinModal, setShowJoinModal] = useState(false);
   const [selectedTeam, setSelectedTeam] = useState<HackathonTeam | null>(null);
-
   const [rankings, setRankings] = useState<any[]>([]);
 
+  // Получаем ID из params
   useEffect(() => {
-    loadData();
+    if (params?.id) {
+      setHackathonId(parseInt(params?.id as string));
+    } else {
+      router.push('/hackathons');
+    }
+  }, [params, router]);
+
+  // Загружаем данные только когда есть ID
+  useEffect(() => {
+    if (hackathonId) {
+      loadData();
+    }
   }, [hackathonId]);
 
   const loadData = async () => {
+    if (!hackathonId) return;
+    
     try {
       const [hackathonData, rankingsData] = await Promise.all([
         hackathonsApi.getOne(hackathonId),
@@ -42,6 +55,8 @@ export default function HackathonDetailPage() {
   };
 
   const handleCreateTeam = async (data: CreateTeamDto) => {
+    if (!hackathonId) return;
+    
     try {
       await hackathonsApi.createTeam(data);
       setShowCreateTeamModal(false);
@@ -53,6 +68,8 @@ export default function HackathonDetailPage() {
   };
 
   const handleJoinTeam = async (teamId: number) => {
+    if (!hackathonId) return;
+    
     try {
       await hackathonsApi.joinTeam(teamId);
       setShowJoinModal(false);
@@ -183,7 +200,7 @@ export default function HackathonDetailPage() {
             )}
           </div>
 
-          {canRegister && user && (
+          {canRegister && user && hackathonId && (
             <div className="mt-6 flex gap-4">
               <button
                 onClick={() => setShowCreateTeamModal(true)}
@@ -269,7 +286,7 @@ export default function HackathonDetailPage() {
         </div>
 
         {/* Modals */}
-        {showCreateTeamModal && (
+        {showCreateTeamModal && hackathonId && (
           <CreateTeamModal
             hackathonId={hackathonId}
             onClose={() => setShowCreateTeamModal(false)}

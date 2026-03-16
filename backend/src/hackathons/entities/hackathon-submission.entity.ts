@@ -13,23 +13,23 @@ export class HackathonSubmission {
   @Column()
   teamId: number;
 
-  @Column({ nullable: true })
-  circuitProjectId: number;
+  @Column({ type: 'int', nullable: true })
+  circuitProjectId: number | null;
 
-  @Column({ length: 500, nullable: true })
-  documentationUrl: string;
+  @Column({ type: 'varchar', length: 500, nullable: true })
+  documentationUrl: string | null;
 
-  @Column({ length: 500, nullable: true })
-  presentationUrl: string;
+  @Column({ type: 'varchar', length: 500, nullable: true })
+  presentationUrl: string | null;
 
-  @Column({ length: 500, nullable: true })
-  videoDemoUrl: string;
+  @Column({ type: 'varchar', length: 500, nullable: true })
+  videoDemoUrl: string | null;
 
-  @Column({ length: 500, nullable: true })
-  sourceCodeUrl: string;
+  @Column({ type: 'varchar', length: 500, nullable: true })
+  sourceCodeUrl: string | null;
 
   @Column({ type: 'text', nullable: true })
-  submissionNote: string;
+  submissionNote: string | null;
 
   @CreateDateColumn()
   submittedAt: Date;

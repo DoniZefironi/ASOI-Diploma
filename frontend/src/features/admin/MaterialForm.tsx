@@ -5,6 +5,7 @@ import { Button } from '@/shared/ui/button';
 import { Card } from '@/shared/ui/card';
 import { Loader2 } from 'lucide-react';
 import { useCourses } from '@/shared/api/admin';
+import { useAuth, getCourseTypeFromRole } from '@/shared/lib/auth-context';
 
 const Label = ({ children, htmlFor, className = '' }: { 
   children: React.ReactNode; 
@@ -127,15 +128,32 @@ interface MaterialFormProps {
   isSubmitting?: boolean;
 }
 
+const courseTypeLabels: Record<string, string> = {
+  'english': 'Английский язык',
+  'electronics': 'Электроника',
+  'computer_science': 'Информатика',
+  'iot': 'IoT (Интернет вещей)',
+};
+
 export default function MaterialForm({ material, onSave, onCancel, isSubmitting = false }: MaterialFormProps) {
+  const { user } = useAuth();
   const { courses, isLoading: coursesLoading } = useCourses();
+  
+  // Получаем тип курса ментора
+  const userRoles = user?.roles || [];
+  const mentorCourseType = getCourseTypeFromRole(userRoles);
+  
+  // Фильтруем курсы по типу курса ментора (если это ментор)
+  const filteredCourses = mentorCourseType
+    ? courses?.filter((c: any) => c.type === mentorCourseType)
+    : courses;
   const [formData, setFormData] = useState<MaterialFormData>({
     title: material?.title || '',
     description: material?.description || '',
     type: material?.type || 'document',
     fileUrl: material?.fileUrl || '',
     thumbnailUrl: material?.thumbnailUrl || '',
-    courseId: material?.courseId || 0,
+    courseId: material?.courseId ? Number(material.courseId) : 0,
     isPublic: material?.isPublic ?? true,
   });
 
@@ -197,11 +215,18 @@ export default function MaterialForm({ material, onSave, onCancel, isSubmitting 
   };
 
   const handleChange = (field: keyof MaterialFormData, value: any) => {
+    let newValue: any = value;
+    
+    // Конвертируем courseId в число
+    if (field === 'courseId') {
+      newValue = value === '' ? 0 : parseInt(value, 10);
+    }
+    
     setFormData(prev => ({
       ...prev,
-      [field]: value
+      [field]: newValue
     }));
-    
+
     if (errors[field]) {
       setErrors(prev => ({
         ...prev,
@@ -270,7 +295,7 @@ export default function MaterialForm({ material, onSave, onCancel, isSubmitting 
               onChange={(value) => handleChange('courseId', parseInt(value))}
             >
               <option value="0">Выберите курс</option>
-              {(courses as any[])?.map((course: any) => (
+              {(filteredCourses as any[])?.map((course: any) => (
                 <option key={course.id} value={course.id}>
                   {course.name}
                 </option>
@@ -281,6 +306,14 @@ export default function MaterialForm({ material, onSave, onCancel, isSubmitting 
             )}
           </div>
         </div>
+
+        {mentorCourseType && (
+          <div className="p-3 bg-blue-900/20 border border-blue-700 rounded-lg mb-4">
+            <p className="text-sm text-blue-400">
+              📖 Доступные курсы: <span className="font-semibold">{courseTypeLabels[mentorCourseType]}</span>
+            </p>
+          </div>
+        )}
 
         <div className="space-y-2">
           <Label htmlFor="fileUrl">URL файла *</Label>

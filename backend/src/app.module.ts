@@ -19,6 +19,7 @@ import { CompilerModule } from './compiler/compiler.module';
 import { HackathonsModule } from './hackathons/hackathons.module';
 import { CircuitModule } from './circuit/circuit.module';
 import { ProfessionalOrientationModule } from './professional-orientation/professional-orientation.module';
+import { CourseAccessModule } from './course-access/course-access.module';
 import { User } from './users/entities/user.entity';
 import { UserRole } from './users/entities/user-role.entity';
 import { CourseRegistration } from './course-groups/entities/course-registration.entity';
@@ -43,6 +44,7 @@ import { HackathonSubmission } from './hackathons/entities/hackathon-submission.
 import { HackathonGrade } from './hackathons/entities/hackathon-grade.entity';
 import { CircuitElementType } from './circuit/entities/circuit-element-type.entity';
 import { CircuitSolution } from './assignments/entities/circuit-solution.entity';
+import { PeerReviewSession } from './assignments/entities/peer-review-session.entity';
 
 @Module({
   imports: [
@@ -83,6 +85,7 @@ import { CircuitSolution } from './assignments/entities/circuit-solution.entity'
             HackathonTeamMember,
             HackathonSubmission,
             HackathonGrade,
+            PeerReviewSession,
           ],
           synchronize: true, 
           logging: configService.get('NODE_ENV') !== 'production',
@@ -103,6 +106,7 @@ import { CircuitSolution } from './assignments/entities/circuit-solution.entity'
     ProfessionalOrientationModule,
     HackathonsModule,
     CircuitModule,
+    CourseAccessModule,
   ],
   controllers: [AppController],
   providers: [AppService],

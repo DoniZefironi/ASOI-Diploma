@@ -104,7 +104,7 @@ export class AssignmentsService {
   async getSubmissionById(id: number): Promise<AssignmentSubmission> {
     const submission = await this.submissionRepository.findOne({
       where: { id },
-      relations: ['assignment', 'user', 'peerReviews', 'peerReviews.reviewer'],
+      relations: ['assignment', 'user', 'peerReviewsReceived', 'peerReviewsReceived.reviewer'],
     });
 
     if (!submission) {
@@ -127,12 +127,22 @@ export class AssignmentsService {
     });
   }
 
-  async getAssignmentSubmissions(assignmentId: number): Promise<AssignmentSubmission[]> {
-    return this.submissionRepository.find({
-      where: { assignmentId },
-      relations: ['user', 'peerReviews'],
-      order: { createdAt: 'DESC' },
-    });
+  async getAssignmentSubmissions(assignmentId: number, userId?: number): Promise<AssignmentSubmission[]> {
+    // Если передан userId (студент) - возвращаем только его submission
+    // Если нет (ментор) - возвращаем все submission
+    if (userId) {
+      return this.submissionRepository.find({
+        where: { assignmentId, userId },
+        relations: ['user', 'peerReviewsReceived'],
+        order: { createdAt: 'DESC' },
+      });
+    } else {
+      return this.submissionRepository.find({
+        where: { assignmentId },
+        relations: ['user', 'peerReviewsReceived'],
+        order: { createdAt: 'DESC' },
+      });
+    }
   }
 
   async createPeerReview(createPeerReviewDto: CreatePeerReviewDto, reviewerId: number): Promise<PeerReview> {
@@ -186,14 +196,14 @@ export class AssignmentsService {
   async calculateFinalGrade(submissionId: number): Promise<AssignmentSubmission> {
     const submission = await this.submissionRepository.findOne({
       where: { id: submissionId },
-      relations: ['peerReviews', 'assignment'],
+      relations: ['peerReviewsReceived', 'assignment'],
     });
 
     if (!submission) {
       throw new NotFoundException('Submission not found');
     }
 
-    const reviews = submission.peerReviews;
+    const reviews = submission.peerReviewsReceived;
     if (reviews.length === 0) {
       throw new ConflictException('No peer reviews available for this submission');
     }

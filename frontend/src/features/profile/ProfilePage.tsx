@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useAuth } from '@/shared/lib/auth-context';
+import { useAuth, hasStudentRole, hasMentorRole, hasAdminRole } from '@/shared/lib/auth-context';
 import { Card } from '@/shared/ui/card';
 import { Button } from '@/shared/ui/button';
 import Link from 'next/link';
@@ -53,6 +53,13 @@ export const ProfilePage = () => {
     email: '',
   });
 
+  const userRoles = user?.roles || [];
+  const hasStudentAccess = hasStudentRole(userRoles);
+  const isMentor = hasMentorRole(userRoles);
+  const isAdmin = hasAdminRole(userRoles);
+
+  const canShowProfOrientationTab = hasStudentAccess && hasInformaticsAccess && !profOrientationResult;
+
   useEffect(() => {
     if (user) {
       setEditForm({
@@ -60,9 +67,11 @@ export const ProfilePage = () => {
         lastName: user.lastName || '',
         email: user.email || '',
       });
-      loadHackathons();
+      if (hasStudentAccess) {
+        loadHackathons();
+      }
     }
-  }, [user]);
+  }, [user, hasStudentAccess]);
 
   const loadHackathons = async () => {
     setIsLoadingHackathons(true);
@@ -79,12 +88,6 @@ export const ProfilePage = () => {
       setIsLoadingHackathons(false);
     }
   };
-
-  const isAdmin = user?.roles?.includes('admin') || false;
-  const isMentor = user?.roles?.includes('mentor') || false;
-  const isStudent = user?.roles?.includes('student') || false;
-
-  const canShowProfOrientationTab = isStudent && hasInformaticsAccess && !profOrientationResult;
 
   if (!user) {
     return (
@@ -209,7 +212,7 @@ export const ProfilePage = () => {
                   ))}
                 </div>
 
-                {isStudent && informaticsRegistration && (
+                {hasStudentAccess && informaticsRegistration && (
                   <div className="mt-4 p-3 rounded-lg bg-gray-800">
                     <p className="text-sm font-medium text-white mb-1">
                       Курс информатики:
@@ -233,7 +236,7 @@ export const ProfilePage = () => {
                   </div>
                 )}
 
-                {isStudent && !registrationsLoading && !informaticsRegistration && (
+                {hasStudentAccess && !registrationsLoading && !informaticsRegistration && (
                   <div className="mt-4 p-3 rounded-lg bg-gray-800">
                     <p className="text-sm text-white">Не зарегистрирован на курс информатики</p>
                   </div>
@@ -244,18 +247,31 @@ export const ProfilePage = () => {
                 <button className="w-full text-left p-3 rounded-lg bg-gray-800 text-blue-600 font-semibold">
                   👤 Информация профиля
                 </button>
-                <button
-                  className="w-full text-left p-3 rounded-lg hover:bg-gray-800 transition-colors text-white"
-                  onClick={() => setIsCoursesModalOpen(true)}
-                >
-                  📚 Мои курсы
-                </button>
-                <Link
-                  href="/hackathons"
-                  className="w-full text-left p-3 rounded-lg hover:bg-gray-800 transition-colors text-white block"
-                >
-                  🏆 Мои хакатоны
-                </Link>
+                {/* Студенты и менторы видят эти опции */}
+                {hasStudentAccess && (
+                  <button
+                    className="w-full text-left p-3 rounded-lg hover:bg-gray-800 transition-colors text-white"
+                    onClick={() => setIsCoursesModalOpen(true)}
+                  >
+                    📚 Мои курсы
+                  </button>
+                )}
+                {hasStudentAccess && (
+                  <Link
+                    href="/hackathons"
+                    className="w-full text-left p-3 rounded-lg hover:bg-gray-800 transition-colors text-white block"
+                  >
+                    🏆 Мои хакатоны
+                  </Link>
+                )}
+                {hasStudentAccess && (
+                  <Link
+                    href="/peer-review"
+                    className="w-full text-left p-3 rounded-lg hover:bg-gray-800 transition-colors text-white block"
+                  >
+                    🔄 Peer Review
+                  </Link>
+                )}
                 {canShowProfOrientationTab && (
                   <button
                     className="w-full text-left p-3 rounded-lg hover:bg-gray-800 transition-colors text-white"
@@ -333,23 +349,23 @@ export const ProfilePage = () => {
                 <p className="text-white mb-4">
                   Инструменты управления курсами и наставничества
                 </p>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                   <Link href="/mentor">
                     <Button variant="secondary" className="w-full p-4">
                       <span className="text-2xl mb-2">📊</span>
                       <span>Дашборд</span>
                     </Button>
                   </Link>
-                  <Link href="/mentor/courses">
+                  <Link href="/mentor/groups">
                     <Button variant="secondary" className="w-full p-4">
-                      <span className="text-2xl mb-2">📚</span>
-                      <span>Мои курсы</span>
+                      <span className="text-2xl mb-2">👨‍🏫</span>
+                      <span>Группы</span>
                     </Button>
                   </Link>
-                  <Link href="/mentor/students">
+                  <Link href="/mentor/schedule">
                     <Button variant="secondary" className="w-full p-4">
-                      <span className="text-2xl mb-2">👨‍🎓</span>
-                      <span>Студенты</span>
+                      <span className="text-2xl mb-2">📅</span>
+                      <span>Расписание</span>
                     </Button>
                   </Link>
                   <Link href="/mentor/assignments">
@@ -358,11 +374,23 @@ export const ProfilePage = () => {
                       <span>Задания</span>
                     </Button>
                   </Link>
+                  <Link href="/mentor/materials">
+                    <Button variant="secondary" className="w-full p-4">
+                      <span className="text-2xl mb-2">📖</span>
+                      <span>Материалы</span>
+                    </Button>
+                  </Link>
+                  <Link href="/mentor/hackathons">
+                    <Button variant="secondary" className="w-full p-4">
+                      <span className="text-2xl mb-2">🏆</span>
+                      <span>Хакатоны</span>
+                    </Button>
+                  </Link>
                 </div>
               </Card>
             )}
 
-            {isStudent && (
+            {hasStudentAccess && (
               <Card className="p-6 border-l-4 border-l-green-500">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-2xl font-bold text-white flex items-center gap-2">
@@ -376,8 +404,8 @@ export const ProfilePage = () => {
                   Ваш путь обучения и прогресс по курсам
                 </p>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  <Button 
-                    variant="secondary" 
+                  <Button
+                    variant="secondary"
                     className="w-full p-4"
                     onClick={() => setIsCoursesModalOpen(true)}
                   >
@@ -385,8 +413,8 @@ export const ProfilePage = () => {
                     <span>Мои курсы</span>
                   </Button>
                   {canShowProfOrientationTab && (
-                    <Button 
-                      variant="secondary" 
+                    <Button
+                      variant="secondary"
                       className="w-full p-4"
                       onClick={() => setIsProfOrientationModalOpen(true)}
                     >
@@ -416,7 +444,7 @@ export const ProfilePage = () => {
               </Card>
             )}
 
-            {isStudent && hasInformaticsAccess && !profOrientationResult && (
+            {hasStudentAccess && hasInformaticsAccess && !profOrientationResult && (
               <Card className="p-6 border-l-4 border-l-blue-500">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-2xl font-bold text-white flex items-center gap-2">
@@ -440,7 +468,7 @@ export const ProfilePage = () => {
               </Card>
             )}
 
-            {isStudent && profOrientationResult && (
+            {hasStudentAccess && profOrientationResult && (
               <Card className="p-6 border-l-4 border-l-green-500">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-2xl font-bold text-white flex items-center gap-2">
@@ -457,28 +485,29 @@ export const ProfilePage = () => {
             )}
 
             {/* Хакатоны */}
-            <Card className="p-6 border-l-4 border-l-yellow-500">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-2xl font-bold text-white flex items-center gap-2">
-                  🏆 Мои хакатоны
-                </h3>
-                <Link href="/hackathons">
-                  <Button variant="secondary" size="sm">
-                    Все хакатоны →
-                  </Button>
-                </Link>
-              </div>
-
-              {isLoadingHackathons ? (
-                <p className="text-white">Загрузка...</p>
-              ) : hackathonTeams.length === 0 ? (
-                <p className="text-muted-foreground">
-                  Вы ещё не участвуете в хакатонах.{' '}
-                  <Link href="/hackathons" className="text-primary hover:underline">
-                    Посмотреть доступные
+            {hasStudentAccess && (
+              <Card className="p-6 border-l-4 border-l-yellow-500">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-2xl font-bold text-white flex items-center gap-2">
+                    🏆 Мои хакатоны
+                  </h3>
+                  <Link href="/hackathons">
+                    <Button variant="secondary" size="sm">
+                      Все хакатоны →
+                    </Button>
                   </Link>
-                </p>
-              ) : (
+                </div>
+
+                {isLoadingHackathons ? (
+                  <p className="text-white">Загрузка...</p>
+                ) : hackathonTeams.length === 0 ? (
+                  <p className="text-muted-foreground">
+                    Вы ещё не участвуете в хакатонах.{' '}
+                    <Link href="/hackathons" className="text-primary hover:underline">
+                      Посмотреть доступные
+                    </Link>
+                  </p>
+                ) : (
                 <div className="space-y-4">
                   <div className="grid gap-4 md:grid-cols-2">
                     {hackathonTeams.map((team) => (
@@ -520,7 +549,9 @@ export const ProfilePage = () => {
                       <h4 className="text-lg font-semibold text-white mb-3">🏅 Результаты</h4>
                       <div className="space-y-3">
                         {hackathonSubmissions.filter(s => s.grades && s.grades.length > 0).map((submission) => {
-                          const avgScore = submission.grades?.reduce((sum, g) => sum + (g.totalScore || 0), 0) / (submission.grades?.length || 1);
+                          const avgScore = submission.grades 
+                                          ? submission.grades.reduce((sum, g) => sum + (g.totalScore || 0), 0) / submission.grades.length
+                                          : 0;
                           return (
                             <div key={submission.id} className="p-4 bg-gray-800 rounded-lg">
                               <div className="flex justify-between items-center">
@@ -549,7 +580,8 @@ export const ProfilePage = () => {
                   )}
                 </div>
               )}
-            </Card>
+              </Card>
+            )}
 
             <Card className="p-6">
               <div className="flex justify-between items-center mb-6">

@@ -19,6 +19,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { UserRoleEnum } from '../users/entities/user-role.entity';
+import { MENTOR_ROLES } from '../common/helpers/role.helper';
 
 @Controller('forum')
 export class ForumController {
@@ -43,14 +44,14 @@ export class ForumController {
 
   @Post('sections')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRoleEnum.ADMIN, UserRoleEnum.MENTOR)
+  @Roles(...MENTOR_ROLES, UserRoleEnum.ADMIN)
   createSection(@Body() createSectionDto: CreateForumSectionDto) {
     return this.forumService.createSection(createSectionDto);
   }
 
   @Put('sections/:id')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRoleEnum.ADMIN, UserRoleEnum.MENTOR)
+  @Roles(...MENTOR_ROLES, UserRoleEnum.ADMIN)
   updateSection(
     @Param('id', ParseIntPipe) id: number,
     @Body() updates: Partial<CreateForumSectionDto>,
@@ -97,21 +98,21 @@ export class ForumController {
 
   @Put('topics/:id/pin')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRoleEnum.ADMIN, UserRoleEnum.MENTOR)
+  @Roles(...MENTOR_ROLES, UserRoleEnum.ADMIN)
   toggleTopicPinned(@Param('id', ParseIntPipe) id: number) {
     return this.forumService.toggleTopicPinned(id);
   }
 
   @Put('topics/:id/close')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRoleEnum.ADMIN, UserRoleEnum.MENTOR)
+  @Roles(...MENTOR_ROLES, UserRoleEnum.ADMIN)
   toggleTopicClosed(@Param('id', ParseIntPipe) id: number) {
     return this.forumService.toggleTopicClosed(id);
   }
 
   @Delete('topics/:id')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRoleEnum.ADMIN, UserRoleEnum.MENTOR)
+  @Roles(...MENTOR_ROLES, UserRoleEnum.ADMIN)
   deleteTopic(@Param('id', ParseIntPipe) id: number) {
     return this.forumService.deleteTopic(id);
   }

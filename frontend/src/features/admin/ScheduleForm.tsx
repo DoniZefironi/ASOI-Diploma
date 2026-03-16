@@ -5,6 +5,14 @@ import { Button } from '@/shared/ui/button';
 import { Card } from '@/shared/ui/card';
 import { Loader2 } from 'lucide-react';
 import { useCourseGroups, useUsers } from '@/shared/api/admin';
+import { useAuth, getCourseTypeFromRole } from '@/shared/lib/auth-context';
+
+const courseTypeLabels: Record<string, string> = {
+  'english': 'Английский язык',
+  'electronics': 'Электроника',
+  'computer_science': 'Информатика',
+  'iot': 'IoT (Интернет вещей)',
+};
 
 const Label = ({ children, htmlFor, className = '' }: { 
   children: React.ReactNode; 
@@ -94,6 +102,10 @@ interface ScheduleFormData {
   title: string;
   description: string;
   type: 'lecture' | 'practice' | 'test' | 'hackathon' | 'olympiad' | 'facultative' | 'internship';
+  content?: string;
+  videoUrl?: string;
+  materialsUrl?: string;
+  assignmentDescription?: string;
   startTime: string;
   endTime: string;
   location: string;
@@ -110,31 +122,56 @@ interface ScheduleFormProps {
 }
 
 export default function ScheduleForm({ scheduleItem, onSave, onCancel, isSubmitting = false }: ScheduleFormProps) {
+  const { user } = useAuth();
   const { groups, isLoading: groupsLoading } = useCourseGroups();
-  const { mentors, isLoading: mentorsLoading } = useUsers();
+  const { users: allUsers, isLoading: usersLoading } = useUsers('/users/mentors');
+  
+  // Получаем тип курса ментора
+  const userRoles = user?.roles || [];
+  const mentorCourseType = getCourseTypeFromRole(userRoles);
+  
+  // Фильтруем группы по типу курса ментора (если это ментор)
+  const filteredGroups = mentorCourseType
+    ? groups?.filter((g: any) => g.course?.type === mentorCourseType)
+    : groups;
+  
+  // Фильтруем менторов по типу курса (показываем только менторов своего направления)
+  const filteredMentors = mentorCourseType
+    ? allUsers?.filter((u: any) => {
+        const userRole = u.roles?.find((r: any) => {
+          const roleName = typeof r === 'string' ? r : r?.role || r?.name;
+          return roleName && roleName.startsWith('mentor_');
+        });
+        if (!userRole) return false;
+        const roleName = typeof userRole === 'string' ? userRole : userRole?.role || userRole?.name;
+        const mentorType = roleName.split('_')[1];
+        return mentorType === mentorCourseType;
+      })
+    : allUsers?.filter((u: any) => u.roles?.some((r: any) => {
+        const roleName = typeof r === 'string' ? r : r?.role || r?.name;
+        return roleName && roleName.startsWith('mentor_');
+      }));
   
   const [formData, setFormData] = useState<ScheduleFormData>({
     title: scheduleItem?.title || '',
     description: scheduleItem?.description || '',
     type: scheduleItem?.type || 'lecture',
+    content: scheduleItem?.content || '',
+    videoUrl: scheduleItem?.videoUrl || '',
+    materialsUrl: scheduleItem?.materialsUrl || '',
+    assignmentDescription: scheduleItem?.assignmentDescription || '',
     startTime: scheduleItem?.startTime ? new Date(scheduleItem.startTime).toISOString().slice(0, 16) : '',
     endTime: scheduleItem?.endTime ? new Date(scheduleItem.endTime).toISOString().slice(0, 16) : '',
     location: scheduleItem?.location || 'online',
     meetingUrl: scheduleItem?.meetingUrl || '',
-    courseGroupId: scheduleItem?.courseGroupId || 0,
-    instructorId: scheduleItem?.instructorId || 0,
+    courseGroupId: scheduleItem?.courseGroupId ? Number(scheduleItem.courseGroupId) : 0,
+    instructorId: scheduleItem?.instructorId ? Number(scheduleItem.instructorId) : 0,
   });
 
   const [errors, setErrors] = useState<Partial<Record<keyof ScheduleFormData, string>>>({});
 
   const scheduleTypes = [
     { value: 'lecture', label: 'Лекция' },
-    { value: 'practice', label: 'Практика' },
-    { value: 'test', label: 'Тест' },
-    { value: 'hackathon', label: 'Хакатон' },
-    { value: 'olympiad', label: 'Олимпиада' },
-    { value: 'facultative', label: 'Факультатив' },
-    { value: 'internship', label: 'Стажировка' },
   ];
 
   const locations = [
@@ -205,11 +242,18 @@ export default function ScheduleForm({ scheduleItem, onSave, onCancel, isSubmitt
   };
 
   const handleChange = (field: keyof ScheduleFormData, value: any) => {
+    let newValue: any = value;
+    
+    // Конвертируем числовые поля в числа
+    if (['courseGroupId', 'instructorId'].includes(field)) {
+      newValue = value === '' || value === '0' ? undefined : parseInt(value, 10);
+    }
+    
     setFormData(prev => ({
       ...prev,
-      [field]: value
+      [field]: newValue
     }));
-    
+
     if (errors[field]) {
       setErrors(prev => ({
         ...prev,
@@ -218,7 +262,7 @@ export default function ScheduleForm({ scheduleItem, onSave, onCancel, isSubmitt
     }
   };
 
-  if (groupsLoading || mentorsLoading) {
+  if (groupsLoading || usersLoading) {
     return (
       <div className="flex items-center justify-center p-8">
         <Loader2 className="h-6 w-6 animate-spin text-gray-400" />
@@ -255,6 +299,14 @@ export default function ScheduleForm({ scheduleItem, onSave, onCancel, isSubmitt
             <p className="text-sm text-red-500">{errors.description}</p>
           )}
         </div>
+
+        {mentorCourseType && (
+          <div className="p-3 bg-blue-900/20 border border-blue-700 rounded-lg">
+            <p className="text-sm text-blue-400">
+              📅 Доступные группы: <span className="font-semibold">{courseTypeLabels[mentorCourseType]}</span>
+            </p>
+          </div>
+        )}
 
         <div className="grid gap-4 md:grid-cols-2">
           <div className="space-y-2">
@@ -325,7 +377,7 @@ export default function ScheduleForm({ scheduleItem, onSave, onCancel, isSubmitt
               onChange={(value) => handleChange('courseGroupId', parseInt(value))}
             >
               <option value="0">Выберите группу</option>
-              {(groups as any[])?.map((group: any) => (
+              {(filteredGroups as any[])?.map((group: any) => (
                 <option key={group.id} value={group.id}>
                   {group.name}
                 </option>
@@ -343,14 +395,14 @@ export default function ScheduleForm({ scheduleItem, onSave, onCancel, isSubmitt
               onChange={(value) => handleChange('instructorId', value === '0' ? undefined : parseInt(value))}
             >
               <option value="0">Выберите ментора</option>
-              {mentors.map((mentor: any) => (
+              {filteredMentors?.map((mentor: any) => (
                 <option key={mentor.id} value={mentor.id}>
                   {mentor.firstName} {mentor.lastName}
                   {mentor.email && ` (${mentor.email})`}
                 </option>
               ))}
             </Select>
-            {mentors.length === 0 && !mentorsLoading && (
+            {filteredMentors?.length === 0 && !usersLoading && (
               <p className="text-sm text-yellow-500 mt-1">
                 Менторы не найдены. Сначала создайте пользователей с ролью MENTOR.
               </p>
@@ -370,6 +422,53 @@ export default function ScheduleForm({ scheduleItem, onSave, onCancel, isSubmitt
           {errors.meetingUrl && (
             <p className="text-sm text-red-500">{errors.meetingUrl}</p>
           )}
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="videoUrl">Ссылка на YouTube видео</Label>
+          <Input
+            id="videoUrl"
+            type="url"
+            value={formData.videoUrl || ''}
+            onChange={(e) => handleChange('videoUrl', e.target.value)}
+            placeholder="https://www.youtube.com/watch?v=..."
+          />
+          <p className="text-xs text-gray-400">
+            Видео с YouTube будет автоматически встроено в страницу занятия
+          </p>
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="materialsUrl">Ссылка на материалы</Label>
+          <Input
+            id="materialsUrl"
+            type="url"
+            value={formData.materialsUrl || ''}
+            onChange={(e) => handleChange('materialsUrl', e.target.value)}
+            placeholder="https://drive.google.com/..."
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="assignmentDescription">Описание задания</Label>
+          <Textarea
+            id="assignmentDescription"
+            value={formData.assignmentDescription || ''}
+            onChange={(e) => handleChange('assignmentDescription', e.target.value)}
+            placeholder="Опишите задание для студентов..."
+            rows={4}
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="content">Дополнительный контент</Label>
+          <Textarea
+            id="content"
+            value={formData.content || ''}
+            onChange={(e) => handleChange('content', e.target.value)}
+            placeholder="Дополнительная информация, заметки, ссылки..."
+            rows={4}
+          />
         </div>
 
         <div className="flex justify-end space-x-3 pt-4 border-t border-gray-700">

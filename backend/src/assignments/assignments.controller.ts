@@ -9,6 +9,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { UserRoleEnum } from '../users/entities/user-role.entity';
+import { MENTOR_ROLES } from '../common/helpers/role.helper';
 
 @Controller('assignments')
 @UseGuards(JwtAuthGuard)
@@ -30,23 +31,29 @@ export class AssignmentsController {
     return this.assignmentsService.findAssignmentById(+id);
   }
 
+  @Get(':id/submissions')
+  getAssignmentSubmissionsList(@Param('id') id: string, @Request() req) {
+    // Студенты видят только свои submission, менторы - все
+    return this.assignmentsService.getAssignmentSubmissions(+id, req.user.userId);
+  }
+
   @Post()
   @UseGuards(RolesGuard)
-  @Roles(UserRoleEnum.ADMIN, UserRoleEnum.MENTOR)
+  @Roles(...MENTOR_ROLES, UserRoleEnum.ADMIN)
   createAssignment(@Body() createAssignmentDto: CreateAssignmentDto) {
     return this.assignmentsService.createAssignment(createAssignmentDto);
   }
 
   @Put(':id')
   @UseGuards(RolesGuard)
-  @Roles(UserRoleEnum.ADMIN, UserRoleEnum.MENTOR)
+  @Roles(...MENTOR_ROLES, UserRoleEnum.ADMIN)
   updateAssignment(@Param('id') id: string, @Body() updateAssignmentDto: UpdateAssignmentDto) {
     return this.assignmentsService.updateAssignment(+id, updateAssignmentDto);
   }
 
   @Delete(':id')
   @UseGuards(RolesGuard)
-  @Roles(UserRoleEnum.ADMIN, UserRoleEnum.MENTOR)
+  @Roles(...MENTOR_ROLES, UserRoleEnum.ADMIN)
   removeAssignment(@Param('id') id: string) {
     return this.assignmentsService.removeAssignment(+id);
   }
@@ -66,7 +73,7 @@ export class AssignmentsController {
 
   @Get('submissions/assignment/:assignmentId')
   @UseGuards(RolesGuard)
-  @Roles(UserRoleEnum.ADMIN, UserRoleEnum.MENTOR)
+  @Roles(...MENTOR_ROLES, UserRoleEnum.ADMIN)
   getAssignmentSubmissions(@Param('assignmentId') assignmentId: string) {
     return this.assignmentsService.getAssignmentSubmissions(+assignmentId);
   }
@@ -83,14 +90,14 @@ export class AssignmentsController {
 
   @Post('submissions/:id/final-grade')
   @UseGuards(RolesGuard)
-  @Roles(UserRoleEnum.ADMIN, UserRoleEnum.MENTOR)
+  @Roles(...MENTOR_ROLES, UserRoleEnum.ADMIN)
   calculateFinalGrade(@Param('id') id: string) {
     return this.assignmentsService.calculateFinalGrade(+id);
   }
 
   @Get('course-group/:groupId/grades')
   @UseGuards(RolesGuard)
-  @Roles(UserRoleEnum.ADMIN, UserRoleEnum.MENTOR)
+  @Roles(...MENTOR_ROLES, UserRoleEnum.ADMIN)
   getCourseGroupGrades(@Param('groupId') groupId: string) {
     return this.assignmentsService.getCourseGroupGrades(+groupId);
   }

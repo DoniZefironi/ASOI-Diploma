@@ -9,15 +9,11 @@ services:
       POSTGRES_DB: ${POSTGRES_DB:-asoi_diploma}
       POSTGRES_USER: ${POSTGRES_USER:-asoi_user}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-asoi_pass}
-      # Добавляем LANG и LC_ALL для PostgreSQL контейнера
       LANG: en_US.UTF-8
       LC_ALL: en_US.UTF-8
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./database:/docker-entrypoint-initdb.d
-    # УБРАНО: проброс порта 5432 наружу для безопасности
-    # ports:
-    #   - "5432:5432" 
     networks:
       - app-network
     healthcheck:
@@ -37,7 +33,6 @@ services:
       NODE_ENV: development
       DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-4450}@db:5432/${POSTGRES_DB:-Curs}
       PORT: 2904
-      # Добавляем LANG и LC_ALL для backend контейнера
       LANG: en_US.UTF-8
       LC_ALL: en_US.UTF-8
     ports:
@@ -63,7 +58,6 @@ services:
     environment:
       NODE_ENV: development
       NEXT_PUBLIC_API_URL: http://localhost:2904
-      # Добавляем LANG и LC_ALL для frontend контейнера (если Next.js или Nginx внутри чувствительны к локали)
       LANG: en_US.UTF-8
       LC_ALL: en_US.UTF-8
     ports:
@@ -81,8 +75,8 @@ services:
       start_period: 40s
 
 volumes:
-  postgres_data: # Именованный том для данных БД
+  postgres_data: 
 
 networks:
-  app-network: # Пользовательская сеть
+  app-network: 
     driver: bridge

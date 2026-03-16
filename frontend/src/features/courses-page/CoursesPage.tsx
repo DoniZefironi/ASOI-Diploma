@@ -1,8 +1,13 @@
 // features/courses-page/CoursesPage.tsx
 'use client';
 
+import { useState, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { CourseCardWithRegistration } from '@/shared/ui/card';
 import { useCourses } from '@/shared/api/admin';
+import { useAuth } from '@/shared/lib/auth-context';
+import Link from 'next/link';
+import { Button } from '@/shared/ui/button';
 
 interface Course {
   id: number;
@@ -38,7 +43,18 @@ function mapCourseToCardFormat(course: Course) {
 }
 
 export const CoursesPage = () => {
+  const searchParams = useSearchParams();
+  const { user } = useAuth();
   const { courses, isLoading, isError } = useCourses();
+  const [filterType, setFilterType] = useState<string>('all');
+
+  const courseType = searchParams?.get('type') ?? null;
+
+  useEffect(() => {
+    if (courseType) {
+      setFilterType(courseType);
+    }
+  }, [courseType]);
 
   if (isLoading) {
     return (
@@ -61,6 +77,9 @@ export const CoursesPage = () => {
   }
 
   const mappedCourses = courses?.map(mapCourseToCardFormat) || [];
+  const filteredCourses = filterType === 'all' 
+    ? mappedCourses 
+    : mappedCourses.filter(c => c.category === filterType);
 
   return (
     <div className="min-h-screen bg-[#0D1117] py-12">
@@ -74,10 +93,64 @@ export const CoursesPage = () => {
           </p>
         </div>
 
+        {/* Фильтр направлений */}
+        <div className="flex justify-center gap-4 mb-8 flex-wrap">
+          <button
+            onClick={() => setFilterType('all')}
+            className={`px-6 py-3 rounded-lg transition-colors ${
+              filterType === 'all'
+                ? 'bg-blue-600 text-white'
+                : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+            }`}
+          >
+            Все курсы
+          </button>
+          <button
+            onClick={() => setFilterType('electronics')}
+            className={`px-6 py-3 rounded-lg transition-colors ${
+              filterType === 'electronics'
+                ? 'bg-blue-600 text-white'
+                : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+            }`}
+          >
+            ⚡ Электроника
+          </button>
+          <button
+            onClick={() => setFilterType('computer-science')}
+            className={`px-6 py-3 rounded-lg transition-colors ${
+              filterType === 'computer-science'
+                ? 'bg-blue-600 text-white'
+                : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+            }`}
+          >
+            💻 Информатика
+          </button>
+          <button
+            onClick={() => setFilterType('iot')}
+            className={`px-6 py-3 rounded-lg transition-colors ${
+              filterType === 'iot'
+                ? 'bg-blue-600 text-white'
+                : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+            }`}
+          >
+            🌐 IoT
+          </button>
+          <button
+            onClick={() => setFilterType('language')}
+            className={`px-6 py-3 rounded-lg transition-colors ${
+              filterType === 'language'
+                ? 'bg-blue-600 text-white'
+                : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+            }`}
+          >
+            📚 Английский
+          </button>
+        </div>
+
         <div className="w-24 h-1 bg-blue-600 mx-auto mb-16 animate-slide-in-left"></div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-          {mappedCourses.map((course, index) => (
+          {filteredCourses.map((course, index) => (
             <CourseCardWithRegistration
               key={course.id}
               course={course}
@@ -85,6 +158,17 @@ export const CoursesPage = () => {
             />
           ))}
         </div>
+
+        {filteredCourses.length === 0 && (
+          <div className="text-center text-gray-400 py-12">
+            <p className="text-lg">Курсы этого направления не найдены</p>
+            <Link href="/courses">
+              <Button variant="secondary" className="mt-4">
+                Показать все курсы
+              </Button>
+            </Link>
+          </div>
+        )}
       </div>
     </div>
   );

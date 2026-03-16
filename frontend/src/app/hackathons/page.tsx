@@ -11,7 +11,7 @@ export default function HackathonsPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [showCreateModal, setShowCreateModal] = useState(false);
 
-  const isAdmin = hasRole('admin') || hasRole('mentor');
+  const isAdmin = hasRole('admin') || hasRole('mentor_english') || hasRole('mentor_electronics') || hasRole('mentor_computer_science') || hasRole('mentor_iot');
 
   useEffect(() => {
     loadHackathons();

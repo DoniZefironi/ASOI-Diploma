@@ -122,8 +122,8 @@ export class HackathonsService {
     team.hackathonId = dto.hackathonId;
     team.leaderId = leaderId;
     team.status = 'forming';
-    team.projectName = dto.projectName || null;
-    team.projectDescription = dto.projectDescription || null;
+    team.projectName = dto.projectName ?? null;
+    team.projectDescription = dto.projectDescription ?? null;
 
     const savedTeam = await this.teamRepo.save(team);
 
@@ -228,12 +228,12 @@ export class HackathonsService {
 
     const submission = new HackathonSubmission() as HackathonSubmission;
     submission.teamId = teamId;
-    submission.circuitProjectId = dto.circuitProjectId || null;
-    submission.documentationUrl = dto.documentationUrl || null;
-    submission.presentationUrl = dto.presentationUrl || null;
-    submission.videoDemoUrl = dto.videoDemoUrl || null;
-    submission.sourceCodeUrl = dto.sourceCodeUrl || null;
-    submission.submissionNote = dto.submissionNote || null;
+    submission.circuitProjectId = dto.circuitProjectId ?? null;
+    submission.documentationUrl = dto.documentationUrl ?? null;
+    submission.presentationUrl = dto.presentationUrl ?? null;
+    submission.videoDemoUrl = dto.videoDemoUrl ?? null;
+    submission.sourceCodeUrl = dto.sourceCodeUrl ?? null;
+    submission.submissionNote = dto.submissionNote ?? null;
 
     return await this.submissionRepo.save(submission);
   }
@@ -257,13 +257,13 @@ export class HackathonsService {
     const grade = new HackathonGrade() as HackathonGrade;
     grade.submissionId = submissionId;
     grade.judgeId = judgeId;
-    grade.innovationScore = dto.innovationScore;
-    grade.functionalityScore = dto.functionalityScore;
-    grade.presentationScore = dto.presentationScore;
-    grade.teamworkScore = dto.teamworkScore;
-    grade.totalScore = totalScore;
-    grade.feedback = dto.feedback || undefined;
-    grade.judgingCriteriaScores = dto.judgingCriteriaScores || undefined;
+    grade.innovationScore = dto.innovationScore ?? null;
+    grade.functionalityScore = dto.functionalityScore ?? null;
+    grade.presentationScore = dto.presentationScore ?? null;
+    grade.teamworkScore = dto.teamworkScore ?? null;
+    grade.totalScore = totalScore ?? null;
+    grade.feedback = dto.feedback ?? null;
+    grade.judgingCriteriaScores = dto.judgingCriteriaScores ?? null;
 
     return await this.gradeRepo.save(grade);
   }

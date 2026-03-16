@@ -10,18 +10,32 @@ export function ForumSectionPage() {
   const params = useParams();
   const router = useRouter();
   const { user } = useAuth();
-  const sectionId = parseInt(params.id as string);
-
+  
+  const [sectionId, setSectionId] = useState<number | null>(null);
   const [section, setSection] = useState<ForumSection | null>(null);
   const [topics, setTopics] = useState<ForumTopic[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [showCreateModal, setShowCreateModal] = useState(false);
 
+  // Получаем ID из params
   useEffect(() => {
-    loadData();
+    if (params?.id) {
+      setSectionId(parseInt(params.id as string));
+    } else {
+      router.push('/forum');
+    }
+  }, [params, router]);
+
+  // Загружаем данные только когда есть ID
+  useEffect(() => {
+    if (sectionId) {
+      loadData();
+    }
   }, [sectionId]);
 
   const loadData = async () => {
+    if (!sectionId) return;
+    
     try {
       const [sectionData, topicsData] = await Promise.all([
         forumApi.getSection(sectionId),
@@ -147,7 +161,7 @@ export function ForumSectionPage() {
           )}
         </div>
 
-        {showCreateModal && (
+        {showCreateModal && sectionId && (
           <CreateTopicModal
             sectionId={sectionId}
             onClose={() => setShowCreateModal(false)}

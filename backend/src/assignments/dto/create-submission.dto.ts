@@ -1,14 +1,20 @@
 // src/assignments/dto/create-submission.dto.ts
-import { IsString, IsNumber, IsArray, IsOptional } from 'class-validator';
+import { IsString, IsNumber, IsArray, IsOptional, IsUrl } from 'class-validator';
 
 export class CreateSubmissionDto {
+  @IsNumber()
+  assignmentId: number;
+
   @IsString()
-  content: string;
+  @IsOptional()
+  content?: string;
 
   @IsArray()
+  @IsString({ each: true })
   @IsOptional()
   attachments?: string[];
 
-  @IsNumber()
-  assignmentId: number;
+  @IsUrl()
+  @IsOptional()
+  repositoryUrl?: string;
 }

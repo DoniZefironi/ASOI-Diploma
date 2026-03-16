@@ -7,6 +7,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { UserRoleEnum } from '../users/entities/user-role.entity';
+import { MENTOR_ROLES } from '../common/helpers/role.helper';
 
 @Controller('schedule')
 @UseGuards(JwtAuthGuard)
@@ -50,21 +51,21 @@ export class ScheduleController {
 
   @Post()
   @UseGuards(RolesGuard)
-  @Roles(UserRoleEnum.ADMIN, UserRoleEnum.MENTOR)
+  @Roles(...MENTOR_ROLES, UserRoleEnum.ADMIN)
   create(@Body() createScheduleItemDto: CreateScheduleItemDto) {
     return this.scheduleService.create(createScheduleItemDto);
   }
 
   @Put(':id')
   @UseGuards(RolesGuard)
-  @Roles(UserRoleEnum.ADMIN, UserRoleEnum.MENTOR)
+  @Roles(...MENTOR_ROLES, UserRoleEnum.ADMIN)
   update(@Param('id') id: string, @Body() updateScheduleItemDto: UpdateScheduleItemDto) {
     return this.scheduleService.update(+id, updateScheduleItemDto);
   }
 
   @Delete(':id')
   @UseGuards(RolesGuard)
-  @Roles(UserRoleEnum.ADMIN, UserRoleEnum.MENTOR)
+  @Roles(...MENTOR_ROLES, UserRoleEnum.ADMIN)
   remove(@Param('id') id: string) {
     return this.scheduleService.remove(+id);
   }

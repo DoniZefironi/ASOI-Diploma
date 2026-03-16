@@ -1,5 +1,5 @@
 // src/assignments/dto/create-assignment.dto.ts
-import { IsString, IsEnum, IsNumber, IsDateString, IsBoolean, IsOptional, IsArray } from 'class-validator';
+import { IsString, IsEnum, IsNumber, IsDateString, IsBoolean, IsOptional, IsArray, IsInt, Min, Max } from 'class-validator';
 import { AssignmentType } from '../entities/assignment.entity';
 
 export class CreateAssignmentDto {
@@ -27,4 +27,26 @@ export class CreateAssignmentDto {
 
   @IsNumber()
   courseGroupId: number;
+
+  @IsBoolean()
+  @IsOptional()
+  peerReviewEnabled?: boolean;
+
+  @IsDateString()
+  @IsOptional()
+  peerReviewStartDate?: string;
+
+  @IsDateString()
+  @IsOptional()
+  peerReviewEndDate?: string;
+
+  @IsInt()
+  @Min(1)
+  @Max(10)
+  @IsOptional()
+  peerReviewsPerStudent?: number;
+
+  @IsString()
+  @IsOptional()
+  peerReviewCriteria?: string;
 }

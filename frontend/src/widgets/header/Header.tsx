@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
-import { useAuth } from '@/shared/lib/auth-context';
+import { useAuth, hasStudentRole, hasMentorRole, hasAdminRole, getCourseTypeFromRole } from '@/shared/lib/auth-context';
 
 export const Header = () => {
   const { user, logout } = useAuth();
@@ -25,6 +25,13 @@ export const Header = () => {
     setIsDropdownOpen(false);
     window.location.href = '/';
   };
+
+  // Проверяем роли пользователя
+  const userRoles = user?.roles || [];
+  const isStudent = hasStudentRole(userRoles);
+  const isMentor = hasMentorRole(userRoles);
+  const isAdmin = hasAdminRole(userRoles);
+  const userCourseType = getCourseTypeFromRole(userRoles) || (user as any)?.enrolledCourseType;
 
   const getDisplayName = () => {
     if (!user) return '';
@@ -55,16 +62,64 @@ export const Header = () => {
           
           <nav className="hidden md:flex space-x-6">
             <Link href="/" className="hover:text-blue-600 transition-colors">Главная</Link>
-            <Link href="/courses" className="hover:text-blue-600 transition-colors">Курсы</Link>
-            <Link href="/hackathons" className="hover:text-blue-600 transition-colors">Хакатоны</Link>
-            <Link href="/career" className="hover:text-blue-600 transition-colors">Карьера</Link>
-            <Link href="/forum" className="hover:text-blue-600 transition-colors">Форум</Link>
-            <Link href="/complilier" className="hover:text-blue-600 transition-colors">Компилятор</Link>
-            <Link href="/circuit" className="hover:text-blue-600 transition-colors">Эмулятор</Link>
+            {!user && (
+              <>
+                <Link href="/about" className="hover:text-blue-600 transition-colors">О нас</Link>
+                <Link href="/contacts" className="hover:text-blue-600 transition-colors">Контакты</Link>
+                <Link href="/faq" className="hover:text-blue-600 transition-colors">Частые вопросы</Link>
+              </>
+            )}
+            {user && (
+              <>
+                <Link href="/courses" className="hover:text-blue-600 transition-colors">Курсы</Link>
+                {/* Студенты и менторы видят эти страницы */}
+                {(isStudent || isMentor) && (
+                  <>
+                    <Link href="/hackathons" className="hover:text-blue-600 transition-colors">Хакатоны</Link>
+                    <Link href="/career" className="hover:text-blue-600 transition-colors">Карьера</Link>
+                    <Link href="/forum" className="hover:text-blue-600 transition-colors">Форум</Link>
+                    {/* Показываем компилятор только для информатики */}
+                    {(!userCourseType || userCourseType === 'computer_science') && (
+                      <Link href="/complilier" className="hover:text-blue-600 transition-colors">Компилятор</Link>
+                    )}
+                    {/* Показываем эмулятор только для электроники */}
+                    {(!userCourseType || userCourseType === 'electronics') && (
+                      <Link href="/circuit" className="hover:text-blue-600 transition-colors">Эмулятор</Link>
+                    )}
+                  </>
+                )}
+                {/* Менторы и админы видят панель ментора */}
+                {(isMentor || isAdmin) && (
+                  <Link href="/mentor" className="hover:text-blue-600 transition-colors">Панель ментора</Link>
+                )}
+              </>
+            )}
           </nav>
 
           <div className="flex items-center space-x-4">
-            {user ? (
+            {!user && (
+              <>
+                <Link
+                  href="/courses"
+                  className="text-gray-300 hover:text-blue-600 transition-colors hidden lg:block"
+                >
+                  Курсы
+                </Link>
+                <Link
+                  href="/auth"
+                  className="text-gray-300 hover:text-blue-600 transition-colors"
+                >
+                  Войти
+                </Link>
+                <Link
+                  href="/auth"
+                  className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg transition-colors"
+                >
+                  Регистрация
+                </Link>
+              </>
+            )}
+            {user && (
               <div className="relative" ref={dropdownRef}>
                 <button
                   onClick={() => setIsDropdownOpen(!isDropdownOpen)}
@@ -92,33 +147,72 @@ export const Header = () => {
                       <p className="text-sm font-semibold">{getDisplayName()}</p>
                       <p className="text-xs text-gray-400">{user.email}</p>
                     </div>
-                    
-                    <Link 
-                      href="/profile" 
+
+                    <Link
+                      href="/profile"
                       className="block px-4 py-2 text-sm hover:bg-[#2D333B] transition-colors"
                       onClick={() => setIsDropdownOpen(false)}
                     >
                       👤 Мой профиль
                     </Link>
-                    
-                    <Link 
-                      href="/my-courses" 
-                      className="block px-4 py-2 text-sm hover:bg-[#2D333B] transition-colors"
-                      onClick={() => setIsDropdownOpen(false)}
-                    >
-                      📚 Мои курсы
-                    </Link>
-                    
-                    <Link 
-                      href="/settings" 
-                      className="block px-4 py-2 text-sm hover:bg-[#2D333B] transition-colors"
-                      onClick={() => setIsDropdownOpen(false)}
-                    >
-                      ⚙️ Настройки
-                    </Link>
-                    
+
+                    {/* Менторы и админы видят панель ментора */}
+                    {(isMentor || isAdmin) && (
+                      <Link
+                        href="/mentor"
+                        className="block px-4 py-2 text-sm hover:bg-[#2D333B] transition-colors"
+                        onClick={() => setIsDropdownOpen(false)}
+                      >
+                        🎯 Панель ментора
+                      </Link>
+                    )}
+
+                    {/* Админы видят админ панель */}
+                    {isAdmin && (
+                      <Link
+                        href="/admin"
+                        className="block px-4 py-2 text-sm hover:bg-[#2D333B] transition-colors"
+                        onClick={() => setIsDropdownOpen(false)}
+                      >
+                        🛡️ Панель администратора
+                      </Link>
+                    )}
+
+                    {/* Студенты и менторы видят дашборд */}
+                    {(isStudent || isMentor) && (
+                      <Link
+                        href="/dashboard"
+                        className="block px-4 py-2 text-sm hover:bg-[#2D333B] transition-colors"
+                        onClick={() => setIsDropdownOpen(false)}
+                      >
+                        📊 Дашборд
+                      </Link>
+                    )}
+
+                    {/* Студенты и менторы видят настройки */}
+                    {(isStudent || isMentor) && (
+                      <Link
+                        href="/settings"
+                        className="block px-4 py-2 text-sm hover:bg-[#2D333B] transition-colors"
+                        onClick={() => setIsDropdownOpen(false)}
+                      >
+                        ⚙️ Настройки
+                      </Link>
+                    )}
+
+                    {/* Студенты и менторы видят peer review */}
+                    {(isStudent || isMentor) && (
+                      <Link
+                        href="/peer-review"
+                        className="block px-4 py-2 text-sm hover:bg-[#2D333B] transition-colors"
+                        onClick={() => setIsDropdownOpen(false)}
+                      >
+                        🔄 Peer Review
+                      </Link>
+                    )}
+
                     <div className="border-t border-[#353C45] my-1"></div>
-                    
+
                     <button
                       onClick={handleLogout}
                       className="block w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-[#2D333B] transition-colors"
@@ -127,21 +221,6 @@ export const Header = () => {
                     </button>
                   </div>
                 )}
-              </div>
-            ) : (
-              <div className="flex items-center space-x-3">
-                <Link 
-                  href="/auth" 
-                  className="text-gray-300 hover:text-blue-600 transition-colors"
-                >
-                  Войти
-                </Link>
-                <Link 
-                  href="/auth" 
-                  className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg transition-colors"
-                >
-                  Регистрация
-                </Link>
               </div>
             )}
           </div>

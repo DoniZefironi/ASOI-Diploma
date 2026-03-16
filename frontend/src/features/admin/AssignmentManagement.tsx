@@ -5,7 +5,15 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/shared/ui/card';
 import { Button } from '@/shared/ui/button';
 import { Plus, Edit, Trash2, Loader2 } from 'lucide-react';
 import AssignmentForm from './AssignmentForm';
-import { useAssignments, type Assignment } from '@/shared/api/admin'; 
+import { useAssignments, type Assignment } from '@/shared/api/admin';
+import { useAuth, getCourseTypeFromRole } from '@/shared/lib/auth-context';
+
+const courseTypeLabels: Record<string, string> = {
+  'english': 'Английский язык',
+  'electronics': 'Электроника',
+  'computer_science': 'Информатика',
+  'iot': 'IoT (Интернет вещей)',
+}; 
 
 type BadgeVariant = 'default' | 'secondary' | 'outline' | 'destructive';
 
@@ -62,21 +70,31 @@ const getAssignmentTypeLabel = (type: string) => {
 };
 
 export default function AssignmentManagement() {
-  const { 
-    assignments, 
-    isLoading, 
-    isError, 
-    createAssignment, 
-    updateAssignment, 
-    deleteAssignment, 
+  const { user } = useAuth();
+  const {
+    assignments,
+    isLoading,
+    isError,
+    createAssignment,
+    updateAssignment,
+    deleteAssignment,
     isCreating,
     isUpdating,
     isDeleting,
-    mutate 
+    mutate
   } = useAssignments();
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingAssignment, setEditingAssignment] = useState<Assignment | null>(null);
+
+  // Получаем тип курса ментора
+  const userRoles = user?.roles || [];
+  const mentorCourseType = getCourseTypeFromRole(userRoles);
+  
+  // Фильтруем задания по типу курса (если это ментор)
+  const filteredAssignments = mentorCourseType
+    ? assignments?.filter((a: any) => a.courseGroup?.course?.type === mentorCourseType)
+    : assignments;
 
   const handleCreate = () => {
     setEditingAssignment(null);
@@ -92,6 +110,7 @@ export default function AssignmentManagement() {
     if (!confirm('Удалить задание?')) return;
     try {
       await deleteAssignment(id);
+      mutate(); // Обновляем данные после удаления
     } catch (error) {
       console.error('Ошибка при удалении задания:', error);
     }
@@ -99,10 +118,16 @@ export default function AssignmentManagement() {
 
   const handleSave = async (data: any) => {
     try {
+      const payload = {
+        ...data,
+        courseGroupId: Number(data.courseGroupId),
+        maxScore: Number(data.maxScore),
+      };
+      
       if (editingAssignment) {
-        await updateAssignment({ id: editingAssignment.id, data });
+        await updateAssignment({ id: editingAssignment.id, data: payload });
       } else {
-        await createAssignment(data);
+        await createAssignment(payload);
       }
       setIsDialogOpen(false);
       setEditingAssignment(null);
@@ -137,13 +162,18 @@ export default function AssignmentManagement() {
           <p className="text-gray-400 mt-2">
             Создание и редактирование учебных заданий
           </p>
+          {mentorCourseType && (
+            <p className="text-sm text-blue-400 mt-1">
+              📚 Направление: <span className="font-semibold">{courseTypeLabels[mentorCourseType]}</span>
+            </p>
+          )}
         </div>
         <div className="flex items-center space-x-2">
           <Badge variant="secondary" className="text-sm">
-            Всего: {assignments?.length || 0}
+            Всего: {filteredAssignments?.length || 0}
           </Badge>
           <Button onClick={handleCreate} className="gap-2">
-            <Plus className="h-4 w-4" /> 
+            <Plus className="h-4 w-4" />
             Создать задание
           </Button>
         </div>
@@ -185,7 +215,7 @@ export default function AssignmentManagement() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
-                {assignments?.map((assignment: Assignment) => (
+                {filteredAssignments?.map((assignment: Assignment) => (
                   <tr key={assignment.id} className="bg-gray-800 border-b-2 border-b-white">
                     <td className="px-4 py-3 text-sm text-white">{assignment.id}</td>
                     <td className="px-4 py-3">
@@ -239,7 +269,7 @@ export default function AssignmentManagement() {
             </table>
           </div>
 
-          {(!assignments || assignments.length === 0) && (
+          {(!filteredAssignments || filteredAssignments.length === 0) && (
             <div className="text-center py-8 text-gray-400">
               <p>Задания не найдены</p>
               <p className="text-sm mt-2">

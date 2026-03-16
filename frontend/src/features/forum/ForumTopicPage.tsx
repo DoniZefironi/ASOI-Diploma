@@ -10,8 +10,8 @@ export function ForumTopicPage() {
   const params = useParams();
   const router = useRouter();
   const { user, hasRole } = useAuth();
-  const topicId = parseInt(params.id as string);
-
+  
+  const [topicId, setTopicId] = useState<number | null>(null);
   const [topic, setTopic] = useState<ForumTopic | null>(null);
   const [posts, setPosts] = useState<ForumPost[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -21,11 +21,23 @@ export function ForumTopicPage() {
   const [editingTopic, setEditingTopic] = useState(false);
   const [editTopicData, setEditTopicData] = useState({ title: '', content: '' });
 
-  const isAdmin = hasRole('admin') || hasRole('mentor');
+  const isAdmin = hasRole('admin') || hasRole('mentor_english') || hasRole('mentor_electronics') || hasRole('mentor_computer_science') || hasRole('mentor_iot');
   const isTopicAuthor = topic && user && topic.authorId?.toString() === user.id;
 
+  // Получаем ID из params
   useEffect(() => {
-    loadData();
+    if (params?.id) {
+      setTopicId(parseInt(params.id as string));
+    } else {
+      router.push('/forum');
+    }
+  }, [params, router]);
+
+  // Загружаем данные только когда есть ID
+  useEffect(() => {
+    if (topicId) {
+      loadData();
+    }
   }, [topicId]);
 
   useEffect(() => {
@@ -35,6 +47,8 @@ export function ForumTopicPage() {
   }, [topic]);
 
   const loadData = async () => {
+    if (!topicId) return;
+    
     try {
       const [topicData, postsData] = await Promise.all([
         forumApi.getTopic(topicId),
@@ -51,7 +65,7 @@ export function ForumTopicPage() {
 
   const handleCreatePost = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!replyContent.trim()) return;
+    if (!topicId || !replyContent.trim()) return;
 
     try {
       const data: CreatePostDto = {
@@ -68,6 +82,8 @@ export function ForumTopicPage() {
   };
 
   const handleEditPost = async (postId: number) => {
+    if (!topicId) return;
+    
     try {
       await forumApi.updatePost(postId, editContent);
       setEditingPostId(null);
@@ -80,7 +96,9 @@ export function ForumTopicPage() {
   };
 
   const handleDeletePost = async (postId: number) => {
+    if (!topicId) return;
     if (!confirm('Вы уверены, что хотите удалить это сообщение?')) return;
+    
     try {
       await forumApi.deletePost(postId);
       loadData();
@@ -91,6 +109,8 @@ export function ForumTopicPage() {
   };
 
   const handleTogglePinned = async () => {
+    if (!topicId) return;
+    
     try {
       await forumApi.toggleTopicPinned(topicId);
       loadData();
@@ -100,6 +120,8 @@ export function ForumTopicPage() {
   };
 
   const handleToggleClosed = async () => {
+    if (!topicId) return;
+    
     try {
       await forumApi.toggleTopicClosed(topicId);
       loadData();
@@ -109,6 +131,8 @@ export function ForumTopicPage() {
   };
 
   const handleEditTopic = async () => {
+    if (!topicId) return;
+    
     try {
       await forumApi.updateTopic(topicId, editTopicData);
       setEditingTopic(false);

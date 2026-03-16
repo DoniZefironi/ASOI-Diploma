@@ -13,7 +13,7 @@ export class Hackathon {
   @Column({ nullable: true })
   courseId: number;
 
-  @Column({ length: 200 })
+  @Column({ length: 200, default: 'Untitled Hackathon' })
   title: string;
 
   @Column({ type: 'text' })

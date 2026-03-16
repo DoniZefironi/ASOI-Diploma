@@ -2,14 +2,15 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, CreateDateColumn, UpdateDateColumn } from 'typeorm';
 import { CourseGroup } from '../../course-groups/entities/course-group.entity';
 import { AssignmentSubmission } from './assignment-submission.entity';
+import { PeerReview } from './peer-review.entity';
+import { PeerReviewSession } from './peer-review-session.entity';
 
 export enum AssignmentType {
-  LECTURE = 'lecture',
   PRACTICE = 'practice',
   TEST = 'test',
+  PRACTICE_REVIEW = 'practice_review',
   HACKATHON = 'hackathon',
   OLYMPIAD = 'olympiad',
-  FACULTATIVE = 'facultative'
 }
 
 @Entity('assignments')
@@ -40,6 +41,24 @@ export class Assignment {
 
   @Column({ default: true })
   isActive: boolean;
+
+  @Column({ nullable: true })
+  peerReviewEnabled: boolean;
+
+  @Column({ nullable: true })
+  peerReviewStartDate: Date;
+
+  @Column({ nullable: true })
+  peerReviewEndDate: Date;
+
+  @Column({ default: 5 })
+  peerReviewsPerStudent: number;
+
+  @Column({ type: 'text', nullable: true })
+  peerReviewCriteria: string;
+
+  @OneToMany(() => PeerReviewSession, session => session.assignment)
+  peerReviewSessions: PeerReviewSession[];
 
   @CreateDateColumn()
   createdAt: Date;

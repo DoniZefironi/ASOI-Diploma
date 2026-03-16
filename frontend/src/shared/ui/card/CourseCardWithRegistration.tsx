@@ -1,7 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { Card } from '@/shared/ui/card';
 import { Button } from '@/shared/ui/button';
 import { useCourseGroups, useRegisterToCourse, useUserRegistrations } from '@/shared/api/admin';
+import { useAuth } from '@/shared/lib/auth-context';
 
 interface Course {
   id: number;
@@ -21,33 +23,65 @@ interface CourseCardWithRegistrationProps {
 }
 
 export const CourseCardWithRegistration = ({ course, index }: CourseCardWithRegistrationProps) => {
+  const router = useRouter();
+  const { logout } = useAuth();
   const [showGroups, setShowGroups] = useState(false);
   const [registrationError, setRegistrationError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
-  
-  const { groups, isLoading: groupsLoading, error: groupsError } = useCourseGroups(course.id);
+
+  const { groups, isLoading: groupsLoading, error: groupsError, mutate } = useCourseGroups(course.id);
   const { register, isRegistering } = useRegisterToCourse();
   const { registrations, isLoading: registrationsLoading, error: registrationsError, mutate: mutateRegistrations } = useUserRegistrations();
+  
+  // Debug log
+  useEffect(() => {
+    console.log('CourseCard mounted:', course.id);
+    console.log('Registrations:', registrations);
+    console.log('Groups:', groups);
+  }, [registrations, groups, course.id]);
 
   const handleRegisterClick = async (courseGroupId: number, groupName: string) => {
     if (isRegistering) return;
+
+    // Показываем уведомление перед регистрацией
+    const confirmed = window.confirm(
+      '⚠️ Внимание!\n\n' +
+      'После записи на курс вам потребуется:\n' +
+      '1. Выйти из системы\n' +
+      '2. Войти заново для применения новой роли\n\n' +
+      'Продолжить?'
+    );
+
+    if (!confirmed) return;
 
     setRegistrationError(null);
     setSuccessMessage(null);
 
     try {
       await register({ courseGroupId });
-      setSuccessMessage(`Заявка на группу "${groupName}" успешно подана!`);
+      setSuccessMessage(`Вы успешно записаны на группу "${groupName}"!\n\nСейчас вы будете перенаправлены на страницу входа.`);
 
+      // Выход из системы через 2 секунды
       setTimeout(() => {
-        setSuccessMessage(null);
-      }, 3000);
-      
+        logout();
+        router.push('/auth');
+      }, 2000);
+
     } catch (error: any) {
       console.error('Registration failed:', error);
 
-      if (error.message?.includes('already applied')) {
-        setRegistrationError('Вы уже подали заявку на эту группу');
+      // Если пользователь уже записан - перенаправляем на страницу курса
+      if (error.message?.includes('already enrolled') || error.message?.includes('already applied')) {
+        setSuccessMessage('Вы уже записаны на этот курс');
+        await mutateRegistrations();
+        setTimeout(() => {
+          router.push(`/courses/${course.id}`);
+        }, 1500);
+        return;
+      }
+
+      if (error.message?.includes('pending')) {
+        setRegistrationError('Ваша заявка уже на рассмотрении');
       } else if (error.message?.includes('Course group is full')) {
         setRegistrationError('Эта группа уже заполнена');
       } else if (error.message?.includes('Course group not found')) {
@@ -68,41 +102,47 @@ export const CourseCardWithRegistration = ({ course, index }: CourseCardWithRegi
     const userRegistration = registrations?.find(
       reg => reg.courseGroupId === groupId
     );
-    return userRegistration ? userRegistration.status : null;
+    const status = userRegistration ? userRegistration.status?.toLowerCase() : null;
+    console.log(`Group ${groupId} status:`, status, 'All registrations:', registrations);
+    return status;
   };
 
   const getRegistrationButtonProps = (groupId: number) => {
     const status = getUserRegistrationStatus(groupId);
-    
+
     switch (status) {
-      case 'PENDING':
+      case 'pending':
         return {
           text: 'Заявка на рассмотрении',
           disabled: true,
           variant: 'secondary' as const,
         };
-      case 'APPROVED':
+      case 'approved':
         return {
-          text: 'Заявка одобрена',
-          disabled: true,
-          variant: 'secondary' as const,
+          text: 'Вы записаны',
+          disabled: false,
+          variant: 'primary' as const,
+          action: 'go' as const,
         };
-      case 'REJECTED':
+      case 'rejected':
         return {
           text: 'Заявка отклонена',
-          disabled: false, 
+          disabled: false,
           variant: 'secondary' as const,
         };
       default:
         return {
-          text: isRegistering ? 'Регистрация...' : 'Зарегистрироваться',
+          text: isRegistering ? 'Запись...' : 'Записаться',
           disabled: isRegistering,
           variant: 'primary' as const,
+          action: 'register' as const,
         };
     }
   };
 
   const displayGroups = groups || [];
+  
+  console.log('CourseCard props:', { course, groups, registrations, showGroups });
 
   return (
     <Card className="h-full bg-gray-800 border-gray-700 hover:border-blue-500 transition-colors duration-300 overflow-hidden group">
@@ -180,11 +220,11 @@ export const CourseCardWithRegistration = ({ course, index }: CourseCardWithRegi
               
               {displayGroups.map((group) => {
                 const buttonProps = getRegistrationButtonProps(group.id);
-                const isRejected = getUserRegistrationStatus(group.id) === 'REJECTED';
-                
+                const isRejected = getUserRegistrationStatus(group.id) === 'rejected';
+
                 return (
-                  <div 
-                    key={group.id} 
+                  <div
+                    key={group.id}
                     className={`flex justify-between items-center p-3 rounded ${
                       isRejected ? 'bg-red-900 bg-opacity-30' : 'bg-gray-700'
                     }`}
@@ -200,11 +240,17 @@ export const CourseCardWithRegistration = ({ course, index }: CourseCardWithRegi
                         </span>
                       )}
                     </div>
-                    
+
                     <Button
                       variant={buttonProps.variant}
                       size="sm"
-                      onClick={() => handleRegisterClick(group.id, group.name)}
+                      onClick={() => {
+                        if (buttonProps.action === 'go') {
+                          router.push(`/courses/${course.id}`);
+                        } else {
+                          handleRegisterClick(group.id, group.name);
+                        }
+                      }}
                       disabled={buttonProps.disabled}
                       className="ml-2 whitespace-nowrap"
                     >

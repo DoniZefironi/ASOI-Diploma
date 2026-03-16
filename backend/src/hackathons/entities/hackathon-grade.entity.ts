@@ -20,22 +20,22 @@ export class HackathonGrade {
   judgeId: number;
 
   @Column({ type: 'decimal', precision: 5, scale: 2, nullable: true })
-  innovationScore: number;
+  innovationScore: number | null;
 
   @Column({ type: 'decimal', precision: 5, scale: 2, nullable: true })
-  functionalityScore: number;
+  functionalityScore: number | null;
 
   @Column({ type: 'decimal', precision: 5, scale: 2, nullable: true })
-  presentationScore: number;
+  presentationScore: number | null;
 
   @Column({ type: 'decimal', precision: 5, scale: 2, nullable: true })
-  teamworkScore: number;
+  teamworkScore: number | null;
 
   @Column({ type: 'decimal', precision: 5, scale: 2, nullable: true })
-  totalScore: number;
+  totalScore: number | null;
 
   @Column({ type: 'text', nullable: true })
-  feedback: string;
+  feedback: string | null;
 
   @Column({ type: 'jsonb', nullable: true })
   judgingCriteriaScores: any;

@@ -1,4 +1,3 @@
-// shared/api/hackathons/index.ts
 import { apiClient } from '../client';
 
 export interface Hackathon {
@@ -138,33 +137,33 @@ export interface HackathonStats {
 
 export const hackathonsApi = {
   // Hackathons
-  getAll: () => apiClient.get<Hackathon[]>('/hackathons'),
-  getOne: (id: number) => apiClient.get<Hackathon>(`/hackathons/${id}`),
-  getRankings: (id: number) => apiClient.get<TeamRanking[]>(`/hackathons/${id}/rankings`),
-  create: (data: CreateHackathonDto) => apiClient.post<Hackathon>('/hackathons', data),
+  getAll: () => apiClient.get('/hackathons'),
+  getOne: (id: number) => apiClient.get(`/hackathons/${id}`),
+  getRankings: (id: number) => apiClient.get(`/hackathons/${id}/rankings`),
+  create: (data: CreateHackathonDto) => apiClient.post('/hackathons', data),
   update: (id: number, data: Partial<CreateHackathonDto>) =>
-    apiClient.patch<Hackathon>(`/hackathons/${id}`, data),
+    apiClient.patch(`/hackathons/${id}`, data),
   delete: (id: number) => apiClient.delete(`/hackathons/${id}`),
-  getStats: () => apiClient.get<HackathonStats>('/hackathons/admin/stats'),
+  getStats: () => apiClient.get('/hackathons/admin/stats'),
 
   // Teams
-  createTeam: (data: CreateTeamDto) => apiClient.post<HackathonTeam>('/hackathons/teams', data),
+  createTeam: (data: CreateTeamDto) => apiClient.post('/hackathons/teams', data),
   joinTeam: (teamId: number) =>
-    apiClient.post<HackathonTeam>(`/hackathons/teams/${teamId}/join`, {}),
+    apiClient.post(`/hackathons/teams/${teamId}/join`, {}),
   leaveTeam: (teamId: number) =>
     apiClient.post(`/hackathons/teams/${teamId}/leave`, {}),
   transferLeadership: (teamId: number, newLeaderId: number) =>
-    apiClient.patch<HackathonTeam>(`/hackathons/teams/${teamId}/transfer-leadership`, { newLeaderId }),
+    apiClient.patch(`/hackathons/teams/${teamId}/transfer-leadership`, { newLeaderId }),
   updateTeamStatus: (teamId: number, status: string) =>
-    apiClient.patch<HackathonTeam>(`/hackathons/teams/${teamId}/status`, { status }),
-  getUserTeams: () => apiClient.get<HackathonTeam[]>('/hackathons/my-teams'),
+    apiClient.patch(`/hackathons/teams/${teamId}/status`, { status }),
+  getUserTeams: () => apiClient.get('/hackathons/my-teams'),
 
   // Submissions
   submitProject: (data: SubmitProjectDto) =>
-    apiClient.post<HackathonSubmission>('/hackathons/submissions', data),
-  getUserSubmissions: () => apiClient.get<HackathonSubmission[]>('/hackathons/my-submissions'),
+    apiClient.post('/hackathons/submissions', data),
+  getUserSubmissions: () => apiClient.get('/hackathons/my-submissions'),
 
   // Grading
   gradeSubmission: (submissionId: number, data: GradeSubmissionDto) =>
-    apiClient.post<HackathonGrade>(`/hackathons/submissions/${submissionId}/grade`, data),
+    apiClient.post(`/hackathons/submissions/${submissionId}/grade`, data),
 };

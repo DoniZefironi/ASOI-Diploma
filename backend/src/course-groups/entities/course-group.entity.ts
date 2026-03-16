@@ -43,12 +43,12 @@ export class CourseGroup {
   @Column()
   courseId: number;
 
-  @OneToMany(() => CourseRegistration, registration => registration.courseGroup)
+  @OneToMany(() => CourseRegistration, registration => registration.courseGroup, { cascade: true })
   registrations: CourseRegistration[];
 
-  @OneToMany(() => ScheduleItem, scheduleItem => scheduleItem.courseGroup)
+  @OneToMany(() => ScheduleItem, scheduleItem => scheduleItem.courseGroup, { cascade: true })
   scheduleItems: ScheduleItem[];
 
-  @OneToMany(() => Assignment, assignment => assignment.courseGroup)
+  @OneToMany(() => Assignment, assignment => assignment.courseGroup, { cascade: true })
   assignments: Assignment[];
 }

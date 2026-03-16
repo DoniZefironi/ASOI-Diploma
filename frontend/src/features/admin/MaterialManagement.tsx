@@ -6,6 +6,14 @@ import { Button } from '@/shared/ui/button';
 import { Plus, Edit, Trash2, Loader2, FileText, Video, Image, Code, FolderGit } from 'lucide-react';
 import MaterialForm from './MaterialForm';
 import { useMaterials } from '@/shared/api/admin';
+import { useAuth, getCourseTypeFromRole } from '@/shared/lib/auth-context';
+
+const courseTypeLabels: Record<string, string> = {
+  'english': 'Английский язык',
+  'electronics': 'Электроника',
+  'computer_science': 'Информатика',
+  'iot': 'IoT (Интернет вещей)',
+};
 
 type BadgeVariant = 'default' | 'secondary' | 'outline' | 'destructive';
 
@@ -74,21 +82,31 @@ const getMaterialTypeLabel = (type: string) => {
 };
 
 export default function MaterialManagement() {
-  const { 
-    materials, 
-    isLoading, 
-    isError, 
-    createMaterial, 
-    updateMaterial, 
-    deleteMaterial, 
+  const { user } = useAuth();
+  const {
+    materials,
+    isLoading,
+    isError,
+    createMaterial,
+    updateMaterial,
+    deleteMaterial,
     isCreating,
     isUpdating,
     isDeleting,
-    mutate 
+    mutate
   } = useMaterials();
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [editingMaterial, setEditingMaterial] = useState<any | null>(null); 
+  const [editingMaterial, setEditingMaterial] = useState<any | null>(null);
+
+  // Получаем тип курса ментора
+  const userRoles = user?.roles || [];
+  const mentorCourseType = getCourseTypeFromRole(userRoles);
+  
+  // Фильтруем материалы по типу курса (если это ментор)
+  const filteredMaterials = mentorCourseType
+    ? materials?.filter((m: any) => m.course?.type === mentorCourseType)
+    : materials;
 
   const handleCreate = () => {
     setEditingMaterial(null);
@@ -104,6 +122,7 @@ export default function MaterialManagement() {
     if (!confirm('Удалить материал?')) return;
     try {
       await deleteMaterial(id);
+      mutate(); // Обновляем данные после удаления
     } catch (error) {
       console.error('Ошибка при удалении материала:', error);
     }
@@ -111,10 +130,15 @@ export default function MaterialManagement() {
 
   const handleSave = async (data: any) => {
     try {
+      const payload = {
+        ...data,
+        courseId: Number(data.courseId),
+      };
+      
       if (editingMaterial) {
-        await updateMaterial({ id: editingMaterial.id, data });
+        await updateMaterial({ id: editingMaterial.id, data: payload });
       } else {
-        await createMaterial(data);
+        await createMaterial(payload);
       }
       setIsDialogOpen(false);
       setEditingMaterial(null);
@@ -149,13 +173,18 @@ export default function MaterialManagement() {
           <p className="text-gray-400 mt-2">
             Управление учебными материалами и ресурсами
           </p>
+          {mentorCourseType && (
+            <p className="text-sm text-blue-400 mt-1">
+              📚 Направление: <span className="font-semibold">{courseTypeLabels[mentorCourseType]}</span>
+            </p>
+          )}
         </div>
         <div className="flex items-center space-x-2">
           <Badge variant="secondary" className="text-sm">
-            Всего: {materials?.length || 0}
+            Всего: {filteredMaterials?.length || 0}
           </Badge>
           <Button onClick={handleCreate} className="gap-2 flex justify-center">
-            <Plus className="h-4 w-4" /> 
+            <Plus className="h-4 w-4" />
             Добавить материал
           </Button>
         </div>
@@ -194,7 +223,7 @@ export default function MaterialManagement() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
-                {materials?.map((material: any) => ( 
+                {filteredMaterials?.map((material: any) => (
                   <tr key={material.id} className="bg-gray-800 border-b-2 border-b-white">
                     <td className="px-4 py-3 text-sm text-white">{material.id}</td>
                     <td className="px-4 py-3">
@@ -250,7 +279,7 @@ export default function MaterialManagement() {
             </table>
           </div>
 
-          {(!materials || materials.length === 0) && (
+          {(!filteredMaterials || filteredMaterials.length === 0) && (
             <div className="text-center py-8 text-gray-400">
               <FileText className="h-12 w-12 mx-auto mb-4 opacity-50" />
               <p>Материалы не найдены</p>

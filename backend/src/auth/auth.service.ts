@@ -8,6 +8,7 @@ import { User } from '../users/entities/user.entity';
 import { UserRole, UserRoleEnum } from '../users/entities/user-role.entity';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
+import { CourseRegistration, RegistrationStatus } from '../course-groups/entities/course-registration.entity';
 
 @Injectable()
 export class AuthService {
@@ -16,6 +17,8 @@ export class AuthService {
     private usersRepository: Repository<User>,
     @InjectRepository(UserRole)
     private userRoleRepository: Repository<UserRole>,
+    @InjectRepository(CourseRegistration)
+    private registrationRepository: Repository<CourseRegistration>,
     private jwtService: JwtService,
   ) {}
 
@@ -38,20 +41,33 @@ export class AuthService {
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    const payload = { 
-      email: user.email, 
+    // Получаем тип курса пользователя
+    const userRegistration = await this.registrationRepository.findOne({
+      where: {
+        userId: user.id,
+        status: RegistrationStatus.APPROVED,
+      },
+      relations: ['courseGroup', 'courseGroup.course'],
+    });
+
+    const enrolledCourseType = userRegistration?.courseGroup?.course?.type || null;
+
+    const payload = {
+      email: user.email,
       sub: user.id,
-      roles: user.roles.map((role: UserRole) => role.role)
+      roles: user.roles.map((role: UserRole) => role.role),
+      enrolledCourseType,
     };
 
     return {
       access_token: this.jwtService.sign(payload),
       user: {
-        id: user.id,
+        id: user.id.toString(),
         email: user.email,
         firstName: user.firstName,
         lastName: user.lastName,
-        roles: user.roles.map((role: UserRole) => role.role)
+        roles: user.roles.map((role: UserRole) => role.role),
+        enrolledCourseType,
       }
     };
   }

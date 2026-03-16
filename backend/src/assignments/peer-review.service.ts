@@ -1,0 +1,254 @@
+// src/assignments/peer-review.service.ts
+import { Injectable, NotFoundException, ForbiddenException, BadRequestException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository, In } from 'typeorm';
+import { PeerReview } from './entities/peer-review.entity';
+import { AssignmentSubmission, SubmissionStatus } from './entities/assignment-submission.entity';
+import { CourseRegistration } from '../course-groups/entities/course-registration.entity';
+import { CreatePeerReviewDto, AssignPeerReviewsDto } from './dto/create-peer-review.dto';
+import { Assignment } from './entities/assignment.entity';
+
+@Injectable()
+export class PeerReviewService {
+  constructor(
+    @InjectRepository(PeerReview)
+    private peerReviewRepository: Repository<PeerReview>,
+    @InjectRepository(AssignmentSubmission)
+    private submissionRepository: Repository<AssignmentSubmission>,
+    @InjectRepository(CourseRegistration)
+    private registrationRepository: Repository<CourseRegistration>,
+    @InjectRepository(Assignment)
+    private assignmentRepository: Repository<Assignment>,
+  ) {}
+
+  /**
+   * Назначает peer review для задания
+   * Каждый студент получает N работ на проверку
+   * Каждую работу проверяют N студентов (или меньше если студентов недостаточно)
+   */
+  async assignPeerReviews(assignmentId: number, reviewsPerStudent: number = 5) {
+    // Проверяем существование задания
+    const assignment = await this.assignmentRepository.findOne({
+      where: { id: assignmentId },
+      relations: ['courseGroup'],
+    });
+
+    if (!assignment) {
+      throw new NotFoundException('Assignment not found');
+    }
+
+    // Проверяем даты
+    const now = new Date();
+    if (assignment.peerReviewStartDate && now < assignment.peerReviewStartDate) {
+      throw new BadRequestException('Период peer review ещё не начался');
+    }
+    if (assignment.peerReviewEndDate && now > assignment.peerReviewEndDate) {
+      throw new BadRequestException('Период peer review завершён');
+    }
+
+    // Получаем все submission для этого задания
+    const submissions = await this.submissionRepository.find({
+      where: { assignmentId },
+      relations: ['user'],
+    });
+
+    if (submissions.length < 2) {
+      throw new BadRequestException('Недостаточно студентов для peer review (минимум 2)');
+    }
+
+    // Получаем всех студентов с их submission
+    const studentSubmissions = submissions.map(s => ({
+      userId: s.userId,
+      submissionId: s.id,
+    }));
+
+    // Удаляем старые назначения для этого задания
+    await this.peerReviewRepository.delete({
+      submission: { assignmentId },
+    });
+
+    // Адаптируем количество рецензий под количество студентов
+    const actualReviewsPerStudent = Math.min(reviewsPerStudent, studentSubmissions.length - 1);
+
+    // Для каждого студента назначаем случайные работы на проверку
+    for (const student of studentSubmissions) {
+      // Фильтруем submission, которые студент ещё не проверял и не свою собственную
+      const availableSubmissions = studentSubmissions.filter(
+        s => s.userId !== student.userId
+      );
+
+      // Перемешиваем и берём первые N (или все если меньше)
+      const shuffled = availableSubmissions.sort(() => 0.5 - Math.random());
+      const selectedSubmissions = shuffled.slice(0, actualReviewsPerStudent);
+
+      // Создаём peer reviews
+      for (const selected of selectedSubmissions) {
+        const peerReview = this.peerReviewRepository.create({
+          reviewerId: student.userId,
+          submissionId: selected.submissionId,
+          isCompleted: false,
+        });
+        await this.peerReviewRepository.save(peerReview);
+      }
+    }
+
+    // Обновляем статус submission на "under_review"
+    await this.submissionRepository.update(
+      { assignmentId, status: SubmissionStatus.SUBMITTED },
+      { status: SubmissionStatus.UNDER_REVIEW },
+    );
+
+    return { 
+      success: true, 
+      count: studentSubmissions.length * actualReviewsPerStudent,
+      actualReviewsPerStudent,
+      totalStudents: studentSubmissions.length,
+    };
+  }
+
+  /**
+   * Получает peer reviews для студента (которые он должен проверить)
+   */
+  async getReviewsToComplete(userId: number) {
+    const reviews = await this.peerReviewRepository.find({
+      where: { reviewerId: userId, isCompleted: false },
+      relations: [
+        'submission',
+        'submission.user',
+        'submission.assignment',
+        'submission.assignment.courseGroup',
+      ],
+    });
+
+    return reviews.map(review => ({
+      id: review.id,
+      reviewId: review.id,
+      submissionId: review.submission.id,
+      assignmentId: review.submission.assignment.id,
+      assignmentTitle: review.submission.assignment.title,
+      studentName: `${review.submission.user.firstName} ${review.submission.user.lastName}`,
+      content: review.submission.content,
+      attachments: review.submission.attachments,
+      isCompleted: review.isCompleted,
+      score: review.score,
+      feedback: review.feedback,
+      // Критерии для проверки
+      peerReviewCriteria: review.submission.assignment.peerReviewCriteria,
+      peerReviewEnabled: review.submission.assignment.peerReviewEnabled,
+    }));
+  }
+
+  /**
+   * Получает peer reviews для submission студента (которые другие студенты проверяют)
+   */
+  async getReviewsForSubmission(userId: number, submissionId?: number) {
+    const where: any = { submission: { userId } };
+    if (submissionId) {
+      where.submission = { id: submissionId };
+    }
+
+    const reviews = await this.peerReviewRepository.find({
+      where,
+      relations: ['reviewer', 'submission'],
+    });
+
+    return reviews.map(review => ({
+      id: review.id,
+      reviewerName: `${review.reviewer.firstName} ${review.reviewer.lastName}`,
+      score: review.score,
+      feedback: review.feedback,
+      isCompleted: review.isCompleted,
+      createdAt: review.createdAt,
+    }));
+  }
+
+  /**
+   * Создаёт или обновляет peer review
+   */
+  async createPeerReview(userId: number, dto: CreatePeerReviewDto) {
+    // Проверяем что submission существует
+    const submission = await this.submissionRepository.findOne({
+      where: { id: dto.submissionId },
+      relations: ['assignment'],
+    });
+
+    if (!submission) {
+      throw new NotFoundException('Submission not found');
+    }
+
+    // Проверяем что пользователь назначен проверять эту работу
+    const existingReview = await this.peerReviewRepository.findOne({
+      where: {
+        reviewerId: userId,
+        submissionId: dto.submissionId,
+      },
+    });
+
+    if (!existingReview) {
+      throw new ForbiddenException('Вы не назначены для проверки этой работы');
+    }
+
+    // Проверяем что feedback не пустой
+    if (!dto.feedback || dto.feedback.trim().length === 0) {
+      throw new BadRequestException('Комментарий обязателен');
+    }
+
+    // Обновляем review
+    if (dto.score !== undefined && dto.score !== null) {
+      existingReview.score = dto.score;
+    }
+    existingReview.feedback = dto.feedback || '';
+    existingReview.isCompleted = true;
+    
+    const savedReview = await this.peerReviewRepository.save(existingReview);
+
+    // Проверяем все ли reviews для этого submission завершены
+    const allReviews = await this.peerReviewRepository.find({
+      where: { submissionId: dto.submissionId },
+    });
+    const allCompleted = allReviews.every(r => r.isCompleted);
+
+    if (allCompleted) {
+      // Обновляем статус submission на "reviewed"
+      await this.submissionRepository.update(dto.submissionId, {
+        status: SubmissionStatus.REVIEWED,
+      });
+
+      // Вычисляем средний балл
+      const completedReviews = allReviews.filter(r => r.isCompleted && r.score !== null);
+      if (completedReviews.length > 0) {
+        const averageScore = completedReviews.reduce((sum, r) => sum + (r.score || 0), 0) / completedReviews.length;
+        await this.submissionRepository.update(dto.submissionId, {
+          finalScore: Math.round(averageScore),
+        });
+      }
+    }
+
+    return savedReview;
+  }
+
+  /**
+   * Получает статистику peer review для ментора
+   */
+  async getPeerReviewStats(assignmentId: number) {
+    const submissions = await this.submissionRepository.find({
+      where: { assignmentId },
+      relations: ['user', 'peerReviewsReceived'],
+    });
+
+    const stats = submissions.map(submission => ({
+      submissionId: submission.id,
+      studentName: `${submission.user.firstName} ${submission.user.lastName}`,
+      totalReviews: submission.peerReviewsReceived?.length || 0,
+      completedReviews: submission.peerReviewsReceived?.filter(r => r.isCompleted).length || 0,
+      averageScore: submission.peerReviewsReceived?.filter(r => r.isCompleted && r.score).length
+        ? submission.peerReviewsReceived
+            .filter(r => r.isCompleted && r.score)
+            .reduce((sum, r) => sum + r.score, 0) /
+          submission.peerReviewsReceived.filter(r => r.isCompleted && r.score).length
+        : null,
+    }));
+
+    return stats;
+  }
+}

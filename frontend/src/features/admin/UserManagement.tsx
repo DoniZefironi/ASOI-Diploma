@@ -3,8 +3,26 @@
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
 import { Button } from '@/shared/ui/button';
-import { User, Shield, Loader2 } from 'lucide-react';
+import { User, Shield, Loader2, RefreshCw } from 'lucide-react';
 import { useUsers } from '@/shared/api/admin';
+import { apiClient } from '@/shared/api/client';
+
+// Функция для получения красивого названия роли
+const getRoleLabel = (role: string): string => {
+  const roleLabels: Record<string, string> = {
+    'registered_user': 'Пользователь',
+    'student_english': 'Студент (Английский)',
+    'student_electronics': 'Студент (Электроника)',
+    'student_computer_science': 'Студент (Информатика)',
+    'student_iot': 'Студент (IoT)',
+    'mentor_english': 'Ментор (Английский)',
+    'mentor_electronics': 'Ментор (Электроника)',
+    'mentor_computer_science': 'Ментор (Информатика)',
+    'mentor_iot': 'Ментор (IoT)',
+    'admin': 'Администратор',
+  };
+  return roleLabels[role] || role;
+};
 
 const Badge = ({ children, variant = 'default', className = '' }: { 
   children: React.ReactNode; 
@@ -103,10 +121,11 @@ const TableCell = ({ children, className = '' }: { children: React.ReactNode; cl
 );
 
 export default function UserManagement() {
-  const { users, isLoading, isError, updateUserRoles, mutate, isUpdating } = useUsers();  
+  const { users, isLoading, isError, updateUserRoles, mutate, isUpdating } = useUsers();
   const [selectedUser, setSelectedUser] = useState<any>(null);
   const [isRoleDialogOpen, setIsRoleDialogOpen] = useState(false);
   const [localUpdating, setLocalUpdating] = useState(false);
+  const [isSyncing, setIsSyncing] = useState(false);
 
   if (isLoading) {
     return (
@@ -135,16 +154,16 @@ export default function UserManagement() {
 
   const handleUpdateRoles = async (roles: string[]) => {
     if (!selectedUser) return;
-    
+
     setLocalUpdating(true);
     try {
-      await updateUserRoles({ 
-        id: selectedUser.id, 
-        roles 
+      await updateUserRoles({
+        id: selectedUser.id,
+        roles
       });
 
       mutate();
-      
+
       setIsRoleDialogOpen(false);
       setSelectedUser(null);
       alert('Роли успешно обновлены!');
@@ -153,6 +172,25 @@ export default function UserManagement() {
       alert('Ошибка при обновлении ролей');
     } finally {
       setLocalUpdating(false);
+    }
+  };
+
+  const handleSyncRoles = async () => {
+    if (!confirm('Выполнить синхронизацию ролей для всех пользователей с активными курсами?')) {
+      return;
+    }
+
+    setIsSyncing(true);
+    try {
+      const result = await apiClient.post('/course-groups/sync-student-roles', {});
+      console.log('Синхронизация ролей:', result);
+      mutate();
+      alert(`Роли синхронизированы! Обновлено пользователей: ${result.updatedCount || 0}`);
+    } catch (error) {
+      console.error('Ошибка при синхронизации ролей:', error);
+      alert('Ошибка при синхронизации ролей');
+    } finally {
+      setIsSyncing(false);
     }
   };
 
@@ -178,6 +216,15 @@ export default function UserManagement() {
           <Badge variant="secondary" className="text-sm">
             Всего: {users?.length || 0}
           </Badge>
+          <Button
+            size="sm"
+            onClick={handleSyncRoles}
+            disabled={isSyncing}
+            className="gap-1"
+          >
+            <RefreshCw className={`h-4 w-4 ${isSyncing ? 'animate-spin' : ''}`} />
+            {isSyncing ? 'Синхронизация...' : 'Синхронизировать роли'}
+          </Button>
         </div>
       </div>
 
@@ -220,18 +267,30 @@ export default function UserManagement() {
                     <TableCell className="text-white">{user.email}</TableCell>
                     <TableCell>
                       <div className="flex flex-wrap gap-1">
-                        {userRoles.map((role: string) => (
-                          <Badge 
-                            key={role} 
-                            variant={
-                              role === 'admin' ? 'destructive' : 
-                              role === 'mentor' ? 'default' : 'secondary'
-                            }
-                            className="text-xs"
-                          >
-                            {role}
-                          </Badge>
-                        ))}
+                        {userRoles.map((role: string) => {
+                          const isStudent = role.startsWith('student_');
+                          const isMentor = role.startsWith('mentor_');
+                          const isAdmin = role === 'admin';
+                          
+                          return (
+                            <Badge
+                              key={role}
+                              variant={
+                                isAdmin ? 'destructive' :
+                                isMentor ? 'default' :
+                                isStudent ? 'default' : 'secondary'
+                              }
+                              className={`text-xs ${
+                                isStudent ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300' :
+                                isMentor ? 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300' :
+                                isAdmin ? 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300' :
+                                ''
+                              }`}
+                            >
+                              {getRoleLabel(role)}
+                            </Badge>
+                          );
+                        })}
                       </div>
                     </TableCell>
                     <TableCell>
@@ -294,8 +353,19 @@ function RoleDialog({ user, isOpen, onClose, onSave, isUpdating }: any) {
 
   const availableRoles = [
     { value: 'registered_user', label: 'Зарегистрированный пользователь' },
-    { value: 'student', label: 'Студент' },
-    { value: 'mentor', label: 'Ментор' },
+    
+    // Студенты по направлениям
+    { value: 'student_english', label: 'Студент - Английский язык' },
+    { value: 'student_electronics', label: 'Студент - Электроника' },
+    { value: 'student_computer_science', label: 'Студент - Информатика' },
+    { value: 'student_iot', label: 'Студент - IoT' },
+    
+    // Менторы по направлениям
+    { value: 'mentor_english', label: 'Ментор - Английский язык' },
+    { value: 'mentor_electronics', label: 'Ментор - Электроника' },
+    { value: 'mentor_computer_science', label: 'Ментор - Информатика' },
+    { value: 'mentor_iot', label: 'Ментор - IoT' },
+    
     { value: 'admin', label: 'Администратор' },
   ];
 

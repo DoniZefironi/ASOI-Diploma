@@ -12,6 +12,22 @@ export class CreateScheduleItemDto {
   @IsEnum(ScheduleItemType)
   type: ScheduleItemType;
 
+  @IsString()
+  @IsOptional()
+  content?: string;
+
+  @IsString()
+  @IsOptional()
+  videoUrl?: string;
+
+  @IsString()
+  @IsOptional()
+  materialsUrl?: string;
+
+  @IsString()
+  @IsOptional()
+  assignmentDescription?: string;
+
   @IsDateString()
   startTime: string;
 

@@ -5,12 +5,6 @@ import { User } from '../../users/entities/user.entity';
 
 export enum ScheduleItemType {
   LECTURE = 'lecture',
-  PRACTICE = 'practice',
-  TEST = 'test',
-  HACKATHON = 'hackathon',
-  OLYMPIAD = 'olympiad',
-  FACULTATIVE = 'facultative',
-  INTERNSHIP = 'internship'
 }
 
 @Entity('schedule_items')
@@ -29,6 +23,18 @@ export class ScheduleItem {
     enum: ScheduleItemType
   })
   type: ScheduleItemType;
+
+  @Column({ type: 'text', nullable: true })
+  content: string;
+
+  @Column({ type: 'text', nullable: true })
+  videoUrl: string;
+
+  @Column({ type: 'text', nullable: true })
+  materialsUrl: string;
+
+  @Column({ type: 'text', nullable: true })
+  assignmentDescription: string;
 
   @Column()
   startTime: Date;

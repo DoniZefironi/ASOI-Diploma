@@ -54,7 +54,10 @@ export class User {
   achievements: UserAchievement[];
 
   @OneToMany(() => PeerReview, peerReview => peerReview.reviewer)
-  peerReviews: PeerReview[];
+  peerReviewsGiven: PeerReview[];
+
+  @OneToMany(() => PeerReview, peerReview => peerReview.submission)
+  peerReviewsReceived: PeerReview[];
 
   @OneToMany(() => CircuitSubmission, submission => submission.user)
   circuitSubmissions: CircuitSubmission[];

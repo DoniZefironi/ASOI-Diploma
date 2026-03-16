@@ -1,7 +1,8 @@
 // src/features/profile/components/MyCoursesModal.tsx
-import { User, BookOpen, Calendar, Clock, Check, X, Loader2, Filter } from 'lucide-react';
+import { User, BookOpen, Calendar, Clock, Check, X, Loader2, Filter, ArrowRight } from 'lucide-react';
 import { Button } from '@/shared/ui/button';
-import { useUserRegistrations } from '@/shared/api/admin';
+import { useUserApprovedCourses, useUserCourseRegistrations } from '@/shared/api/admin/registrations';
+import Link from 'next/link';
 
 const Badge = ({ children, variant = 'default', className = '' }: {
   children: React.ReactNode;
@@ -127,23 +128,19 @@ interface Props {
 }
 
 export const MyCoursesModal = ({ isOpen, onClose }: Props) => {
-  const { registrations: userRegistrations, isLoading, isError } = useUserRegistrations();
+  const { courses: approvedCourses, isLoading: isLoadingApproved } = useUserApprovedCourses();
+  const { registrations: allRegistrations, isLoading: isLoadingAll } = useUserCourseRegistrations();
 
-  if (isError) {
+  if (isLoadingApproved || isLoadingAll) {
     return (
       <Dialog open={isOpen} onOpenChange={onClose}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="sm:max-w-2xl">
           <DialogHeader>
-            <DialogTitle className="text-red-500">Ошибка</DialogTitle>
+            <DialogTitle className="text-white">Мои Курсы</DialogTitle>
           </DialogHeader>
-          <DialogDescription>
-            Не удалось загрузить информацию о ваших заявках.
-          </DialogDescription>
-          <DialogFooter>
-            <Button variant="secondary" onClick={onClose}>
-              Закрыть
-            </Button>
-          </DialogFooter>
+          <div className="flex justify-center py-8">
+            <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
+          </div>
         </DialogContent>
       </Dialog>
     );
@@ -153,17 +150,44 @@ export const MyCoursesModal = ({ isOpen, onClose }: Props) => {
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-2xl">
         <DialogHeader>
-          <DialogTitle className="text-white">Мои Заявки на Курсы</DialogTitle>
+          <DialogTitle className="text-white">Мои Курсы</DialogTitle>
         </DialogHeader>
         <DialogDescription className="mb-4">
-          Ниже приведен список ваших заявок на участие в учебных группах.
+          Ниже приведен список курсов, на которые вы записаны.
         </DialogDescription>
 
-        {isLoading ? (
-          <div className="flex justify-center py-8">
-            <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
-          </div>
-        ) : (
+        <div className="mb-6">
+          <h4 className="text-sm font-semibold text-gray-300 mb-3">Активные курсы</h4>
+          {approvedCourses && approvedCourses.length > 0 ? (
+            <div className="space-y-2">
+              {approvedCourses.map((reg) => (
+                <Link
+                  key={reg.id}
+                  href={`/courses/${reg.courseGroup.courseId}`}
+                  className="block p-4 bg-gray-700 rounded-lg hover:bg-gray-600 transition-colors"
+                >
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <div className="font-semibold text-white">{reg.courseGroup.course.name}</div>
+                      <div className="text-sm text-gray-400">Группа: {reg.courseGroup.name}</div>
+                      <div className="text-xs text-gray-500 mt-1">
+                        {new Date(reg.courseGroup.startDate).toLocaleDateString('ru-RU')} - {new Date(reg.courseGroup.endDate).toLocaleDateString('ru-RU')}
+                      </div>
+                    </div>
+                    <ArrowRight className="text-gray-400" />
+                  </div>
+                </Link>
+              ))}
+            </div>
+          ) : (
+            <div className="p-4 bg-gray-700 rounded-lg text-center text-gray-400">
+              У вас пока нет активных курсов
+            </div>
+          )}
+        </div>
+
+        <div>
+          <h4 className="text-sm font-semibold text-gray-300 mb-3">Заявки</h4>
           <Table>
             <TableHeader>
               <TableRow>
@@ -174,27 +198,26 @@ export const MyCoursesModal = ({ isOpen, onClose }: Props) => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {userRegistrations && userRegistrations.length > 0 ? (
-                userRegistrations.map((reg) => (
+              {allRegistrations && allRegistrations.length > 0 ? (
+                allRegistrations.map((reg) => (
                   <TableRow key={reg.id}>
                     <TableCell className="text-white">{reg.courseGroup.name}</TableCell>
                     <TableCell className="text-white">{reg.courseGroup.course.name}</TableCell>
-                    <TableCell className="text-white">{new Date(reg.createdAt).toLocaleDateString('ru-RU')}</TableCell>
+                    <TableCell className="text-white">{new Date(reg.registeredAt).toLocaleDateString('ru-RU')}</TableCell>
                     <TableCell>
                       <Badge
                         variant={
-                          reg.status === 'PENDING' ? 'pending' :
-                          reg.status === 'APPROVED' ? 'default' : 'destructive'
+                          reg.status?.toLowerCase() === 'pending' ? 'pending' :
+                          reg.status?.toLowerCase() === 'approved' ? 'default' : 'destructive'
                         }
                       >
-                        {reg.status === 'APPROVED' ? 'Одобрено' : reg.status === 'REJECTED' ? 'Отклонено' : 'В ожидании'}
+                        {reg.status?.toLowerCase() === 'approved' ? 'Одобрено' : reg.status?.toLowerCase() === 'rejected' ? 'Отклонено' : 'В ожидании'}
                       </Badge>
                     </TableCell>
                   </TableRow>
                 ))
               ) : (
                 <TableRow>
-                  {/* Исправлена ошибка: colSpan теперь на нативном td внутри tr */}
                   <td colSpan={4} className="px-4 py-3 text-sm text-gray-400 dark:text-white text-center">
                     У вас нет заявок на курсы.
                   </td>
@@ -202,7 +225,7 @@ export const MyCoursesModal = ({ isOpen, onClose }: Props) => {
               )}
             </TableBody>
           </Table>
-        )}
+        </div>
 
         <DialogFooter>
           <Button variant="secondary" onClick={onClose}>

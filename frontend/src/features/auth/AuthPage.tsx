@@ -12,6 +12,17 @@ interface AuthForm {
   password: string;
   firstName: string;
   lastName: string;
+  acceptTerms: boolean;
+  captchaAnswer: string;
+}
+
+interface AuthFormErrors {
+  email?: string;
+  password?: string;
+  firstName?: string;
+  lastName?: string;
+  acceptTerms?: string;
+  captcha?: string;
 }
 
 export const AuthPage = () => {
@@ -22,17 +33,26 @@ export const AuthPage = () => {
     email: '',
     password: '',
     firstName: '',
-    lastName: ''
+    lastName: '',
+    acceptTerms: false,
+    captchaAnswer: ''
   });
-  const [errors, setErrors] = useState<Partial<AuthForm>>({});
+  const [errors, setErrors] = useState<AuthFormErrors>({});
+  
+  // Генерация случайных чисел для капчи
+  const [captchaNumbers, setCaptchaNumbers] = useState(() => {
+    const num1 = Math.floor(Math.random() * 10) + 1;
+    const num2 = Math.floor(Math.random() * 10) + 1;
+    return { num1, num2, answer: num1 + num2 };
+  });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
+    const { name, value, type, checked } = e.target;
     setFormData(prev => ({
       ...prev,
-      [name]: value
+      [name]: type === 'checkbox' ? checked : value
     }));
-    if (errors[name as keyof AuthForm]) {
+    if (errors[name as keyof AuthFormErrors]) {
       setErrors(prev => ({
         ...prev,
         [name]: ''
@@ -40,8 +60,16 @@ export const AuthPage = () => {
     }
   };
 
+  const refreshCaptcha = () => {
+    const num1 = Math.floor(Math.random() * 10) + 1;
+    const num2 = Math.floor(Math.random() * 10) + 1;
+    setCaptchaNumbers({ num1, num2, answer: num1 + num2 });
+    setFormData(prev => ({ ...prev, captchaAnswer: '' }));
+    setErrors(prev => ({ ...prev, captcha: '' } as AuthFormErrors));
+  };
+
   const validateForm = (): boolean => {
-    const newErrors: Partial<AuthForm> = {};
+    const newErrors: AuthFormErrors = {};
 
     if (!formData.email.trim()) {
       newErrors.email = 'Электронная почта обязательна для заполнения.';
@@ -62,6 +90,19 @@ export const AuthPage = () => {
       if (!formData.lastName.trim()) {
         newErrors.lastName = 'Фамилия обязательна для заполнения.';
       }
+      
+      // Валидация чекбокса принятия условий
+      if (!formData.acceptTerms) {
+        newErrors.acceptTerms = 'Необходимо принять условия обслуживания.';
+      }
+      
+      // Валидация капчи
+      const userAnswer = parseInt(formData.captchaAnswer);
+      if (isNaN(userAnswer)) {
+        newErrors.captcha = 'Введите ответ.';
+      } else if (userAnswer !== captchaNumbers.answer) {
+        newErrors.captcha = `Неверный ответ. Правильный ответ: ${captchaNumbers.answer}`;
+      }
     }
 
     setErrors(newErrors);
@@ -70,22 +111,22 @@ export const AuthPage = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!validateForm()) return;
 
     setIsLoading(true);
 
     try {
-      const url = isLogin 
+      const url = isLogin
         ? 'http://localhost:2904/auth/login'
         : 'http://localhost:2904/auth/register';
 
       const payload = isLogin
-        ? { 
+        ? {
             email: formData.email,
-            password: formData.password 
+            password: formData.password
           }
-        : { 
+        : {
             email: formData.email,
             password: formData.password,
             firstName: formData.firstName,
@@ -120,9 +161,9 @@ export const AuthPage = () => {
 
           localStorage.setItem('access_token', token);
           localStorage.setItem('user', JSON.stringify(userData));
-          
+
           if (login) login(token, userData);
-          
+
           alert('🎉 С возвращением!');
           window.location.href = '/';
         } else {
@@ -135,12 +176,16 @@ export const AuthPage = () => {
           email: formData.email,
           password: '',
           firstName: '',
-          lastName: ''
+          lastName: '',
+          acceptTerms: false,
+          captchaAnswer: ''
         });
+        // Обновить капчу
+        refreshCaptcha();
       }
 
     } catch (error) {
-      console.error('Ошибка аутентификации.:', error);
+      console.error('Ошибка аутентификации:', error);
       alert(error instanceof Error ? error.message : 'Произошла ошибка.');
     } finally {
       setIsLoading(false);
@@ -286,17 +331,60 @@ export const AuthPage = () => {
               )}
 
               {!isLogin && (
-                <div>
-                  <label className="flex items-center">
+                <>
+                  <div>
+                    <label className="flex items-start">
+                      <input
+                        type="checkbox"
+                        name="acceptTerms"
+                        checked={formData.acceptTerms}
+                        onChange={handleChange}
+                        className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500 mt-1"
+                      />
+                      <span className="ml-2 text-sm text-gray-600">
+                        Я согласен(на) с <Link href="/terms" className="text-blue-600 hover:underline" target="_blank">Условиями обслуживания</Link> и <Link href="/privacy" className="text-blue-600 hover:underline" target="_blank">Политикой конфиденциальности</Link>.
+                      </span>
+                    </label>
+                    {errors.acceptTerms && (
+                      <p className="text-red-500 text-sm mt-1">{errors.acceptTerms}</p>
+                    )}
+                  </div>
+
+                  {/* Капча */}
+                  <div className="bg-gray-100 p-4 rounded-lg">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Проверка на робота 🤖
+                    </label>
+                    <div className="flex items-center gap-3 mb-2">
+                      <div className="bg-white px-4 py-2 rounded-lg border border-gray-300">
+                        <span className="text-lg font-bold text-gray-800">
+                          {captchaNumbers.num1} + {captchaNumbers.num2} = ?
+                        </span>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={refreshCaptcha}
+                        className="text-blue-600 hover:text-blue-700 p-2"
+                        title="Обновить капчу"
+                      >
+                        🔄
+                      </button>
+                    </div>
                     <input
-                      type="checkbox"
-                      className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
+                      type="number"
+                      name="captchaAnswer"
+                      value={formData.captchaAnswer}
+                      onChange={handleChange}
+                      placeholder="Введите ответ"
+                      className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-black ${
+                        errors.captcha ? 'border-red-500' : 'border-gray-300'
+                      }`}
                     />
-                    <span className="ml-2 text-sm text-gray-600">
-                      Я согласен(на) с Условиями обслуживания и Политикой конфиденциальности.
-                    </span>
-                  </label>
-                </div>
+                    {errors.captcha && (
+                      <p className="text-red-500 text-sm mt-1">{errors.captcha}</p>
+                    )}
+                  </div>
+                </>
               )}
 
               <Button

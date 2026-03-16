@@ -86,7 +86,7 @@ export class AchievementsService {
         'submissions',
         'submissions.assignment',
         'forumPosts',
-        'peerReviews',
+        'peerReviewsGiven',
         'courseRegistrations',
       ],
     });
@@ -125,7 +125,7 @@ export class AchievementsService {
         return excellentSubmissions >= conditions.minAssignments;
 
       case AchievementType.PEER_REVIEWER:
-        const reviewCount = user.peerReviews.length;
+        const reviewCount = user.peerReviewsGiven?.length || 0;
         return reviewCount >= conditions.minReviews;
 
       case AchievementType.FORUM_CONTRIBUTOR:
