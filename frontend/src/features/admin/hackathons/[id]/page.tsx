@@ -1,291 +1,278 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
 import { Button } from '@/shared/ui/button';
-import { useHackathon } from '@/shared/api/admin/hackathons';
-import { Award, Users, Calendar, FileText, GitBranch, Video, ExternalLink, Loader2, ArrowLeft } from 'lucide-react';
+import { hackathonsApi, Hackathon, HackathonTeam, HackathonSubmission } from '@/shared/api/hackathons';
+import {
+  Award, Users, Calendar, GitBranch, Archive, ExternalLink,
+  FileText, Video, Loader2, ArrowLeft, CheckCircle, Clock, ChevronDown, ChevronUp,
+} from 'lucide-react';
 
-const Badge = ({
-  children,
-  variant = 'default',
-  className = '',
-}: {
-  children: React.ReactNode;
-  variant?: 'default' | 'secondary' | 'outline' | 'destructive' | 'success';
-  className?: string;
-}) => {
-  const baseStyles = 'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium';
-  const variants = {
-    default: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300',
-    secondary: 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300',
-    outline: 'border border-gray-300 text-gray-300 dark:border-gray-600 dark:text-gray-300',
-    destructive: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300',
-    success: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300',
-  };
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:2904';
+
+function SubmissionBlock({ submission }: { submission: HackathonSubmission }) {
+  return (
+    <div className="mt-3 border-t border-gray-700 pt-3 space-y-2">
+      <div className="flex items-center gap-2 mb-2">
+        <CheckCircle className="h-4 w-4 text-green-400" />
+        <span className="text-sm font-medium text-green-400">Проект сдан</span>
+        <span className="text-xs text-gray-500 ml-auto">
+          {new Date(submission.submittedAt).toLocaleString('ru-RU')}
+        </span>
+      </div>
+
+      {submission.sourceCodeUrl && (
+        <a href={submission.sourceCodeUrl} target="_blank" rel="noopener noreferrer"
+          className="flex items-center gap-2 text-sm text-blue-400 hover:text-blue-300">
+          <GitBranch className="h-4 w-4 shrink-0" />
+          GitHub репозиторий
+          <ExternalLink className="h-3 w-3 ml-auto" />
+        </a>
+      )}
+
+      {submission.archiveUrl && (
+        <a href={`${API_URL}${submission.archiveUrl}`} target="_blank" rel="noopener noreferrer"
+          className="flex items-center gap-2 text-sm text-blue-400 hover:text-blue-300">
+          <Archive className="h-4 w-4 shrink-0" />
+          Архив проекта
+          <ExternalLink className="h-3 w-3 ml-auto" />
+        </a>
+      )}
+
+      {submission.documentationUrl && (
+        <a href={submission.documentationUrl} target="_blank" rel="noopener noreferrer"
+          className="flex items-center gap-2 text-sm text-blue-400 hover:text-blue-300">
+          <FileText className="h-4 w-4 shrink-0" />
+          Документация
+          <ExternalLink className="h-3 w-3 ml-auto" />
+        </a>
+      )}
+
+      {submission.presentationUrl && (
+        <a href={submission.presentationUrl} target="_blank" rel="noopener noreferrer"
+          className="flex items-center gap-2 text-sm text-blue-400 hover:text-blue-300">
+          <FileText className="h-4 w-4 shrink-0" />
+          Презентация
+          <ExternalLink className="h-3 w-3 ml-auto" />
+        </a>
+      )}
+
+      {submission.videoDemoUrl && (
+        <a href={submission.videoDemoUrl} target="_blank" rel="noopener noreferrer"
+          className="flex items-center gap-2 text-sm text-blue-400 hover:text-blue-300">
+          <Video className="h-4 w-4 shrink-0" />
+          Видео демо
+          <ExternalLink className="h-3 w-3 ml-auto" />
+        </a>
+      )}
+
+      {submission.submissionNote && (
+        <p className="text-sm text-gray-300 bg-gray-800 rounded p-2 mt-1">
+          {submission.submissionNote}
+        </p>
+      )}
+
+      {submission.grades && submission.grades.length > 0 && (
+        <div className="mt-2 pt-2 border-t border-gray-700">
+          <p className="text-xs text-gray-400 mb-1">Оценки: {submission.grades.length} шт.</p>
+          {submission.grades.map(g => (
+            <div key={g.id} className="text-xs text-gray-300">
+              Итог: <span className="text-green-400 font-semibold">{g.totalScore}</span>
+              {g.feedback && <span className="ml-2 text-gray-500">— {g.feedback}</span>}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function TeamCard({ team }: { team: HackathonTeam }) {
+  const [open, setOpen] = useState(false);
+  const submission = team.submissions?.[0] ?? null;
 
   return (
-    <span className={`${baseStyles} ${variants[variant]} ${className}`}>
-      {children}
-    </span>
+    <div className="border border-gray-700 rounded-lg p-4">
+      <div className="flex items-center justify-between cursor-pointer" onClick={() => setOpen(v => !v)}>
+        <div>
+          <h3 className="font-semibold text-white">{team.name}</h3>
+          {team.projectName && <p className="text-sm text-gray-400">{team.projectName}</p>}
+        </div>
+        <div className="flex items-center gap-3">
+          {submission ? (
+            <span className="flex items-center gap-1 text-xs text-green-400">
+              <CheckCircle className="h-3 w-3" /> Сдано
+            </span>
+          ) : (
+            <span className="flex items-center gap-1 text-xs text-gray-500">
+              <Clock className="h-3 w-3" /> Не сдано
+            </span>
+          )}
+          <span className="text-xs text-gray-500">{team.members?.length || 0} уч.</span>
+          {open ? <ChevronUp className="h-4 w-4 text-gray-400" /> : <ChevronDown className="h-4 w-4 text-gray-400" />}
+        </div>
+      </div>
+
+      {open && (
+        <div className="mt-3">
+          {/* Участники */}
+          <div className="space-y-1 mb-3">
+            {team.members?.map(m => (
+              <div key={m.id} className="flex items-center justify-between text-sm">
+                <span className="text-white">
+                  {m.user?.firstName} {m.user?.lastName}
+                  {m.role === 'leader' && (
+                    <span className="ml-2 px-1.5 py-0.5 bg-yellow-600 text-white text-xs rounded-full">Лидер</span>
+                  )}
+                </span>
+                <span className="text-gray-500 text-xs">{m.user?.email}</span>
+              </div>
+            ))}
+          </div>
+
+          {/* Submission */}
+          {submission ? (
+            <SubmissionBlock submission={submission} />
+          ) : (
+            <p className="text-sm text-gray-500 border-t border-gray-700 pt-3">Работа ещё не сдана</p>
+          )}
+        </div>
+      )}
+    </div>
   );
-};
+}
 
 export default function HackathonDetailPage() {
   const params = useParams();
   const router = useRouter();
-  
+
   const id = params?.id ? parseInt(params.id as string) : null;
-  const { hackathon, isLoading, isError } = useHackathon(id || 0);
+  const [hackathon, setHackathon] = useState<Hackathon | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('ru-RU', {
-      day: 'numeric',
-      month: 'long',
-      year: 'numeric',
-    });
-  };
-
-  const getStatusBadge = (status: string) => {
-    const statusConfig = {
-      pending: { label: 'Ожидание', variant: 'secondary' as const },
-      active: { label: 'Активен', variant: 'success' as const },
-      completed: { label: 'Завершен', variant: 'default' as const },
-      cancelled: { label: 'Отменен', variant: 'destructive' as const },
-    };
-    
-    const config = statusConfig[status as keyof typeof statusConfig] || statusConfig.pending;
-    return <Badge variant={config.variant}>{config.label}</Badge>;
-  };
+  useEffect(() => {
+    if (!id || isNaN(id)) return;
+    hackathonsApi.getOne(id)
+      .then(setHackathon)
+      .catch(() => setHackathon(null))
+      .finally(() => setIsLoading(false));
+  }, [id]);
 
   if (!id || isNaN(id)) {
     return (
-      <Card>
-        <CardContent className="p-6">
-          <div className="text-center text-red-500">
-            <p>Неверный ID хакатона</p>
-            <Button 
-              onClick={() => router.push('/admin/hackathons')}
-              className="mt-4"
-              variant="secondary"
-            >
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Назад к списку хакатонов
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
+      <Card><CardContent className="p-6 text-center text-red-500">
+        <p>Неверный ID хакатона</p>
+        <Button onClick={() => router.push('/admin/hackathons')} className="mt-4" variant="secondary">
+          <ArrowLeft className="h-4 w-4 mr-2" /> Назад
+        </Button>
+      </CardContent></Card>
     );
   }
 
   if (isLoading) {
+    return <div className="flex items-center justify-center h-64"><Loader2 className="h-8 w-8 animate-spin text-gray-400" /></div>;
+  }
+
+  if (!hackathon) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
-      </div>
+      <Card><CardContent className="p-6 text-center text-red-500">
+        <p>Ошибка загрузки хакатона</p>
+        <Button onClick={() => router.push('/admin/hackathons')} className="mt-4" variant="secondary">
+          <ArrowLeft className="h-4 w-4 mr-2" /> Назад
+        </Button>
+      </CardContent></Card>
     );
   }
 
-  if (isError || !hackathon) {
-    return (
-      <Card>
-        <CardContent className="p-6">
-          <div className="text-center text-red-500">
-            <p>Ошибка загрузки хакатона</p>
-            <Button 
-              onClick={() => router.push('/admin/hackathons')}
-              className="mt-4"
-              variant="secondary"
-            >
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Назад к списку хакатонов
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
-    );
-  }
+  const now = new Date();
+  const isActive = now >= new Date(hackathon.startDate) && now <= new Date(hackathon.endDate);
+  const submittedCount = hackathon.teams?.filter(t => t.submissions && t.submissions.length > 0).length ?? 0;
 
   return (
     <div className="space-y-6">
+      {/* Заголовок */}
       <div className="flex items-center gap-4">
-        <Button
-          variant="secondary"
-          onClick={() => router.push('/admin/hackathons')}
-          className="flex items-center gap-2"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          Назад
+        <Button variant="secondary" onClick={() => router.push('/admin/hackathons')} className="flex items-center gap-2">
+          <ArrowLeft className="h-4 w-4" /> Назад
         </Button>
-        
         <div className="flex-1 flex justify-between items-center">
           <div>
-            <h1 className="text-3xl font-bold text-white">{hackathon.name}</h1>
-            <p className="text-gray-400">{hackathon.description}</p>
+            <h1 className="text-3xl font-bold text-white">{hackathon.title}</h1>
+            {hackathon.theme && <p className="text-blue-400">{hackathon.theme}</p>}
+            <p className="text-gray-400 mt-1">{hackathon.description}</p>
           </div>
-          <div className="flex items-center space-x-2">
-            {getStatusBadge(hackathon.status)}
-            <Badge variant={hackathon.isPublic ? 'default' : 'secondary'}>
-              {hackathon.isPublic ? 'Публичный' : 'Закрытый'}
-            </Badge>
-          </div>
+          <span className={`px-3 py-1 rounded-full text-sm font-medium ${
+            isActive ? 'bg-green-900/50 text-green-400 border border-green-700' :
+            now < new Date(hackathon.startDate) ? 'bg-blue-900/50 text-blue-400 border border-blue-700' :
+            'bg-gray-800 text-gray-400 border border-gray-600'
+          }`}>
+            {isActive ? 'Идёт' : now < new Date(hackathon.startDate) ? 'Не начался' : 'Завершён'}
+          </span>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-400">Даты проведения</p>
-                <p className="text-sm text-white">
-                  {formatDate(hackathon.startDate)} - {formatDate(hackathon.endDate)}
-                </p>
-              </div>
-              <Calendar className="h-8 w-8 text-blue-500" />
-            </div>
-          </CardContent>
-        </Card>
+      {/* Карточки статистики */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <Card><CardContent className="p-4 flex items-center justify-between">
+          <div>
+            <p className="text-xs text-gray-400">Команд</p>
+            <p className="text-2xl font-bold text-white">{hackathon.teams?.length ?? 0}</p>
+          </div>
+          <Users className="h-7 w-7 text-blue-400" />
+        </CardContent></Card>
 
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-400">Команд</p>
-                <p className="text-2xl font-bold text-white">
-                  {hackathon.teams?.length || 0}
-                </p>
-              </div>
-              <Users className="h-8 w-8 text-green-500" />
-            </div>
-          </CardContent>
-        </Card>
+        <Card><CardContent className="p-4 flex items-center justify-between">
+          <div>
+            <p className="text-xs text-gray-400">Сдали работу</p>
+            <p className="text-2xl font-bold text-green-400">{submittedCount}</p>
+          </div>
+          <CheckCircle className="h-7 w-7 text-green-400" />
+        </CardContent></Card>
 
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-400">Размер команды</p>
-                <p className="text-2xl font-bold text-white">
-                  до {hackathon.maxTeamSize} чел.
-                </p>
-              </div>
-              <Award className="h-8 w-8 text-purple-500" />
-            </div>
-          </CardContent>
-        </Card>
+        <Card><CardContent className="p-4 flex items-center justify-between">
+          <div>
+            <p className="text-xs text-gray-400">Начало</p>
+            <p className="text-sm font-semibold text-white">
+              {new Date(hackathon.startDate).toLocaleDateString('ru-RU')}
+            </p>
+          </div>
+          <Calendar className="h-7 w-7 text-purple-400" />
+        </CardContent></Card>
+
+        <Card><CardContent className="p-4 flex items-center justify-between">
+          <div>
+            <p className="text-xs text-gray-400">Конец</p>
+            <p className="text-sm font-semibold text-white">
+              {new Date(hackathon.endDate).toLocaleDateString('ru-RU')}
+            </p>
+          </div>
+          <Award className="h-7 w-7 text-orange-400" />
+        </CardContent></Card>
       </div>
 
-      {hackathon.rules && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-white">
-              <FileText className="h-5 w-5" />
-              Правила и условия
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="prose prose-invert max-w-none">
-              <p className="text-gray-300 whitespace-pre-wrap">{hackathon.rules}</p>
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
+      {/* Список команд с работами */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-white">
             <Users className="h-5 w-5" />
-            Команды ({hackathon.teams?.length || 0})
+            Команды и сданные работы ({hackathon.teams?.length ?? 0})
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="space-y-4">
-            {hackathon.teams?.map((team) => (
-              <div key={team.id} className="border border-gray-700 rounded-lg p-4">
-                <div className="flex justify-between items-start mb-3">
-                  <div>
-                    <h3 className="font-semibold text-white">{team.name}</h3>
-                    <p className="text-sm text-gray-400">Код для вступления: {team.joinCode}</p>
-                  </div>
-                  <Badge variant={
-                    team.status === 'approved' ? 'success' : 
-                    team.status === 'rejected' ? 'destructive' : 'secondary'
-                  }>
-                    {team.status === 'approved' ? 'Одобрена' : 
-                     team.status === 'rejected' ? 'Отклонена' : 'На рассмотрении'}
-                  </Badge>
-                </div>
-
-                <div className="mb-3">
-                  <h4 className="text-sm font-medium text-gray-300 mb-2">Участники:</h4>
-                  <div className="space-y-1">
-                    {team.members.map((member) => (
-                      <div key={member.id} className="flex items-center justify-between text-sm">
-                        <span className="text-white">
-                          {member.user?.firstName} {member.user?.lastName}
-                          {member.role === 'captain' && (
-                            <Badge variant="outline" className="ml-2">Капитан</Badge>
-                          )}
-                        </span>
-                        <span className="text-gray-400">{member.user?.email}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {team.project && (
-                  <div className="border-t border-gray-700 pt-3">
-                    <h4 className="text-sm font-medium text-gray-300 mb-2">Проект:</h4>
-                    <div className="space-y-2">
-                      <div className="flex justify-between items-center">
-                        <span className="text-white font-medium">{team.project.name}</span>
-                        <Badge variant={team.project.isSubmitted ? 'success' : 'secondary'}>
-                          {team.project.isSubmitted ? 'Сдан' : 'В работе'}
-                        </Badge>
-                      </div>
-                      <p className="text-sm text-gray-400">{team.project.description}</p>
-                      
-                      {team.project.repositoryUrl && (
-                        <div className="flex items-center gap-2 text-sm">
-                          <GitBranch className="h-4 w-4 text-gray-400" />
-                          <a 
-                            href={team.project.repositoryUrl} 
-                            target="_blank" 
-                            rel="noopener noreferrer"
-                            className="text-blue-400 hover:text-blue-300 flex items-center gap-1"
-                          >
-                            Репозиторий <ExternalLink className="h-3 w-3" />
-                          </a>
-                        </div>
-                      )}
-                      
-                      {team.project.presentationUrl && (
-                        <div className="flex items-center gap-2 text-sm">
-                          <Video className="h-4 w-4 text-gray-400" />
-                          <a 
-                            href={team.project.presentationUrl} 
-                            target="_blank" 
-                            rel="noopener noreferrer"
-                            className="text-blue-400 hover:text-blue-300 flex items-center gap-1"
-                          >
-                            Презентация <ExternalLink className="h-3 w-3" />
-                          </a>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                )}
-              </div>
-            ))}
-
-            {(!hackathon.teams || hackathon.teams.length === 0) && (
-              <div className="text-center py-8 text-gray-400">
-                <Users className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                <p>Команды еще не зарегистрированы</p>
-              </div>
-            )}
-          </div>
+          {hackathon.teams && hackathon.teams.length > 0 ? (
+            <div className="space-y-3">
+              {hackathon.teams.map(team => (
+                <TeamCard key={team.id} team={team} />
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-8 text-gray-400">
+              <Users className="h-12 w-12 mx-auto mb-4 opacity-50" />
+              <p>Команды ещё не зарегистрированы</p>
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>

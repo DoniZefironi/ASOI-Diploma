@@ -39,7 +39,7 @@ export class CourseGroupsService {
   }
 
   async findAll(searchDto?: GroupSearchDto): Promise<CourseGroup[]> {
-    const { search, sortBy = 'createdAt', sortOrder = SortOrder.DESC, courseId, year, semester, isActive } = searchDto || {};
+    const { search, sortBy = 'createdAt', sortOrder = SortOrder.DESC, courseId, year, semester, isActive, page = 1, limit = 10 } = searchDto || {};
 
     const where: any = {};
 
@@ -76,6 +76,8 @@ export class CourseGroupsService {
       where,
       relations: ['course', 'registrations'],
       order,
+      take: limit,
+      skip: (page - 1) * limit,
     });
   }
 

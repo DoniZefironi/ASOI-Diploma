@@ -53,13 +53,13 @@ export class HackathonsService {
   }
 
   async findAll(searchDto?: SearchDto): Promise<Hackathon[]> {
-    const { search, sortBy = 'startDate', sortOrder = SortOrder.DESC } = searchDto || {};
+    const { search, sortBy = 'startDate', sortOrder = SortOrder.DESC, page = 1, limit = 10 } = searchDto || {};
 
     const where: any = {};
 
     // Поиск по названию
     if (search) {
-      where.name = Like(`%${search}%`);
+      where.title = Like(`%${search}%`);
     }
 
     // Сортировка
@@ -70,6 +70,8 @@ export class HackathonsService {
       where,
       relations: ['course', 'teams'],
       order,
+      take: limit,
+      skip: (page - 1) * limit,
     });
   }
 
@@ -134,11 +136,11 @@ export class HackathonsService {
     const savedTeam = await this.teamRepo.save(team);
 
     // Добавляем участников
-    const teamMembers = dto.memberIds.map((userId, index) => {
+    const teamMembers = dto.memberIds.map((userId) => {
       const member = new HackathonTeamMember() as HackathonTeamMember;
       member.teamId = savedTeam.id;
       member.userId = userId;
-      member.role = index === 0 ? 'leader' : 'member';
+      member.role = userId === leaderId ? 'leader' : 'member';
       return member;
     });
 
@@ -227,13 +229,15 @@ export class HackathonsService {
       throw new NotFoundException('Team not found');
     }
 
-    // Проверка: пользователь является частью команды
-    const isMember = team.members?.some(m => m.userId === userId);
-    if (!isMember) {
-      throw new ForbiddenException('You are not a member of this team');
+    // Проверка: только лидер команды может сдать проект
+    if (team.leaderId !== userId) {
+      throw new ForbiddenException('Only the team leader can submit the project');
     }
 
     const now = new Date();
+    if (now < team.hackathon.startDate) {
+      throw new BadRequestException('Hackathon has not started yet');
+    }
     if (now > team.hackathon.endDate) {
       throw new BadRequestException('Hackathon has ended');
     }
@@ -250,8 +254,9 @@ export class HackathonsService {
       existingSubmission.presentationUrl = dto.presentationUrl ?? null;
       existingSubmission.videoDemoUrl = dto.videoDemoUrl ?? null;
       existingSubmission.sourceCodeUrl = dto.sourceCodeUrl ?? null;
+      existingSubmission.archiveUrl = dto.archiveUrl ?? existingSubmission.archiveUrl;
       existingSubmission.submissionNote = dto.submissionNote ?? null;
-      
+
       return await this.submissionRepo.save(existingSubmission);
     } else {
       // Создаём новую submission
@@ -262,6 +267,7 @@ export class HackathonsService {
       submission.presentationUrl = dto.presentationUrl ?? null;
       submission.videoDemoUrl = dto.videoDemoUrl ?? null;
       submission.sourceCodeUrl = dto.sourceCodeUrl ?? null;
+      submission.archiveUrl = dto.archiveUrl ?? null;
       submission.submissionNote = dto.submissionNote ?? null;
 
       return await this.submissionRepo.save(submission);
@@ -279,10 +285,10 @@ export class HackathonsService {
     }
 
     // Вычисляем общий балл
-    const totalScore = (dto.innovationScore || 0) + 
-                       (dto.functionalityScore || 0) + 
-                       (dto.presentationScore || 0) + 
-                       (dto.teamworkScore || 0);
+    const totalScore = (Number(dto.innovationScore) || 0) +
+                       (Number(dto.functionalityScore) || 0) +
+                       (Number(dto.presentationScore) || 0) +
+                       (Number(dto.teamworkScore) || 0);
 
     const grade = new HackathonGrade() as HackathonGrade;
     grade.submissionId = submissionId;
@@ -315,15 +321,15 @@ export class HackathonsService {
         const allGrades = team.submissions.flatMap(s => s.grades || []);
         
         if (allGrades.length > 0) {
-          const totalScore = allGrades.reduce((sum, g) => sum + (g.totalScore || 0), 0);
+          const totalScore = allGrades.reduce((sum, g) => sum + (Number(g.totalScore) || 0), 0);
           const averageScore = totalScore / allGrades.length;
 
           rankings.push({
             teamId: team.id,
             teamName: team.name,
             projectName: team.projectName || 'Без названия',
-            totalScore: Number(totalScore.toFixed(2)),
-            averageScore: Number(averageScore.toFixed(2))
+            totalScore: Math.round(totalScore * 100) / 100,
+            averageScore: Math.round(averageScore * 100) / 100,
           });
         }
       }
@@ -395,7 +401,7 @@ export class HackathonsService {
     await this.teamMemberRepo.remove(member);
   }
 
-  async transferLeadership(teamId: number, newLeaderId: number): Promise<HackathonTeam> {
+  async transferLeadership(teamId: number, newLeaderId: number, currentUserId: number): Promise<HackathonTeam> {
     const team = await this.teamRepo.findOne({
       where: { id: teamId },
       relations: ['members']
@@ -403,6 +409,10 @@ export class HackathonsService {
 
     if (!team) {
       throw new NotFoundException('Team not found');
+    }
+
+    if (team.leaderId !== currentUserId) {
+      throw new ForbiddenException('Only the team leader can transfer leadership');
     }
 
     const newLeader = await this.teamMemberRepo.findOne({
@@ -431,6 +441,19 @@ export class HackathonsService {
     return this.teamRepo.save(team);
   }
 
+  async getTeam(teamId: number): Promise<HackathonTeam> {
+    const team = await this.teamRepo.findOne({
+      where: { id: teamId },
+      relations: ['hackathon', 'members', 'members.user', 'submissions', 'submissions.grades'],
+    });
+
+    if (!team) {
+      throw new NotFoundException('Team not found');
+    }
+
+    return team;
+  }
+
   async getUserTeams(userId: number): Promise<HackathonTeam[]> {
     return this.teamRepo.find({
       where: { members: { userId } },
@@ -442,6 +465,17 @@ export class HackathonsService {
     return this.submissionRepo.find({
       where: { team: { members: { userId } } },
       relations: ['team', 'team.hackathon', 'grades']
+    });
+  }
+
+  async getTeamSubmissionForReview(teamId: number): Promise<HackathonSubmission | null> {
+    const team = await this.teamRepo.findOne({ where: { id: teamId } });
+    if (!team) {
+      throw new NotFoundException('Team not found');
+    }
+    return this.submissionRepo.findOne({
+      where: { teamId },
+      relations: ['team', 'team.members', 'team.members.user', 'grades'],
     });
   }
 

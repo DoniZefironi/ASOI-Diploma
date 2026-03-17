@@ -31,6 +31,14 @@ export class PeerReviewController {
   }
 
   /**
+   * Получить все рецензии которые студент получил на свои работы
+   */
+  @Get('my-received')
+  async getMyReceivedReviews(@Request() req) {
+    return this.peerReviewService.getMyReceivedReviews(req.user.userId);
+  }
+
+  /**
    * Получить рецензии на свою работу
    */
   @Get('submission/:submissionId')

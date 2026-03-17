@@ -7,7 +7,8 @@ import { Card } from '@/shared/ui/card';
 import { Button } from '@/shared/ui/button';
 import Link from 'next/link';
 import { apiClient } from '@/shared/api/client';
-import { Calendar, Clock, MapPin, Video, Filter, BookOpen, FileText, Trophy, ChevronDown, ChevronRight } from 'lucide-react';
+import { Calendar, Clock, MapPin, Video, Filter, BookOpen, FileText, Trophy, ChevronDown, ChevronRight, Star, CheckCircle, Loader2 } from 'lucide-react';
+import { usePeerReviewsToReview, useMyReceivedReviews, type ReceivedReviewGroup } from '@/shared/api/admin/peer-reviews';
 
 interface ScheduleItem {
   id: number;
@@ -79,6 +80,10 @@ export default function SchedulePage() {
   const [filterType, setFilterType] = useState<string>('all');
   const [showPast, setShowPast] = useState(false);
   const [showFuture, setShowFuture] = useState(true);
+  const [activeTab, setActiveTab] = useState<'schedule' | 'peer_review'>('schedule');
+
+  const { reviews: toReview, isLoading: isLoadingToReview } = usePeerReviewsToReview();
+  const { received, isLoading: isLoadingReceived } = useMyReceivedReviews();
 
   useEffect(() => {
     loadData();
@@ -336,7 +341,38 @@ export default function SchedulePage() {
             </Link>
           </div>
 
-          {/* Фильтры */}
+          {/* Вкладки */}
+          <div className="flex gap-2 mb-4 border-b border-gray-700 pb-3">
+            <button
+              onClick={() => setActiveTab('schedule')}
+              className={`px-4 py-2 text-sm font-medium rounded-t-lg transition-colors ${
+                activeTab === 'schedule'
+                  ? 'bg-blue-600 text-white'
+                  : 'text-gray-400 hover:text-white'
+              }`}
+            >
+              Расписание
+            </button>
+            <button
+              onClick={() => setActiveTab('peer_review')}
+              className={`px-4 py-2 text-sm font-medium rounded-t-lg transition-colors flex items-center gap-1.5 ${
+                activeTab === 'peer_review'
+                  ? 'bg-blue-600 text-white'
+                  : 'text-gray-400 hover:text-white'
+              }`}
+            >
+              <Star className="h-4 w-4" />
+              Peer Review
+              {toReview.filter(r => !r.isCompleted).length > 0 && (
+                <span className="ml-1 bg-yellow-500 text-black text-xs font-bold px-1.5 py-0.5 rounded-full">
+                  {toReview.filter(r => !r.isCompleted).length}
+                </span>
+              )}
+            </button>
+          </div>
+
+          {/* Фильтры (только для расписания) */}
+          {activeTab === 'schedule' && (
           <div className="flex flex-wrap gap-2 mb-4">
             <Button
               variant={filterType === 'all' ? 'primary' : 'secondary'}
@@ -367,9 +403,10 @@ export default function SchedulePage() {
               🏆 Хакатоны
             </Button>
           </div>
+          )}
 
-          {/* Переключатели времени */}
-          <div className="flex gap-4 mb-4">
+          {/* Переключатели времени (только для расписания) */}
+          {activeTab === 'schedule' && <div className="flex gap-4 mb-4">
             <label className="flex items-center gap-2 text-sm text-gray-400 cursor-pointer">
               <input
                 type="checkbox"
@@ -396,10 +433,10 @@ export default function SchedulePage() {
                 Свернуть все
               </Button>
             </div>
-          </div>
+          </div>}
 
           {/* Информация о группах */}
-          {userGroupIds.length > 0 && (
+          {activeTab === 'schedule' && userGroupIds.length > 0 && (
             <div className="p-3 bg-blue-900/20 border border-blue-700 rounded-lg">
               <p className="text-sm text-blue-400">
                 📚 Показаны данные для {userGroupIds.length} группы(п)
@@ -408,8 +445,18 @@ export default function SchedulePage() {
           )}
         </div>
 
+        {/* Peer Review вкладка */}
+        {activeTab === 'peer_review' && (
+          <PeerReviewTab
+            toReview={toReview}
+            received={received}
+            isLoadingToReview={isLoadingToReview}
+            isLoadingReceived={isLoadingReceived}
+          />
+        )}
+
         {/* Дерево расписания */}
-        <div className="space-y-4">
+        {activeTab === 'schedule' && <div className="space-y-4">
           {filteredWeeks.length === 0 ? (
             <Card className="p-8 text-center">
               <Calendar className="h-12 w-12 mx-auto mb-4 text-gray-600" />
@@ -653,8 +700,172 @@ export default function SchedulePage() {
               );
             })
           )}
-        </div>
+        </div>}
       </div>
+    </div>
+  );
+}
+
+// ---- Peer Review Tab ----
+
+function PeerReviewTab({
+  toReview,
+  received,
+  isLoadingToReview,
+  isLoadingReceived,
+}: {
+  toReview: any[];
+  received: ReceivedReviewGroup[];
+  isLoadingToReview: boolean;
+  isLoadingReceived: boolean;
+}) {
+  const [section, setSection] = useState<'to_review' | 'received'>('to_review');
+  const pending = toReview.filter(r => !r.isCompleted);
+  const done = toReview.filter(r => r.isCompleted);
+
+  return (
+    <div className="space-y-4">
+      <div className="flex gap-2">
+        <button
+          onClick={() => setSection('to_review')}
+          className={`px-4 py-2 text-sm rounded-lg transition-colors ${
+            section === 'to_review' ? 'bg-yellow-600 text-white' : 'bg-gray-800 text-gray-400 hover:text-white'
+          }`}
+        >
+          Нужно проверить
+          {pending.length > 0 && (
+            <span className="ml-1.5 bg-white text-yellow-700 text-xs font-bold px-1.5 rounded-full">{pending.length}</span>
+          )}
+        </button>
+        <button
+          onClick={() => setSection('received')}
+          className={`px-4 py-2 text-sm rounded-lg transition-colors ${
+            section === 'received' ? 'bg-green-700 text-white' : 'bg-gray-800 text-gray-400 hover:text-white'
+          }`}
+        >
+          Мои оценки
+        </button>
+      </div>
+
+      {section === 'to_review' && (
+        <div className="space-y-3">
+          {isLoadingToReview ? (
+            <Card className="p-6 text-center text-gray-400">Загрузка...</Card>
+          ) : pending.length === 0 && done.length === 0 ? (
+            <Card className="p-8 text-center">
+              <CheckCircle className="h-10 w-10 mx-auto mb-3 text-green-500" />
+              <p className="text-white">Нет работ для проверки</p>
+            </Card>
+          ) : (
+            <>
+              {pending.length > 0 && (
+                <div className="space-y-2">
+                  <p className="text-sm text-yellow-400 font-semibold uppercase tracking-wide">Ожидают проверки</p>
+                  {pending.map(r => (
+                    <Link key={r.reviewId ?? r.id} href="/peer-review">
+                      <div className="p-4 bg-yellow-900/20 border border-yellow-700 rounded-lg hover:bg-yellow-900/30 transition-colors cursor-pointer">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="text-white font-medium">{r.assignmentTitle}</p>
+                            <p className="text-sm text-gray-400 mt-0.5">Студент: {r.studentName}</p>
+                          </div>
+                          <span className="text-yellow-400 text-sm flex items-center gap-1">
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                            Проверить
+                          </span>
+                        </div>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              )}
+              {done.length > 0 && (
+                <div className="space-y-2 mt-4">
+                  <p className="text-sm text-gray-500 font-semibold uppercase tracking-wide">Проверено</p>
+                  {done.map(r => (
+                    <div key={r.reviewId ?? r.id} className="p-4 bg-gray-800 border border-gray-700 rounded-lg">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-white font-medium">{r.assignmentTitle}</p>
+                          <p className="text-sm text-gray-400 mt-0.5">Студент: {r.studentName}</p>
+                        </div>
+                        <span className="text-green-400 text-sm flex items-center gap-1">
+                          <CheckCircle className="h-4 w-4" />
+                          {r.score !== undefined && r.score !== null ? `${r.score} баллов` : 'Оценено'}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </>
+          )}
+        </div>
+      )}
+
+      {section === 'received' && (
+        <div className="space-y-3">
+          {isLoadingReceived ? (
+            <Card className="p-6 text-center text-gray-400">Загрузка...</Card>
+          ) : received.length === 0 ? (
+            <Card className="p-8 text-center">
+              <Star className="h-10 w-10 mx-auto mb-3 text-gray-600" />
+              <p className="text-white">Никто ещё не проверил ваши работы</p>
+              <p className="text-sm text-gray-400 mt-1">Оценки появятся здесь после проверки</p>
+            </Card>
+          ) : (
+            received.map(group => (
+              <Card key={group.submissionId} className="overflow-hidden">
+                <div className="p-4 border-b border-gray-700">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-white font-semibold">{group.assignmentTitle ?? `Задание #${group.assignmentId}`}</p>
+                      <p className="text-xs text-gray-400 mt-0.5">
+                        Проверок: {group.completedReviews} из {group.totalReviews}
+                      </p>
+                    </div>
+                    {group.finalScore !== null && group.finalScore !== undefined ? (
+                      <div className="text-right">
+                        <p className="text-xs text-gray-400">Итоговая оценка</p>
+                        <p className="text-2xl font-bold text-white">{group.finalScore}</p>
+                      </div>
+                    ) : (
+                      <span className="text-sm text-gray-500">Ожидается...</span>
+                    )}
+                  </div>
+                </div>
+                {group.reviews.length > 0 && (
+                  <div className="divide-y divide-gray-800">
+                    {group.reviews.map((review, idx) => (
+                      <div key={review.id} className="p-4">
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-sm text-gray-400">Рецензент #{idx + 1}</span>
+                          {review.score !== null && (
+                            <span className="text-white font-bold text-sm">{review.score} баллов</span>
+                          )}
+                        </div>
+                        {review.criteriaScores && review.criteriaScores.length > 0 && (
+                          <div className="space-y-1 mb-2">
+                            {review.criteriaScores.map(cs => (
+                              <div key={cs.name} className="flex items-center justify-between text-xs">
+                                <span className="text-gray-400">{cs.name}:</span>
+                                <span className="text-gray-300">{cs.score} / {cs.maxScore}</span>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                        {review.feedback && (
+                          <p className="text-sm text-gray-300 mt-1 whitespace-pre-wrap">{review.feedback}</p>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </Card>
+            ))
+          )}
+        </div>
+      )}
     </div>
   );
 }

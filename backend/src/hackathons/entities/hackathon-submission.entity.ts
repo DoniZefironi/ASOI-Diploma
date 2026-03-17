@@ -28,6 +28,9 @@ export class HackathonSubmission {
   @Column({ type: 'varchar', length: 500, nullable: true })
   sourceCodeUrl: string | null;
 
+  @Column({ type: 'varchar', length: 1000, nullable: true })
+  archiveUrl: string | null;
+
   @Column({ type: 'text', nullable: true })
   submissionNote: string | null;
 

@@ -45,6 +45,13 @@ export class PeerReviewSessionController {
     return this.sessionService.assignPeerReviews(+id);
   }
 
+  @Get(':id/stats')
+  @UseGuards(RolesGuard)
+  @Roles(...MENTOR_ROLES, UserRoleEnum.ADMIN)
+  getStats(@Param('id', ParseIntPipe) id: number) {
+    return this.sessionService.getSessionStats(id);
+  }
+
   @Put(':id')
   @UseGuards(RolesGuard)
   @Roles(...MENTOR_ROLES, UserRoleEnum.ADMIN)

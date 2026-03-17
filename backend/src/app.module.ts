@@ -87,7 +87,7 @@ import { PeerReviewSession } from './assignments/entities/peer-review-session.en
             HackathonGrade,
             PeerReviewSession,
           ],
-          synchronize: true, 
+          synchronize: configService.get('NODE_ENV') !== 'production',
           logging: configService.get('NODE_ENV') !== 'production',
         };
       },

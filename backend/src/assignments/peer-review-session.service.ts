@@ -25,7 +25,7 @@ export class PeerReviewSessionService {
     startDate: Date;
     endDate: Date;
     reviewsPerStudent: number;
-    criteria?: string;
+    criteria?: { name: string; maxScore: number; description?: string }[];
   }): Promise<PeerReviewSession> {
     const session = this.sessionRepository.create(dto);
     return this.sessionRepository.save(session);
@@ -59,17 +59,22 @@ export class PeerReviewSessionService {
     });
   }
 
+  /**
+   * Calculates reviewsPerStudent based on submission count:
+   *  < 100  → 2
+   *  < 150  → 3
+   *  < 200  → 4
+   *  >= 200 → 5
+   */
+  private calcReviewsPerStudent(count: number): number {
+    if (count < 100) return 2;
+    if (count < 150) return 3;
+    if (count < 200) return 4;
+    return 5;
+  }
+
   async assignPeerReviews(sessionId: number): Promise<any> {
     const session = await this.findById(sessionId);
-
-    // Проверяем даты
-    const now = new Date();
-    if (now < session.startDate) {
-      throw new BadRequestException('Период peer review ещё не начался');
-    }
-    if (now > session.endDate) {
-      throw new BadRequestException('Период peer review завершён');
-    }
 
     // Получаем все submission для этого задания
     const submissions = await this.submissionRepository.find({
@@ -81,37 +86,41 @@ export class PeerReviewSessionService {
       throw new BadRequestException('Недостаточно студентов для peer review (минимум 2)');
     }
 
-    const studentSubmissions = submissions.map(s => ({
-      userId: s.userId,
-      submissionId: s.id,
-    }));
+    // Shuffle submissions for randomness, then apply circular rotation for balance
+    const studentSubmissions = submissions
+      .map(s => ({ userId: s.userId, submissionId: s.id }))
+      .sort(() => 0.5 - Math.random());
+
+    const k = studentSubmissions.length;
+    const reviewsPerStudent = this.calcReviewsPerStudent(k);
+    const actualReviewsPerStudent = Math.min(reviewsPerStudent, k - 1);
 
     // Удаляем старые назначения для этой сессии
-    await this.peerReviewRepository.delete({
-      submission: { assignmentId: session.assignmentId },
-    });
+    const submissionIds = studentSubmissions.map(s => s.submissionId);
+    if (submissionIds.length > 0) {
+      await this.peerReviewRepository
+        .createQueryBuilder()
+        .delete()
+        .where('submissionId IN (:...ids)', { ids: submissionIds })
+        .execute();
+    }
 
-    // Адаптируем количество рецензий под количество студентов
-    const actualReviewsPerStudent = Math.min(session.reviewsPerStudent, studentSubmissions.length - 1);
-
-    // Для каждого студента назначаем случайные работы на проверку
-    for (const student of studentSubmissions) {
-      const availableSubmissions = studentSubmissions.filter(
-        s => s.userId !== student.userId
-      );
-
-      const shuffled = availableSubmissions.sort(() => 0.5 - Math.random());
-      const selectedSubmissions = shuffled.slice(0, actualReviewsPerStudent);
-
-      for (const selected of selectedSubmissions) {
-        const peerReview = this.peerReviewRepository.create({
-          reviewerId: student.userId,
-          submissionId: selected.submissionId,
-          isCompleted: false,
+    // Circular rotation: submission[i] is reviewed by submission[(i+1)%k], (i+2)%k, ...
+    // This guarantees every reviewer reviews exactly `actualReviewsPerStudent` submissions
+    // and every submission receives exactly `actualReviewsPerStudent` reviews.
+    const pairs: { reviewerId: number; submissionId: number }[] = [];
+    for (let i = 0; i < k; i++) {
+      for (let offset = 1; offset <= actualReviewsPerStudent; offset++) {
+        const reviewerIdx = (i + offset) % k;
+        pairs.push({
+          reviewerId: studentSubmissions[reviewerIdx].userId,
+          submissionId: studentSubmissions[i].submissionId,
         });
-        await this.peerReviewRepository.save(peerReview);
       }
     }
+
+    const reviews = pairs.map(p => this.peerReviewRepository.create({ ...p, isCompleted: false }));
+    await this.peerReviewRepository.save(reviews);
 
     // Обновляем статус submission на "under_review"
     await this.submissionRepository.update(
@@ -119,12 +128,41 @@ export class PeerReviewSessionService {
       { status: SubmissionStatus.UNDER_REVIEW },
     );
 
-    return { 
-      success: true, 
-      count: studentSubmissions.length * actualReviewsPerStudent,
+    await this.sessionRepository.update(session.id, { isDistributed: true, reviewsPerStudent: actualReviewsPerStudent });
+
+    return {
+      success: true,
+      count: pairs.length,
       actualReviewsPerStudent,
-      totalStudents: studentSubmissions.length,
+      totalStudents: k,
     };
+  }
+
+  async getSessionStats(sessionId: number) {
+    const session = await this.findById(sessionId);
+
+    const submissions = await this.submissionRepository.find({
+      where: { assignmentId: session.assignmentId },
+      relations: ['user', 'peerReviewsReceived'],
+    });
+
+    return submissions.map(sub => {
+      const reviews = sub.peerReviewsReceived || [];
+      const completed = reviews.filter(r => r.isCompleted);
+      const avgScore = completed.length
+        ? Math.round(completed.reduce((s, r) => s + Number(r.score || 0), 0) / completed.length * 10) / 10
+        : null;
+
+      return {
+        submissionId: sub.id,
+        studentName: `${sub.user.firstName} ${sub.user.lastName}`,
+        totalReviews: reviews.length,
+        completedReviews: completed.length,
+        averageScore: avgScore,
+        finalScore: sub.finalScore,
+        status: sub.status,
+      };
+    });
   }
 
   async updateSession(id: number, dto: Partial<PeerReviewSession>): Promise<PeerReviewSession> {

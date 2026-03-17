@@ -35,8 +35,11 @@ export class PeerReviewSession {
   @Column({ default: 5 })
   reviewsPerStudent: number;
 
-  @Column({ type: 'text', nullable: true })
-  criteria: string;
+  @Column({ type: 'jsonb', nullable: true })
+  criteria: { name: string; maxScore: number; description?: string }[];
+
+  @Column({ default: false })
+  isDistributed: boolean;
 
   @Column({ default: true })
   isActive: boolean;

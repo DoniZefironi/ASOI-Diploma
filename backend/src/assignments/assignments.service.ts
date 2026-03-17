@@ -31,7 +31,7 @@ export class AssignmentsService {
   }
 
   async findAllAssignments(searchDto?: AssignmentSearchDto): Promise<Assignment[]> {
-    const { search, type, startDate, endDate, sortBy = 'deadline', sortOrder = SortOrder.DESC } = searchDto || {};
+    const { search, type, startDate, endDate, sortBy = 'deadline', sortOrder = SortOrder.DESC, page = 1, limit = 10 } = searchDto || {};
 
     const where: any = {};
 
@@ -60,6 +60,8 @@ export class AssignmentsService {
       where,
       relations: ['courseGroup', 'courseGroup.course'],
       order,
+      take: limit,
+      skip: (page - 1) * limit,
     });
   }
 

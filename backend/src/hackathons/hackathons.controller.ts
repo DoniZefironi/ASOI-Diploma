@@ -1,4 +1,8 @@
-import { Controller, Get, Post, Body, Param, Delete, UseGuards, Request, ParseIntPipe, Patch, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, UseGuards, Request, ParseIntPipe, Patch, Query, UploadedFile, UseInterceptors, BadRequestException } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
+import * as path from 'path';
+import { v4 as uuidv4 } from 'uuid';
 import { HackathonsService } from './hackathons.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
@@ -20,6 +24,25 @@ export class HackathonsController {
     return this.hackathonsService.findAll(searchDto);
   }
 
+  @Get('admin/stats')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(...MENTOR_ROLES, UserRoleEnum.ADMIN)
+  getStats() {
+    return this.hackathonsService.getStats();
+  }
+
+  @Get('my-teams')
+  @UseGuards(JwtAuthGuard)
+  getUserTeams(@Request() req) {
+    return this.hackathonsService.getUserTeams(req.user.userId);
+  }
+
+  @Get('my-submissions')
+  @UseGuards(JwtAuthGuard)
+  getUserSubmissions(@Request() req) {
+    return this.hackathonsService.getUserSubmissions(req.user.userId);
+  }
+
   @Get(':id')
   findOne(@Param('id', ParseIntPipe) id: number) {
     return this.hackathonsService.findOne(id);
@@ -28,13 +51,6 @@ export class HackathonsController {
   @Get(':id/rankings')
   getRankings(@Param('id', ParseIntPipe) id: number) {
     return this.hackathonsService.getRankings(id);
-  }
-
-  @Get('admin/stats')
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(...MENTOR_ROLES, UserRoleEnum.ADMIN)
-  getStats() {
-    return this.hackathonsService.getStats();
   }
 
   @Post()
@@ -60,6 +76,52 @@ export class HackathonsController {
 
   // ============ Teams ============
 
+  @Get('teams/:teamId')
+  @UseGuards(JwtAuthGuard)
+  getTeam(@Param('teamId', ParseIntPipe) teamId: number) {
+    return this.hackathonsService.getTeam(teamId);
+  }
+
+  @Post('teams/:teamId/upload-archive')
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(FileInterceptor('file', {
+    storage: diskStorage({
+      destination: './uploads/hackathons',
+      filename: (_req, file, cb) => {
+        const ext = path.extname(file.originalname);
+        cb(null, `${uuidv4()}${ext}`);
+      },
+    }),
+    fileFilter: (_req, file, cb) => {
+      const allowed = ['.zip', '.tar', '.gz', '.rar', '.7z'];
+      const ext = path.extname(file.originalname).toLowerCase();
+      if (allowed.includes(ext)) {
+        cb(null, true);
+      } else {
+        cb(new BadRequestException('Only archive files are allowed (.zip, .tar, .gz, .rar, .7z)'), false);
+      }
+    },
+    limits: { fileSize: 50 * 1024 * 1024 }, // 50 MB
+  }))
+  async uploadArchive(
+    @Param('teamId', ParseIntPipe) teamId: number,
+    @UploadedFile() file: Express.Multer.File,
+    @Request() req,
+  ) {
+    if (!file) {
+      throw new BadRequestException('No file uploaded');
+    }
+
+    // Проверяем, что пользователь — лидер команды
+    const team = await this.hackathonsService.getTeam(teamId);
+    if (team.leaderId !== req.user.userId) {
+      throw new BadRequestException('Only the team leader can upload the archive');
+    }
+
+    const archiveUrl = `/uploads/hackathons/${file.filename}`;
+    return { archiveUrl, originalName: file.originalname, size: file.size };
+  }
+
   @Post('teams')
   @UseGuards(JwtAuthGuard)
   createTeam(@Body() dto: CreateTeamDto, @Request() req) {
@@ -80,8 +142,8 @@ export class HackathonsController {
 
   @Patch('teams/:teamId/transfer-leadership')
   @UseGuards(JwtAuthGuard)
-  transferLeadership(@Param('teamId', ParseIntPipe) teamId: number, @Body() body: { newLeaderId: number }) {
-    return this.hackathonsService.transferLeadership(teamId, body.newLeaderId);
+  transferLeadership(@Param('teamId', ParseIntPipe) teamId: number, @Body() body: { newLeaderId: number }, @Request() req) {
+    return this.hackathonsService.transferLeadership(teamId, body.newLeaderId, req.user.userId);
   }
 
   @Patch('teams/:teamId/status')
@@ -89,12 +151,6 @@ export class HackathonsController {
   @Roles(...MENTOR_ROLES, UserRoleEnum.ADMIN)
   updateTeamStatus(@Param('teamId', ParseIntPipe) teamId: number, @Body() body: { status: string }) {
     return this.hackathonsService.updateTeamStatus(teamId, body.status);
-  }
-
-  @Get('my-teams')
-  @UseGuards(JwtAuthGuard)
-  getUserTeams(@Request() req) {
-    return this.hackathonsService.getUserTeams(req.user.userId);
   }
 
   // ============ Submissions ============
@@ -105,16 +161,17 @@ export class HackathonsController {
     return this.hackathonsService.submitProject(dto, dto.teamId, req.user.userId);
   }
 
-  @Get('my-submissions')
-  @UseGuards(JwtAuthGuard)
-  getUserSubmissions(@Request() req) {
-    return this.hackathonsService.getUserSubmissions(req.user.userId);
-  }
-
   @Get('teams/:teamId/submission')
   @UseGuards(JwtAuthGuard)
   getTeamSubmission(@Param('teamId', ParseIntPipe) teamId: number, @Request() req) {
     return this.hackathonsService.getTeamSubmission(teamId, req.user.userId);
+  }
+
+  @Get('teams/:teamId/submission/review')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(...MENTOR_ROLES, UserRoleEnum.ADMIN)
+  getTeamSubmissionForReview(@Param('teamId', ParseIntPipe) teamId: number) {
+    return this.hackathonsService.getTeamSubmissionForReview(teamId);
   }
 
   // ============ Grading ============

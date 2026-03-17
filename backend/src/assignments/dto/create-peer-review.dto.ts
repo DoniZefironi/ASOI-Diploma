@@ -1,15 +1,32 @@
 // src/assignments/dto/create-peer-review.dto.ts
-import { IsInt, IsOptional, IsString, Min, Max } from 'class-validator';
+import { IsInt, IsOptional, IsString, Min, Max, IsArray, ValidateNested } from 'class-validator';
+import { Type } from 'class-transformer';
+
+export class CriterionScoreDto {
+  @IsString()
+  name: string;
+
+  @Min(0)
+  score: number;
+
+  @Min(0)
+  maxScore: number;
+}
 
 export class CreatePeerReviewDto {
   @IsInt()
   submissionId: number;
 
-  @IsInt()
-  @Min(0)
-  @Max(100)
   @IsOptional()
+  @Min(0)
+  @Max(400)
   score?: number;
+
+  @IsOptional()
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => CriterionScoreDto)
+  criteriaScores?: CriterionScoreDto[];
 
   @IsString()
   @IsOptional()

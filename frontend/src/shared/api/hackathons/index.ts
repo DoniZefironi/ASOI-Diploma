@@ -58,6 +58,7 @@ export interface HackathonSubmission {
   presentationUrl: string | null;
   videoDemoUrl: string | null;
   sourceCodeUrl: string | null;
+  archiveUrl: string | null;
   submissionNote: string | null;
   submittedAt: string;
   team?: HackathonTeam;
@@ -108,6 +109,7 @@ export interface SubmitProjectDto {
   presentationUrl?: string;
   videoDemoUrl?: string;
   sourceCodeUrl?: string;
+  archiveUrl?: string;
   submissionNote?: string;
 }
 
@@ -147,6 +149,23 @@ export const hackathonsApi = {
   getStats: () => apiClient.get('/hackathons/admin/stats'),
 
   // Teams
+  getTeam: (teamId: number) => apiClient.get(`/hackathons/teams/${teamId}`),
+  uploadArchive: (teamId: number, file: File): Promise<{ archiveUrl: string; originalName: string; size: number }> => {
+    const token = typeof window !== 'undefined' ? localStorage.getItem('access_token') : null;
+    const formData = new FormData();
+    formData.append('file', file);
+    return fetch(
+      `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:2904'}/hackathons/teams/${teamId}/upload-archive`,
+      {
+        method: 'POST',
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+        body: formData,
+      }
+    ).then(res => {
+      if (!res.ok) return res.json().then(e => Promise.reject(new Error(e.message || 'Upload failed')));
+      return res.json();
+    });
+  },
   createTeam: (data: CreateTeamDto) => apiClient.post('/hackathons/teams', data),
   joinTeam: (teamId: number) =>
     apiClient.post(`/hackathons/teams/${teamId}/join`, {}),

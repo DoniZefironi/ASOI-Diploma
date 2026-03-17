@@ -21,8 +21,11 @@ export class PeerReview {
   @ManyToOne(() => AssignmentSubmission, submission => submission.peerReviewsReceived)
   submission: AssignmentSubmission;
 
-  @Column({ type: 'int', nullable: true })
+  @Column({ type: 'decimal', precision: 5, scale: 2, nullable: true })
   score: number;
+
+  @Column({ type: 'jsonb', nullable: true })
+  criteriaScores: { name: string; score: number; maxScore: number }[];
 
   @Column({ type: 'text', nullable: true })
   feedback: string;

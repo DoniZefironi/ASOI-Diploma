@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install:*)",
+      "Bash(python3 -c \":*)",
+      "Bash(node -e \"const fs = require\\(''fs''\\); const c = fs.readFileSync\\(''frontend/src/app/admin/hackathons/[id]/page.tsx'', ''utf8''\\); console.log\\(c.length\\);\")",
+      "Bash(node -e \"require\\(''fs''\\).writeFileSync\\(''/tmp/write-admin.js'', ''placeholder''\\);\")",
+      "Bash(node -e \"require\\(''fs''\\).writeFileSync\\(''write_admin_page.js'', ''test''\\);\")",
+      "Bash(node write_admin_page.js)",
+      "Bash(node -e \"const fs=require\\(''fs''\\); console.log\\(fs.readFileSync\\(''write_admin_page.js'',''utf8''\\).substring\\(0,100\\)\\);\")",
+      "Bash(node write_public_page.js)",
+      "Bash(node -e \"const fs=require\\(''fs''\\); const c=fs.readFileSync\\(''frontend/src/app/admin/hackathons/[id]/page.tsx'',''utf8''\\); console.log\\(''Admin page size:'', c.length, ''GradeModal:'', c.includes\\(''GradeModal''\\), ''gradeSubmission:'', c.includes\\(''gradeSubmission''\\)\\);\")",
+      "Bash(node -e \"const fs=require\\(''fs''\\); const c=fs.readFileSync\\(''frontend/src/app/hackathons/[hackathonId]/page.tsx'',''utf8''\\); console.log\\(''Public page size:'', c.length, ''PodiumSection:'', c.includes\\(''PodiumSection''\\), ''paginated:'', c.includes\\(''paginated''\\), ''rankings table removed:'', !c.includes\\(''Рейтинг команд''\\)\\);\")",
+      "Bash(node -e \"const fs=require\\(''fs''\\); const c=fs.readFileSync\\(''frontend/src/app/hackathons/[hackathonId]/page.tsx'',''utf8''\\); console.log\\(''size'', c.length, ''podium'', c.includes\\(''PodiumSection''\\), ''paginated'', c.includes\\(''paginated''\\)\\);\")",
+      "Bash(sed -i 's/if \\(!team\\) return <div key={place}/if \\(!team\\) return <div key={`empty-${place}`}/' \"frontend/src/app/hackathons/[hackathonId]/page.tsx\")",
+      "Bash(sed -i 's/<div key={team.teamId} className=\"\"flex-1 max-w-\\\\[220px\\\\]/<div key={`place-${place}`} className=\"\"flex-1 max-w-[220px]/' \"frontend/src/app/hackathons/[hackathonId]/page.tsx\")",
+      "Bash(xargs grep:*)"
+    ]
+  }
+}

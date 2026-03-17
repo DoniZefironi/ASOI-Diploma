@@ -1,4 +1,4 @@
-import { IsString, IsOptional, IsNumber, IsUrl } from 'class-validator';
+import { IsString, IsOptional, IsNumber, IsUrl, Matches } from 'class-validator';
 
 export class SubmitProjectDto {
   @IsNumber()
@@ -27,6 +27,10 @@ export class SubmitProjectDto {
   @IsString()
   @IsUrl()
   sourceCodeUrl?: string;
+
+  @IsOptional()
+  @IsString()
+  archiveUrl?: string;
 
   @IsOptional()
   @IsString()
