@@ -19,6 +19,9 @@ export class CreateAssignmentDto {
   maxScore: number;
 
   @IsDateString()
+  startDate: string;
+
+  @IsDateString()
   deadline: string;
 
   @IsBoolean()
@@ -28,25 +31,8 @@ export class CreateAssignmentDto {
   @IsNumber()
   courseGroupId: number;
 
-  @IsBoolean()
-  @IsOptional()
-  peerReviewEnabled?: boolean;
-
-  @IsDateString()
-  @IsOptional()
-  peerReviewStartDate?: string;
-
-  @IsDateString()
-  @IsOptional()
-  peerReviewEndDate?: string;
-
+  // Для типа practice_review
   @IsInt()
-  @Min(1)
-  @Max(10)
   @IsOptional()
-  peerReviewsPerStudent?: number;
-
-  @IsString()
-  @IsOptional()
-  peerReviewCriteria?: string;
+  practiceAssignmentId?: number;
 }

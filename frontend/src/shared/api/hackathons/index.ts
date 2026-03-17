@@ -162,6 +162,8 @@ export const hackathonsApi = {
   submitProject: (data: SubmitProjectDto) =>
     apiClient.post('/hackathons/submissions', data),
   getUserSubmissions: () => apiClient.get('/hackathons/my-submissions'),
+  getTeamSubmission: (teamId: number) =>
+    apiClient.get(`/hackathons/teams/${teamId}/submission`),
 
   // Grading
   gradeSubmission: (submissionId: number, data: GradeSubmissionDto) =>

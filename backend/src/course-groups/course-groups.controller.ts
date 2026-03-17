@@ -1,5 +1,5 @@
 // src/course-groups/course-groups.controller.ts
-import { Controller, Get, Post, Body, Param, Put, Delete, UseGuards, Request, Patch } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Put, Delete, UseGuards, Request, Patch, Query } from '@nestjs/common';
 import { CourseGroupsService } from './course-groups.service';
 import { CreateCourseGroupDto } from './dto/create-course-group.dto';
 import { UpdateCourseGroupDto } from './dto/update-course-group.dto';
@@ -9,6 +9,7 @@ import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { UserRoleEnum } from '../users/entities/user-role.entity';
 import { MENTOR_ROLES, STUDENT_ROLES, ALL_ROLES } from '../common/helpers/role.helper';
+import { GroupSearchDto } from '../common/dto/pagination.dto';
 
 @Controller('course-groups')
 export class CourseGroupsController {
@@ -16,8 +17,8 @@ export class CourseGroupsController {
 
   @Get()
   @Roles(...ALL_ROLES)
-  findAll() {
-    return this.courseGroupsService.findAll();
+  findAll(@Query() searchDto: GroupSearchDto) {
+    return this.courseGroupsService.findAll(searchDto);
   }
 
   @Get('course/:courseId')

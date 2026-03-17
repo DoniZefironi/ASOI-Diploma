@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Delete, UseGuards, Request, ParseIntPipe, Patch } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, UseGuards, Request, ParseIntPipe, Patch, Query } from '@nestjs/common';
 import { HackathonsService } from './hackathons.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
@@ -9,14 +9,15 @@ import { CreateHackathonDto } from './dto/create-hackathon.dto';
 import { CreateTeamDto } from './dto/create-team.dto';
 import { SubmitProjectDto } from './dto/submit-project.dto';
 import { GradeProjectDto } from './dto/grade-project.dto';
+import { SearchDto } from '../common/dto/pagination.dto';
 
 @Controller('hackathons')
 export class HackathonsController {
   constructor(private readonly hackathonsService: HackathonsService) {}
 
   @Get()
-  findAll() {
-    return this.hackathonsService.findAll();
+  findAll(@Query() searchDto: SearchDto) {
+    return this.hackathonsService.findAll(searchDto);
   }
 
   @Get(':id')
@@ -101,13 +102,19 @@ export class HackathonsController {
   @Post('submissions')
   @UseGuards(JwtAuthGuard)
   submitProject(@Body() dto: SubmitProjectDto, @Request() req) {
-    return this.hackathonsService.submitProject(dto, dto.teamId);
+    return this.hackathonsService.submitProject(dto, dto.teamId, req.user.userId);
   }
 
   @Get('my-submissions')
   @UseGuards(JwtAuthGuard)
   getUserSubmissions(@Request() req) {
     return this.hackathonsService.getUserSubmissions(req.user.userId);
+  }
+
+  @Get('teams/:teamId/submission')
+  @UseGuards(JwtAuthGuard)
+  getTeamSubmission(@Param('teamId', ParseIntPipe) teamId: number, @Request() req) {
+    return this.hackathonsService.getTeamSubmission(teamId, req.user.userId);
   }
 
   // ============ Grading ============

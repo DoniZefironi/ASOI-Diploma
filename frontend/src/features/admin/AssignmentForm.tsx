@@ -104,6 +104,7 @@ interface AssignmentFormData {
   description: string;
   type: 'practice' | 'test' | 'practice_review';
   maxScore: number;
+  startDate: string;
   deadline: string;
   courseGroupId: number;
   isActive: boolean;
@@ -138,6 +139,7 @@ export default function AssignmentForm({ assignment, onSave, onCancel, isSubmitt
     description: assignment?.description || '',
     type: assignment?.type || 'practice',
     maxScore: assignment?.maxScore ? Number(assignment.maxScore) : 100,
+    startDate: assignment?.startDate ? new Date(assignment.startDate).toISOString().slice(0, 16) : new Date().toISOString().slice(0, 16),
     deadline: assignment?.deadline ? new Date(assignment.deadline).toISOString().slice(0, 16) : '',
     courseGroupId: assignment?.courseGroupId ? Number(assignment.courseGroupId) : 0,
     isActive: assignment?.isActive ?? true,
@@ -173,8 +175,16 @@ export default function AssignmentForm({ assignment, onSave, onCancel, isSubmitt
       newErrors.maxScore = 'Максимальный балл должен быть положительным числом';
     }
 
+    if (!formData.startDate) {
+      newErrors.startDate = 'Дата начала обязательна';
+    }
+
     if (!formData.deadline) {
       newErrors.deadline = 'Срок выполнения обязателен';
+    }
+
+    if (formData.startDate && formData.deadline && new Date(formData.deadline) <= new Date(formData.startDate)) {
+      newErrors.deadline = 'Дата окончания должна быть позже даты начала';
     }
 
     if (!formData.courseGroupId) {
@@ -309,7 +319,20 @@ export default function AssignmentForm({ assignment, onSave, onCancel, isSubmitt
           </div>
         </div>
 
-        <div className="grid gap-4 md:grid-cols-2">
+        <div className="grid gap-4 md:grid-cols-3">
+          <div className="space-y-2">
+            <Label htmlFor="startDate">Дата начала *</Label>
+            <Input
+              id="startDate"
+              type="datetime-local"
+              value={formData.startDate}
+              onChange={(e) => handleChange('startDate', e.target.value)}
+            />
+            {errors.startDate && (
+              <p className="text-sm text-red-500">{errors.startDate}</p>
+            )}
+          </div>
+
           <div className="space-y-2">
             <Label htmlFor="deadline">Срок выполнения *</Label>
             <Input

@@ -1,12 +1,13 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/shared/ui/card';
 import { Button } from '@/shared/ui/button';
 import { Plus, Edit, Trash2, Loader2, Calendar, Clock, MapPin, Video } from 'lucide-react';
 import ScheduleForm from './ScheduleForm';
 import { useSchedule } from '@/shared/api/admin';
 import { useAuth, getCourseTypeFromRole } from '@/shared/lib/auth-context';
+import DataTableFilters from '@/features/common/DataTableFilters';
 
 const courseTypeLabels: Record<string, string> = {
   'english': 'Английский язык',
@@ -128,14 +129,54 @@ export default function ScheduleManagement() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingScheduleItem, setEditingScheduleItem] = useState<ScheduleItem | null>(null);
 
+  // Поиск, фильтрация, сортировка
+  const [search, setSearch] = useState('');
+  const [filterType, setFilterType] = useState<string>('');
+  const [sortBy, setSortBy] = useState<string>('startTime');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
+
   // Получаем тип курса ментора
   const userRoles = user?.roles || [];
   const mentorCourseType = getCourseTypeFromRole(userRoles);
   
   // Фильтруем расписание по типу курса (если это ментор)
-  const filteredSchedule = mentorCourseType
-    ? schedule?.filter((item: any) => item.courseGroup?.course?.type === mentorCourseType)
-    : schedule;
+  const filteredSchedule = useMemo(() => {
+    let result = mentorCourseType
+      ? schedule?.filter((item: any) => item.courseGroup?.course?.type === mentorCourseType)
+      : schedule;
+
+    // Поиск
+    if (search) {
+      result = result?.filter((item: any) => 
+        item.title.toLowerCase().includes(search.toLowerCase()) ||
+        item.courseGroup?.course?.name?.toLowerCase().includes(search.toLowerCase())
+      );
+    }
+
+    // Фильтр по типу
+    if (filterType) {
+      result = result?.filter((item: any) => item.type === filterType);
+    }
+
+    // Сортировка
+    if (sortBy) {
+      result = result?.sort((a: any, b: any) => {
+        let aVal = a[sortBy];
+        let bVal = b[sortBy];
+        
+        if (sortBy === 'startTime' || sortBy === 'endTime') {
+          aVal = new Date(aVal).getTime();
+          bVal = new Date(bVal).getTime();
+        }
+        
+        if (aVal < bVal) return sortOrder === 'asc' ? -1 : 1;
+        if (aVal > bVal) return sortOrder === 'asc' ? 1 : -1;
+        return 0;
+      });
+    }
+
+    return result;
+  }, [schedule, search, filterType, sortBy, sortOrder, mentorCourseType]);
 
   const handleCreate = () => {
     setEditingScheduleItem(null);
@@ -233,6 +274,32 @@ export default function ScheduleManagement() {
           </Button>
         </div>
       </div>
+
+      {/* Фильтры и поиск */}
+      <DataTableFilters
+        searchPlaceholder="Поиск занятия..."
+        searchValue={search}
+        onSearchChange={setSearch}
+        filters={[
+          {
+            label: 'Все типы',
+            value: filterType,
+            onChange: setFilterType,
+            options: [
+              { value: 'lecture', label: 'Лекция' },
+            ],
+          },
+        ]}
+        sortBy={sortBy}
+        onSortByChange={setSortBy}
+        sortOptions={[
+          { value: 'startTime', label: 'По времени начала' },
+          { value: 'endTime', label: 'По времени окончания' },
+          { value: 'title', label: 'По названию' },
+        ]}
+        sortOrder={sortOrder}
+        onSortOrderChange={setSortOrder}
+      />
 
       <Card>
         <CardHeader>

@@ -1,7 +1,7 @@
 // src/course-groups/course-groups.service.ts
 import { Injectable, NotFoundException, ConflictException, ForbiddenException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, Like, IsNull, Not } from 'typeorm';
 import { CourseGroup } from './entities/course-group.entity';
 import { CourseRegistration, RegistrationStatus } from './entities/course-registration.entity';
 import { CreateCourseGroupDto } from './dto/create-course-group.dto';
@@ -11,6 +11,8 @@ import { AssignmentSubmission, SubmissionStatus } from '../assignments/entities/
 import { Assignment } from '../assignments/entities/assignment.entity';
 import { UserRole, UserRoleEnum } from '../users/entities/user-role.entity';
 import { User } from '../users/entities/user.entity';
+import { ScheduleItem } from '../schedule/entities/schedule-item.entity';
+import { GroupSearchDto, SortOrder } from '../common/dto/pagination.dto';
 
 @Injectable()
 export class CourseGroupsService {
@@ -23,6 +25,8 @@ export class CourseGroupsService {
     private submissionRepository: Repository<AssignmentSubmission>,
     @InjectRepository(Assignment)
     private assignmentRepository: Repository<Assignment>,
+    @InjectRepository(ScheduleItem)
+    private scheduleRepository: Repository<ScheduleItem>,
     @InjectRepository(UserRole)
     private userRoleRepository: Repository<UserRole>,
     @InjectRepository(User)
@@ -34,9 +38,44 @@ export class CourseGroupsService {
     return this.courseGroupRepository.save(courseGroup);
   }
 
-  async findAll(): Promise<CourseGroup[]> {
+  async findAll(searchDto?: GroupSearchDto): Promise<CourseGroup[]> {
+    const { search, sortBy = 'createdAt', sortOrder = SortOrder.DESC, courseId, year, semester, isActive } = searchDto || {};
+
+    const where: any = {};
+
+    // Поиск по названию
+    if (search) {
+      where.name = Like(`%${search}%`);
+    }
+
+    // Фильтр по курсу
+    if (courseId) {
+      where.courseId = parseInt(courseId);
+    }
+
+    // Фильтр по году
+    if (year) {
+      where.year = parseInt(year);
+    }
+
+    // Фильтр по семестру
+    if (semester) {
+      where.semester = parseInt(semester);
+    }
+
+    // Фильтр по активности
+    if (isActive !== undefined && isActive !== '') {
+      where.isActive = isActive === 'true';
+    }
+
+    // Сортировка
+    const order: any = {};
+    order[sortBy] = sortOrder;
+
     return this.courseGroupRepository.find({
+      where,
       relations: ['course', 'registrations'],
+      order,
     });
   }
 
@@ -68,13 +107,29 @@ export class CourseGroupsService {
   async remove(id: number): Promise<void> {
     const courseGroup = await this.courseGroupRepository.findOne({
       where: { id },
+      relations: ['registrations', 'scheduleItems', 'assignments'],
     });
 
     if (!courseGroup) {
       throw new NotFoundException('Course group not found');
     }
 
-    // С cascade: true в сущности, связанные записи удалятся автоматически
+    // Удаляем связанные записи вручную
+    if (courseGroup.assignments && courseGroup.assignments.length > 0) {
+      for (const assignment of courseGroup.assignments) {
+        await this.assignmentRepository.delete(assignment.id);
+      }
+    }
+
+    if (courseGroup.scheduleItems && courseGroup.scheduleItems.length > 0) {
+      await this.scheduleRepository.delete({ courseGroupId: id });
+    }
+
+    if (courseGroup.registrations && courseGroup.registrations.length > 0) {
+      await this.registrationRepository.delete({ courseGroupId: id });
+    }
+
+    // Удаляем саму группу
     await this.courseGroupRepository.delete(id);
   }
 

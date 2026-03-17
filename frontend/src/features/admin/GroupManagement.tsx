@@ -1,12 +1,14 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/shared/ui/card';
 import { Button } from '@/shared/ui/button';
 import { useCourseGroups } from '@/shared/api/admin';
 import { useAuth, getCourseTypeFromRole } from '@/shared/lib/auth-context';
 import { Plus, Users2, Edit, Trash2, Loader2, BookOpen } from 'lucide-react';
 import GroupForm from './GroupForm';
+import Link from 'next/link';
+import DataTableFilters from '@/features/common/DataTableFilters';
 
 const courseTypeLabels: Record<string, string> = {
   'english': 'Английский язык',
@@ -93,15 +95,63 @@ export default function GroupManagement() {
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingGroup, setEditingGroup] = useState<any>(null);
+  
+  // Поиск, фильтрация, сортировка
+  const [search, setSearch] = useState('');
+  const [filterCourse, setFilterCourse] = useState<string>('');
+  const [filterYear, setFilterYear] = useState<string>('');
+  const [sortBy, setSortBy] = useState<string>('name');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
 
   // Получаем тип курса ментора
   const userRoles = user?.roles || [];
   const mentorCourseType = getCourseTypeFromRole(userRoles);
-  
-  // Фильтруем группы по типу курса (если это ментор)
-  const filteredGroups = mentorCourseType
-    ? groups?.filter((g: any) => g.course?.type === mentorCourseType)
-    : groups;
+
+  // Поиск, фильтрация, сортировка
+  const filteredGroups = useMemo(() => {
+    let result = mentorCourseType
+      ? groups?.filter((g: any) => g.course?.type === mentorCourseType)
+      : groups;
+
+    // Поиск по названию или курсу
+    if (search) {
+      result = result?.filter((g: any) => 
+        g.name.toLowerCase().includes(search.toLowerCase()) ||
+        g.course?.name?.toLowerCase().includes(search.toLowerCase())
+      );
+    }
+
+    // Фильтр по курсу
+    if (filterCourse) {
+      result = result?.filter((g: any) => g.courseId.toString() === filterCourse);
+    }
+
+    // Фильтр по году
+    if (filterYear) {
+      result = result?.filter((g: any) => g.year.toString() === filterYear);
+    }
+
+    // Сортировка
+    if (sortBy) {
+      result = result?.sort((a: any, b: any) => {
+        let aVal = a[sortBy];
+        let bVal = b[sortBy];
+        
+        // Для вложенных полей (course.name)
+        if (sortBy.includes('.')) {
+          const [parent, child] = sortBy.split('.');
+          aVal = a[parent]?.[child];
+          bVal = b[parent]?.[child];
+        }
+        
+        if (aVal < bVal) return sortOrder === 'asc' ? -1 : 1;
+        if (aVal > bVal) return sortOrder === 'asc' ? 1 : -1;
+        return 0;
+      });
+    }
+
+    return result;
+  }, [groups, search, filterCourse, filterYear, sortBy, sortOrder, mentorCourseType]);
 
   const handleCreate = () => {
     setEditingGroup(null);
@@ -174,6 +224,44 @@ export default function GroupManagement() {
         </div>
       </div>
 
+      {/* Фильтры и поиск */}
+      <DataTableFilters
+        searchPlaceholder="Поиск группы..."
+        searchValue={search}
+        onSearchChange={setSearch}
+        filters={[
+          {
+            label: 'Все курсы',
+            value: filterCourse,
+            onChange: setFilterCourse,
+            options: Array.from(new Set(groups?.map((g: any) => g.course).filter(Boolean))).map((course: any) => ({
+              value: course.id.toString(),
+              label: course.name,
+            })),
+          },
+          {
+            label: 'Все годы',
+            value: filterYear,
+            onChange: setFilterYear,
+            options: [
+              { value: '2024', label: '2024' },
+              { value: '2025', label: '2025' },
+              { value: '2026', label: '2026' },
+            ],
+          },
+        ]}
+        sortBy={sortBy}
+        onSortByChange={setSortBy}
+        sortOptions={[
+          { value: 'name', label: 'По названию' },
+          { value: 'year', label: 'По году' },
+          { value: 'semester', label: 'По семестру' },
+          { value: 'course.name', label: 'По курсу' },
+        ]}
+        sortOrder={sortOrder}
+        onSortOrderChange={setSortOrder}
+      />
+
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-white">
@@ -199,7 +287,14 @@ export default function GroupManagement() {
               {filteredGroups?.map((g: any) => (
                 <TableRow key={g.id}>
                   <TableCell>{g.id}</TableCell>
-                  <TableCell>{g.name}</TableCell>
+                  <TableCell>
+                    <Link
+                      href={`/mentor/groups/${g.id}`}
+                      className="text-blue-400 hover:underline font-medium"
+                    >
+                      {g.name}
+                    </Link>
+                  </TableCell>
                   <TableCell>
                     <div className="flex items-center gap-1">
                       <BookOpen className="h-4 w-4 text-gray-400" />

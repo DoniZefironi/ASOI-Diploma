@@ -1,7 +1,7 @@
 // src/assignments/assignments.service.ts
 import { Injectable, NotFoundException, ConflictException, ForbiddenException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, Like } from 'typeorm';
 import { Assignment, AssignmentType } from './entities/assignment.entity';
 import { AssignmentSubmission, SubmissionStatus } from './entities/assignment-submission.entity';
 import { PeerReview } from './entities/peer-review.entity';
@@ -10,6 +10,7 @@ import { UpdateAssignmentDto } from './dto/update-assignment.dto';
 import { CreateSubmissionDto } from './dto/create-submission.dto';
 import { CreatePeerReviewDto } from './dto/create-peer-review.dto';
 import { CourseRegistration, RegistrationStatus } from '../course-groups/entities/course-registration.entity';
+import { AssignmentSearchDto, SortOrder } from '../common/dto/pagination.dto';
 
 @Injectable()
 export class AssignmentsService {
@@ -29,9 +30,36 @@ export class AssignmentsService {
     return this.assignmentRepository.save(assignment);
   }
 
-  async findAllAssignments(): Promise<Assignment[]> {
+  async findAllAssignments(searchDto?: AssignmentSearchDto): Promise<Assignment[]> {
+    const { search, type, startDate, endDate, sortBy = 'deadline', sortOrder = SortOrder.DESC } = searchDto || {};
+
+    const where: any = {};
+
+    // Поиск по названию
+    if (search) {
+      where.title = Like(`%${search}%`);
+    }
+
+    // Фильтр по типу
+    if (type) {
+      where.type = type;
+    }
+
+    // Фильтр по дате
+    if (startDate || endDate) {
+      where.deadline = {};
+      if (startDate) where.deadline.gte = new Date(startDate);
+      if (endDate) where.deadline.lte = new Date(endDate);
+    }
+
+    // Сортировка
+    const order: any = {};
+    order[sortBy] = sortOrder;
+
     return this.assignmentRepository.find({
+      where,
       relations: ['courseGroup', 'courseGroup.course'],
+      order,
     });
   }
 

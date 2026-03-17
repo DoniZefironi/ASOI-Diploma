@@ -1,10 +1,11 @@
 // src/materials/materials.service.ts
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, Like } from 'typeorm';
 import { CourseMaterial, MaterialType } from './entities/course-material.entity';
 import { CreateCourseMaterialDto } from './dto/create-course-material.dto';
 import { UpdateCourseMaterialDto } from './dto/update-course-material.dto';
+import { SearchDto, SortOrder } from '../common/dto/pagination.dto';
 
 @Injectable()
 export class MaterialsService {
@@ -21,10 +22,24 @@ export class MaterialsService {
     return this.materialRepository.save(material);
   }
 
-  async findAll(): Promise<CourseMaterial[]> {
+  async findAll(searchDto?: SearchDto): Promise<CourseMaterial[]> {
+    const { search, sortBy = 'createdAt', sortOrder = SortOrder.DESC } = searchDto || {};
+
+    const where: any = {};
+
+    // Поиск по названию или описанию
+    if (search) {
+      where.title = Like(`%${search}%`);
+    }
+
+    // Сортировка
+    const order: any = {};
+    order[sortBy] = sortOrder;
+
     return this.materialRepository.find({
+      where,
       relations: ['course', 'uploadedBy'],
-      order: { createdAt: 'DESC' },
+      order,
     });
   }
 

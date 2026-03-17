@@ -17,8 +17,11 @@ export default function HackathonDetailPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [showCreateTeamModal, setShowCreateTeamModal] = useState(false);
   const [showJoinModal, setShowJoinModal] = useState(false);
+  const [showSubmitModal, setShowSubmitModal] = useState(false);
   const [selectedTeam, setSelectedTeam] = useState<HackathonTeam | null>(null);
   const [rankings, setRankings] = useState<any[]>([]);
+  const [userTeam, setUserTeam] = useState<HackathonTeam | null>(null);
+  const [teamSubmission, setTeamSubmission] = useState<any | null>(null);
 
   // Получаем ID из params
   useEffect(() => {
@@ -38,15 +41,35 @@ export default function HackathonDetailPage() {
 
   const loadData = async () => {
     if (!hackathonId) return;
-    
+
     try {
-      const [hackathonData, rankingsData] = await Promise.all([
+      const [hackathonData, rankingsData, userTeamsData] = await Promise.all([
         hackathonsApi.getOne(hackathonId),
         hackathonsApi.getRankings(hackathonId).catch(() => []),
+        hackathonsApi.getUserTeams().catch(() => []),
       ]);
       setHackathon(hackathonData);
       setTeams(hackathonData?.teams || []);
       setRankings(rankingsData || []);
+      
+      console.log('User teams:', userTeamsData);
+      
+      // Находим команду пользователя в этом хакатоне
+      const userTeamData = userTeamsData?.find((t: any) => t.hackathonId === hackathonId);
+      console.log('User team for this hackathon:', userTeamData);
+      setUserTeam(userTeamData || null);
+      
+      // Загружаем submission если есть команда
+      if (userTeamData) {
+        try {
+          const submission = await hackathonsApi.getTeamSubmission(userTeamData.id);
+          console.log('Team submission:', submission);
+          setTeamSubmission(submission);
+        } catch (err) {
+          console.log('No submission yet:', err);
+          setTeamSubmission(null);
+        }
+      }
     } catch (error) {
       console.error('Failed to load data:', error);
     } finally {
@@ -216,6 +239,37 @@ export default function HackathonDetailPage() {
               </button>
             </div>
           )}
+
+          {/* Информация о команде пользователя */}
+          {userTeam && (
+            <div className="mt-6 p-4 bg-green-900/20 border border-green-700 rounded-lg">
+              <p className="text-green-400 font-semibold mb-2">
+                ✅ Вы в команде: {userTeam.name}
+              </p>
+              {userTeam.members && (
+                <p className="text-sm text-gray-400">
+                  👥 Участников: {userTeam.members.length} / {hackathon?.maxTeamSize || 5}
+                </p>
+              )}
+            </div>
+          )}
+
+          {/* Загрузка проекта (если хакатон идёт и пользователь в команде) */}
+          {userTeam && statusInfo?.status === 'active' && (
+            <div className="mt-6">
+              <button
+                onClick={() => setShowSubmitModal(true)}
+                className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+              >
+                {teamSubmission ? 'Обновить проект' : 'Загрузить проект'}
+              </button>
+              {teamSubmission && (
+                <p className="text-sm text-gray-400 mt-2">
+                  Последняя загрузка: {new Date(teamSubmission.submittedAt).toLocaleString('ru-RU')}
+                </p>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Rankings */}
@@ -307,6 +361,19 @@ export default function HackathonDetailPage() {
             }}
           />
         )}
+
+        {/* Модальное окно загрузки проекта */}
+        {showSubmitModal && userTeam && (
+          <SubmitProjectModal
+            team={userTeam}
+            existingSubmission={teamSubmission}
+            onClose={() => setShowSubmitModal(false)}
+            onSuccess={() => {
+              setShowSubmitModal(false);
+              loadData();
+            }}
+          />
+        )}
       </div>
     </div>
   );
@@ -319,6 +386,7 @@ interface CreateTeamModalProps {
 }
 
 function CreateTeamModal({ hackathonId, onClose, onSuccess }: CreateTeamModalProps) {
+  const { user } = useAuth();
   const [formData, setFormData] = useState({
     name: '',
     projectName: '',
@@ -334,7 +402,7 @@ function CreateTeamModal({ hackathonId, onClose, onSuccess }: CreateTeamModalPro
       const data: CreateTeamDto = {
         name: formData.name,
         hackathonId,
-        memberIds: [], // Will be populated by backend with current user
+        memberIds: user?.id ? [parseInt(user.id)] : [], // Лидер (создатель) в команде
         projectName: formData.projectName || undefined,
         projectDescription: formData.projectDescription || undefined,
       };
@@ -439,6 +507,148 @@ function JoinTeamModal({ teams, onClose, onSelectTeam }: JoinTeamModalProps) {
         >
           Отмена
         </button>
+      </div>
+    </div>
+  );
+}
+
+interface SubmitProjectModalProps {
+  team: HackathonTeam;
+  existingSubmission: any | null;
+  onClose: () => void;
+  onSuccess: () => void;
+}
+
+function SubmitProjectModal({ team, existingSubmission, onClose, onSuccess }: SubmitProjectModalProps) {
+  const [formData, setFormData] = useState({
+    documentationUrl: existingSubmission?.documentationUrl || '',
+    presentationUrl: existingSubmission?.presentationUrl || '',
+    videoDemoUrl: existingSubmission?.videoDemoUrl || '',
+    sourceCodeUrl: existingSubmission?.sourceCodeUrl || '',
+    submissionNote: existingSubmission?.submissionNote || '',
+  });
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+
+    try {
+      const data = {
+        teamId: team.id,
+        ...formData,
+      };
+      await hackathonsApi.submitProject(data);
+      onSuccess();
+      alert('Проект успешно загружен!');
+    } catch (error) {
+      console.error('Failed to submit project:', error);
+      alert('Не удалось загрузить проект');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 overflow-y-auto">
+      <div className="bg-[#161B22] rounded-xl p-8 max-w-2xl w-full mx-4 my-8 border border-gray-700">
+        <h2 className="text-2xl font-bold text-white mb-2">Загрузка проекта</h2>
+        <p className="text-gray-400 mb-6">Команда: {team.name}</p>
+        
+        {existingSubmission && (
+          <div className="mb-6 p-4 bg-blue-900/20 border border-blue-700 rounded-lg">
+            <p className="text-blue-400 text-sm">
+              📝 Проект уже загружен. Вы можете обновить ссылки или добавить новые.
+            </p>
+            <p className="text-gray-400 text-xs mt-2">
+              Последняя загрузка: {new Date(existingSubmission.submittedAt).toLocaleString('ru-RU')}
+            </p>
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit} className="space-y-4 max-h-[60vh] overflow-y-auto">
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-2">
+              📄 Документация (ссылка)
+            </label>
+            <input
+              type="url"
+              value={formData.documentationUrl}
+              onChange={(e) => setFormData({ ...formData, documentationUrl: e.target.value })}
+              className="w-full px-4 py-2 bg-[#0D1117] border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-blue-500"
+              placeholder="https://..."
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-2">
+              📊 Презентация (ссылка)
+            </label>
+            <input
+              type="url"
+              value={formData.presentationUrl}
+              onChange={(e) => setFormData({ ...formData, presentationUrl: e.target.value })}
+              className="w-full px-4 py-2 bg-[#0D1117] border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-blue-500"
+              placeholder="https://..."
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-2">
+              🎥 Видео демо (ссылка)
+            </label>
+            <input
+              type="url"
+              value={formData.videoDemoUrl}
+              onChange={(e) => setFormData({ ...formData, videoDemoUrl: e.target.value })}
+              className="w-full px-4 py-2 bg-[#0D1117] border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-blue-500"
+              placeholder="https://youtube.com/..."
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-2">
+              💻 Исходный код (ссылка)
+            </label>
+            <input
+              type="url"
+              value={formData.sourceCodeUrl}
+              onChange={(e) => setFormData({ ...formData, sourceCodeUrl: e.target.value })}
+              className="w-full px-4 py-2 bg-[#0D1117] border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-blue-500"
+              placeholder="https://github.com/..."
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-2">
+              📝 Комментарий к проекту
+            </label>
+            <textarea
+              value={formData.submissionNote}
+              onChange={(e) => setFormData({ ...formData, submissionNote: e.target.value })}
+              className="w-full px-4 py-2 bg-[#0D1117] border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-blue-500"
+              rows={3}
+              placeholder="Краткое описание проекта..."
+            />
+          </div>
+
+          <div className="flex gap-4 pt-4 border-t border-gray-700">
+            <button
+              type="button"
+              onClick={onClose}
+              className="flex-1 px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600"
+            >
+              Отмена
+            </button>
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50"
+            >
+              {isLoading ? 'Загрузка...' : (existingSubmission ? 'Обновить' : 'Загрузить')}
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   );

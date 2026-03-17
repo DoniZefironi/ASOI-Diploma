@@ -1,5 +1,7 @@
-import Hackathons from '@/features/admin/hackathons/Hackathons';
+'use client';
+
+import AdminHackathons from '@/app/admin/hackathons/page';
 
 export default function MentorHackathons() {
-  return <Hackathons />;
+  return <AdminHackathons />;
 }

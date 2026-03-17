@@ -1,12 +1,13 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/shared/ui/card';
 import { Button } from '@/shared/ui/button';
 import { Plus, Edit, Trash2, Loader2, FileText, Video, Image, Code, FolderGit } from 'lucide-react';
 import MaterialForm from './MaterialForm';
 import { useMaterials } from '@/shared/api/admin';
 import { useAuth, getCourseTypeFromRole } from '@/shared/lib/auth-context';
+import DataTableFilters from '@/features/common/DataTableFilters';
 
 const courseTypeLabels: Record<string, string> = {
   'english': 'Английский язык',
@@ -98,15 +99,49 @@ export default function MaterialManagement() {
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingMaterial, setEditingMaterial] = useState<any | null>(null);
+  
+  // Поиск, фильтрация, сортировка
+  const [search, setSearch] = useState('');
+  const [sortBy, setSortBy] = useState<string>('createdAt');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
 
   // Получаем тип курса ментора
   const userRoles = user?.roles || [];
   const mentorCourseType = getCourseTypeFromRole(userRoles);
   
   // Фильтруем материалы по типу курса (если это ментор)
-  const filteredMaterials = mentorCourseType
-    ? materials?.filter((m: any) => m.course?.type === mentorCourseType)
-    : materials;
+  const filteredMaterials = useMemo(() => {
+    let result = mentorCourseType
+      ? materials?.filter((m: any) => m.course?.type === mentorCourseType)
+      : materials;
+
+    // Поиск
+    if (search) {
+      result = result?.filter((m: any) => 
+        m.title.toLowerCase().includes(search.toLowerCase()) ||
+        m.description?.toLowerCase().includes(search.toLowerCase())
+      );
+    }
+
+    // Сортировка
+    if (sortBy) {
+      result = result?.sort((a: any, b: any) => {
+        let aVal = a[sortBy];
+        let bVal = b[sortBy];
+        
+        if (sortBy === 'createdAt' || sortBy === 'updatedAt') {
+          aVal = new Date(aVal).getTime();
+          bVal = new Date(bVal).getTime();
+        }
+        
+        if (aVal < bVal) return sortOrder === 'asc' ? -1 : 1;
+        if (aVal > bVal) return sortOrder === 'asc' ? 1 : -1;
+        return 0;
+      });
+    }
+
+    return result;
+  }, [materials, search, sortBy, sortOrder, mentorCourseType]);
 
   const handleCreate = () => {
     setEditingMaterial(null);
@@ -189,6 +224,22 @@ export default function MaterialManagement() {
           </Button>
         </div>
       </div>
+
+      {/* Фильтры и поиск */}
+      <DataTableFilters
+        searchPlaceholder="Поиск материала..."
+        searchValue={search}
+        onSearchChange={setSearch}
+        sortBy={sortBy}
+        onSortByChange={setSortBy}
+        sortOptions={[
+          { value: 'title', label: 'По названию' },
+          { value: 'createdAt', label: 'По дате создания' },
+          { value: 'type', label: 'По типу' },
+        ]}
+        sortOrder={sortOrder}
+        onSortOrderChange={setSortOrder}
+      />
 
       <Card>
         <CardHeader>

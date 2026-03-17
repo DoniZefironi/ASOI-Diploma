@@ -1,10 +1,11 @@
 // src/schedule/schedule.service.ts
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, Between } from 'typeorm';
+import { Repository, Like, Between } from 'typeorm';
 import { ScheduleItem } from './entities/schedule-item.entity';
 import { CreateScheduleItemDto } from './dto/create-schedule-item.dto';
 import { UpdateScheduleItemDto } from './dto/update-schedule-item.dto';
+import { ScheduleSearchDto, SortOrder } from '../common/dto/pagination.dto';
 
 @Injectable()
 export class ScheduleService {
@@ -18,10 +19,36 @@ export class ScheduleService {
     return this.scheduleRepository.save(scheduleItem);
   }
 
-  async findAll(): Promise<ScheduleItem[]> {
+  async findAll(searchDto?: ScheduleSearchDto): Promise<ScheduleItem[]> {
+    const { search, type, startDate, endDate, sortBy = 'startTime', sortOrder = SortOrder.ASC } = searchDto || {};
+
+    const where: any = {};
+
+    // Поиск по названию
+    if (search) {
+      where.title = Like(`%${search}%`);
+    }
+
+    // Фильтр по типу
+    if (type) {
+      where.type = type;
+    }
+
+    // Фильтр по дате
+    if (startDate || endDate) {
+      where.startTime = {};
+      if (startDate) where.startTime.gte = new Date(startDate);
+      if (endDate) where.startTime.lte = new Date(endDate);
+    }
+
+    // Сортировка
+    const order: any = {};
+    order[sortBy] = sortOrder;
+
     return this.scheduleRepository.find({
+      where,
       relations: ['courseGroup', 'courseGroup.course', 'instructor'],
-      order: { startTime: 'ASC' },
+      order,
     });
   }
 

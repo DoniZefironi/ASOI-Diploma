@@ -9,14 +9,15 @@ import { Roles } from '../auth/decorators/roles.decorator';
 import { UserRoleEnum } from '../users/entities/user-role.entity';
 import { MENTOR_ROLES } from '../common/helpers/role.helper';
 import { MaterialType } from './entities/course-material.entity';
+import { SearchDto } from '../common/dto/pagination.dto';
 
 @Controller('materials')
 export class MaterialsController {
   constructor(private readonly materialsService: MaterialsService) {}
 
   @Get()
-  findAll() {
-    return this.materialsService.findAll();
+  findAll(@Query() searchDto: SearchDto) {
+    return this.materialsService.findAll(searchDto);
   }
 
   @Get('public')

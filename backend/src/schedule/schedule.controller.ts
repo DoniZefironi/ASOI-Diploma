@@ -8,6 +8,7 @@ import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { UserRoleEnum } from '../users/entities/user-role.entity';
 import { MENTOR_ROLES } from '../common/helpers/role.helper';
+import { ScheduleSearchDto } from '../common/dto/pagination.dto';
 
 @Controller('schedule')
 @UseGuards(JwtAuthGuard)
@@ -15,8 +16,8 @@ export class ScheduleController {
   constructor(private readonly scheduleService: ScheduleService) {}
 
   @Get()
-  findAll() {
-    return this.scheduleService.findAll();
+  findAll(@Query() searchDto: ScheduleSearchDto) {
+    return this.scheduleService.findAll(searchDto);
   }
 
   @Get('user')

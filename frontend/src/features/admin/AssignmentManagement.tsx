@@ -1,12 +1,13 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/shared/ui/card';
 import { Button } from '@/shared/ui/button';
 import { Plus, Edit, Trash2, Loader2 } from 'lucide-react';
 import AssignmentForm from './AssignmentForm';
 import { useAssignments, type Assignment } from '@/shared/api/admin';
 import { useAuth, getCourseTypeFromRole } from '@/shared/lib/auth-context';
+import DataTableFilters from '@/features/common/DataTableFilters';
 
 const courseTypeLabels: Record<string, string> = {
   'english': 'Английский язык',
@@ -86,15 +87,55 @@ export default function AssignmentManagement() {
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingAssignment, setEditingAssignment] = useState<Assignment | null>(null);
+  
+  // Поиск, фильтрация, сортировка
+  const [search, setSearch] = useState('');
+  const [filterType, setFilterType] = useState<string>('');
+  const [sortBy, setSortBy] = useState<string>('deadline');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
 
   // Получаем тип курса ментора
   const userRoles = user?.roles || [];
   const mentorCourseType = getCourseTypeFromRole(userRoles);
   
   // Фильтруем задания по типу курса (если это ментор)
-  const filteredAssignments = mentorCourseType
-    ? assignments?.filter((a: any) => a.courseGroup?.course?.type === mentorCourseType)
-    : assignments;
+  const filteredAssignments = useMemo(() => {
+    let result = mentorCourseType
+      ? assignments?.filter((a: any) => a.courseGroup?.course?.type === mentorCourseType)
+      : assignments;
+
+    // Поиск
+    if (search) {
+      result = result?.filter((a: any) => 
+        a.title.toLowerCase().includes(search.toLowerCase()) ||
+        a.description?.toLowerCase().includes(search.toLowerCase())
+      );
+    }
+
+    // Фильтр по типу
+    if (filterType) {
+      result = result?.filter((a: any) => a.type === filterType);
+    }
+
+    // Сортировка
+    if (sortBy) {
+      result = result?.sort((a: any, b: any) => {
+        let aVal = a[sortBy];
+        let bVal = b[sortBy];
+        
+        if (sortBy === 'deadline' || sortBy === 'startDate') {
+          aVal = new Date(aVal).getTime();
+          bVal = new Date(bVal).getTime();
+        }
+        
+        if (aVal < bVal) return sortOrder === 'asc' ? -1 : 1;
+        if (aVal > bVal) return sortOrder === 'asc' ? 1 : -1;
+        return 0;
+      });
+    }
+
+    return result;
+  }, [assignments, search, filterType, sortBy, sortOrder, mentorCourseType]);
 
   const handleCreate = () => {
     setEditingAssignment(null);
@@ -178,6 +219,34 @@ export default function AssignmentManagement() {
           </Button>
         </div>
       </div>
+
+      {/* Фильтры и поиск */}
+      <DataTableFilters
+        searchPlaceholder="Поиск задания..."
+        searchValue={search}
+        onSearchChange={setSearch}
+        filters={[
+          {
+            label: 'Все типы',
+            value: filterType,
+            onChange: setFilterType,
+            options: [
+              { value: 'practice', label: 'Практика' },
+              { value: 'test', label: 'Тест' },
+              { value: 'practice_review', label: 'Проверка практики' },
+            ],
+          },
+        ]}
+        sortBy={sortBy}
+        onSortByChange={setSortBy}
+        sortOptions={[
+          { value: 'title', label: 'По названию' },
+          { value: 'deadline', label: 'По дедлайну' },
+          { value: 'maxScore', label: 'По баллам' },
+        ]}
+        sortOrder={sortOrder}
+        onSortOrderChange={setSortOrder}
+      />
 
       <Card>
         <CardHeader>

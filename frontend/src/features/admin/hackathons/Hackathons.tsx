@@ -1,12 +1,13 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
 import { Button } from '@/shared/ui/button';
 import { useHackathons, useHackathonStats } from '@/shared/api/admin/hackathons';
 import { Award, Plus, Edit, Trash2, Users, Calendar, Loader2, Eye } from 'lucide-react';
 import HackathonForm from './HackathonForm';
 import Link from 'next/link';
+import DataTableFilters from '@/features/common/DataTableFilters';
 
 const Badge = ({
   children,
@@ -131,6 +132,43 @@ export default function HackathonManagement() {
   const { stats } = useHackathonStats();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingHackathon, setEditingHackathon] = useState<any>(null);
+  
+  // Поиск, сортировка
+  const [search, setSearch] = useState('');
+  const [sortBy, setSortBy] = useState<string>('startDate');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
+  
+  // Фильтрация и сортировка
+  const filteredHackathons = useMemo(() => {
+    let result = hackathons;
+
+    // Поиск
+    if (search) {
+      result = result?.filter((h: any) =>
+        h.name?.toLowerCase().includes(search.toLowerCase()) ||
+        h.description?.toLowerCase().includes(search.toLowerCase())
+      );
+    }
+
+    // Сортировка
+    if (sortBy) {
+      result = result?.sort((a: any, b: any) => {
+        let aVal = a[sortBy];
+        let bVal = b[sortBy];
+        
+        if (sortBy === 'startDate' || sortBy === 'endDate' || sortBy === 'registrationDeadline') {
+          aVal = new Date(aVal).getTime();
+          bVal = new Date(bVal).getTime();
+        }
+        
+        if (aVal < bVal) return sortOrder === 'asc' ? -1 : 1;
+        if (aVal > bVal) return sortOrder === 'asc' ? 1 : -1;
+        return 0;
+      });
+    }
+
+    return result;
+  }, [hackathons, search, sortBy, sortOrder]);
 
   const handleCreate = () => {
     setEditingHackathon(null);
@@ -200,6 +238,22 @@ export default function HackathonManagement() {
           </Button>
         </div>
       </div>
+
+      {/* Фильтры и поиск */}
+      <DataTableFilters
+        searchPlaceholder="Поиск хакатона..."
+        searchValue={search}
+        onSearchChange={setSearch}
+        sortBy={sortBy}
+        onSortByChange={setSortBy}
+        sortOptions={[
+          { value: 'title', label: 'По названию' },
+          { value: 'startDate', label: 'По дате начала' },
+          { value: 'endDate', label: 'По дате окончания' },
+        ]}
+        sortOrder={sortOrder}
+        onSortOrderChange={setSortOrder}
+      />
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card>
@@ -272,7 +326,7 @@ export default function HackathonManagement() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {hackathons?.map((hackathon: any) => (
+              {filteredHackathons?.map((hackathon: any) => (
                 <TableRow key={hackathon.id}>
                   <TableCell>
                     <div className="flex flex-col">

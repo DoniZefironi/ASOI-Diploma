@@ -9,9 +9,10 @@ import { AssignmentSubmission } from '../assignments/entities/assignment-submiss
 import { Assignment } from '../assignments/entities/assignment.entity';
 import { UserRole } from '../users/entities/user-role.entity';
 import { User } from '../users/entities/user.entity';
+import { ScheduleItem } from '../schedule/entities/schedule-item.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([CourseGroup, CourseRegistration, AssignmentSubmission, Assignment, UserRole, User])],
+  imports: [TypeOrmModule.forFeature([CourseGroup, CourseRegistration, AssignmentSubmission, Assignment, UserRole, User, ScheduleItem])],
   controllers: [CourseGroupsController],
   providers: [CourseGroupsService],
   exports: [CourseGroupsService],

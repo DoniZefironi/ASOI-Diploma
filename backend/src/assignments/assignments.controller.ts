@@ -10,6 +10,7 @@ import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { UserRoleEnum } from '../users/entities/user-role.entity';
 import { MENTOR_ROLES } from '../common/helpers/role.helper';
+import { AssignmentSearchDto } from '../common/dto/pagination.dto';
 
 @Controller('assignments')
 @UseGuards(JwtAuthGuard)
@@ -17,8 +18,8 @@ export class AssignmentsController {
   constructor(private readonly assignmentsService: AssignmentsService) {}
 
   @Get()
-  findAllAssignments() {
-    return this.assignmentsService.findAllAssignments();
+  findAllAssignments(@Query() searchDto: AssignmentSearchDto) {
+    return this.assignmentsService.findAllAssignments(searchDto);
   }
 
   @Get('course-group/:groupId')
