@@ -119,6 +119,7 @@ function QuickActions() {
     { href: '/admin/schedule', label: 'Расписание', description: 'Добавить занятие' },
     { href: '/admin/course-registrations', label: 'Новый студент?', description: 'Новая заявка в группу' },
     { href: '/admin/forum', label: 'Управление форумом', description: 'Разделы и темы' },
+    { href: '/admin/career-tests', label: 'Тесты профориентации', description: 'Управление тестами и вопросами' },
   ];
 
   return (

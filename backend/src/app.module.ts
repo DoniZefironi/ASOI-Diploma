@@ -29,6 +29,7 @@ import { UserAchievement } from './achievements/entities/user-achievement.entity
 import { PeerReview } from './assignments/entities/peer-review.entity';
 import { CircuitSubmission } from './circuit/entities/circuit-submission.entity';
 import { ProfessionalOrientation } from './professional-orientation/entities/professional-orientation.entity';
+import { CareerTest } from './professional-orientation/entities/career-test.entity';
 import { Assignment } from './assignments/entities/assignment.entity';
 import { ForumTopic } from './forum/entities/forum-topic.entity';
 import { ForumSection } from './forum/entities/forum-section.entity';
@@ -78,6 +79,7 @@ import { PeerReviewSession } from './assignments/entities/peer-review-session.en
             CircuitSubmission,
             CircuitElementType,
             ProfessionalOrientation,
+            CareerTest,
             CourseMaterial,
             ScheduleItem,
             Hackathon,
