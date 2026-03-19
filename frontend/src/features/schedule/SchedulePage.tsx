@@ -61,12 +61,23 @@ interface Hackathon {
   registrationDeadline?: string;
 }
 
+interface ElectiveItem {
+  id: number;
+  title: string;
+  description?: string;
+  startDate?: string;
+  endDate?: string;
+  courseGroupName?: string;
+  courseName?: string;
+}
+
 interface WeekGroup {
   weekStart: Date;
   weekEnd: Date;
   scheduleItems: ScheduleItem[];
   assignments: Assignment[];
   hackathons: Hackathon[];
+  electives: ElectiveItem[];
 }
 
 export default function SchedulePage() {
@@ -74,6 +85,7 @@ export default function SchedulePage() {
   const [schedule, setSchedule] = useState<ScheduleItem[]>([]);
   const [assignments, setAssignments] = useState<Assignment[]>([]);
   const [hackathons, setHackathons] = useState<Hackathon[]>([]);
+  const [enrolledElectives, setEnrolledElectives] = useState<ElectiveItem[]>([]);
   const [userGroupIds, setUserGroupIds] = useState<number[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [expandedWeeks, setExpandedWeeks] = useState<Set<string>>(new Set());
@@ -92,11 +104,12 @@ export default function SchedulePage() {
   const loadData = async () => {
     try {
       setIsLoading(true);
-      const [scheduleData, assignmentsData, hackathonsData, registrationsData] = await Promise.all([
+      const [scheduleData, assignmentsData, hackathonsData, registrationsData, electivesData] = await Promise.all([
         apiClient.get('/schedule'),
         apiClient.get('/assignments'),
         apiClient.get('/hackathons'),
         apiClient.get('/course-groups/user/registrations'),
+        apiClient.get('/electives').catch(() => []),
       ]);
 
       // Получаем ID групп пользователя
@@ -118,8 +131,12 @@ export default function SchedulePage() {
 
       setHackathons(hackathonsData || []);
 
+      // Фильтруем факультативы: только те, на которые записан
+      const myElectives = (electivesData || []).filter((e: any) => e.isEnrolled);
+      setEnrolledElectives(myElectives);
+
       // Развернуть первые 2 недели
-      const weeks = groupByWeek(userSchedule, userAssignments, hackathonsData || []);
+      const weeks = groupByWeek(userSchedule, userAssignments, hackathonsData || [], myElectives);
       const initialExpanded = new Set<string>();
       weeks.slice(0, 2).forEach(week => {
         initialExpanded.add(week.weekStart.toISOString());
@@ -132,7 +149,7 @@ export default function SchedulePage() {
     }
   };
 
-  const groupByWeek = (scheduleItems: ScheduleItem[], assignments: Assignment[], hackathons: Hackathon[]): WeekGroup[] => {
+  const groupByWeek = (scheduleItems: ScheduleItem[], assignments: Assignment[], hackathons: Hackathon[], electives: ElectiveItem[] = []): WeekGroup[] => {
     const weeks = new Map<string, WeekGroup>();
     const now = new Date();
 
@@ -152,6 +169,7 @@ export default function SchedulePage() {
           scheduleItems: [],
           assignments: [],
           hackathons: [],
+          electives: [],
         });
       }
 
@@ -171,6 +189,7 @@ export default function SchedulePage() {
           scheduleItems: [],
           assignments: [],
           hackathons: [],
+          electives: [],
         });
       }
 
@@ -190,10 +209,32 @@ export default function SchedulePage() {
           scheduleItems: [],
           assignments: [],
           hackathons: [],
+          electives: [],
         });
       }
 
       weeks.get(key)!.hackathons.push(hackathon);
+    });
+
+    // Добавляем факультативы (по дате начала)
+    electives.forEach(elective => {
+      if (!elective.startDate) return;
+      const date = new Date(elective.startDate);
+      const weekStart = getWeekStart(date);
+      const key = weekStart.toISOString();
+
+      if (!weeks.has(key)) {
+        weeks.set(key, {
+          weekStart,
+          weekEnd: new Date(weekStart.getTime() + 6 * 24 * 60 * 60 * 1000),
+          scheduleItems: [],
+          assignments: [],
+          hackathons: [],
+          electives: [],
+        });
+      }
+
+      weeks.get(key)!.electives.push(elective);
     });
 
     return Array.from(weeks.values())
@@ -211,7 +252,7 @@ export default function SchedulePage() {
 
   const filteredWeeks = useMemo(() => {
     const now = new Date();
-    let weeks = groupByWeek(schedule, assignments, hackathons);
+    let weeks = groupByWeek(schedule, assignments, hackathons, enrolledElectives);
 
     // Фильтр по типу
     if (filterType === 'assignments') {
@@ -220,6 +261,8 @@ export default function SchedulePage() {
       weeks = weeks.filter(w => w.hackathons.length > 0);
     } else if (filterType === 'schedule') {
       weeks = weeks.filter(w => w.scheduleItems.length > 0);
+    } else if (filterType === 'electives') {
+      weeks = weeks.filter(w => w.electives.length > 0);
     }
 
     // Фильтр по времени
@@ -402,6 +445,13 @@ export default function SchedulePage() {
             >
               🏆 Хакатоны
             </Button>
+            <Button
+              variant={filterType === 'electives' ? 'primary' : 'secondary'}
+              size="sm"
+              onClick={() => setFilterType('electives')}
+            >
+              🎓 Факультативы
+            </Button>
           </div>
           )}
 
@@ -471,7 +521,7 @@ export default function SchedulePage() {
             filteredWeeks.map((week) => {
               const isExpanded = expandedWeeks.has(week.weekStart.toISOString());
               const weekIsToday = isToday(week.weekStart) || isToday(week.weekEnd);
-              const totalItems = week.scheduleItems.length + week.assignments.length + week.hackathons.length;
+              const totalItems = week.scheduleItems.length + week.assignments.length + week.hackathons.length + week.electives.length;
 
               return (
                 <Card key={week.weekStart.toISOString()} className={`border ${weekIsToday ? 'border-blue-500' : 'border-gray-700'}`}>
@@ -685,6 +735,58 @@ export default function SchedulePage() {
                                     {hackathon.registrationDeadline && (
                                       <p className="text-xs text-yellow-500 mt-2">
                                         ⏰ Регистрация до: {formatDateTime(hackathon.registrationDeadline).date}
+                                      </p>
+                                    )}
+                                  </div>
+                                </div>
+                              </Link>
+                            );
+                          })}
+                        </div>
+                      )}
+
+                      {/* Факультативы */}
+                      {week.electives.length > 0 && (
+                        <div className="p-4 space-y-3 bg-teal-900/10">
+                          <h4 className="text-sm font-semibold text-teal-400 uppercase">🎓 Факультативы</h4>
+                          {week.electives.map((elective) => {
+                            const startDateStr = elective.startDate ? formatDateTime(elective.startDate).date : null;
+                            const endDateStr = elective.endDate ? formatDateTime(elective.endDate).date : null;
+
+                            return (
+                              <Link
+                                key={elective.id}
+                                href={`/electives/${elective.id}`}
+                                className="block p-4 rounded-lg border-l-4 border-l-teal-500 bg-teal-900/20 hover:bg-teal-900/30 transition-colors"
+                              >
+                                <div className="flex items-start justify-between">
+                                  <div className="flex-1">
+                                    <div className="flex items-center gap-2 mb-2">
+                                      <span className="px-2 py-1 bg-teal-600 text-white text-xs rounded-full flex items-center gap-1">
+                                        <BookOpen className="h-3 w-3" />
+                                        Факультатив
+                                      </span>
+                                    </div>
+
+                                    <h4 className="text-lg font-semibold text-white mb-2">
+                                      {elective.title}
+                                    </h4>
+
+                                    {(startDateStr || endDateStr) && (
+                                      <div className="flex flex-wrap gap-4 text-sm text-gray-400">
+                                        <div className="flex items-center gap-1">
+                                          <Calendar className="h-4 w-4" />
+                                          <span>
+                                            {startDateStr}{endDateStr ? ` - ${endDateStr}` : ''}
+                                          </span>
+                                        </div>
+                                      </div>
+                                    )}
+
+                                    {elective.courseGroupName && (
+                                      <p className="text-xs text-gray-500 mt-2">
+                                        📚 {elective.courseGroupName}
+                                        {elective.courseName ? ` • ${elective.courseName}` : ''}
                                       </p>
                                     )}
                                   </div>

@@ -416,6 +416,24 @@ export const DashboardPage = () => {
             </div>
           </Card>
         </div>
+
+        {/* Ссылка на факультативы */}
+        <div className="mt-6">
+          <Link href="/electives">
+            <Card className="p-5 bg-gradient-to-br from-teal-700 to-teal-900 hover:from-teal-600 hover:to-teal-800 transition-colors cursor-pointer">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <span className="text-4xl">🎓</span>
+                  <div>
+                    <p className="text-teal-100 text-sm">Дополнительные занятия</p>
+                    <p className="text-xl font-bold text-white">Факультативы</p>
+                  </div>
+                </div>
+                <span className="text-teal-300 text-2xl">→</span>
+              </div>
+            </Card>
+          </Link>
+        </div>
       </div>
     </div>
   );

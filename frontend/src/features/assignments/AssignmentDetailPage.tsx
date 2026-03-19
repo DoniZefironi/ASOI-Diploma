@@ -324,7 +324,19 @@ export default function AssignmentDetailPage() {
             </Card>
 
             {/* Отправка работы */}
-            {!submission && !isDeadlinePast && (
+            {assignment?.type === 'practice_review' ? (
+              <Card>
+                <CardContent className="p-6">
+                  <div className="flex items-center gap-3 text-yellow-400">
+                    <span className="text-2xl">👁️</span>
+                    <div>
+                      <p className="font-medium text-white">Это задание — проверка работ</p>
+                      <p className="text-sm text-gray-400 mt-0.5">Сдавать свою работу здесь не нужно. Перейдите во вкладку Peer Review, чтобы проверить работы других студентов.</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ) : !submission && !isDeadlinePast && (
               <Card>
                 <CardHeader>
                   <CardTitle className="text-white flex items-center gap-2">

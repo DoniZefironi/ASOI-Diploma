@@ -14,7 +14,8 @@
       "Bash(node -e \"const fs=require\\(''fs''\\); const c=fs.readFileSync\\(''frontend/src/app/hackathons/[hackathonId]/page.tsx'',''utf8''\\); console.log\\(''size'', c.length, ''podium'', c.includes\\(''PodiumSection''\\), ''paginated'', c.includes\\(''paginated''\\)\\);\")",
       "Bash(sed -i 's/if \\(!team\\) return <div key={place}/if \\(!team\\) return <div key={`empty-${place}`}/' \"frontend/src/app/hackathons/[hackathonId]/page.tsx\")",
       "Bash(sed -i 's/<div key={team.teamId} className=\"\"flex-1 max-w-\\\\[220px\\\\]/<div key={`place-${place}`} className=\"\"flex-1 max-w-[220px]/' \"frontend/src/app/hackathons/[hackathonId]/page.tsx\")",
-      "Bash(xargs grep:*)"
+      "Bash(xargs grep:*)",
+      "Bash(ls /c/Users/vladn/OneDrive/Dokumente/GitHub/ASOI-Diploma/frontend/src/app/electives/[id]/)"
     ]
   }
 }

@@ -20,6 +20,11 @@ import { HackathonsModule } from './hackathons/hackathons.module';
 import { CircuitModule } from './circuit/circuit.module';
 import { ProfessionalOrientationModule } from './professional-orientation/professional-orientation.module';
 import { CourseAccessModule } from './course-access/course-access.module';
+import { ElectivesModule } from './electives/electives.module';
+import { Elective } from './electives/entities/elective.entity';
+import { InternshipsModule } from './internships/internships.module';
+import { Internship } from './internships/entities/internship.entity';
+import { ElectiveEnrollment } from './electives/entities/elective-enrollment.entity';
 import { User } from './users/entities/user.entity';
 import { UserRole } from './users/entities/user-role.entity';
 import { CourseRegistration } from './course-groups/entities/course-registration.entity';
@@ -88,6 +93,9 @@ import { PeerReviewSession } from './assignments/entities/peer-review-session.en
             HackathonSubmission,
             HackathonGrade,
             PeerReviewSession,
+            Elective,
+            ElectiveEnrollment,
+            Internship,
           ],
           synchronize: configService.get('NODE_ENV') !== 'production',
           logging: configService.get('NODE_ENV') !== 'production',
@@ -109,6 +117,8 @@ import { PeerReviewSession } from './assignments/entities/peer-review-session.en
     HackathonsModule,
     CircuitModule,
     CourseAccessModule,
+    ElectivesModule,
+    InternshipsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

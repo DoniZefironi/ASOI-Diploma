@@ -29,7 +29,12 @@ export class CreateAssignmentDto {
   isActive?: boolean;
 
   @IsNumber()
-  courseGroupId: number;
+  @IsOptional()
+  courseGroupId?: number;
+
+  @IsNumber()
+  @IsOptional()
+  electiveId?: number;
 
   // Для типа practice_review
   @IsInt()

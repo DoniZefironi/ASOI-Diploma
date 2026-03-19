@@ -66,11 +66,14 @@ export class Assignment {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @ManyToOne(() => CourseGroup, group => group.assignments)
+  @ManyToOne(() => CourseGroup, group => group.assignments, { nullable: true })
   courseGroup: CourseGroup;
 
-  @Column()
+  @Column({ nullable: true })
   courseGroupId: number;
+
+  @Column({ nullable: true })
+  electiveId: number;
 
   @OneToMany(() => AssignmentSubmission, submission => submission.assignment)
   submissions: AssignmentSubmission[];

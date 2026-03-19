@@ -13,6 +13,7 @@ const navigation = [
   { name: 'Задания', href: '/mentor/assignments', icon: '📝' },
   { name: 'Материалы', href: '/mentor/materials', icon: '📖' },
   { name: 'Хакатоны', href: '/mentor/hackathons', icon: '🏆' },
+  { name: 'Факультативы', href: '/admin/electives', icon: '🎓' },
 ];
 
 export default function MentorLayout({

@@ -43,7 +43,16 @@ export class CreateScheduleItemDto {
   meetingUrl?: string;
 
   @IsNumber()
-  courseGroupId: number;
+  @IsOptional()
+  courseGroupId?: number;
+
+  @IsNumber()
+  @IsOptional()
+  electiveId?: number;
+
+  @IsNumber()
+  @IsOptional()
+  linkedScheduleItemId?: number;
 
   @IsNumber()
   @IsOptional()

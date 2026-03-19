@@ -5,6 +5,9 @@ import { User } from '../../users/entities/user.entity';
 
 export enum ScheduleItemType {
   LECTURE = 'lecture',
+  PRACTICE = 'practice',
+  TEST = 'test',
+  PRACTICE_REVIEW = 'practice_review',
 }
 
 @Entity('schedule_items')
@@ -18,10 +21,7 @@ export class ScheduleItem {
   @Column({ type: 'text' })
   description: string;
 
-  @Column({
-    type: 'enum',
-    enum: ScheduleItemType
-  })
+  @Column({ type: 'varchar', length: 50, default: 'lecture' })
   type: ScheduleItemType;
 
   @Column({ type: 'text', nullable: true })
@@ -54,10 +54,10 @@ export class ScheduleItem {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @ManyToOne(() => CourseGroup, group => group.scheduleItems)
+  @ManyToOne(() => CourseGroup, group => group.scheduleItems, { nullable: true })
   courseGroup: CourseGroup;
 
-  @Column()
+  @Column({ nullable: true })
   courseGroupId: number;
 
   @ManyToOne(() => User, { nullable: true })
@@ -65,4 +65,10 @@ export class ScheduleItem {
 
   @Column({ nullable: true })
   instructorId: number;
+
+  @Column({ nullable: true })
+  electiveId: number;
+
+  @Column({ nullable: true })
+  linkedScheduleItemId: number;
 }
