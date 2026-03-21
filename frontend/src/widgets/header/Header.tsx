@@ -77,6 +77,7 @@ export const Header = () => {
                   <>
                     <Link href="/hackathons" className="hover:text-blue-600 transition-colors">Хакатоны</Link>
                     <Link href="/internships" className="hover:text-blue-600 transition-colors">Стажировки</Link>
+                    <Link href="/prof-orientation" className="hover:text-blue-600 transition-colors">Профориентация</Link>
                     <Link href="/career" className="hover:text-blue-600 transition-colors">Карьера</Link>
                     <Link href="/forum" className="hover:text-blue-600 transition-colors">Форум</Link>
                     {/* Показываем компилятор только для информатики */}

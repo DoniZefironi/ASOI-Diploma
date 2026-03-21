@@ -93,4 +93,18 @@ export class ProfessionalOrientationController {
   async getExpertAnalysis(@Request() req: any) {
     return this.service.getExpertAnalysis(req.user.userId);
   }
+
+  // ── AI Roadmap ────────────────────────────────────────────────────────────
+
+  @Post('roadmap')
+  @UseGuards(JwtAuthGuard)
+  async generateRoadmap(@Body() dto: {
+    careerId: string;
+    careerTitle: string;
+    traitScores: Record<string, number>;
+    firedRuleDescriptions: string[];
+    confidence: number;
+  }) {
+    return this.service.generateRoadmap(dto);
+  }
 }

@@ -15,7 +15,13 @@
       "Bash(sed -i 's/if \\(!team\\) return <div key={place}/if \\(!team\\) return <div key={`empty-${place}`}/' \"frontend/src/app/hackathons/[hackathonId]/page.tsx\")",
       "Bash(sed -i 's/<div key={team.teamId} className=\"\"flex-1 max-w-\\\\[220px\\\\]/<div key={`place-${place}`} className=\"\"flex-1 max-w-[220px]/' \"frontend/src/app/hackathons/[hackathonId]/page.tsx\")",
       "Bash(xargs grep:*)",
-      "Bash(ls /c/Users/vladn/OneDrive/Dokumente/GitHub/ASOI-Diploma/frontend/src/app/electives/[id]/)"
+      "Bash(ls /c/Users/vladn/OneDrive/Dokumente/GitHub/ASOI-Diploma/frontend/src/app/electives/[id]/)",
+      "Bash(find /c/Users/vladn/OneDrive/Dokumente/GitHub/ASOI-Diploma/frontend/src -name *auth* -o -name *Auth*)",
+      "Bash(ls /c/Users/vladn/OneDrive/Dokumente/GitHub/ASOI-Diploma/backend/.env*)",
+      "Bash(grep -n \"professional-orientation\\\\|rewrites\\\\|proxy\" /c/Users/vladn/OneDrive/Dokumente/GitHub/ASOI-Diploma/frontend/next.config.*)",
+      "Bash(ls /c/Users/vladn/OneDrive/Dokumente/GitHub/ASOI-Diploma/frontend/next.config*)",
+      "Bash(npx tsc:*)",
+      "Bash(find /c/Users/vladn/OneDrive/Dokumente/GitHub/ASOI-Diploma -type d -name expertSystem -o -type f -name *expert* -o -type f -name *inference* -o -type f -name *knowledge*)"
     ]
   }
 }

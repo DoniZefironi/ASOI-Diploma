@@ -971,4 +971,196 @@ export class ProfessionalOrientationService implements OnModuleInit {
       personalityInsight,
     };
   }
+
+  // ─── AI Roadmap Generation ────────────────────────────────────────────────
+
+  async generateRoadmap(dto: {
+    careerId: string;
+    careerTitle: string;
+    traitScores: Record<string, number>;
+    firedRuleDescriptions: string[];
+    confidence: number;
+  }): Promise<any> {
+    const apiKey = process.env.GEMINI_API_KEY;
+
+    if (apiKey) {
+      try {
+        return await this.generateRoadmapViaGemini(apiKey, dto);
+      } catch (e: any) {
+        // fallback to local generation on quota/network errors
+        console.warn('Gemini unavailable, using local roadmap generator:', e.message?.slice(0, 80));
+      }
+    }
+
+    return this.generateRoadmapLocally(dto);
+  }
+
+  private async generateRoadmapViaGemini(apiKey: string, dto: {
+    careerId: string; careerTitle: string;
+    traitScores: Record<string, number>;
+    firedRuleDescriptions: string[]; confidence: number;
+  }): Promise<any> {
+    const traitLabels: Record<string, string> = {
+      logical: 'Логическое мышление', analytical: 'Аналитика', technical: 'Техническая склонность',
+      creative: 'Творческое мышление', social: 'Коммуникабельность', managerial: 'Лидерство',
+      research: 'Самообучаемость', detail: 'Внимание к деталям', risk: 'Готовность к риску',
+    };
+    const traitEntries = Object.entries(dto.traitScores).sort(([, a], [, b]) => b - a);
+    const topTraits = traitEntries.slice(0, 3).map(([k, v]) => `${traitLabels[k] ?? k}: ${v}/10`).join(', ');
+    const weakTraits = traitEntries.filter(([, v]) => v < 5).map(([k, v]) => `${traitLabels[k] ?? k}: ${v}/10`).join(', ');
+    const rulesBlock = dto.firedRuleDescriptions.length > 0
+      ? dto.firedRuleDescriptions.map((d, i) => `  ${i + 1}. ${d}`).join('\n')
+      : '  Нет специфических правил.';
+
+    const prompt = `Ты — опытный IT-карьерный консультант. Составь персонализированную дорожную карту для студента.
+
+Целевая профессия: ${dto.careerTitle}
+Степень совпадения профиля: ${dto.confidence}%
+Сильные стороны: ${topTraits}
+Области для развития: ${weakTraits || 'нет явных пробелов'}
+Ключевые выводы из анализа:
+${rulesBlock}
+
+Верни ТОЛЬКО валидный JSON без markdown блоков:
+{"phases":[{"title":"","duration":"","focus":"","goals":[],"resources":[],"milestone":""}],"totalDuration":"","firstStep":"","advice":""}
+
+Требования: 4-5 фаз, реалистичные сроки, конкретные ресурсы, всё на русском языке.`;
+
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: prompt }] }],
+          generationConfig: { maxOutputTokens: 2048, temperature: 0.7 },
+        }),
+      },
+    );
+
+    if (!response.ok) {
+      const err = await response.text();
+      throw new Error(`Gemini API error: ${err}`);
+    }
+
+    const data = await response.json() as any;
+    const text: string = data.candidates?.[0]?.content?.parts?.[0]?.text ?? '';
+    const jsonMatch = text.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) throw new Error('AI returned invalid JSON');
+    return JSON.parse(jsonMatch[0]);
+  }
+
+  private generateRoadmapLocally(dto: {
+    careerId: string; careerTitle: string;
+    traitScores: Record<string, number>;
+    firedRuleDescriptions: string[]; confidence: number;
+  }): any {
+    type PhaseTemplate = { title: string; duration: string; focus: string; goals: string[]; resources: string[]; milestone: string };
+    const templates: Record<string, PhaseTemplate[]> = {
+      'frontend-developer': [
+        { title: 'Основы веб-разработки', duration: '1–2 месяца', focus: 'HTML, CSS, базовый JavaScript',
+          goals: ['Освоить семантический HTML5', 'Изучить CSS Flexbox и Grid', 'Написать первые JS-скрипты'],
+          resources: ['MDN Web Docs (документация)', 'freeCodeCamp (интерактивный курс)', 'CSS Tricks (статьи)'],
+          milestone: 'Сверстать адаптивную веб-страницу с нуля' },
+        { title: 'React и современный JS', duration: '2–3 месяца', focus: 'React, ES6+, TypeScript',
+          goals: ['Изучить React hooks и компонентный подход', 'Освоить TypeScript основы', 'Работать с API через fetch/axios'],
+          resources: ['Официальная документация React (docs.react.dev)', 'Курс «React — полный курс» на Udemy', 'TypeScript Handbook'],
+          milestone: 'Создать SPA-приложение на React+TypeScript' },
+        { title: 'Инструменты и экосистема', duration: '1–2 месяца', focus: 'Git, сборка, тестирование',
+          goals: ['Уверенно работать с Git', 'Настроить Vite/Webpack проект', 'Написать базовые тесты (Jest)'],
+          resources: ['Pro Git Book (книга, бесплатно)', 'Vitejs.dev (документация)', 'Testing Library docs'],
+          milestone: 'Опубликовать проект на GitHub Pages с CI' },
+        { title: 'Портфолио и трудоустройство', duration: '2–3 месяца', focus: 'Реальные проекты, собеседования',
+          goals: ['Создать 2–3 проекта для портфолио', 'Пройти код-ревью от опытных разработчиков', 'Подготовиться к техническому интервью'],
+          resources: ['LeetCode / Codewars (алгоритмы)', 'Frontend Mentor (дизайн-макеты)', 'Хабр Карьера (вакансии)'],
+          milestone: 'Получить первый оффер или стажировку' },
+      ],
+      'backend-developer': [
+        { title: 'Основы программирования', duration: '1–2 месяца', focus: 'Выбранный язык (Node.js / Python / Java)',
+          goals: ['Освоить синтаксис и типы данных', 'Понять ООП и функциональные паттерны', 'Работать с файлами и модулями'],
+          resources: ['Node.js official docs', 'Python.org tutorial', 'Курс на Stepik / Coursera'],
+          milestone: 'Написать консольное приложение с CRUD-операциями' },
+        { title: 'Базы данных и REST API', duration: '2–3 месяца', focus: 'SQL, NoSQL, HTTP-протокол',
+          goals: ['Освоить SQL (PostgreSQL)', 'Спроектировать схему базы данных', 'Создать REST API с авторизацией'],
+          resources: ['PostgreSQL Tutorial (postgresqltutorial.com)', 'Документация Express.js / NestJS / FastAPI', 'Insomnia / Postman (инструменты)'],
+          milestone: 'REST API с JWT-авторизацией и базой данных' },
+        { title: 'Архитектура и DevOps-основы', duration: '2 месяца', focus: 'Docker, CI/CD, паттерны проектирования',
+          goals: ['Контейнеризировать приложение в Docker', 'Настроить базовый CI/CD (GitHub Actions)', 'Применить паттерны Repository и Service'],
+          resources: ['Docker docs (docs.docker.com)', 'GitHub Actions документация', 'Книга «Clean Architecture» Мартина'],
+          milestone: 'Задеплоить API на сервер с автодеплоем' },
+        { title: 'Портфолио и рост', duration: '2–3 месяца', focus: 'Реальные проекты, оптимизация',
+          goals: ['Разработать 2 полноценных API-сервиса', 'Изучить кэширование (Redis)', 'Подготовиться к System Design вопросам'],
+          resources: ['Redis.io docs', 'System Design Primer (GitHub)', 'LeetCode (алгоритмы)'],
+          milestone: 'Открытый pet-проект с 10+ звёздами на GitHub' },
+      ],
+      'data-scientist': [
+        { title: 'Python и математика', duration: '2 месяца', focus: 'Python, линейная алгебра, статистика',
+          goals: ['Уверенно работать с Python', 'Освоить NumPy и Pandas', 'Понять базовую статистику и вероятность'],
+          resources: ['Python for Data Analysis (книга, Уэс МакКинни)', 'Khan Academy Statistics (бесплатно)', 'Kaggle Learn (интерактивно)'],
+          milestone: 'Провести полный EDA-анализ реального датасета' },
+        { title: 'Машинное обучение', duration: '3 месяца', focus: 'Scikit-learn, классические алгоритмы ML',
+          goals: ['Освоить supervised/unsupervised learning', 'Применить кросс-валидацию и метрики', 'Участвовать в соревновании на Kaggle'],
+          resources: ['Hands-On Machine Learning (Жерон, книга)', 'Scikit-learn documentation', 'Kaggle Competitions'],
+          milestone: 'Топ-25% в Kaggle Titanic или аналогичном' },
+        { title: 'Глубокое обучение', duration: '2–3 месяца', focus: 'PyTorch / TensorFlow, нейронные сети',
+          goals: ['Понять архитектуры CNN, RNN, Transformer', 'Дообучить предобученную модель', 'Реализовать задачу классификации/регрессии'],
+          resources: ['fast.ai (практичный курс)', 'Документация PyTorch', 'Papers With Code (актуальные исследования)'],
+          milestone: 'Модель с метрикой выше baseline на реальной задаче' },
+        { title: 'MLOps и портфолио', duration: '2 месяца', focus: 'Деплой моделей, воспроизводимость',
+          goals: ['Задеплоить модель через FastAPI', 'Использовать MLflow для экспериментов', 'Оформить 2–3 проекта на GitHub'],
+          resources: ['MLflow documentation', 'Made With ML (madewithml.com)', 'Towards Data Science (статьи)'],
+          milestone: 'Демо-приложение с задеплоенной ML-моделью' },
+      ],
+    };
+
+    // Generic template for careers without specific templates
+    const genericPhases = (title: string): PhaseTemplate[] => [
+      { title: 'Изучение основ', duration: '1–2 месяца', focus: `Фундаментальные знания для ${title}`,
+        goals: ['Изучить ключевые концепции профессии', 'Пройти вводный онлайн-курс', 'Прочитать 1–2 книги по специальности'],
+        resources: ['Coursera / Stepik (онлайн-курсы)', 'Хабр / Medium (статьи)', 'YouTube-каналы по специальности'],
+        milestone: 'Сдать итоговый тест вводного курса' },
+      { title: 'Практика и инструменты', duration: '2–3 месяца', focus: 'Рабочие инструменты и первые проекты',
+        goals: ['Освоить 2–3 ключевых инструмента профессии', 'Выполнить 3–5 учебных проектов', 'Получить обратную связь от ментора'],
+        resources: ['GitHub (открытые проекты)', 'Stack Overflow (решение проблем)', 'Профессиональные сообщества в Telegram'],
+        milestone: 'Собственный проект, демонстрирующий базовые навыки' },
+      { title: 'Углублённое изучение', duration: '2–3 месяца', focus: 'Продвинутые темы и паттерны',
+        goals: ['Изучить продвинутые концепции', 'Поучаствовать в open-source проекте', 'Пройти сложный курс или специализацию'],
+        resources: ['Udemy / Pluralsight (продвинутые курсы)', 'Книги по архитектуре и паттернам', 'Конференции и вебинары'],
+        milestone: 'Завершить сложный проект с применением продвинутых техник' },
+      { title: 'Портфолио и карьера', duration: '2–3 месяца', focus: 'Трудоустройство и профессиональная сеть',
+        goals: ['Оформить профессиональное резюме', 'Собрать портфолио из 3+ проектов', 'Пройти 5+ собеседований'],
+        resources: ['LinkedIn (нетворкинг)', 'Хабр Карьера / HeadHunter (вакансии)', 'Pramp (практика интервью)'],
+        milestone: 'Получить первый оффер по специальности' },
+    ];
+
+    const phases = templates[dto.careerId] ?? genericPhases(dto.careerTitle);
+
+    // Personalize advice based on trait scores
+    const traitEntries = Object.entries(dto.traitScores).sort(([, a], [, b]) => b - a);
+    const topTrait = traitEntries[0]?.[0] ?? '';
+    const weakTraitEntry = traitEntries.find(([, v]) => v < 5);
+
+    const adviceByTrait: Record<string, string> = {
+      logical: 'Твоё логическое мышление — большое преимущество. Используй его при изучении алгоритмов и архитектурных паттернов.',
+      analytical: 'Твои аналитические способности помогут быстро разобраться в новых технологиях. Применяй их при разборе чужого кода.',
+      technical: 'Техническая склонность ускорит изучение инструментов. Не бойся углубляться в детали реализации.',
+      creative: 'Твоё творческое мышление поможет в дизайне решений. Ищи нестандартные подходы к типовым задачам.',
+      social: 'Коммуникабельность — ценный навык в IT. Активно участвуй в сообществах и Code Review.',
+      managerial: 'Лидерские качества пригодятся с первого дня. Бери инициативу в командных проектах.',
+      research: 'Самообучаемость — твой главный актив. IT меняется быстро, и ты к этому готов.',
+      detail: 'Внимание к деталям сделает твой код надёжным. Особое внимание уделяй тестированию.',
+      risk: 'Готовность к риску поможет пробовать новые технологии раньше других. Это ценится в стартапах.',
+    };
+
+    const advice = adviceByTrait[topTrait] ?? 'Развивай практические навыки ежедневно — регулярность важнее интенсивности.'
+      + (weakTraitEntry ? ` Уделяй особое внимание развитию ${weakTraitEntry[0] === 'social' ? 'коммуникации' : 'технических навыков'}.` : '');
+
+    return {
+      phases,
+      totalDuration: `${phases.length * 2}–${phases.length * 3} месяцев`,
+      firstStep: `Зарегистрироваться на платформе ${phases[0]?.resources[0]?.split(' ')[0] ?? 'Coursera'} и пройти вводный модуль`,
+      advice,
+      source: 'local',
+    };
+  }
 }
