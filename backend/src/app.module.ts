@@ -2,6 +2,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { HttpModule } from '@nestjs/axios';
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -18,6 +19,7 @@ import { AchievementsModule } from './achievements/achievements.module';
 import { CompilerModule } from './compiler/compiler.module';
 import { HackathonsModule } from './hackathons/hackathons.module';
 import { CircuitModule } from './circuit/circuit.module';
+import { InternshipApplication, InternshipView } from './internships/entities/index';
 import { ProfessionalOrientationModule } from './professional-orientation/professional-orientation.module';
 import { CourseAccessModule } from './course-access/course-access.module';
 import { ElectivesModule } from './electives/electives.module';
@@ -96,12 +98,20 @@ import { PeerReviewSession } from './assignments/entities/peer-review-session.en
             Elective,
             ElectiveEnrollment,
             Internship,
+            InternshipApplication,
+            InternshipView,
           ],
           synchronize: configService.get('NODE_ENV') !== 'production',
           logging: configService.get('NODE_ENV') !== 'production',
         };
       },
       inject: [ConfigService], 
+    }),
+    HttpModule.registerAsync({
+      useFactory: () => ({
+        timeout: 10000,
+        maxRedirects: 5,
+      }),
     }),
     AuthModule,
     UsersModule,

@@ -1,13 +1,13 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { useInternship } from '@/shared/api/internships';
+import { useInternship, trackInternshipView, applyToInternship, getUserApplication } from '@/shared/api/internships';
 import { Card } from '@/shared/ui/card';
 import { Button } from '@/shared/ui/button';
 import {
   MapPin, Clock, Banknote, Building2, ChevronLeft,
   Calendar, ExternalLink, Mail, CheckCircle, Briefcase,
-  TrendingUp, Star
+  TrendingUp, Star, Loader2
 } from 'lucide-react';
 
 const FORMAT_LABELS: Record<string, { label: string; color: string }> = {
@@ -28,6 +28,28 @@ interface Props {
 export default function InternshipDetailPage({ id }: Props) {
   const { internship, isLoading, isError } = useInternship(id);
   const [applied, setApplied] = useState(false);
+  const [isApplying, setIsApplying] = useState(false);
+  const [applicationError, setApplicationError] = useState<string | null>(null);
+
+  // Отслеживание просмотра при загрузке страницы
+  useEffect(() => {
+    if (internship) {
+      trackInternshipView(id).catch(console.error);
+    }
+  }, [internship, id]);
+
+  // Проверка существующей заявки
+  useEffect(() => {
+    if (internship) {
+      getUserApplication(id)
+        .then(app => {
+          if (app) {
+            setApplied(true);
+          }
+        })
+        .catch(console.error);
+    }
+  }, [internship, id]);
 
   if (isLoading) {
     return (
@@ -54,13 +76,28 @@ export default function InternshipDetailPage({ id }: Props) {
   const deadline = formatDate(internship.deadline);
   const isExpired = internship.deadline && new Date(internship.deadline) < new Date();
 
-  const handleApply = () => {
-    if (internship.applicationUrl) {
-      window.open(internship.applicationUrl, '_blank', 'noopener');
-    } else if (internship.applicationEmail) {
-      window.location.href = `mailto:${internship.applicationEmail}?subject=Заявка на стажировку: ${internship.title}`;
+  const handleApply = async () => {
+    if (!internship) return;
+
+    setIsApplying(true);
+    setApplicationError(null);
+
+    try {
+      // Сохраняем заявку в базу
+      await applyToInternship(id);
+      setApplied(true);
+
+      // Открываем внешнюю ссылку или почту
+      if (internship.applicationUrl) {
+        window.open(internship.applicationUrl, '_blank', 'noopener');
+      } else if (internship.applicationEmail) {
+        window.location.href = `mailto:${internship.applicationEmail}?subject=Заявка на стажировку: ${internship.title}`;
+      }
+    } catch (error: any) {
+      setApplicationError(error.message || 'Ошибка при подаче заявки');
+    } finally {
+      setIsApplying(false);
     }
-    setApplied(true);
   };
 
   const canApply = !isExpired && (internship.applicationEmail || internship.applicationUrl);
@@ -133,6 +170,12 @@ export default function InternshipDetailPage({ id }: Props) {
 
             {/* Apply button */}
             <div className="shrink-0 flex flex-col items-end gap-2">
+              {applicationError && (
+                <div className="px-4 py-2 bg-red-600/20 border border-red-600 text-red-400 rounded-lg text-sm font-medium">
+                  {applicationError}
+                </div>
+              )}
+
               {applied ? (
                 <div className="flex items-center gap-2 px-4 py-2 bg-green-600/20 border border-green-600 text-green-400 rounded-lg text-sm font-medium">
                   <CheckCircle className="h-4 w-4" />
@@ -142,9 +185,15 @@ export default function InternshipDetailPage({ id }: Props) {
                 <Button
                   variant="primary"
                   onClick={handleApply}
-                  className="bg-blue-600 hover:bg-blue-700 gap-2"
+                  disabled={isApplying}
+                  className="bg-blue-600 hover:bg-blue-700 gap-2 disabled:opacity-50"
                 >
-                  {internship.applicationUrl ? (
+                  {isApplying ? (
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      Отправка...
+                    </>
+                  ) : internship.applicationUrl ? (
                     <><ExternalLink className="h-4 w-4" /> Подать заявку</>
                   ) : (
                     <><Mail className="h-4 w-4" /> Написать на почту</>
@@ -249,9 +298,15 @@ export default function InternshipDetailPage({ id }: Props) {
               <Button
                 variant="primary"
                 onClick={handleApply}
-                className="w-full bg-blue-600 hover:bg-blue-700 gap-2"
+                disabled={isApplying}
+                className="w-full bg-blue-600 hover:bg-blue-700 gap-2 disabled:opacity-50"
               >
-                {internship.applicationUrl ? (
+                {isApplying ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    Отправка...
+                  </>
+                ) : internship.applicationUrl ? (
                   <><ExternalLink className="h-4 w-4" /> Подать заявку</>
                 ) : (
                   <><Mail className="h-4 w-4" /> Написать на почту</>

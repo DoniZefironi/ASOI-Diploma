@@ -1,4 +1,6 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany } from 'typeorm';
+import { InternshipApplication } from './internship-application.entity';
+import { InternshipView } from './internship-view.entity';
 
 @Entity('internships')
 export class Internship {
@@ -52,6 +54,18 @@ export class Internship {
 
   @Column({ type: 'jsonb', nullable: true })
   tags: string[];
+
+  @Column({ nullable: true })
+  externalId: string;
+
+  @Column({ length: 50, nullable: true })
+  source: string;
+
+  @OneToMany(() => InternshipApplication, app => app.internship)
+  applications: InternshipApplication[];
+
+  @OneToMany(() => InternshipView, view => view.internship)
+  views: InternshipView[];
 
   @CreateDateColumn()
   createdAt: Date;

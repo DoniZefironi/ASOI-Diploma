@@ -6,6 +6,7 @@ import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { UserRoleEnum } from '../users/entities/user-role.entity';
 import { SubmitTestDto } from './dto/submit-test.dto';
+import { SubmitExpertResultDto } from './dto/submit-expert-result.dto';
 
 @Controller('professional-orientation')
 export class ProfessionalOrientationController {
@@ -106,5 +107,16 @@ export class ProfessionalOrientationController {
     confidence: number;
   }) {
     return this.service.generateRoadmap(dto);
+  }
+
+  // ── Expert System Result ──────────────────────────────────────────────────
+
+  @Post('expert-result')
+  @UseGuards(JwtAuthGuard)
+  async submitExpertResult(
+    @Request() req: any,
+    @Body() dto: SubmitExpertResultDto,
+  ) {
+    return this.service.submitExpertResult(req.user.userId, dto);
   }
 }

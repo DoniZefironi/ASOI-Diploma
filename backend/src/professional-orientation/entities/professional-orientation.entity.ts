@@ -19,6 +19,9 @@ export class ProfessionalOrientation {
   @Column()
   recommendedProfession: string;
 
+  @Column({ type: 'json', nullable: true })
+  expertResult: Record<string, any>;
+
   @CreateDateColumn()
   createdAt: Date;
 

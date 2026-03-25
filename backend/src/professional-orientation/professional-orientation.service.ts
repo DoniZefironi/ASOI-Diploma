@@ -5,6 +5,7 @@ import { Repository } from 'typeorm';
 import { ProfessionalOrientation } from './entities/professional-orientation.entity';
 import { CareerTest } from './entities/career-test.entity';
 import { SubmitTestDto } from './dto/submit-test.dto';
+import { SubmitExpertResultDto } from './dto/submit-expert-result.dto';
 
 export interface ProfessionStat {
   profession: string;
@@ -901,6 +902,22 @@ export class ProfessionalOrientationService implements OnModuleInit {
       .orderBy('count', 'DESC')
       .getRawMany();
     return stats.map(row => ({ profession: row.profession, count: parseInt(row.count, 10) }));
+  }
+
+  async submitExpertResult(userId: number, dto: SubmitExpertResultDto) {
+    const existing = await this.repo.findOne({ where: { userId } });
+    
+    if (existing) {
+      existing.expertResult = dto as any;
+      existing.recommendedProfession = dto.topMatches[0]?.careerTitle ?? existing.recommendedProfession;
+      return this.repo.save(existing);
+    }
+    
+    return this.repo.save(this.repo.create({
+      userId,
+      recommendedProfession: dto.topMatches[0]?.careerTitle ?? 'Не определено',
+      expertResult: dto,
+    }));
   }
 
   // ── Expert Analysis ───────────────────────────────────────────────────────

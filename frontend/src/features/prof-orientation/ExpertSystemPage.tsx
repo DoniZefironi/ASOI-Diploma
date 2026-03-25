@@ -1,11 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { QUESTIONS } from './expertSystem/knowledgeBase';
 import { runExpertSystem } from './expertSystem/inferenceEngine';
 import { TRAIT_LABELS, TRAIT_COLORS, TRAIT_ICONS } from './expertSystem/types';
 import type { ExpertResult, TraitKey, CareerMatch } from './expertSystem/types';
 import { useAuth } from '@/shared/lib/auth-context';
+import { useSubmitExpertResult } from '@/shared/api/prof-orientation';
 
 const LIKERT_OPTIONS = [
   { label: 'Нет',        active: 'border-red-500    bg-red-500/15    text-red-300'    },
@@ -212,10 +213,46 @@ export default function CareerOrientationPage() {
   const [result, setResult] = useState<ExpertResult | null>(null);
   const [expandedCareer, setExpandedCareer] = useState<string | null>(null);
   const [roadmapMatch, setRoadmapMatch] = useState<CareerMatch | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
+  const [isSaved, setIsSaved] = useState(false);
+  
+  const { token } = useAuth();
+  const { submit: submitExpert } = useSubmitExpertResult();
 
   const currentQ = QUESTIONS[currentIdx];
   const totalQ = QUESTIONS.length;
   const progress = Math.round((currentIdx / totalQ) * 100);
+
+  // Сохранение результатов при переходе на вкладку результатов
+  useEffect(() => {
+    if (step === 'results' && result && token && !isSaved && !isSaving) {
+      saveResults();
+    }
+  }, [step, result, token]);
+
+  async function saveResults() {
+    if (!result || !token) return;
+    
+    setIsSaving(true);
+    try {
+      await submitExpert({
+        profileTitle: result.profileTitle,
+        profileDescription: result.profileDescription,
+        dominantTraits: result.dominantTraits,
+        traitScores: result.traitScores,
+        topMatches: result.topMatches.map(m => ({
+          careerId: m.career.id,
+          careerTitle: m.career.title,
+          confidence: m.confidence,
+        })),
+      });
+      setIsSaved(true);
+    } catch (error) {
+      console.error('Ошибка сохранения результатов:', error);
+    } finally {
+      setIsSaving(false);
+    }
+  }
 
   function handleConfirm() {
     if (selected === null) return;
@@ -245,6 +282,8 @@ export default function CareerOrientationPage() {
     setResult(null);
     setExpandedCareer(null);
     setRoadmapMatch(null);
+    setIsSaving(false);
+    setIsSaved(false);
   }
 
   // ── Welcome ────────────────────────────────────────────────────────────────
@@ -388,6 +427,28 @@ export default function CareerOrientationPage() {
       )}
 
       <div className="max-w-3xl mx-auto">
+        {/* Status indicator */}
+        <div className="mb-4 flex items-center justify-center gap-2">
+          {isSaving ? (
+            <div className="flex items-center gap-2 text-blue-400 text-sm">
+              <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
+              </svg>
+              <span>Сохранение результатов...</span>
+            </div>
+          ) : isSaved ? (
+            <div className="flex items-center gap-2 text-green-400 text-sm">
+              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+              </svg>
+              <span>Результаты сохранены</span>
+            </div>
+          ) : !token ? (
+            <div className="text-gray-500 text-sm">Войдите, чтобы сохранить результаты</div>
+          ) : null}
+        </div>
+
         {/* Profile */}
         <div className="relative overflow-hidden bg-gradient-to-br from-[#1a2030] to-[#161b22] border border-[#30363d] rounded-2xl p-6 mb-5">
           <div className="absolute top-0 right-0 w-40 h-40 bg-blue-500/5 rounded-full -mr-10 -mt-10 pointer-events-none" />

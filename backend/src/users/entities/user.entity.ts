@@ -7,7 +7,9 @@ import { ForumPost } from '../../forum/entities/forum-post.entity';
 import { UserAchievement } from '../../achievements/entities/user-achievement.entity';
 import { PeerReview } from '../../assignments/entities/peer-review.entity';
 import { CircuitSubmission } from '../../circuit/entities/circuit-submission.entity'
-import { ProfessionalOrientation } from '../../professional-orientation/entities/professional-orientation.entity'; 
+import { ProfessionalOrientation } from '../../professional-orientation/entities/professional-orientation.entity';
+import { InternshipApplication } from '../../internships/entities/internship-application.entity';
+import { InternshipView } from '../../internships/entities/internship-view.entity';
 
 @Entity('users')
 export class User {
@@ -64,4 +66,10 @@ export class User {
 
   @OneToMany(() => ProfessionalOrientation, professionalOrientation => professionalOrientation.user)
   professionalOrientations: ProfessionalOrientation[];
+
+  @OneToMany(() => InternshipApplication, application => application.user)
+  internshipApplications: InternshipApplication[];
+
+  @OneToMany(() => InternshipView, view => view.user)
+  internshipViews: InternshipView[];
 }

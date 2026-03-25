@@ -2,14 +2,14 @@
 'use client';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
-import { 
-  BarChart, 
-  Bar, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
-  Legend, 
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
   ResponsiveContainer,
   PieChart,
   Pie,
@@ -18,8 +18,9 @@ import {
   Line
 } from 'recharts';
 import { useProfessionStats, ProfessionStat } from '@/shared/api/admin';
-import { Loader2, Users, TrendingUp, PieChart as PieChartIcon } from 'lucide-react';
+import { Loader2, Users, TrendingUp, PieChart as PieChartIcon, Download } from 'lucide-react';
 import { useState } from 'react';
+import { exportProfOrientationStatsToExcel } from '@/shared/lib/excel-export';
 
 const COLORS = [
   '#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8',
@@ -75,6 +76,20 @@ type ChartType = 'bar' | 'pie' | 'line';
 export default function ProfOrientationAnalysisPage() {
   const { stats, isLoading, isError } = useProfessionStats();
   const [chartType, setChartType] = useState<ChartType>('bar');
+  const [isExporting, setIsExporting] = useState(false);
+
+  const exportToExcel = async () => {
+    if (!stats || stats.length === 0) return;
+    
+    setIsExporting(true);
+    try {
+      await exportProfOrientationStatsToExcel(stats);
+    } catch (error) {
+      console.error('Ошибка экспорта в Excel:', error);
+    } finally {
+      setIsExporting(false);
+    }
+  };
 
   if (isLoading) {
     return (
@@ -141,6 +156,23 @@ export default function ProfOrientationAnalysisPage() {
             Статистика по результатам теста профессиональной ориентации
           </p>
         </div>
+        <button
+          onClick={exportToExcel}
+          disabled={isExporting}
+          className="flex items-center gap-2 px-4 py-2.5 bg-green-600 hover:bg-green-700 disabled:bg-green-600/50 text-white rounded-lg transition-colors font-medium"
+        >
+          {isExporting ? (
+            <>
+              <Loader2 className="h-4 w-4 animate-spin" />
+              <span>Экспорт...</span>
+            </>
+          ) : (
+            <>
+              <Download className="h-4 w-4" />
+              <span>Экспорт в Excel</span>
+            </>
+          )}
+        </button>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

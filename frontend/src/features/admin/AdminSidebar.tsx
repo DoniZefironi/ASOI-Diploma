@@ -15,7 +15,9 @@ import {
   BarChart3,
   LogOut,
   GraduationCap,
-  Briefcase
+  Briefcase,
+  TrendingUp,
+  Download
 } from 'lucide-react';
 import { useAuthStore } from '@/shared/store/auth-store';
 import { cn } from '@/shared/lib/utils';
@@ -32,6 +34,8 @@ const menuItems = [
   { href: '/admin/forum', icon: MessageSquare, label: 'Форум' },
   { href: '/admin/hackathons', icon: Award, label: 'Хакатоны' },
   { href: '/admin/internships', icon: Briefcase, label: 'Стажировки' },
+  { href: '/admin/import-internships', icon: Download, label: 'Импорт стажировок' },
+  { href: '/admin/internships-stats', icon: TrendingUp, label: 'Статистика стажировок' },
   { href: '/admin/prof-orientation-analysis', icon: BarChart3, label: 'Анализ проф. ориентации' },
 ];
 
