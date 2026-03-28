@@ -1,5 +1,4 @@
-// src/achievements/achievements.service.ts
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, OnModuleInit } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Achievement, AchievementType } from './entities/achievement.entity';
@@ -7,80 +6,222 @@ import { UserAchievement } from './entities/user-achievement.entity';
 import { CreateAchievementDto } from './dto/create-achievement.dto';
 import { UpdateAchievementDto } from './dto/update-achievement.dto';
 import { User } from '../users/entities/user.entity';
+import { NotificationsService } from '../notifications/notifications.service';
+import { NotificationType } from '../notifications/entities/notification.entity';
+
+const SEED_ACHIEVEMENTS = [
+  {
+    name: 'Добро пожаловать!',
+    description: 'Зарегистрировался на сайте',
+    type: AchievementType.FIRST_REGISTRATION,
+    icon: '🎉',
+    points: 5,
+    conditions: {},
+  },
+  {
+    name: 'Студент',
+    description: 'Записался на первый курс',
+    type: AchievementType.COURSE_REGISTRATION,
+    icon: '📚',
+    points: 10,
+    conditions: { minRegistrations: 1 },
+  },
+  {
+    name: 'Первые шаги',
+    description: 'Сдал первое задание',
+    type: AchievementType.FIRST_SUBMISSION,
+    icon: '✏️',
+    points: 15,
+    conditions: { minSubmissions: 1 },
+  },
+  {
+    name: 'Прилежный ученик',
+    description: 'Сдал 5 заданий',
+    type: AchievementType.MULTIPLE_SUBMISSIONS,
+    icon: '📖',
+    points: 25,
+    conditions: { minSubmissions: 5 },
+  },
+  {
+    name: 'Отличник',
+    description: 'Получил 90 и более баллов за задание',
+    type: AchievementType.ASSIGNMENT_EXCELLENCE,
+    icon: '⭐',
+    points: 20,
+    conditions: { minScore: 90, minAssignments: 1 },
+  },
+  {
+    name: 'Перфекционист',
+    description: 'Получил максимальный балл за задание',
+    type: AchievementType.PERFECT_SCORE,
+    icon: '💯',
+    points: 30,
+    conditions: { minPerfectScores: 1 },
+  },
+  {
+    name: 'Участник форума',
+    description: 'Написал первое сообщение на форуме',
+    type: AchievementType.FORUM_CONTRIBUTOR,
+    icon: '💬',
+    points: 10,
+    conditions: { minPosts: 1 },
+  },
+  {
+    name: 'Активный участник',
+    description: 'Написал 10 сообщений на форуме',
+    type: AchievementType.FORUM_CONTRIBUTOR,
+    icon: '🗣️',
+    points: 25,
+    conditions: { minPosts: 10 },
+  },
+  {
+    name: 'Форумный эксперт',
+    description: 'Написал 50 сообщений на форуме',
+    type: AchievementType.FORUM_CONTRIBUTOR,
+    icon: '👑',
+    points: 50,
+    conditions: { minPosts: 50 },
+  },
+  {
+    name: 'Рецензент',
+    description: 'Выполнил первую взаимооценку',
+    type: AchievementType.PEER_REVIEWER,
+    icon: '🔍',
+    points: 15,
+    conditions: { minReviews: 1 },
+  },
+  {
+    name: 'Опытный рецензент',
+    description: 'Выполнил 5 взаимооценок',
+    type: AchievementType.PEER_REVIEWER,
+    icon: '🏅',
+    points: 35,
+    conditions: { minReviews: 5 },
+  },
+  {
+    name: 'Ранняя пташка',
+    description: 'Записался на курс, когда до начала оставалось больше 7 дней',
+    type: AchievementType.EARLY_BIRD,
+    icon: '🐦',
+    points: 15,
+    conditions: { minDaysBeforeStart: 7 },
+  },
+  {
+    name: 'Участник хакатона',
+    description: 'Подал первый проект на хакатон',
+    type: AchievementType.HACKATHON_PARTICIPANT,
+    icon: '🚀',
+    points: 20,
+    conditions: {},
+  },
+  {
+    name: 'Победитель хакатона',
+    description: 'Набрал 90+ баллов на хакатоне',
+    type: AchievementType.HACKATHON_WINNER,
+    icon: '🏆',
+    points: 50,
+    conditions: { minScore: 90 },
+  },
+  {
+    name: 'Активный студент',
+    description: 'Записан хотя бы на один курс',
+    type: AchievementType.COURSE_COMPLETION,
+    icon: '🎓',
+    points: 40,
+    conditions: { minCourses: 1 },
+  },
+];
 
 @Injectable()
-export class AchievementsService {
+export class AchievementsService implements OnModuleInit {
   constructor(
     @InjectRepository(Achievement)
-    private achievementRepository: Repository<Achievement>,
+    private achievementRepo: Repository<Achievement>,
     @InjectRepository(UserAchievement)
-    private userAchievementRepository: Repository<UserAchievement>,
+    private userAchievementRepo: Repository<UserAchievement>,
     @InjectRepository(User)
-    private userRepository: Repository<User>,
+    private userRepo: Repository<User>,
+    private readonly notificationsService: NotificationsService,
   ) {}
 
-  async createAchievement(createAchievementDto: CreateAchievementDto): Promise<Achievement> {
-    const achievement = this.achievementRepository.create(createAchievementDto);
-    return this.achievementRepository.save(achievement);
+  async onModuleInit() {
+    const count = await this.achievementRepo.count();
+    if (count === 0) {
+      await this.achievementRepo.save(
+        SEED_ACHIEVEMENTS.map(a => this.achievementRepo.create(a)),
+      );
+    }
+  }
+
+  // ── CRUD ─────────────────────────────────────────────────────────
+
+  async createAchievement(dto: CreateAchievementDto): Promise<Achievement> {
+    return this.achievementRepo.save(this.achievementRepo.create(dto));
   }
 
   async findAllAchievements(): Promise<Achievement[]> {
-    return this.achievementRepository.find({
-      where: { isActive: true },
-      order: { points: 'DESC' },
-    });
+    return this.achievementRepo.find({ where: { isActive: true }, order: { points: 'DESC' } });
   }
 
   async findAchievementById(id: number): Promise<Achievement> {
-    const achievement = await this.achievementRepository.findOne({
-      where: { id },
-    });
-
-    if (!achievement) {
-      throw new NotFoundException('Achievement not found');
-    }
-
-    return achievement;
+    const a = await this.achievementRepo.findOne({ where: { id } });
+    if (!a) throw new NotFoundException('Achievement not found');
+    return a;
   }
 
-  async updateAchievement(id: number, updateAchievementDto: UpdateAchievementDto): Promise<Achievement> {
-    await this.achievementRepository.update(id, updateAchievementDto);
+  async updateAchievement(id: number, dto: UpdateAchievementDto): Promise<Achievement> {
+    await this.achievementRepo.update(id, dto);
     return this.findAchievementById(id);
   }
 
   async removeAchievement(id: number): Promise<void> {
-    await this.achievementRepository.delete(id);
+    await this.achievementRepo.delete(id);
   }
 
+  // ── User achievements ─────────────────────────────────────────────
+
   async getUserAchievements(userId: number): Promise<UserAchievement[]> {
-    return this.userAchievementRepository.find({
+    return this.userAchievementRepo.find({
       where: { userId },
       relations: ['achievement'],
       order: { earnedAt: 'DESC' },
     });
   }
 
-  async grantAchievement(userId: number, achievementId: number, metadata?: any): Promise<UserAchievement> {
-    const existingAchievement = await this.userAchievementRepository.findOne({
-      where: { userId, achievementId },
-    });
+  async grantAchievement(userId: number, achievementId: number, metadata?: any): Promise<UserAchievement | null> {
+    const existing = await this.userAchievementRepo.findOne({ where: { userId, achievementId } });
+    if (existing) return existing;
 
-    if (existingAchievement) {
-      return existingAchievement;
-    }
+    const achievement = await this.achievementRepo.findOne({ where: { id: achievementId } });
+    if (!achievement) return null;
 
-    const userAchievement = this.userAchievementRepository.create({
+    const ua = await this.userAchievementRepo.save(
+      this.userAchievementRepo.create({ userId, achievementId, earnedAt: new Date(), metadata }),
+    );
+
+    // Notify user
+    await this.notificationsService.create(
       userId,
-      achievementId,
-      earnedAt: new Date(),
-      metadata,
-    });
+      NotificationType.ACHIEVEMENT,
+      'Новое достижение!',
+      `${achievement.icon} Вы получили достижение «${achievement.name}»: ${achievement.description} (+${achievement.points} очков)`,
+      { achievementId: achievement.id, points: achievement.points },
+    );
 
-    return this.userAchievementRepository.save(userAchievement);
+    return ua;
   }
 
+  /** Grant achievement directly by type (for single-instance types like FIRST_REGISTRATION). */
+  async grantAchievementByType(userId: number, type: AchievementType, metadata?: any): Promise<void> {
+    const achievements = await this.achievementRepo.find({ where: { type, isActive: true } });
+    for (const a of achievements) {
+      await this.grantAchievement(userId, a.id, metadata);
+    }
+  }
+
+  /** Check count-based achievements and grant those whose conditions are met. */
   async checkAndGrantAchievements(userId: number): Promise<UserAchievement[]> {
-    const user = await this.userRepository.findOne({
+    const user = await this.userRepo.findOne({
       where: { id: userId },
       relations: [
         'submissions',
@@ -91,105 +232,105 @@ export class AchievementsService {
       ],
     });
 
-    if (!user) {
-      throw new NotFoundException('User not found');
-    }
+    if (!user) throw new NotFoundException('User not found');
 
     const allAchievements = await this.findAllAchievements();
-    const grantedAchievements: UserAchievement[] = [];
+    const granted: UserAchievement[] = [];
 
     for (const achievement of allAchievements) {
-      if (await this.checkAchievementConditions(user, achievement)) {
-        const granted = await this.grantAchievement(userId, achievement.id);
-        grantedAchievements.push(granted);
+      if (await this.checkConditions(user, achievement)) {
+        const ua = await this.grantAchievement(userId, achievement.id);
+        if (ua) granted.push(ua);
       }
     }
 
-    return grantedAchievements;
+    return granted;
   }
 
-  private async checkAchievementConditions(user: User, achievement: Achievement): Promise<boolean> {
-    const conditions = achievement.conditions;
+  private async checkConditions(user: User, achievement: Achievement): Promise<boolean> {
+    const c = achievement.conditions;
 
     switch (achievement.type) {
-      case AchievementType.COURSE_COMPLETION:
-        const completedCourses = user.courseRegistrations.filter(
-          reg => reg.status === 'approved'
+      case AchievementType.FIRST_REGISTRATION:
+        return true; // Always granted directly on register; here just ensure it triggers
+
+      case AchievementType.COURSE_REGISTRATION:
+      case AchievementType.COURSE_COMPLETION: {
+        const approved = (user.courseRegistrations || []).filter(r => r.status === 'approved').length;
+        return approved >= (c.minRegistrations ?? c.minCourses ?? 1);
+      }
+
+      case AchievementType.FIRST_SUBMISSION: {
+        const count = (user.submissions || []).length;
+        return count >= (c.minSubmissions ?? 1);
+      }
+
+      case AchievementType.MULTIPLE_SUBMISSIONS: {
+        const count = (user.submissions || []).length;
+        return count >= (c.minSubmissions ?? 5);
+      }
+
+      case AchievementType.ASSIGNMENT_EXCELLENCE: {
+        const excellent = (user.submissions || []).filter(
+          s => s.finalScore != null && s.finalScore >= (c.minScore ?? 90),
         ).length;
-        return completedCourses >= conditions.minCourses;
+        return excellent >= (c.minAssignments ?? 1);
+      }
 
-      case AchievementType.ASSIGNMENT_EXCELLENCE:
-        const excellentSubmissions = user.submissions.filter(
-          submission => submission.finalScore && submission.finalScore >= conditions.minScore
+      case AchievementType.PERFECT_SCORE: {
+        const perfect = (user.submissions || []).filter(
+          s => s.finalScore != null && s.assignment && s.finalScore >= s.assignment.maxScore,
         ).length;
-        return excellentSubmissions >= conditions.minAssignments;
+        return perfect >= (c.minPerfectScores ?? 1);
+      }
 
-      case AchievementType.PEER_REVIEWER:
-        const reviewCount = user.peerReviewsGiven?.length || 0;
-        return reviewCount >= conditions.minReviews;
+      case AchievementType.PEER_REVIEWER: {
+        const count = (user.peerReviewsGiven || []).length;
+        return count >= (c.minReviews ?? 1);
+      }
 
-      case AchievementType.FORUM_CONTRIBUTOR:
-        const postCount = user.forumPosts.length;
-        return postCount >= conditions.minPosts;
+      case AchievementType.FORUM_CONTRIBUTOR: {
+        const count = (user.forumPosts || []).length;
+        return count >= (c.minPosts ?? 1);
+      }
 
       case AchievementType.EARLY_BIRD:
-        const registrationDate = new Date(user.createdAt);
-        const courseStartDate = new Date(conditions.courseStartDate);
-        const daysDifference = (courseStartDate.getTime() - registrationDate.getTime()) / (1000 * 3600 * 24);
-        return daysDifference <= conditions.maxDaysBeforeStart;
-
-      case AchievementType.PERFECT_SCORE:
-        const perfectSubmissions = user.submissions.filter(
-          submission => submission.finalScore === submission.assignment.maxScore
-        );
-        return perfectSubmissions.length >= conditions.minPerfectScores;
+      case AchievementType.HACKATHON_PARTICIPANT:
+      case AchievementType.HACKATHON_WINNER:
+      case AchievementType.OLYMPIAD_WINNER:
+        return false; // Granted directly via grantAchievementByType
 
       default:
         return false;
     }
   }
 
-async getLeaderboard(limit: number = 10): Promise<any[]> {
-  const leaderboard = await this.userAchievementRepository
-    .createQueryBuilder('userAchievement')
-    .select('userAchievement.userId', 'userId')
-    .addSelect('SUM(achievement.points)', 'totalPoints')
-    .addSelect('COUNT(userAchievement.id)', 'achievementCount')
-    .innerJoin('userAchievement.achievement', 'achievement')
-    .groupBy('userAchievement.userId')
-    .orderBy('totalPoints', 'DESC')
-    .limit(limit)
-    .getRawMany();
+  // ── Leaderboard ───────────────────────────────────────────────────
 
-    const userIds = leaderboard.map(item => item.userId);
-    const users = await this.userRepository.findByIds(userIds);
+  async getLeaderboard(limit = 10): Promise<any[]> {
+    const rows = await this.userAchievementRepo
+      .createQueryBuilder('ua')
+      .select('ua.userId', 'userId')
+      .addSelect('SUM(a.points)', 'totalPoints')
+      .addSelect('COUNT(ua.id)', 'achievementCount')
+      .innerJoin('ua.achievement', 'a')
+      .groupBy('ua.userId')
+      .orderBy('totalPoints', 'DESC')
+      .limit(limit)
+      .getRawMany();
 
-    return leaderboard.map(item => {
-        const user = users.find(u => u.id === item.userId);
-        
-        if (!user) {
-        return {
-            user: {
-            id: item.userId,
-            firstName: 'Unknown',
-            lastName: 'User',
-            email: 'unknown@example.com',
-            },
-            totalPoints: parseInt(item.totalPoints) || 0,
-            achievementCount: parseInt(item.achievementCount) || 0,
-        };
-        }
+    const userIds = rows.map(r => r.userId);
+    const users = await this.userRepo.findByIds(userIds);
 
-        return {
-        user: {
-            id: user.id,
-            firstName: user.firstName,
-            lastName: user.lastName,
-            email: user.email,
-        },
-        totalPoints: parseInt(item.totalPoints) || 0,
-        achievementCount: parseInt(item.achievementCount) || 0,
-        };
+    return rows.map(r => {
+      const u = users.find(u => u.id === r.userId);
+      return {
+        user: u
+          ? { id: u.id, firstName: u.firstName, lastName: u.lastName, email: u.email }
+          : { id: r.userId, firstName: 'Unknown', lastName: 'User', email: '' },
+        totalPoints: parseInt(r.totalPoints) || 0,
+        achievementCount: parseInt(r.achievementCount) || 0,
+      };
     });
-    }
+  }
 }

@@ -12,6 +12,7 @@ import { PeerReviewController } from './peer-review.controller';
 import { PeerReviewSession } from './entities/peer-review-session.entity';
 import { PeerReviewSessionService } from './peer-review-session.service';
 import { PeerReviewSessionController } from './peer-review-session.controller';
+import { AchievementsModule } from '../achievements/achievements.module';
 
 @Module({
   imports: [
@@ -21,7 +22,8 @@ import { PeerReviewSessionController } from './peer-review-session.controller';
       PeerReview,
       CourseRegistration,
       PeerReviewSession,
-    ])
+    ]),
+    AchievementsModule,
   ],
   controllers: [
     AssignmentsController,

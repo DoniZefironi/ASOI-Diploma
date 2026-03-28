@@ -3,6 +3,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { HttpModule } from '@nestjs/axios';
+import { ScheduleModule as NestScheduleModule } from '@nestjs/schedule';
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -24,6 +25,10 @@ import { ProfessionalOrientationModule } from './professional-orientation/profes
 import { CourseAccessModule } from './course-access/course-access.module';
 import { ElectivesModule } from './electives/electives.module';
 import { Elective } from './electives/entities/elective.entity';
+import { AnalyticsModule } from './analytics/analytics.module';
+import { SiteVisit } from './analytics/entities/site-visit.entity';
+import { NotificationsModule } from './notifications/notifications.module';
+import { Notification } from './notifications/entities/notification.entity';
 import { InternshipsModule } from './internships/internships.module';
 import { Internship } from './internships/entities/internship.entity';
 import { ElectiveEnrollment } from './electives/entities/elective-enrollment.entity';
@@ -59,6 +64,7 @@ import { PeerReviewSession } from './assignments/entities/peer-review-session.en
     ConfigModule.forRoot({
       isGlobal: true,
     }),
+    NestScheduleModule.forRoot(),
     TypeOrmModule.forRootAsync({
       useFactory: (configService: ConfigService) => {
         const databaseUrl = configService.get<string>('DATABASE_URL');
@@ -100,6 +106,8 @@ import { PeerReviewSession } from './assignments/entities/peer-review-session.en
             Internship,
             InternshipApplication,
             InternshipView,
+            SiteVisit,
+            Notification,
           ],
           synchronize: configService.get('NODE_ENV') !== 'production',
           logging: configService.get('NODE_ENV') !== 'production',
@@ -129,6 +137,8 @@ import { PeerReviewSession } from './assignments/entities/peer-review-session.en
     CourseAccessModule,
     ElectivesModule,
     InternshipsModule,
+    AnalyticsModule,
+    NotificationsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

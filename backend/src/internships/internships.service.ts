@@ -182,6 +182,14 @@ export class InternshipsService {
     });
   }
 
+  findAllFromSource(source: string): Promise<Internship[]> {
+    return this.internshipRepo.find({ where: { source } });
+  }
+
+  async deactivate(id: number): Promise<void> {
+    await this.internshipRepo.update(id, { isActive: false });
+  }
+
   async createWithSource(dto: any): Promise<Internship> {
     const internship = this.internshipRepo.create(dto);
     const saved = await this.internshipRepo.save(internship);

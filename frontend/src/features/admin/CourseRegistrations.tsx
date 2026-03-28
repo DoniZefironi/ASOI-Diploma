@@ -204,9 +204,6 @@ export default function CourseRegistrationsPage() {
               <thead className="bg-gray-50 dark:bg-gray-800">
                 <tr className="bg-gray-800 border-b-white border-b-2">
                   <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                    ID
-                  </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                     Пользователь
                   </th>
                   <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
@@ -233,14 +230,10 @@ export default function CourseRegistrationsPage() {
                 ) : (
                   filteredRegistrations.map((reg) => (
                     <tr key={reg.id} className="bg-gray-800 border-b-white border-b-2">
-                      <td className="px-4 py-3 text-sm text-white font-medium">{reg.id}</td>
                       <td className="px-4 py-3 text-sm text-white">
                         <div className="flex flex-col">
                           <span className="font-medium">
                             {reg.user.firstName} {reg.user.lastName}
-                          </span>
-                          <span className="text-xs text-gray-400">
-                            ID: {reg.user.id}
                           </span>
                         </div>
                       </td>

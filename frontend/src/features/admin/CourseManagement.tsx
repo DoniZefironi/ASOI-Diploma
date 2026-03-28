@@ -240,7 +240,6 @@ export default function CourseManagement() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>ID</TableHead>
                 <TableHead>Название</TableHead>
                 <TableHead>Тип</TableHead>
                 <TableHead>Длительность</TableHead>
@@ -251,7 +250,6 @@ export default function CourseManagement() {
             <TableBody>
               {courses?.map((course: any) => (
                 <TableRow key={course.id}>
-                  <TableCell className="font-medium text-white">{course.id}</TableCell>
                   <TableCell>
                     <div className="flex flex-col">
                       <span className="font-medium text-white">{course.name}</span>

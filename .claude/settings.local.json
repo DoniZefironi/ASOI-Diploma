@@ -21,7 +21,12 @@
       "Bash(grep -n \"professional-orientation\\\\|rewrites\\\\|proxy\" /c/Users/vladn/OneDrive/Dokumente/GitHub/ASOI-Diploma/frontend/next.config.*)",
       "Bash(ls /c/Users/vladn/OneDrive/Dokumente/GitHub/ASOI-Diploma/frontend/next.config*)",
       "Bash(npx tsc:*)",
-      "Bash(find /c/Users/vladn/OneDrive/Dokumente/GitHub/ASOI-Diploma -type d -name expertSystem -o -type f -name *expert* -o -type f -name *inference* -o -type f -name *knowledge*)"
+      "Bash(find /c/Users/vladn/OneDrive/Dokumente/GitHub/ASOI-Diploma -type d -name expertSystem -o -type f -name *expert* -o -type f -name *inference* -o -type f -name *knowledge*)",
+      "Bash(find c:UsersvladnOneDriveDokumenteGitHubASOI-Diplomafrontendsrcappprofile -type f -name *.tsx -o -name *.ts -o -name *.json)",
+      "Bash(ls -la \"c:\\\\Users\\\\vladn\\\\OneDrive\\\\Dokumente\\\\GitHub\\\\ASOI-Diploma\\\\frontend\\\\src\\\\app\\\\profile\"\" 2>/dev/null || echo \"Directory not found or empty \")",
+      "Bash(grep \"\\\\.tsx$\")",
+      "Read(//c/Users/vladn/OneDrive/Dokumente/GitHub/ASOI-Diploma/**)",
+      "Bash(find /c/Users/vladn/OneDrive/Dokumente/GitHub/ASOI-Diploma/frontend/src/shared/api -type f -name *.ts -o -name *.tsx)"
     ]
   }
 }

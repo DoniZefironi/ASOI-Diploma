@@ -64,7 +64,7 @@ function GradeModal({ submission, onClose, onSuccess }: {
       <div className="bg-[#1C2128] border border-gray-700 rounded-xl p-6 max-w-md w-full mx-4">
         <h2 className="text-xl font-bold text-white mb-1">Оценить работу</h2>
         <p className="text-sm text-gray-500 mb-5">
-          Submission #{submission.id} — Итог:{' '}
+          Итог:{' '}
           <span className="text-green-400 font-semibold">{total}</span>/400
         </p>
         <form onSubmit={handleSubmit} className="space-y-4">

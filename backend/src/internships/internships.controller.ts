@@ -53,6 +53,13 @@ export class InternshipsController {
     return this.internshipsHhService.scheduledImport();
   }
 
+  @Post('admin/cleanup-hh')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRoleEnum.ADMIN)
+  async cleanupHh() {
+    return this.internshipsHhService.cleanupStaleVacancies();
+  }
+
   @Get('admin/applications')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRoleEnum.ADMIN)

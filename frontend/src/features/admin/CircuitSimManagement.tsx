@@ -222,7 +222,7 @@ export default function CircuitSimManagement() {
                         </div>
                         <p className="text-sm text-gray-400 mb-2">{circuit.description}</p>
                         <div className="text-xs text-gray-500">
-                          Курс: {circuit.course?.name || `ID: ${circuit.courseId}`}
+                          Курс: {circuit.course?.name || '—'}
                         </div>
                         <div className="text-xs text-gray-500 mt-1">
                           Обновлено: {new Date(circuit.updatedAt).toLocaleDateString('ru-RU')}

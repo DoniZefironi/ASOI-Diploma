@@ -11,10 +11,12 @@ import { UserRole } from '../users/entities/user-role.entity';
 import { CourseRegistration } from '../course-groups/entities/course-registration.entity';
 import { LocalStrategy } from './strategies/local.strategy';
 import { JwtStrategy } from './strategies/jwt.strategy';
+import { AchievementsModule } from '../achievements/achievements.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([User, UserRole, CourseRegistration]),
+    AchievementsModule,
     PassportModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],

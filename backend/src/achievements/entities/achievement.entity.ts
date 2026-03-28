@@ -1,16 +1,20 @@
-// src/achievements/entities/achievement.entity.ts
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany, CreateDateColumn, UpdateDateColumn } from 'typeorm';
 import { UserAchievement } from './user-achievement.entity';
 
 export enum AchievementType {
-  COURSE_COMPLETION = 'course_completion',
-  ASSIGNMENT_EXCELLENCE = 'assignment_excellence',
-  PEER_REVIEWER = 'peer_reviewer',
-  FORUM_CONTRIBUTOR = 'forum_contributor',
-  EARLY_BIRD = 'early_bird',
-  PERFECT_SCORE = 'perfect_score',
-  HACKATHON_WINNER = 'hackathon_winner',
-  OLYMPIAD_WINNER = 'olympiad_winner'
+  FIRST_REGISTRATION   = 'first_registration',
+  COURSE_REGISTRATION  = 'course_registration',
+  FIRST_SUBMISSION     = 'first_submission',
+  MULTIPLE_SUBMISSIONS = 'multiple_submissions',
+  ASSIGNMENT_EXCELLENCE= 'assignment_excellence',
+  PERFECT_SCORE        = 'perfect_score',
+  PEER_REVIEWER        = 'peer_reviewer',
+  FORUM_CONTRIBUTOR    = 'forum_contributor',
+  EARLY_BIRD           = 'early_bird',
+  HACKATHON_PARTICIPANT= 'hackathon_participant',
+  HACKATHON_WINNER     = 'hackathon_winner',
+  OLYMPIAD_WINNER      = 'olympiad_winner',
+  COURSE_COMPLETION    = 'course_completion',
 }
 
 @Entity('achievements')
@@ -24,10 +28,7 @@ export class Achievement {
   @Column({ type: 'text' })
   description: string;
 
-  @Column({
-    type: 'enum',
-    enum: AchievementType
-  })
+  @Column({ type: 'enum', enum: AchievementType })
   type: AchievementType;
 
   @Column()
@@ -48,6 +49,6 @@ export class Achievement {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @OneToMany(() => UserAchievement, userAchievement => userAchievement.achievement)
+  @OneToMany(() => UserAchievement, ua => ua.achievement)
   userAchievements: UserAchievement[];
 }

@@ -13,6 +13,8 @@ import { UserRole, UserRoleEnum } from '../users/entities/user-role.entity';
 import { User } from '../users/entities/user.entity';
 import { ScheduleItem } from '../schedule/entities/schedule-item.entity';
 import { GroupSearchDto, SortOrder } from '../common/dto/pagination.dto';
+import { AchievementsService } from '../achievements/achievements.service';
+import { AchievementType } from '../achievements/entities/achievement.entity';
 
 @Injectable()
 export class CourseGroupsService {
@@ -31,6 +33,7 @@ export class CourseGroupsService {
     private userRoleRepository: Repository<UserRole>,
     @InjectRepository(User)
     private usersRepository: Repository<User>,
+    private readonly achievementsService: AchievementsService,
   ) {}
 
   async create(createCourseGroupDto: CreateCourseGroupDto): Promise<CourseGroup> {
@@ -214,6 +217,18 @@ export class CourseGroupsService {
 
     // Добавляем роль STUDENT пользователю с типом курса
     await this.addStudentRole(userId, courseGroup.course.type);
+
+    // Достижения
+    this.achievementsService.grantAchievementByType(userId, AchievementType.COURSE_REGISTRATION).catch(() => {});
+    this.achievementsService.checkAndGrantAchievements(userId).catch(() => {});
+
+    // Ранняя пташка: записался за 7+ дней до начала курса
+    if (courseGroup.startDate) {
+      const daysLeft = (new Date(courseGroup.startDate).getTime() - Date.now()) / 86400000;
+      if (daysLeft >= 7) {
+        this.achievementsService.grantAchievementByType(userId, AchievementType.EARLY_BIRD).catch(() => {});
+      }
+    }
 
     return saved;
   }

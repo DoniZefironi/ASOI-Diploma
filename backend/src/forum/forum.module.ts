@@ -7,6 +7,7 @@ import { ForumSection } from './entities/forum-section.entity';
 import { ForumTopic } from './entities/forum-topic.entity';
 import { ForumPost } from './entities/forum-post.entity';
 import { CourseRegistration } from '../course-groups/entities/course-registration.entity';
+import { AchievementsModule } from '../achievements/achievements.module';
 
 @Module({
   imports: [
@@ -14,8 +15,9 @@ import { CourseRegistration } from '../course-groups/entities/course-registratio
       ForumSection,
       ForumTopic,
       ForumPost,
-      CourseRegistration
-    ])
+      CourseRegistration,
+    ]),
+    AchievementsModule,
   ],
   controllers: [ForumController],
   providers: [ForumService],

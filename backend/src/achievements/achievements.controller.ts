@@ -28,6 +28,11 @@ export class AchievementsController {
     return this.achievementsService.getUserAchievements(req.user.userId);
   }
 
+  @Get('user/:userId')
+  getUserAchievements(@Param('userId') userId: string) {
+    return this.achievementsService.getUserAchievements(+userId);
+  }
+
   @Get(':id')
   findAchievementById(@Param('id') id: string) {
     return this.achievementsService.findAchievementById(+id);

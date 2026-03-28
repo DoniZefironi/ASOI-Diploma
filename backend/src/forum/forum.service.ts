@@ -9,6 +9,7 @@ import { CreateForumSectionDto } from './dto/create-forum-section.dto';
 import { CreateForumTopicDto } from './dto/create-forum-topic.dto';
 import { CreateForumPostDto } from './dto/create-forum-post.dto';
 import { CourseRegistration, RegistrationStatus } from '../course-groups/entities/course-registration.entity';
+import { AchievementsService } from '../achievements/achievements.service';
 
 @Injectable()
 export class ForumService {
@@ -21,6 +22,7 @@ export class ForumService {
     private postRepository: Repository<ForumPost>,
     @InjectRepository(CourseRegistration)
     private registrationRepository: Repository<CourseRegistration>,
+    private readonly achievementsService: AchievementsService,
   ) {}
 
   async createSection(createSectionDto: CreateForumSectionDto): Promise<ForumSection> {
@@ -126,9 +128,9 @@ export class ForumService {
 
     const savedPost = await this.postRepository.save(post);
 
-    await this.topicRepository.update(topic.id, {
-      lastPostAt: new Date(),
-    });
+    await this.topicRepository.update(topic.id, { lastPostAt: new Date() });
+
+    this.achievementsService.checkAndGrantAchievements(authorId).catch(() => {});
 
     return savedPost;
   }

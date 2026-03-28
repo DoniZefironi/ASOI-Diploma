@@ -1,12 +1,90 @@
 import * as React from 'react';
 
-export const Input = React.forwardRef<HTMLInputElement, React.InputHTMLAttributes<HTMLInputElement>>(
-  ({ className = '', ...props }, ref) => (
-    <input
-      ref={ref}
-      className={`border border-gray-600 rounded-md bg-transparent px-3 py-2 w-full text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 ${className}`}
-      {...props}
-    />
-  )
+interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
+  /** Show error styling */
+  error?: boolean;
+  /** Left icon/element inside the input */
+  leadingAddon?: React.ReactNode;
+  /** Right icon/element inside the input */
+  trailingAddon?: React.ReactNode;
+}
+
+export const Input = React.forwardRef<HTMLInputElement, InputProps>(
+  ({ className = '', error = false, leadingAddon, trailingAddon, style, onFocus, onBlur, ...props }, ref) => {
+    const [focused, setFocused] = React.useState(false);
+
+    if (leadingAddon || trailingAddon) {
+      return (
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            background: '#0d1117',
+            border: `1px solid ${error ? '#f85149' : focused ? '#2f81f7' : '#30363d'}`,
+            borderRadius: '6px',
+            boxShadow: focused ? `0 0 0 3px ${error ? 'rgba(248,81,73,0.4)' : 'rgba(47,129,247,0.4)'}` : 'none',
+            transition: 'border-color 80ms, box-shadow 80ms',
+            overflow: 'hidden',
+          }}
+        >
+          {leadingAddon && (
+            <span style={{ padding: '0 8px', color: '#8b949e', flexShrink: 0 }}>
+              {leadingAddon}
+            </span>
+          )}
+          <input
+            ref={ref}
+            style={{
+              flex: 1,
+              background: 'transparent',
+              border: 'none',
+              outline: 'none',
+              padding: '5px 12px',
+              fontSize: '14px',
+              color: '#e6edf3',
+              lineHeight: 1.5,
+              minWidth: 0,
+              ...style,
+            }}
+            onFocus={(e) => { setFocused(true); onFocus?.(e); }}
+            onBlur={(e) => { setFocused(false); onBlur?.(e); }}
+            className={className}
+            {...props}
+          />
+          {trailingAddon && (
+            <span style={{ padding: '0 8px', color: '#8b949e', flexShrink: 0 }}>
+              {trailingAddon}
+            </span>
+          )}
+        </div>
+      );
+    }
+
+    return (
+      <input
+        ref={ref}
+        style={{
+          display: 'block',
+          width: '100%',
+          background: '#0d1117',
+          border: `1px solid ${error ? '#f85149' : focused ? '#2f81f7' : '#30363d'}`,
+          borderRadius: '6px',
+          padding: '5px 12px',
+          fontSize: '14px',
+          color: '#e6edf3',
+          lineHeight: 1.5,
+          outline: 'none',
+          boxShadow: focused ? `0 0 0 3px ${error ? 'rgba(248,81,73,0.4)' : 'rgba(47,129,247,0.4)'}` : 'none',
+          transition: 'border-color 80ms, box-shadow 80ms',
+          ...style,
+        }}
+        onFocus={(e) => { setFocused(true); onFocus?.(e); }}
+        onBlur={(e) => { setFocused(false); onBlur?.(e); }}
+        className={className}
+        {...props}
+      />
+    );
+  }
 );
+
 Input.displayName = 'Input';

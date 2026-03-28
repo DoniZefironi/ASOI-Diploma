@@ -1,13 +1,11 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
-import { Button } from '@/shared/ui/button';
-import { User, Shield, Loader2, RefreshCw } from 'lucide-react';
+import Link from 'next/link';
 import { useUsers } from '@/shared/api/admin';
 import { apiClient } from '@/shared/api/client';
+import { Badge } from '@/shared/ui/badge';
 
-// Функция для получения красивого названия роли
 const getRoleLabel = (role: string): string => {
   const roleLabels: Record<string, string> = {
     'registered_user': 'Пользователь',
@@ -24,320 +22,33 @@ const getRoleLabel = (role: string): string => {
   return roleLabels[role] || role;
 };
 
-const Badge = ({ children, variant = 'default', className = '' }: { 
-  children: React.ReactNode; 
-  variant?: 'default' | 'secondary' | 'outline' | 'destructive';
-  className?: string;
-}) => {
-  const baseStyles = 'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium';
-  const variants = {
-    default: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300',
-    secondary: 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300',
-    outline: 'border border-gray-300 text-gray-700 dark:border-gray-600 dark:text-gray-300',
-    destructive: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300'
-  };
-
-  return (
-    <span className={`${baseStyles} ${variants[variant]} ${className}`}>
-      {children}
-    </span>
-  );
+const getRoleBadgeVariant = (role: string): 'default' | 'accent' | 'success' | 'attention' | 'danger' | 'done' => {
+  if (role === 'admin') return 'danger';
+  if (role.startsWith('mentor_')) return 'done';
+  if (role.startsWith('student_')) return 'success';
+  return 'default';
 };
 
-const Dialog = ({ 
-  open, 
-  onOpenChange, 
-  children 
-}: { 
-  open: boolean; 
-  onOpenChange: (open: boolean) => void;
-  children: React.ReactNode;
-}) => {
-  if (!open) return null;
-
-  return (
-    <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center p-4">
-      <div className="bg-white dark:bg-gray-800 rounded-lg max-w-md w-full max-h-[90vh] overflow-y-auto">
-        {children}
-      </div>
-    </div>
-  );
-};
-
-const DialogContent = ({ children, className = '' }: { children: React.ReactNode; className?: string }) => (
-  <div className={`p-6 ${className}`}>
-    {children}
-  </div>
+// ── Icon components ────────────────────────────────────────────────
+const ShieldIcon = () => (
+  <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
+    <path d="M7.467.133a1.748 1.748 0 0 1 1.066 0l5.25 1.68A1.75 1.75 0 0 1 15 3.48V7c0 1.566-.32 3.182-1.303 4.682-.983 1.498-2.585 2.813-5.032 3.855a1.697 1.697 0 0 1-1.33 0c-2.447-1.042-4.049-2.357-5.032-3.855C1.32 10.182 1 8.566 1 7V3.48a1.75 1.75 0 0 1 1.217-1.667Z"/>
+  </svg>
 );
 
-const DialogHeader = ({ children }: { children: React.ReactNode }) => (
-  <div className="mb-4 border-b border-gray-200 dark:border-gray-700 pb-4">
-    {children}
-  </div>
+const SyncIcon = () => (
+  <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
+    <path d="M1.705 8.005a.75.75 0 0 1 .834.656 5.5 5.5 0 0 0 9.592 2.97l-1.204-1.204a.25.25 0 0 1 .177-.427h3.646a.25.25 0 0 1 .25.25v3.646a.25.25 0 0 1-.427.177l-1.38-1.38A7.002 7.002 0 0 1 1.05 8.84a.75.75 0 0 1 .656-.834ZM8 2.5a5.487 5.487 0 0 0-4.131 1.869l1.204 1.204A.25.25 0 0 1 4.896 6H1.25A.25.25 0 0 1 1 5.75V2.104a.25.25 0 0 1 .427-.177l1.38 1.38A7.002 7.002 0 0 1 14.95 7.16a.75.75 0 0 1-1.49.178A5.5 5.5 0 0 0 8 2.5Z"/>
+  </svg>
 );
 
-const DialogTitle = ({ children, className = '' }: { children: React.ReactNode; className?: string }) => (
-  <h3 className={`text-lg font-semibold text-gray-900 dark:text-white ${className}`}>
-    {children}
-  </h3>
+const UsersIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+    <path d="M2 5.5a3.5 3.5 0 1 1 5.898 2.549 5.508 5.508 0 0 1 3.034 4.084.75.75 0 1 1-1.482.235 4 4 0 0 0-7.9 0 .75.75 0 0 1-1.482-.236A5.507 5.507 0 0 1 3.102 8.05 3.493 3.493 0 0 1 2 5.5ZM11 4a3.001 3.001 0 0 1 2.22 5.018 5.01 5.01 0 0 1 2.56 3.012.749.749 0 0 1-.885.954.752.752 0 0 1-.549-.514 3.507 3.507 0 0 0-2.522-2.372.75.75 0 0 1-.574-.73v-.352a.75.75 0 0 1 .416-.672A1.5 1.5 0 0 0 11 5.5.75.75 0 0 1 11 4Zm-5.5-.5a2 2 0 1 0-.001 3.999A2 2 0 0 0 5.5 3.5Z"/>
+  </svg>
 );
 
-const Table = ({ children, className = '' }: { children: React.ReactNode; className?: string }) => (
-  <div className={`w-full border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden ${className}`}>
-    <table className="w-full">
-      {children}
-    </table>
-  </div>
-);
-
-const TableHeader = ({ children }: { children: React.ReactNode }) => (
-  <thead className="bg-gray-50 dark:bg-gray-800">
-    {children}
-  </thead>
-);
-
-const TableBody = ({ children }: { children: React.ReactNode }) => (
-  <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
-    {children}
-  </tbody>
-);
-
-const TableRow = ({ children, className = '' }: { children: React.ReactNode; className?: string }) => (
-  <tr className={`bg-gray-800 border-b-white border-b-2 ${className}`}>
-    {children}
-  </tr>
-);
-
-const TableHead = ({ children, className = '' }: { children: React.ReactNode; className?: string }) => (
-  <th className={`px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider ${className}`}>
-    {children}
-  </th>
-);
-
-const TableCell = ({ children, className = '' }: { children: React.ReactNode; className?: string }) => (
-  <td className={`px-4 py-3 text-sm text-gray-900 dark:text-white ${className}`}>
-    {children}
-  </td>
-);
-
-export default function UserManagement() {
-  const { users, isLoading, isError, updateUserRoles, mutate, isUpdating } = useUsers();
-  const [selectedUser, setSelectedUser] = useState<any>(null);
-  const [isRoleDialogOpen, setIsRoleDialogOpen] = useState(false);
-  const [localUpdating, setLocalUpdating] = useState(false);
-  const [isSyncing, setIsSyncing] = useState(false);
-
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
-      </div>
-    );
-  }
-
-  if (isError) {
-    return (
-      <Card>
-        <CardContent className="p-6">
-          <div className="text-center text-red-500">
-            Ошибка загрузки пользователей
-          </div>
-        </CardContent>
-      </Card>
-    );
-  }
-
-  const handleEditRoles = (user: any) => {
-    setSelectedUser(user);
-    setIsRoleDialogOpen(true);
-  };
-
-  const handleUpdateRoles = async (roles: string[]) => {
-    if (!selectedUser) return;
-
-    setLocalUpdating(true);
-    try {
-      await updateUserRoles({
-        id: selectedUser.id,
-        roles
-      });
-
-      mutate();
-
-      setIsRoleDialogOpen(false);
-      setSelectedUser(null);
-      alert('Роли успешно обновлены!');
-    } catch (error) {
-      console.error('Ошибка при обновлении ролей:', error);
-      alert('Ошибка при обновлении ролей');
-    } finally {
-      setLocalUpdating(false);
-    }
-  };
-
-  const handleSyncRoles = async () => {
-    if (!confirm('Выполнить синхронизацию ролей для всех пользователей с активными курсами?')) {
-      return;
-    }
-
-    setIsSyncing(true);
-    try {
-      const result = await apiClient.post('/course-groups/sync-student-roles', {});
-      console.log('Синхронизация ролей:', result);
-      mutate();
-      alert(`Роли синхронизированы! Обновлено пользователей: ${result.updatedCount || 0}`);
-    } catch (error) {
-      console.error('Ошибка при синхронизации ролей:', error);
-      alert('Ошибка при синхронизации ролей');
-    } finally {
-      setIsSyncing(false);
-    }
-  };
-
-  const getUserRoles = (user: any) => {
-    if (!user.roles) return [];
-
-    return user.roles.map((role: any) => {
-      if (typeof role === 'string') return role;
-      return role.role || role;
-    });
-  };
-
-  return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-3xl font-bold text-white">Управление пользователями</h1>
-          <p className="text-gray-400">
-            Управление пользователями и их ролями в системе
-          </p>
-        </div>
-        <div className="flex items-center space-x-2">
-          <Badge variant="secondary" className="text-sm">
-            Всего: {users?.length || 0}
-          </Badge>
-          <Button
-            size="sm"
-            onClick={handleSyncRoles}
-            disabled={isSyncing}
-            className="gap-1"
-          >
-            <RefreshCw className={`h-4 w-4 ${isSyncing ? 'animate-spin' : ''}`} />
-            {isSyncing ? 'Синхронизация...' : 'Синхронизировать роли'}
-          </Button>
-        </div>
-      </div>
-
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-white">
-            <User className="h-5 w-5" />
-            Список пользователей
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>ID</TableHead>
-                <TableHead>Пользователь</TableHead>
-                <TableHead>Email</TableHead>
-                <TableHead>Роли</TableHead>
-                <TableHead>Статус</TableHead>
-                <TableHead className="text-right">Действия</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {users?.map((user: any) => {
-                const userRoles = getUserRoles(user);
-                
-                return (
-                  <TableRow key={user.id}>
-                    <TableCell className="font-medium text-white">{user.id}</TableCell>
-                    <TableCell>
-                      <div className="flex flex-col">
-                        <span className="font-medium text-white">
-                          {user.firstName} {user.lastName}
-                        </span>
-                        <span className="text-sm text-gray-400">
-                          {user.createdAt ? new Date(user.createdAt).toLocaleDateString('ru-RU') : 'Дата не указана'}
-                        </span>
-                      </div>
-                    </TableCell>
-                    <TableCell className="text-white">{user.email}</TableCell>
-                    <TableCell>
-                      <div className="flex flex-wrap gap-1">
-                        {userRoles.map((role: string) => {
-                          const isStudent = role.startsWith('student_');
-                          const isMentor = role.startsWith('mentor_');
-                          const isAdmin = role === 'admin';
-                          
-                          return (
-                            <Badge
-                              key={role}
-                              variant={
-                                isAdmin ? 'destructive' :
-                                isMentor ? 'default' :
-                                isStudent ? 'default' : 'secondary'
-                              }
-                              className={`text-xs ${
-                                isStudent ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300' :
-                                isMentor ? 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300' :
-                                isAdmin ? 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300' :
-                                ''
-                              }`}
-                            >
-                              {getRoleLabel(role)}
-                            </Badge>
-                          );
-                        })}
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant={user.isActive ? "default" : "secondary"}>
-                        {user.isActive ? 'Активен' : 'Неактивен'}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <Button
-                        size="sm"
-                        onClick={() => handleEditRoles(user)}
-                        className="gap-1"
-                        disabled={isUpdating}
-                      >
-                        <Shield className="h-4 w-4" />
-                        Роли
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                );
-              })}
-            </TableBody>
-          </Table>
-
-          {(!users || users.length === 0) && (
-            <div className="text-center py-8 text-gray-400">
-              <User className="h-12 w-12 mx-auto mb-4 opacity-50" />
-              <p>Пользователи не найдены</p>
-            </div>
-          )}
-        </CardContent>
-      </Card>
-
-      <RoleDialog
-        user={selectedUser}
-        isOpen={isRoleDialogOpen}
-        onClose={() => {
-          setIsRoleDialogOpen(false);
-          setSelectedUser(null);
-        }}
-        onSave={handleUpdateRoles}
-        isUpdating={localUpdating || isUpdating}
-      />
-    </div>
-  );
-}
-
+// ── Modal ──────────────────────────────────────────────────────────
 function RoleDialog({ user, isOpen, onClose, onSave, isUpdating }: any) {
   const [selectedRoles, setSelectedRoles] = useState<string[]>([]);
 
@@ -353,108 +64,291 @@ function RoleDialog({ user, isOpen, onClose, onSave, isUpdating }: any) {
 
   const availableRoles = [
     { value: 'registered_user', label: 'Зарегистрированный пользователь' },
-    
-    // Студенты по направлениям
-    { value: 'student_english', label: 'Студент - Английский язык' },
-    { value: 'student_electronics', label: 'Студент - Электроника' },
-    { value: 'student_computer_science', label: 'Студент - Информатика' },
-    { value: 'student_iot', label: 'Студент - IoT' },
-    
-    // Менторы по направлениям
-    { value: 'mentor_english', label: 'Ментор - Английский язык' },
-    { value: 'mentor_electronics', label: 'Ментор - Электроника' },
-    { value: 'mentor_computer_science', label: 'Ментор - Информатика' },
-    { value: 'mentor_iot', label: 'Ментор - IoT' },
-    
+    { value: 'student_english', label: 'Студент — Английский язык' },
+    { value: 'student_electronics', label: 'Студент — Электроника' },
+    { value: 'student_computer_science', label: 'Студент — Информатика' },
+    { value: 'student_iot', label: 'Студент — IoT' },
+    { value: 'mentor_english', label: 'Ментор — Английский язык' },
+    { value: 'mentor_electronics', label: 'Ментор — Электроника' },
+    { value: 'mentor_computer_science', label: 'Ментор — Информатика' },
+    { value: 'mentor_iot', label: 'Ментор — IoT' },
     { value: 'admin', label: 'Администратор' },
   ];
 
   const toggleRole = (role: string) => {
     setSelectedRoles(prev =>
-      prev.includes(role)
-        ? prev.filter(r => r !== role)
-        : [...prev, role]
+      prev.includes(role) ? prev.filter(r => r !== role) : [...prev, role]
     );
   };
 
-  const handleSave = () => {
-    if (selectedRoles.length === 0) {
-      alert('Выберите хотя бы одну роль');
-      return;
-    }
-    onSave(selectedRoles);
-  };
-
-  if (!user) return null;
+  if (!isOpen || !user) return null;
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <Shield className="h-5 w-5" />
-            Редактирование ролей
-          </DialogTitle>
-        </DialogHeader>
-
-        <div className="space-y-4">
-          <div>
-            <p className="text-sm font-medium text-gray-900 dark:text-white">Пользователь:</p>
-            <p className="text-lg text-gray-900 dark:text-white">
-              {user.firstName} {user.lastName}
-            </p>
-            <p className="text-sm text-gray-500 dark:text-gray-400">{user.email}</p>
-          </div>
-
-          <div className="space-y-3">
-            <p className="text-sm font-medium text-gray-900 dark:text-white">Роли пользователя:</p>
-            <div className="space-y-2">
-              {availableRoles.map((role) => (
-                <label 
-                  key={role.value} 
-                  className="flex items-center space-x-3 p-2 rounded-lg border border-gray-300 dark:border-gray-600 hover:bg-gray-700 dark:hover:bg-gray-700 cursor-pointer transition-colors"
-                >
-                  <input
-                    type="checkbox"
-                    checked={selectedRoles.includes(role.value)}
-                    onChange={() => toggleRole(role.value)}
-                    className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                    disabled={isUpdating}
-                  />
-                  <div className="flex-1">
-                    <p className="font-medium text-gray-900 dark:text-white">{role.label}</p>
-                    <p className="text-sm text-gray-500 dark:text-gray-400 capitalize">
-                      {role.value.replace('_', ' ')}
-                    </p>
-                  </div>
-                  <Badge variant={
-                    role.value === 'admin' ? 'destructive' : 
-                    role.value === 'mentor' ? 'default' : 'secondary'
-                  }>
-                    {role.value}
-                  </Badge>
-                </label>
-              ))}
-            </div>
-          </div>
-
-          <div className="flex justify-end space-x-2 pt-4">
-            <Button variant="secondary" onClick={onClose} disabled={isUpdating}>
-              Отмена
-            </Button>
-            <Button onClick={handleSave} disabled={isUpdating}>
-              {isUpdating ? (
-                <>
-                  <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                  Сохранение...
-                </>
-              ) : (
-                'Сохранить изменения'
-              )}
-            </Button>
-          </div>
+    <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50 }}>
+      <div style={{ background: '#161b22', border: '1px solid #30363d', borderRadius: 6, width: '100%', maxWidth: 480, maxHeight: '90vh', overflowY: 'auto', padding: 24 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 20, paddingBottom: 16, borderBottom: '1px solid #21262d' }}>
+          <span style={{ color: '#8b949e', display: 'flex' }}><ShieldIcon /></span>
+          <h3 style={{ fontSize: 16, fontWeight: 600, color: '#e6edf3', margin: 0 }}>Редактирование ролей</h3>
         </div>
-      </DialogContent>
-    </Dialog>
+
+        <div style={{ marginBottom: 16 }}>
+          <p style={{ fontSize: 13, color: '#8b949e', margin: '0 0 4px' }}>Пользователь</p>
+          <p style={{ fontSize: 15, color: '#e6edf3', fontWeight: 600, margin: '0 0 2px' }}>{user.firstName} {user.lastName}</p>
+          <p style={{ fontSize: 12, color: '#8b949e', margin: 0 }}>{user.email}</p>
+        </div>
+
+        <p style={{ fontSize: 13, color: '#8b949e', marginBottom: 8 }}>Роли:</p>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 4, marginBottom: 20 }}>
+          {availableRoles.map((role) => (
+            <label
+              key={role.value}
+              style={{
+                display: 'flex', alignItems: 'center', gap: 10,
+                padding: '8px 10px', borderRadius: 6,
+                border: '1px solid #30363d', cursor: 'pointer',
+                background: selectedRoles.includes(role.value) ? '#21262d' : 'transparent',
+                transition: 'background 80ms',
+              }}
+            >
+              <input
+                type="checkbox"
+                checked={selectedRoles.includes(role.value)}
+                onChange={() => toggleRole(role.value)}
+                disabled={isUpdating}
+                style={{ accentColor: '#2f81f7' }}
+              />
+              <span style={{ fontSize: 13, color: '#e6edf3', flex: 1 }}>{role.label}</span>
+              <Badge variant={getRoleBadgeVariant(role.value)} size="sm">{role.value}</Badge>
+            </label>
+          ))}
+        </div>
+
+        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
+          <button
+            onClick={onClose}
+            disabled={isUpdating}
+            style={{ padding: '5px 16px', fontSize: 13, color: '#e6edf3', background: 'transparent', border: '1px solid #30363d', borderRadius: 6, cursor: 'pointer' }}
+          >
+            Отмена
+          </button>
+          <button
+            onClick={() => {
+              if (selectedRoles.length === 0) { alert('Выберите хотя бы одну роль'); return; }
+              onSave(selectedRoles);
+            }}
+            disabled={isUpdating}
+            style={{ padding: '5px 16px', fontSize: 13, color: '#fff', background: '#2f81f7', border: '1px solid rgba(240,246,252,0.1)', borderRadius: 6, cursor: 'pointer', fontWeight: 600 }}
+          >
+            {isUpdating ? 'Сохранение...' : 'Сохранить'}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── Main component ─────────────────────────────────────────────────
+export default function UserManagement() {
+  const { users, isLoading, isError, updateUserRoles, mutate, isUpdating } = useUsers();
+  const [selectedUser, setSelectedUser] = useState<any>(null);
+  const [isRoleDialogOpen, setIsRoleDialogOpen] = useState(false);
+  const [localUpdating, setLocalUpdating] = useState(false);
+  const [isSyncing, setIsSyncing] = useState(false);
+
+  const handleEditRoles = (user: any) => {
+    setSelectedUser(user);
+    setIsRoleDialogOpen(true);
+  };
+
+  const handleUpdateRoles = async (roles: string[]) => {
+    if (!selectedUser) return;
+    setLocalUpdating(true);
+    try {
+      await updateUserRoles({ id: selectedUser.id, roles });
+      mutate();
+      setIsRoleDialogOpen(false);
+      setSelectedUser(null);
+    } catch {
+      alert('Ошибка при обновлении ролей');
+    } finally {
+      setLocalUpdating(false);
+    }
+  };
+
+  const handleSyncRoles = async () => {
+    if (!confirm('Выполнить синхронизацию ролей для всех пользователей с активными курсами?')) return;
+    setIsSyncing(true);
+    try {
+      const result = await apiClient.post('/course-groups/sync-student-roles', {});
+      mutate();
+      alert(`Роли синхронизированы! Обновлено пользователей: ${result.updatedCount || 0}`);
+    } catch {
+      alert('Ошибка при синхронизации ролей');
+    } finally {
+      setIsSyncing(false);
+    }
+  };
+
+  const getUserRoles = (user: any): string[] => {
+    if (!user.roles) return [];
+    return user.roles.map((role: any) => (typeof role === 'string' ? role : role.role || role));
+  };
+
+  if (isLoading) {
+    return (
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: 240 }}>
+        <div style={{ width: 24, height: 24, border: '2px solid #30363d', borderTopColor: '#2f81f7', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
+        <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div style={{ background: '#161b22', border: '1px solid #30363d', borderRadius: 6, padding: 24, textAlign: 'center' }}>
+        <p style={{ color: '#f85149', fontSize: 14 }}>Ошибка загрузки пользователей</p>
+      </div>
+    );
+  }
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+      {/* Header */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+        <div>
+          <h1 style={{ fontSize: 24, fontWeight: 600, color: '#e6edf3', margin: '0 0 4px' }}>Управление пользователями</h1>
+          <p style={{ fontSize: 13, color: '#8b949e', margin: 0 }}>Управление пользователями и их ролями в системе</p>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <span style={{
+            background: '#21262d', border: '1px solid #30363d', borderRadius: 20,
+            fontSize: 12, padding: '2px 8px', color: '#8b949e',
+          }}>
+            Всего: {users?.length || 0}
+          </span>
+          <button
+            onClick={handleSyncRoles}
+            disabled={isSyncing}
+            style={{
+              display: 'flex', alignItems: 'center', gap: 6,
+              padding: '5px 12px', fontSize: 13, fontWeight: 500,
+              color: '#e6edf3', background: '#21262d',
+              border: '1px solid #30363d', borderRadius: 6, cursor: 'pointer',
+            }}
+          >
+            <span style={{ display: 'flex', alignItems: 'center', animation: isSyncing ? 'spin 1s linear infinite' : 'none' }}>
+              <SyncIcon />
+            </span>
+            {isSyncing ? 'Синхронизация...' : 'Синхронизировать роли'}
+          </button>
+        </div>
+      </div>
+
+      {/* Table card */}
+      <div style={{ background: '#161b22', border: '1px solid #30363d', borderRadius: 6, overflow: 'hidden' }}>
+        {/* Card header */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '12px 16px', borderBottom: '1px solid #21262d' }}>
+          <span style={{ color: '#8b949e', display: 'flex' }}><UsersIcon /></span>
+          <span style={{ fontSize: 14, fontWeight: 600, color: '#e6edf3' }}>Список пользователей</span>
+        </div>
+
+        {/* Table */}
+        <div style={{ overflowX: 'auto' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+            <thead>
+              <tr style={{ borderBottom: '1px solid #21262d' }}>
+                {['Пользователь', 'Email', 'Роли', 'Статус', ''].map((h, i) => (
+                  <th key={i} style={{
+                    padding: '8px 16px', textAlign: i === 4 ? 'right' : 'left',
+                    fontSize: 12, fontWeight: 600, color: '#8b949e',
+                    textTransform: 'uppercase', letterSpacing: '0.04em',
+                  }}>{h}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {users?.map((user: any) => {
+                const userRoles = getUserRoles(user);
+                const displayName = [user.firstName, user.lastName].filter(Boolean).join(' ') || 'Пользователь';
+                const avatarLetter = displayName.charAt(0).toUpperCase();
+
+                return (
+                  <tr key={user.id} style={{ borderBottom: '1px solid #21262d' }}
+                    onMouseEnter={e => (e.currentTarget.style.background = '#161b22')}
+                    onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+                  >
+                    {/* User */}
+                    <td style={{ padding: '12px 16px' }}>
+                      <Link href={`/profile/${user.id}`} style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none' }}>
+                        <div style={{
+                          width: 28, height: 28, borderRadius: '50%', background: '#2f81f7',
+                          display: 'flex', alignItems: 'center', justifyContent: 'center',
+                          fontSize: 12, fontWeight: 700, color: '#fff', flexShrink: 0,
+                        }}>
+                          {avatarLetter}
+                        </div>
+                        <div>
+                          <div style={{ fontSize: 13, fontWeight: 600, color: '#2f81f7' }}>{displayName}</div>
+                          <div style={{ fontSize: 11, color: '#8b949e' }}>
+                            {user.createdAt ? new Date(user.createdAt).toLocaleDateString('ru-RU') : ''}
+                          </div>
+                        </div>
+                      </Link>
+                    </td>
+                    {/* Email */}
+                    <td style={{ padding: '12px 16px', fontSize: 13, color: '#8b949e' }}>{user.email}</td>
+                    {/* Roles */}
+                    <td style={{ padding: '12px 16px' }}>
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
+                        {userRoles.map((role: string) => (
+                          <Badge key={role} variant={getRoleBadgeVariant(role)} size="sm">
+                            {getRoleLabel(role)}
+                          </Badge>
+                        ))}
+                      </div>
+                    </td>
+                    {/* Status */}
+                    <td style={{ padding: '12px 16px' }}>
+                      <Badge variant={user.isActive !== false ? 'success' : 'default'} dot size="sm">
+                        {user.isActive !== false ? 'Активен' : 'Неактивен'}
+                      </Badge>
+                    </td>
+                    {/* Actions */}
+                    <td style={{ padding: '12px 16px', textAlign: 'right' }}>
+                      <button
+                        onClick={() => handleEditRoles(user)}
+                        disabled={isUpdating}
+                        style={{
+                          display: 'inline-flex', alignItems: 'center', gap: 5,
+                          padding: '4px 10px', fontSize: 12, fontWeight: 500,
+                          color: '#e6edf3', background: '#21262d',
+                          border: '1px solid #30363d', borderRadius: 6, cursor: 'pointer',
+                        }}
+                      >
+                        <ShieldIcon /> Роли
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+
+          {(!users || users.length === 0) && (
+            <div style={{ padding: '40px 16px', textAlign: 'center', color: '#8b949e', fontSize: 13 }}>
+              Пользователи не найдены
+            </div>
+          )}
+        </div>
+      </div>
+
+      <RoleDialog
+        user={selectedUser}
+        isOpen={isRoleDialogOpen}
+        onClose={() => { setIsRoleDialogOpen(false); setSelectedUser(null); }}
+        onSave={handleUpdateRoles}
+        isUpdating={localUpdating || isUpdating}
+      />
+    </div>
   );
 }

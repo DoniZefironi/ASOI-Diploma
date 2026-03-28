@@ -9,6 +9,8 @@ import { UserRole, UserRoleEnum } from '../users/entities/user-role.entity';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { CourseRegistration, RegistrationStatus } from '../course-groups/entities/course-registration.entity';
+import { AchievementsService } from '../achievements/achievements.service';
+import { AchievementType } from '../achievements/entities/achievement.entity';
 
 @Injectable()
 export class AuthService {
@@ -20,6 +22,7 @@ export class AuthService {
     @InjectRepository(CourseRegistration)
     private registrationRepository: Repository<CourseRegistration>,
     private jwtService: JwtService,
+    private readonly achievementsService: AchievementsService,
   ) {}
 
   async validateUser(email: string, password: string): Promise<any> {
@@ -96,6 +99,10 @@ export class AuthService {
     });
 
     await this.userRoleRepository.save(userRole);
+
+    this.achievementsService
+      .grantAchievementByType(savedUser.id, AchievementType.FIRST_REGISTRATION)
+      .catch(() => {});
 
     const { password, ...result } = savedUser;
     return result;

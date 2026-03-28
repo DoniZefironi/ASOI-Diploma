@@ -11,6 +11,8 @@ import { CreateSubmissionDto } from './dto/create-submission.dto';
 import { CreatePeerReviewDto } from './dto/create-peer-review.dto';
 import { CourseRegistration, RegistrationStatus } from '../course-groups/entities/course-registration.entity';
 import { AssignmentSearchDto, SortOrder } from '../common/dto/pagination.dto';
+import { AchievementsService } from '../achievements/achievements.service';
+import { AchievementType } from '../achievements/entities/achievement.entity';
 
 @Injectable()
 export class AssignmentsService {
@@ -23,6 +25,7 @@ export class AssignmentsService {
     private peerReviewRepository: Repository<PeerReview>,
     @InjectRepository(CourseRegistration)
     private registrationRepository: Repository<CourseRegistration>,
+    private readonly achievementsService: AchievementsService,
   ) {}
 
   async createAssignment(createAssignmentDto: CreateAssignmentDto): Promise<Assignment> {
@@ -128,7 +131,9 @@ export class AssignmentsService {
       submittedAt: new Date(),
     });
 
-    return this.submissionRepository.save(submission);
+    const saved = await this.submissionRepository.save(submission);
+    this.achievementsService.checkAndGrantAchievements(userId).catch(() => {});
+    return saved;
   }
 
   async getSubmissionById(id: number): Promise<AssignmentSubmission> {
@@ -220,7 +225,9 @@ export class AssignmentsService {
     submission.status = SubmissionStatus.UNDER_REVIEW;
     await this.submissionRepository.save(submission);
 
-    return this.peerReviewRepository.save(peerReview);
+    const savedReview = await this.peerReviewRepository.save(peerReview);
+    this.achievementsService.checkAndGrantAchievements(reviewerId).catch(() => {});
+    return savedReview;
   }
 
   async calculateFinalGrade(submissionId: number): Promise<AssignmentSubmission> {

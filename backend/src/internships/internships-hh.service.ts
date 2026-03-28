@@ -178,6 +178,50 @@ export class InternshipsHhService {
   }
 
   /**
+   * Проверяет, существует ли вакансия на HH.ru
+   */
+  private async isVacancyActive(externalId: string): Promise<boolean> {
+    try {
+      const response = await firstValueFrom(
+        this.httpService
+          .get(`${this.hhApiUrl}/${externalId}`, {
+            headers: { 'User-Agent': 'ASOI-Diploma/1.0' },
+          })
+          .pipe(map((res: any) => res.data)),
+      );
+      return !(response as any).archived;
+    } catch {
+      // 404 или другая ошибка — вакансия недоступна
+      return false;
+    }
+  }
+
+  /**
+   * Удаляет из базы вакансии, которых больше нет на HH.ru
+   */
+  async cleanupStaleVacancies(): Promise<{ removed: number; checked: number }> {
+    const all = await this.internshipsService.findAllFromSource('hh.ru');
+    let removed = 0;
+
+    for (const internship of all) {
+      if (!internship.externalId) continue;
+
+      const active = await this.isVacancyActive(internship.externalId);
+      if (!active) {
+        await this.internshipsService.remove(internship.id);
+        removed++;
+        this.logger.log(`Удалена устаревшая вакансия: ${internship.title} (${internship.externalId})`);
+      }
+
+      // Пауза, чтобы не превысить лимиты HH API
+      await new Promise(resolve => setTimeout(resolve, 200));
+    }
+
+    this.logger.log(`Очистка завершена. Проверено: ${all.length}, удалено: ${removed}`);
+    return { removed, checked: all.length };
+  }
+
+  /**
    * Автоматический импорт по расписанию
    */
   async scheduledImport() {

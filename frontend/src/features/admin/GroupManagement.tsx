@@ -273,7 +273,6 @@ export default function GroupManagement() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>ID</TableHead>
                 <TableHead>Название</TableHead>
                 <TableHead>Курс</TableHead>
                 <TableHead>Год</TableHead>
@@ -286,7 +285,6 @@ export default function GroupManagement() {
             <TableBody>
               {filteredGroups?.map((g: any) => (
                 <TableRow key={g.id}>
-                  <TableCell>{g.id}</TableCell>
                   <TableCell>
                     <Link
                       href={`/mentor/groups/${g.id}`}

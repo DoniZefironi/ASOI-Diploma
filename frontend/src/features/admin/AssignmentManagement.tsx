@@ -548,9 +548,6 @@ export default function AssignmentManagement() {
               <thead className="bg-gray-800 border-b-2 border-b-white">
                 <tr>
                   <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                    ID
-                  </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                     Название
                   </th>
                   <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
@@ -576,7 +573,6 @@ export default function AssignmentManagement() {
               <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
                 {filteredAssignments?.map((assignment: Assignment) => (
                   <tr key={assignment.id} className="bg-gray-800 border-b-2 border-b-white">
-                    <td className="px-4 py-3 text-sm text-white">{assignment.id}</td>
                     <td className="px-4 py-3">
                       <div className="flex flex-col">
                         <span className="font-medium text-white">{assignment.title}</span>

@@ -1,10 +1,9 @@
-// components/auth/AuthPage.tsx
+// features/auth/AuthPage.tsx
 'use client';
 
 import { useState } from 'react';
 import Link from 'next/link';
 import { Button } from '@/shared/ui/button';
-import Image from 'next/image';
 import { useAuth } from '@/shared/lib/auth-context';
 
 interface AuthForm {
@@ -25,6 +24,64 @@ interface AuthFormErrors {
   captcha?: string;
 }
 
+// ── Inline label + input group ────────────────────────────────────
+function Field({
+  label,
+  error,
+  children,
+  hint,
+}: {
+  label: string;
+  error?: string;
+  children: React.ReactNode;
+  hint?: React.ReactNode;
+}) {
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <label style={{ fontSize: 13, fontWeight: 600, color: '#e6edf3' }}>{label}</label>
+        {hint}
+      </div>
+      {children}
+      {error && (
+        <p style={{ fontSize: 12, color: '#f85149', margin: 0 }}>{error}</p>
+      )}
+    </div>
+  );
+}
+
+// ── Controlled input ──────────────────────────────────────────────
+function GhInput({
+  error = false,
+  ...props
+}: React.InputHTMLAttributes<HTMLInputElement> & { error?: boolean }) {
+  const [focused, setFocused] = useState(false);
+  return (
+    <input
+      style={{
+        display: 'block',
+        width: '100%',
+        background: '#0d1117',
+        border: `1px solid ${error ? '#f85149' : focused ? '#2f81f7' : '#30363d'}`,
+        borderRadius: 6,
+        padding: '5px 12px',
+        fontSize: 14,
+        color: '#e6edf3',
+        lineHeight: 1.5,
+        outline: 'none',
+        boxShadow: focused
+          ? `0 0 0 3px ${error ? 'rgba(248,81,73,0.25)' : 'rgba(47,129,247,0.25)'}`
+          : 'none',
+        transition: 'border-color 80ms, box-shadow 80ms',
+        boxSizing: 'border-box',
+      }}
+      onFocus={() => setFocused(true)}
+      onBlur={() => setFocused(false)}
+      {...props}
+    />
+  );
+}
+
 export const AuthPage = () => {
   const { login } = useAuth();
   const [isLogin, setIsLogin] = useState(true);
@@ -35,11 +92,9 @@ export const AuthPage = () => {
     firstName: '',
     lastName: '',
     acceptTerms: false,
-    captchaAnswer: ''
+    captchaAnswer: '',
   });
   const [errors, setErrors] = useState<AuthFormErrors>({});
-  
-  // Генерация случайных чисел для капчи
   const [captchaNumbers, setCaptchaNumbers] = useState(() => {
     const num1 = Math.floor(Math.random() * 10) + 1;
     const num2 = Math.floor(Math.random() * 10) + 1;
@@ -48,15 +103,9 @@ export const AuthPage = () => {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: type === 'checkbox' ? checked : value
-    }));
+    setFormData(prev => ({ ...prev, [name]: type === 'checkbox' ? checked : value }));
     if (errors[name as keyof AuthFormErrors]) {
-      setErrors(prev => ({
-        ...prev,
-        [name]: ''
-      }));
+      setErrors(prev => ({ ...prev, [name]: '' }));
     }
   };
 
@@ -70,84 +119,49 @@ export const AuthPage = () => {
 
   const validateForm = (): boolean => {
     const newErrors: AuthFormErrors = {};
-
     if (!formData.email.trim()) {
-      newErrors.email = 'Электронная почта обязательна для заполнения.';
+      newErrors.email = 'Электронная почта обязательна.';
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = 'Электронная почта недействительна.';
+      newErrors.email = 'Некорректный адрес электронной почты.';
     }
-
     if (!formData.password) {
-      newErrors.password = 'Пароль обязателен для заполнения.';
+      newErrors.password = 'Пароль обязателен.';
     } else if (formData.password.length < 6) {
-      newErrors.password = 'Пароль должен содержать не менее 6 символов.';
+      newErrors.password = 'Пароль должен содержать минимум 6 символов.';
     }
-
     if (!isLogin) {
-      if (!formData.firstName.trim()) {
-        newErrors.firstName = 'Имя обязательно для заполнения.';
-      }
-      if (!formData.lastName.trim()) {
-        newErrors.lastName = 'Фамилия обязательна для заполнения.';
-      }
-      
-      // Валидация чекбокса принятия условий
-      if (!formData.acceptTerms) {
-        newErrors.acceptTerms = 'Необходимо принять условия обслуживания.';
-      }
-      
-      // Валидация капчи
+      if (!formData.firstName.trim()) newErrors.firstName = 'Имя обязательно.';
+      if (!formData.lastName.trim()) newErrors.lastName = 'Фамилия обязательна.';
+      if (!formData.acceptTerms) newErrors.acceptTerms = 'Необходимо принять условия.';
       const userAnswer = parseInt(formData.captchaAnswer);
       if (isNaN(userAnswer)) {
         newErrors.captcha = 'Введите ответ.';
       } else if (userAnswer !== captchaNumbers.answer) {
-        newErrors.captcha = `Неверный ответ. Правильный ответ: ${captchaNumbers.answer}`;
+        newErrors.captcha = `Неверный ответ. Правильный: ${captchaNumbers.answer}`;
       }
     }
-
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
     if (!validateForm()) return;
-
     setIsLoading(true);
-
     try {
       const url = isLogin
         ? 'http://localhost:2904/auth/login'
         : 'http://localhost:2904/auth/register';
-
       const payload = isLogin
-        ? {
-            email: formData.email,
-            password: formData.password
-          }
-        : {
-            email: formData.email,
-            password: formData.password,
-            firstName: formData.firstName,
-            lastName: formData.lastName
-          };
-
-      console.log('Отправка запроса на:', url);
-      console.log('Тело запроса:', payload);
-
+        ? { email: formData.email, password: formData.password }
+        : { email: formData.email, password: formData.password, firstName: formData.firstName, lastName: formData.lastName };
       const response = await fetch(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       });
-
       const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || 'Запрос не удался.');
-      }
-
+      if (!response.ok) throw new Error(data.message || 'Запрос не удался.');
       if (isLogin) {
         if (data.access_token) {
           const token = data.access_token;
@@ -156,36 +170,22 @@ export const AuthPage = () => {
             email: data.user?.email || formData.email,
             firstName: data.user?.firstName || '',
             lastName: data.user?.lastName || '',
-            roles: data.user?.roles || ['REGISTERED_USER']
+            roles: data.user?.roles || ['REGISTERED_USER'],
           };
-
           localStorage.setItem('access_token', token);
           localStorage.setItem('user', JSON.stringify(userData));
-
           if (login) login(token, userData);
-
-          alert('🎉 С возвращением!');
           window.location.href = '/';
         } else {
-          throw new Error('Маркер доступа не получен.');
+          throw new Error('Токен доступа не получен.');
         }
       } else {
-        alert('✅ Аккаунт успешно создан! Пожалуйста, войдите в систему.');
+        alert('Аккаунт успешно создан! Пожалуйста, войдите.');
         setIsLogin(true);
-        setFormData({
-          email: formData.email,
-          password: '',
-          firstName: '',
-          lastName: '',
-          acceptTerms: false,
-          captchaAnswer: ''
-        });
-        // Обновить капчу
+        setFormData({ email: formData.email, password: '', firstName: '', lastName: '', acceptTerms: false, captchaAnswer: '' });
         refreshCaptcha();
       }
-
     } catch (error) {
-      console.error('Ошибка аутентификации:', error);
       alert(error instanceof Error ? error.message : 'Произошла ошибка.');
     } finally {
       setIsLoading(false);
@@ -193,235 +193,275 @@ export const AuthPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#0D1117] py-12">
-      <div className="container mx-auto px-4">
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-white mb-4">EduTech</h1>
-          <nav className="flex justify-center space-x-6 text-gray-400 mb-8">
-            <Link href="/courses" className="hover:text-blue-600 transition-colors">Курсы</Link>
-            <Link href="/career" className="hover:text-blue-600 transition-colors">Карьерные пути</Link>
-            <Link href="/simulator" className="hover:text-blue-600 transition-colors">Симулятор схем</Link>
-          </nav>
-          <div className="w-24 h-1 bg-blue-600 mx-auto"></div>
-        </div>
+    <div
+      style={{
+        minHeight: '100vh',
+        background: '#0d1117',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '24px 16px',
+      }}
+    >
+      {/* Logo */}
+      <div style={{ marginBottom: 16, textAlign: 'center' }}>
+        <svg height="48" viewBox="0 0 16 16" width="48" fill="#e6edf3">
+          <path d="M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z" />
+        </svg>
+      </div>
 
-        <div className="max-w-md mx-auto">
-          <div className="bg-white rounded-xl shadow-2xl p-8">
-            <div className="flex mb-8 border-b border-gray-200">
-              <button
-                onClick={() => setIsLogin(true)}
-                className={`flex-1 py-3 font-semibold text-center transition-colors ${
-                  isLogin
-                    ? 'text-blue-600 border-b-2 border-blue-600'
-                    : 'text-gray-500 hover:text-gray-700'
-                }`}
-              >
-                Войти
-              </button>
-              <button
-                onClick={() => setIsLogin(false)}
-                className={`flex-1 py-3 font-semibold text-center transition-colors ${
-                  !isLogin
-                    ? 'text-blue-600 border-b-2 border-blue-600'
-                    : 'text-gray-500 hover:text-gray-700'
-                }`}
-              >
-                Создать аккаунт
-              </button>
+      {/* Heading */}
+      <h1
+        style={{
+          fontSize: 24,
+          fontWeight: 300,
+          color: '#e6edf3',
+          margin: '0 0 16px',
+          textAlign: 'center',
+        }}
+      >
+        {isLogin ? 'Войти в EduTech' : 'Создать аккаунт'}
+      </h1>
+
+      {/* Form card */}
+      <div
+        style={{
+          width: '100%',
+          maxWidth: 340,
+          background: '#161b22',
+          border: '1px solid #30363d',
+          borderRadius: 6,
+          padding: 16,
+        }}
+      >
+        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+          {!isLogin && (
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+              <Field label="Имя" error={errors.firstName}>
+                <GhInput
+                  type="text"
+                  name="firstName"
+                  value={formData.firstName}
+                  onChange={handleChange}
+                  placeholder="Иван"
+                  autoComplete="given-name"
+                  error={!!errors.firstName}
+                />
+              </Field>
+              <Field label="Фамилия" error={errors.lastName}>
+                <GhInput
+                  type="text"
+                  name="lastName"
+                  value={formData.lastName}
+                  onChange={handleChange}
+                  placeholder="Иванов"
+                  autoComplete="family-name"
+                  error={!!errors.lastName}
+                />
+              </Field>
             </div>
+          )}
 
-            <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">
-              {isLogin ? 'С возвращением в EduTech!' : 'Присоединиться к EduTech'}
-            </h2>
+          <Field label="Email" error={errors.email}>
+            <GhInput
+              type="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              placeholder="you@example.com"
+              autoComplete="email"
+              error={!!errors.email}
+            />
+          </Field>
 
-            <form onSubmit={handleSubmit} className="space-y-6">
-              {!isLogin && (
-                <>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Имя
-                    </label>
-                    <input
-                      type="text"
-                      name="firstName"
-                      value={formData.firstName}
-                      onChange={handleChange}
-                      placeholder="Введите ваше имя"
-                      className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-black ${
-                        errors.firstName ? 'border-red-500' : 'border-gray-300'
-                      }`}
-                    />
-                    {errors.firstName && (
-                      <p className="text-red-500 text-sm mt-1">{errors.firstName}</p>
-                    )}
-                  </div>
+          <Field
+            label="Пароль"
+            error={errors.password}
+            hint={
+              isLogin ? (
+                <Link href="/forgot-password" style={{ fontSize: 12, color: '#2f81f7', textDecoration: 'none' }}>
+                  Забыли пароль?
+                </Link>
+              ) : undefined
+            }
+          >
+            <GhInput
+              type="password"
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+              placeholder={isLogin ? '' : 'Минимум 6 символов'}
+              autoComplete={isLogin ? 'current-password' : 'new-password'}
+              error={!!errors.password}
+            />
+          </Field>
 
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Фамилия
-                    </label>
-                    <input
-                      type="text"
-                      name="lastName"
-                      value={formData.lastName}
-                      onChange={handleChange}
-                      placeholder="Введите вашу фамилию"
-                      className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-black ${
-                        errors.lastName ? 'border-red-500' : 'border-gray-300'
-                      }`}
-                    />
-                    {errors.lastName && (
-                      <p className="text-red-500 text-sm mt-1">{errors.lastName}</p>
-                    )}
-                  </div>
-                </>
-              )}
+          {isLogin && (
+            <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
+              <input
+                type="checkbox"
+                style={{ width: 14, height: 14, accentColor: '#2f81f7' }}
+              />
+              <span style={{ fontSize: 13, color: '#8b949e' }}>Запомнить меня</span>
+            </label>
+          )}
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Email
+          {!isLogin && (
+            <>
+              <Field label="" error={errors.acceptTerms}>
+                <label style={{ display: 'flex', alignItems: 'flex-start', gap: 8, cursor: 'pointer' }}>
+                  <input
+                    type="checkbox"
+                    name="acceptTerms"
+                    checked={formData.acceptTerms}
+                    onChange={handleChange}
+                    style={{ marginTop: 2, width: 14, height: 14, accentColor: '#2f81f7', flexShrink: 0 }}
+                  />
+                  <span style={{ fontSize: 12, color: '#8b949e', lineHeight: 1.5 }}>
+                    Я согласен(на) с{' '}
+                    <Link href="/terms" target="_blank" style={{ color: '#2f81f7', textDecoration: 'none' }}>
+                      Условиями обслуживания
+                    </Link>
+                    {' '}и{' '}
+                    <Link href="/privacy" target="_blank" style={{ color: '#2f81f7', textDecoration: 'none' }}>
+                      Политикой конфиденциальности
+                    </Link>
+                  </span>
                 </label>
-                <input
-                  type="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  placeholder="Введите ваш email"
-                  className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-black ${
-                    errors.email ? 'border-red-500' : 'border-gray-300'
-                  }`}
-                />
-                {errors.email && (
-                  <p className="text-red-500 text-sm mt-1">{errors.email}</p>
-                )}
-              </div>
+              </Field>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Пароль
-                </label>
-                <input
-                  type="password"
-                  name="password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  placeholder="Введите ваш пароль"
-                  className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-black ${
-                    errors.password ? 'border-red-500' : 'border-gray-300'
-                  }`}
-                />
-                {errors.password && (
-                  <p className="text-red-500 text-sm mt-1">{errors.password}</p>
-                )}
-              </div>
-
-              {isLogin && (
-                <div className="flex justify-between items-center">
-                  <label className="flex items-center">
-                    <input
-                      type="checkbox"
-                      className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
-                    />
-                    <span className="ml-2 text-sm text-gray-600">Запомнить меня</span>
-                  </label>
-                  <Link href="/forgot-password" className="text-sm text-blue-600 hover:text-blue-700">
-                    Забыли пароль?
-                  </Link>
+              {/* Captcha */}
+              <div
+                style={{
+                  background: '#0d1117',
+                  border: '1px solid #30363d',
+                  borderRadius: 6,
+                  padding: '12px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: 8,
+                }}
+              >
+                <span style={{ fontSize: 12, fontWeight: 600, color: '#8b949e' }}>
+                  Подтверждение: не робот
+                </span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <div
+                    style={{
+                      background: '#161b22',
+                      border: '1px solid #30363d',
+                      borderRadius: 6,
+                      padding: '4px 10px',
+                      fontSize: 14,
+                      fontFamily: 'ui-monospace, monospace',
+                      color: '#e6edf3',
+                      fontWeight: 600,
+                      letterSpacing: 2,
+                    }}
+                  >
+                    {captchaNumbers.num1} + {captchaNumbers.num2} = ?
+                  </div>
+                  <button
+                    type="button"
+                    onClick={refreshCaptcha}
+                    title="Обновить"
+                    style={{
+                      background: 'transparent',
+                      border: 'none',
+                      color: '#8b949e',
+                      cursor: 'pointer',
+                      padding: '4px',
+                      fontSize: 14,
+                    }}
+                  >
+                    ↻
+                  </button>
                 </div>
-              )}
+                <GhInput
+                  type="number"
+                  name="captchaAnswer"
+                  value={formData.captchaAnswer}
+                  onChange={handleChange}
+                  placeholder="Ответ"
+                  error={!!errors.captcha}
+                />
+                {errors.captcha && (
+                  <p style={{ fontSize: 12, color: '#f85149', margin: 0 }}>{errors.captcha}</p>
+                )}
+              </div>
+            </>
+          )}
 
-              {!isLogin && (
-                <>
-                  <div>
-                    <label className="flex items-start">
-                      <input
-                        type="checkbox"
-                        name="acceptTerms"
-                        checked={formData.acceptTerms}
-                        onChange={handleChange}
-                        className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500 mt-1"
-                      />
-                      <span className="ml-2 text-sm text-gray-600">
-                        Я согласен(на) с <Link href="/terms" className="text-blue-600 hover:underline" target="_blank">Условиями обслуживания</Link> и <Link href="/privacy" className="text-blue-600 hover:underline" target="_blank">Политикой конфиденциальности</Link>.
-                      </span>
-                    </label>
-                    {errors.acceptTerms && (
-                      <p className="text-red-500 text-sm mt-1">{errors.acceptTerms}</p>
-                    )}
-                  </div>
+          <Button
+            type="submit"
+            variant="success"
+            size="md"
+            loading={isLoading}
+            style={{ width: '100%', fontWeight: 600 }}
+          >
+            {isLogin ? 'Войти' : 'Создать аккаунт'}
+          </Button>
+        </form>
+      </div>
 
-                  {/* Капча */}
-                  <div className="bg-gray-100 p-4 rounded-lg">
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Проверка на робота 🤖
-                    </label>
-                    <div className="flex items-center gap-3 mb-2">
-                      <div className="bg-white px-4 py-2 rounded-lg border border-gray-300">
-                        <span className="text-lg font-bold text-gray-800">
-                          {captchaNumbers.num1} + {captchaNumbers.num2} = ?
-                        </span>
-                      </div>
-                      <button
-                        type="button"
-                        onClick={refreshCaptcha}
-                        className="text-blue-600 hover:text-blue-700 p-2"
-                        title="Обновить капчу"
-                      >
-                        🔄
-                      </button>
-                    </div>
-                    <input
-                      type="number"
-                      name="captchaAnswer"
-                      value={formData.captchaAnswer}
-                      onChange={handleChange}
-                      placeholder="Введите ответ"
-                      className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-black ${
-                        errors.captcha ? 'border-red-500' : 'border-gray-300'
-                      }`}
-                    />
-                    {errors.captcha && (
-                      <p className="text-red-500 text-sm mt-1">{errors.captcha}</p>
-                    )}
-                  </div>
-                </>
-              )}
+      {/* Switch mode */}
+      <div
+        style={{
+          width: '100%',
+          maxWidth: 340,
+          background: '#161b22',
+          border: '1px solid #30363d',
+          borderRadius: 6,
+          padding: '16px',
+          marginTop: 12,
+          textAlign: 'center',
+          fontSize: 13,
+          color: '#8b949e',
+        }}
+      >
+        {isLogin ? (
+          <span>
+            Нет аккаунта?{' '}
+            <button
+              onClick={() => setIsLogin(false)}
+              style={{ background: 'none', border: 'none', color: '#2f81f7', cursor: 'pointer', fontSize: 13 }}
+            >
+              Зарегистрироваться
+            </button>
+          </span>
+        ) : (
+          <span>
+            Уже есть аккаунт?{' '}
+            <button
+              onClick={() => setIsLogin(true)}
+              style={{ background: 'none', border: 'none', color: '#2f81f7', cursor: 'pointer', fontSize: 13 }}
+            >
+              Войти
+            </button>
+          </span>
+        )}
+      </div>
 
-              <Button
-                type="submit"
-                variant="primary"
-                className="w-full py-3 text-lg font-semibold"
-                disabled={isLoading}
-              >
-                {isLoading ? 'Loading...' : (isLogin ? 'Sign In' : 'Create Account')}
-              </Button>
-            </form>
-
-            <div className="text-center mt-8 text-sm text-gray-400">
-              {isLogin ? (
-                <p>
-                  Нет аккаунта?{' '}
-                  <button
-                    onClick={() => setIsLogin(false)}
-                    className="text-blue-600 hover:text-blue-700 font-semibold"
-                  >
-                    Зарегистрироваться
-                  </button>
-                </p>
-              ) : (
-                <p>
-                  Уже есть аккаунт?{' '}
-                  <button
-                    onClick={() => setIsLogin(true)}
-                    className="text-blue-600 hover:text-blue-700 font-semibold"
-                  >
-                    Войти
-                  </button>
-                </p>
-              )}
-            </div>
-          </div>
-        </div>
+      {/* Footer links */}
+      <div style={{ marginTop: 24, display: 'flex', gap: 16, flexWrap: 'wrap', justifyContent: 'center' }}>
+        {[
+          { href: '/terms',    label: 'Условия' },
+          { href: '/privacy',  label: 'Конфиденциальность' },
+          { href: '/about',    label: 'О нас' },
+          { href: '/contacts', label: 'Контакты' },
+          { href: '/faq',      label: 'FAQ' },
+        ].map(l => (
+          <Link
+            key={l.href}
+            href={l.href}
+            style={{ fontSize: 11, color: '#8b949e', textDecoration: 'none' }}
+            onMouseEnter={e => (e.currentTarget.style.color = '#2f81f7')}
+            onMouseLeave={e => (e.currentTarget.style.color = '#8b949e')}
+          >
+            {l.label}
+          </Link>
+        ))}
       </div>
     </div>
   );

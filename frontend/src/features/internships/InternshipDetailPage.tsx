@@ -21,6 +21,15 @@ function formatDate(dateStr?: string) {
   return new Date(dateStr).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' });
 }
 
+/** Converts HH API url (api.hh.ru/vacancies/ID) to the public vacancy page (hh.ru/vacancy/ID) */
+function toVacancyUrl(url: string): string {
+  try {
+    const match = url.match(/\/vacancies?\/(\d+)/);
+    if (match) return `https://hh.ru/vacancy/${match[1]}`;
+  } catch {}
+  return url;
+}
+
 interface Props {
   id: number;
 }
@@ -89,7 +98,7 @@ export default function InternshipDetailPage({ id }: Props) {
 
       // Открываем внешнюю ссылку или почту
       if (internship.applicationUrl) {
-        window.open(internship.applicationUrl, '_blank', 'noopener');
+        window.open(toVacancyUrl(internship.applicationUrl), '_blank', 'noopener');
       } else if (internship.applicationEmail) {
         window.location.href = `mailto:${internship.applicationEmail}?subject=Заявка на стажировку: ${internship.title}`;
       }
