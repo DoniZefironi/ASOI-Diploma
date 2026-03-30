@@ -2,45 +2,51 @@
 title Диаграмма последовательности: Регистрация
 
 actor Пользователь as User
-participant "RegisterPage\n(React)" as RP
-participant "AuthStore\n(Zustand)" as AS
-participant "API Client\n(axios)" as API
+participant "AuthPage\n(React)" as AP
+participant "API Client\n(fetch)" as API
 participant "AuthController\n(NestJS)" as AC
 database "User (БД)" as DB
 
-User -> RP: открыть /register
-RP -> RP: render форма регистрации
+User -> AP: открыть /auth → переключить на «Создать аккаунт»
+AP -> AP: render режим регистрации
 
-User -> RP: ввести имя
-User -> RP: ввести email
-User -> RP: ввести пароль
-User -> RP: подтвердить пароль
-User -> RP: нажать «Зарегистрироваться»
-RP -> RP: validateForm()
+User -> AP: ввести имя и фамилию
+User -> AP: ввести email
+User -> AP: ввести пароль
+User -> AP: установить чекбокс согласия с условиями
+User -> AP: решить математическую капчу
+User -> AP: нажать «Создать аккаунт»
+AP -> AP: validateForm()
 
-alt Пароли не совпадают или поля пустые
-  RP -> User: отобразить ошибки валидации
-else Форма корректна
-  RP -> API: POST /auth/register\n{ name, email, password }
-  API -> AC: register(dto)
-  AC -> DB: findByEmail(email)
+alt Поля не заполнены / email некорректен\n/ капча не решена / чекбокс не установлен
+  AP -> User: отобразить ошибки валидации полей
+else Форма заполнена корректно
+  AP -> AP: проверить ответ капчи локально
 
-  alt Email уже занят
-    DB --> AC: User (существующий)
-    AC --> API: 409 Conflict
-    API --> RP: ошибка 409
-    RP -> User: показать «Email уже используется»
-  else Email свободен
-    DB --> AC: null
-    AC -> AC: bcrypt.hash(password, 10)
-    AC -> DB: save({ name, email, passwordHash })
-    DB --> AC: User { id, roles }
-    AC -> AC: jwt.sign({ userId, roles })
-    AC --> API: 201 { accessToken }
-    API --> RP: accessToken
-    RP -> AS: setToken(accessToken)
-    AS -> AS: localStorage.setItem(token)
-    RP -> RP: router.push('/dashboard')
+  alt Ответ капчи неверный
+    AP -> User: показать «Неверный ответ. Попробуйте ещё раз»
+  else Капча решена верно
+    AP -> API: POST /auth/register\n{ email, password, firstName, lastName }
+    API -> AC: register(registerDto)
+    AC -> DB: findOne({ where: { email } })
+
+    alt Email уже зарегистрирован
+      DB --> AC: User (существующий)
+      AC --> API: 409 Conflict
+      API --> AP: ошибка 409
+      AP -> User: alert «Аккаунт с таким email уже существует»
+    else Email свободен
+      DB --> AC: null
+      AC -> AC: bcrypt.hash(password, 12)
+      AC -> DB: save({ firstName, lastName, email, passwordHash })
+      DB --> AC: User { id }
+      AC -> AC: назначить роль REGISTERED_USER
+      AC -> AC: grantAchievement(FIRST_REGISTRATION)
+      AC --> API: 201 { id, email, firstName, lastName }
+      API --> AP: успех
+      AP -> User: alert «Аккаунт успешно создан! Войдите.»
+      AP -> AP: переключить на режим входа
+    end
   end
 end
 

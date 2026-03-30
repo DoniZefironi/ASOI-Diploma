@@ -51,7 +51,12 @@
       "Bash(find c:UsersvladnOneDriveDokumenteGitHubASOI-Diplomafrontendsrc -type f \\\\\\(-name *test* -o -name *Test* \\\\\\))",
       "Bash(grep -r TestCase c:UsersvladnOneDriveDokumenteGitHubASOI-Diplomabackendsrc --include=*.ts -B 2 -A 2)",
       "Bash(python build_doc2.py)",
-      "Bash(python read_template.py)"
+      "Bash(python read_template.py)",
+      "Bash(python build_doc3.py)",
+      "Bash(find \"c:\\\\Users\\\\vladn\\\\OneDrive\\\\Dokumente\\\\GitHub\\\\ASOI-Diploma\\\\пояснительная записка\\\\\" -type f \\\\\\( -name \"*.md\" -o -name \"*.txt \" \\\\\\))",
+      "Bash(find c:UsersvladnOneDriveDokumenteGitHubASOI-Diplomafrontendsrcfeatures -name *.tsx -o -name *.ts)",
+      "Bash(find c:UsersvladnOneDriveDokumenteGitHubASOI-Diplomabackendsrc -name *.controller.ts)",
+      "Bash(grep -E \"\\\\.\\(md|MD\\)$\")"
     ]
   }
 }

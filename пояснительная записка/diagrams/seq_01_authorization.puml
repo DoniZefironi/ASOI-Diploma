@@ -2,48 +2,41 @@
 title Диаграмма последовательности: Авторизация
 
 actor Пользователь as User
-participant "LoginPage\n(React)" as LP
+participant "AuthPage\n(React)" as AP
 participant "AuthStore\n(Zustand)" as AS
-participant "API Client\n(axios)" as API
+participant "API Client\n(fetch)" as API
 participant "AuthController\n(NestJS)" as AC
 database "User (БД)" as DB
 
-User -> LP: открыть /login
-LP -> LP: render форма входа
+User -> AP: открыть /auth
+AP -> AP: render режим входа
 
-User -> LP: ввести email
-User -> LP: ввести пароль
-User -> LP: нажать «Войти»
-LP -> LP: validateForm()
+User -> AP: ввести email
+User -> AP: ввести пароль
+User -> AP: нажать «Войти»
+AP -> AP: validateForm()
 
-alt Форма не заполнена / ошибка формата
-  LP -> User: отобразить ошибки валидации
+alt Поля не заполнены или email некорректен
+  AP -> User: отобразить ошибки валидации полей
 else Форма заполнена корректно
-  LP -> API: POST /auth/login\n{ email, password }
-  API -> AC: login(email, password)
-  AC -> DB: findByEmail(email)
+  AP -> API: POST /auth/login\n{ email, password }
+  API -> AC: login(loginDto)
+  AC -> DB: findOne({ where: { email } })
 
-  alt Пользователь не найден
-    DB --> AC: null
-    AC --> API: 401 Unauthorized
-    API --> LP: ошибка 401
-    LP -> User: показать «Пользователь не найден»
-  else Пользователь найден
+  alt Пользователь не найден или пароль неверный
+    DB --> AC: null / bcrypt.compare → false
+    AC --> API: 401 Unauthorized\n{ message: 'Invalid credentials' }
+    API --> AP: ошибка 401
+    AP -> User: alert «Неверный email или пароль»
+  else Данные верны
     DB --> AC: User { id, passwordHash, roles }
-    AC -> AC: bcrypt.compare(password, passwordHash)
-
-    alt Пароль неверный
-      AC --> API: 401 Unauthorized
-      API --> LP: ошибка 401
-      LP -> User: показать «Неверный пароль»
-    else Пароль верный
-      AC -> AC: jwt.sign({ userId, roles })
-      AC --> API: 200 { accessToken }
-      API --> LP: accessToken
-      LP -> AS: setToken(accessToken)
-      AS -> AS: localStorage.setItem(token)
-      LP -> LP: router.push('/dashboard')
-    end
+    AC -> AC: bcrypt.compare(password, passwordHash) → true
+    AC -> AC: jwt.sign({ email, sub, roles, enrolledCourseType })
+    AC --> API: 200 { access_token, user }
+    API --> AP: { access_token, user }
+    AP -> AS: localStorage.setItem('access_token', token)
+    AP -> AS: login(token, userData)
+    AP -> AP: window.location.href = '/'
   end
 end
 

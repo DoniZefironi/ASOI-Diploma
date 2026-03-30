@@ -3,38 +3,41 @@ title Диаграмма последовательности: Проверка 
 
 actor Пользователь as User
 participant "ProtectedRoute\n(Next.js)" as PR
-participant "AuthStore\n(Zustand)" as AS
-participant "API Client\n(axios)" as API
-participant "AuthController\n(NestJS)" as AC
-participant "JwtGuard" as JG
+participant "AuthContext\n(React)" as AC
+participant "API Client\n(fetch)" as API
+participant "JwtAuthGuard\n(NestJS)" as JG
+database "User (БД)" as DB
 
 User -> PR: переход на защищённую страницу
-PR -> AS: getToken()
+PR -> AC: getToken() из localStorage
 
-alt Токен отсутствует в хранилище
-  AS --> PR: null
-  PR -> User: redirect('/login')
+alt Токен отсутствует в localStorage
+  AC --> PR: null
+  PR -> User: redirect('/auth')
 else Токен присутствует
-  AS --> PR: accessToken
-  PR -> API: GET /auth/profile\nAuthorization: Bearer <token>
-  API -> AC: getProfile()
-  AC -> JG: canActivate(token)
-  JG -> JG: jwt.verify(token, secret)
+  AC --> PR: accessToken
+  PR -> PR: декодировать payload
+  PR -> PR: проверить роль пользователя
 
-  alt Токен истёк или невалиден
-    JG --> AC: UnauthorizedException
-    AC --> API: 401 Unauthorized
-    API --> PR: ошибка 401
-    PR -> AS: clearToken()
-    AS -> AS: localStorage.removeItem(token)
-    PR -> User: redirect('/login')
-  else Токен валиден
-    JG --> AC: { userId, roles }
-    AC -> AC: usersService.findById(userId)
-    AC --> API: 200 { id, name, email, roles }
-    API --> PR: user payload
-    PR -> AS: setUser(user)
-    PR -> User: отрисовать защищённую страницу
+  alt Роль недостаточна для маршрута
+    PR -> User: redirect('/')
+  else Роль соответствует
+    PR -> API: GET /auth/debug\nAuthorization: Bearer <token>
+    API -> JG: canActivate(context)
+    JG -> JG: jwt.verify(token, secret)
+
+    alt Токен истёк или невалиден
+      JG --> API: 401 Unauthorized
+      API --> PR: ошибка 401
+      PR -> AC: clearToken()
+      AC -> AC: localStorage.removeItem('access_token')
+      PR -> User: redirect('/auth')
+    else Токен валиден
+      JG --> API: { userId, roles }
+      API --> PR: 200 { user, roles }
+      PR -> AC: setUser(user)
+      PR -> User: отрисовать защищённую страницу
+    end
   end
 end
 

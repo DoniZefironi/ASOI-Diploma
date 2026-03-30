@@ -104,8 +104,9 @@ export const AuthPage = () => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
     setFormData(prev => ({ ...prev, [name]: type === 'checkbox' ? checked : value }));
-    if (errors[name as keyof AuthFormErrors]) {
-      setErrors(prev => ({ ...prev, [name]: '' }));
+    const errorKey = name === 'captchaAnswer' ? 'captcha' : name as keyof AuthFormErrors;
+    if (errors[errorKey]) {
+      setErrors(prev => ({ ...prev, [errorKey]: '' }));
     }
   };
 
@@ -134,10 +135,10 @@ export const AuthPage = () => {
       if (!formData.lastName.trim()) newErrors.lastName = 'Фамилия обязательна.';
       if (!formData.acceptTerms) newErrors.acceptTerms = 'Необходимо принять условия.';
       const userAnswer = parseInt(formData.captchaAnswer);
-      if (isNaN(userAnswer)) {
-        newErrors.captcha = 'Введите ответ.';
+      if (isNaN(userAnswer) || formData.captchaAnswer.trim() === '') {
+        newErrors.captcha = 'Введите ответ на контрольный вопрос.';
       } else if (userAnswer !== captchaNumbers.answer) {
-        newErrors.captcha = `Неверный ответ. Правильный: ${captchaNumbers.answer}`;
+        newErrors.captcha = 'Неверный ответ. Попробуйте ещё раз.';
       }
     }
     setErrors(newErrors);
@@ -161,7 +162,18 @@ export const AuthPage = () => {
         body: JSON.stringify(payload),
       });
       const data = await response.json();
-      if (!response.ok) throw new Error(data.message || 'Запрос не удался.');
+      if (!response.ok) {
+        const raw = data.message || '';
+        let msg = 'Произошла ошибка. Попробуйте позже.';
+        if (!isLogin) {
+          if (raw.toLowerCase().includes('already exists') || raw.toLowerCase().includes('conflict')) {
+            msg = 'Аккаунт с таким email уже существует.';
+          }
+        } else {
+          msg = 'Неверный email или пароль.';
+        }
+        throw new Error(msg);
+      }
       if (isLogin) {
         if (data.access_token) {
           const token = data.access_token;
