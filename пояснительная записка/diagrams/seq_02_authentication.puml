@@ -1,0 +1,41 @@
+@startuml
+title Диаграмма последовательности: Проверка аутентификации
+
+actor Пользователь as User
+participant "ProtectedRoute\n(Next.js)" as PR
+participant "AuthStore\n(Zustand)" as AS
+participant "API Client\n(axios)" as API
+participant "AuthController\n(NestJS)" as AC
+participant "JwtGuard" as JG
+
+User -> PR: переход на защищённую страницу
+PR -> AS: getToken()
+
+alt Токен отсутствует в хранилище
+  AS --> PR: null
+  PR -> User: redirect('/login')
+else Токен присутствует
+  AS --> PR: accessToken
+  PR -> API: GET /auth/profile\nAuthorization: Bearer <token>
+  API -> AC: getProfile()
+  AC -> JG: canActivate(token)
+  JG -> JG: jwt.verify(token, secret)
+
+  alt Токен истёк или невалиден
+    JG --> AC: UnauthorizedException
+    AC --> API: 401 Unauthorized
+    API --> PR: ошибка 401
+    PR -> AS: clearToken()
+    AS -> AS: localStorage.removeItem(token)
+    PR -> User: redirect('/login')
+  else Токен валиден
+    JG --> AC: { userId, roles }
+    AC -> AC: usersService.findById(userId)
+    AC --> API: 200 { id, name, email, roles }
+    API --> PR: user payload
+    PR -> AS: setUser(user)
+    PR -> User: отрисовать защищённую страницу
+  end
+end
+
+@enduml

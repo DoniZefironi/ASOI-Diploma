@@ -1,0 +1,74 @@
+@startuml
+title Диаграмма последовательности: Работа с форумом
+
+actor Пользователь as U
+participant "ForumPage\n(React)" as FP
+participant "ForumStore\n(Zustand)" as FS
+participant "API Client\n(axios)" as API
+participant "ForumController\n(NestJS)" as FC
+database "ForumSection (БД)" as SecDB
+database "ForumTopic (БД)" as TopDB
+database "ForumPost (БД)" as PostDB
+
+U -> FP: открыть /courses/:id/forum
+FP -> API: GET /forum/sections?courseId=:id
+API -> FC: getSections(courseId)
+FC -> SecDB: findByCourseId(courseId)
+SecDB --> FC: ForumSection[]
+FC --> API: 200 sections[]
+API --> FP: sections[]
+FP -> FS: setSections(sections)
+FP -> U: отрисовать разделы форума
+
+U -> FP: выбрать раздел
+FP -> API: GET /forum/topics?sectionId=:id
+API -> FC: getTopics(sectionId)
+FC -> TopDB: findBySectionId(sectionId)
+TopDB --> FC: ForumTopic[]
+FC --> API: 200 topics[]
+API --> FP: topics[]
+FP -> FS: setTopics(topics)
+FP -> U: отрисовать список тем
+
+U -> FP: выбрать тему
+FP -> API: GET /forum/topics/:id/posts
+API -> FC: getPosts(topicId)
+FC -> PostDB: findByTopicId(topicId, { order: createdAt })
+PostDB --> FC: ForumPost[]
+FC --> API: 200 posts[]
+API --> FP: posts[]
+FP -> U: отрисовать обсуждение
+
+U -> FP: нажать «Создать тему»
+FP -> U: открыть модальное окно
+U -> FP: ввести заголовок темы
+U -> FP: ввести текст первого сообщения
+U -> FP: нажать «Опубликовать»
+FP -> FP: validateForm()
+
+alt Заголовок или текст пустые
+  FP -> U: показать ошибку валидации
+else Форма корректна
+  FP -> API: POST /forum/topics\n{ title, sectionId, content }\nAuthorization: Bearer <token>
+  API -> FC: createTopic(dto, userId)
+  FC -> TopDB: save({ title, sectionId, authorId: userId })
+  TopDB --> FC: ForumTopic { id }
+  FC -> PostDB: save({ topicId, content, authorId: userId })
+  PostDB --> FC: ForumPost
+  FC --> API: 201 { topic, firstPost }
+  API --> FP: новая тема
+  FP -> FS: addTopic(topic)
+  FP -> U: закрыть модальное окно, открыть новую тему
+end
+
+U -> FP: написать ответ в теме
+U -> FP: нажать «Ответить»
+FP -> API: POST /forum/posts\n{ topicId, content }\nAuthorization: Bearer <token>
+API -> FC: createPost(dto, userId)
+FC -> PostDB: save({ topicId, content, authorId: userId })
+PostDB --> FC: ForumPost
+FC --> API: 201 post
+API --> FP: новый пост
+FP -> U: добавить пост в конец обсуждения
+
+@enduml

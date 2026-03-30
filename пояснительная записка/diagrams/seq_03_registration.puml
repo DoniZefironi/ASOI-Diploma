@@ -1,0 +1,47 @@
+@startuml
+title Диаграмма последовательности: Регистрация
+
+actor Пользователь as User
+participant "RegisterPage\n(React)" as RP
+participant "AuthStore\n(Zustand)" as AS
+participant "API Client\n(axios)" as API
+participant "AuthController\n(NestJS)" as AC
+database "User (БД)" as DB
+
+User -> RP: открыть /register
+RP -> RP: render форма регистрации
+
+User -> RP: ввести имя
+User -> RP: ввести email
+User -> RP: ввести пароль
+User -> RP: подтвердить пароль
+User -> RP: нажать «Зарегистрироваться»
+RP -> RP: validateForm()
+
+alt Пароли не совпадают или поля пустые
+  RP -> User: отобразить ошибки валидации
+else Форма корректна
+  RP -> API: POST /auth/register\n{ name, email, password }
+  API -> AC: register(dto)
+  AC -> DB: findByEmail(email)
+
+  alt Email уже занят
+    DB --> AC: User (существующий)
+    AC --> API: 409 Conflict
+    API --> RP: ошибка 409
+    RP -> User: показать «Email уже используется»
+  else Email свободен
+    DB --> AC: null
+    AC -> AC: bcrypt.hash(password, 10)
+    AC -> DB: save({ name, email, passwordHash })
+    DB --> AC: User { id, roles }
+    AC -> AC: jwt.sign({ userId, roles })
+    AC --> API: 201 { accessToken }
+    API --> RP: accessToken
+    RP -> AS: setToken(accessToken)
+    AS -> AS: localStorage.setItem(token)
+    RP -> RP: router.push('/dashboard')
+  end
+end
+
+@enduml

@@ -1,0 +1,66 @@
+@startuml
+title Диаграмма последовательности: Просмотр и управление расписанием
+
+actor Пользователь as U
+participant "SchedulePage\n(React)" as SP
+participant "ScheduleStore\n(Zustand)" as SS
+participant "API Client\n(axios)" as API
+participant "ScheduleController\n(NestJS)" as SC
+participant "RoleGuard" as RG
+database "ScheduleItem (БД)" as SchDB
+database "CourseGroup (БД)" as GDB
+
+U -> SP: открыть /schedule
+SP -> API: GET /schedule?groupId=:id\nAuthorization: Bearer <token>
+API -> SC: getSchedule(groupId, userId)
+SC -> SchDB: findByGroup(groupId, { order: startTime })
+SchDB --> SC: ScheduleItem[]
+SC --> API: 200 items[]
+API --> SP: schedule[]
+SP -> SS: setSchedule(schedule)
+SP -> U: отрисовать расписание (календарный вид)
+
+U -> SP: переключить неделю / фильтр
+SP -> SS: setWeekOffset(offset)
+SS --> SP: отфильтрованные элементы
+SP -> U: обновить отображение
+
+alt Роль — студент
+  SP -> U: отрисовать расписание в режиме просмотра (read-only)
+else Роль — ментор или admin
+  SP -> U: отрисовать кнопку «Добавить занятие»
+
+  U -> SP: нажать «Добавить занятие»
+  SP -> U: открыть форму нового занятия
+  U -> SP: ввести тему занятия
+  U -> SP: выбрать группу
+  U -> SP: выбрать дату и время
+  U -> SP: ввести аудиторию / ссылку (онлайн)
+  U -> SP: нажать «Сохранить»
+  SP -> SP: validateForm()
+
+  alt Обязательные поля не заполнены
+    SP -> U: показать ошибки валидации
+  else Форма корректна
+    SP -> API: POST /schedule\n{ title, groupId, startTime, endTime, location }\nAuthorization: Bearer <token>
+    API -> RG: canActivate(token, ['mentor_electronics','admin'])
+
+    alt Нет прав доступа
+      RG --> API: 403 Forbidden
+      API --> SP: ошибка 403
+      SP -> U: показать «Нет прав для редактирования расписания»
+    else Доступ разрешён
+      RG --> SC: разрешено
+      SC -> GDB: findOne(groupId)
+      GDB --> SC: CourseGroup
+      SC -> SchDB: save({ title, groupId, startTime, endTime, location })
+      SchDB --> SC: ScheduleItem { id }
+      SC --> API: 201 scheduleItem
+      API --> SP: новое занятие
+      SP -> SS: addItem(scheduleItem)
+      SP -> U: добавить занятие в календарный вид
+    end
+  end
+end
+
+@enduml

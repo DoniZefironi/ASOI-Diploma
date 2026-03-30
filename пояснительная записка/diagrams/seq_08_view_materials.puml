@@ -1,0 +1,50 @@
+@startuml
+title Диаграмма последовательности: Просмотр учебных материалов
+
+actor Студент as S
+participant "CoursePage\n(React)" as CP
+participant "MaterialsStore\n(Zustand)" as MS
+participant "API Client\n(axios)" as API
+participant "MaterialsController\n(NestJS)" as MC
+database "CourseMaterial (БД)" as MatDB
+database "CourseRegistration (БД)" as RegDB
+
+S -> CP: открыть /courses/:id/materials
+CP -> API: GET /courses/:id/materials\nAuthorization: Bearer <token>
+API -> MC: getMaterials(courseId, userId)
+MC -> RegDB: findOne({ courseId, userId })
+
+alt Студент не записан на курс
+  RegDB --> MC: null
+  MC --> API: 403 Forbidden
+  API --> CP: ошибка 403
+  CP -> S: показать «Запишитесь на курс для доступа»
+else Студент записан
+  RegDB --> MC: CourseRegistration
+  MC -> MatDB: findByCourseId(courseId, { order: orderIndex })
+  MatDB --> MC: CourseMaterial[]
+  MC --> API: 200 materials[]
+  API --> CP: materials[]
+  CP -> MS: setMaterials(materials)
+  CP -> S: отрисовать список тем
+
+  S -> CP: выбрать тему / материал
+  CP -> MS: setCurrentMaterial(materialId)
+  MS --> CP: material { type, title, content, fileUrl }
+
+  alt Тип материала — видео
+    CP -> S: отрисовать видеоплеер + описание
+  else Тип материала — статья / текст
+    CP -> S: отрисовать текстовый редактор (read-only)
+  else Тип материала — файл
+    CP -> S: отрисовать кнопку скачать + превью
+    S -> CP: нажать «Скачать»
+    CP -> API: GET /materials/:id/download
+    API -> MC: downloadFile(materialId, userId)
+    MC --> API: fileStream
+    API --> CP: файл
+    CP -> S: инициировать загрузку файла
+  end
+end
+
+@enduml

@@ -1,0 +1,55 @@
+@startuml
+title Диаграмма последовательности: Оценка работы студента (ментор)
+
+actor Ментор as M
+participant "GradingPage\n(React)" as GP
+participant "API Client\n(axios)" as API
+participant "AssignmentsController\n(NestJS)" as AC
+database "AssignmentSubmission (БД)" as SubDB
+database "UserAchievement (БД)" as UAD
+
+M -> GP: открыть /mentor/submissions
+GP -> API: GET /submissions?status=pending\nAuthorization: Bearer <token>
+API -> AC: getPendingSubmissions(mentorId)
+AC -> SubDB: findPending({ mentorCourses })
+SubDB --> AC: submissions[]
+AC --> API: 200 submissions[]
+API --> GP: submissions[]
+GP -> M: отрисовать список работ на проверку
+
+M -> GP: выбрать работу студента
+GP -> API: GET /submissions/:id
+API -> AC: getSubmission(submissionId)
+AC -> SubDB: findOne(id, { relations: student, assignment })
+SubDB --> AC: AssignmentSubmission { content, autoScore }
+AC --> API: 200 submission
+API --> GP: детали работы
+GP -> M: отрисовать работу студента и авто-результат
+
+M -> GP: ввести итоговую оценку (баллы)
+M -> GP: написать комментарий для студента
+M -> GP: нажать «Сохранить оценку»
+GP -> GP: validateGrade()
+
+alt Оценка вне диапазона (0 — maxScore)
+  GP -> M: показать «Оценка не может превышать максимальный балл»
+else Оценка корректна
+  GP -> API: PATCH /submissions/:id/grade\n{ score, mentorComment }
+  API -> AC: gradeSubmission(submissionId, score, comment)
+  AC -> SubDB: update({ score, mentorComment, status: 'graded' })
+  SubDB --> AC: updated submission
+  AC -> AC: checkAchievements(studentId, score)
+
+  alt Достижение разблокировано
+    AC -> UAD: save({ userId: studentId, achievementId })
+    UAD --> AC: UserAchievement
+    AC --> API: 200 { success: true, studentNotified: true }
+  else Достижение не разблокировано
+    AC --> API: 200 { success: true }
+  end
+
+  API --> GP: успех
+  GP -> M: показать «Оценка сохранена»
+end
+
+@enduml

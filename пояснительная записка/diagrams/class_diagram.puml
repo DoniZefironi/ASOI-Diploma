@@ -1,0 +1,153 @@
+@startuml
+title Диаграмма классов
+
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+hide empty members
+
+package "Auth" {
+  class AuthController {
+    +login(dto: LoginDto): JwtToken
+    +register(dto: RegisterDto): User
+  }
+  class AuthService {
+    +login(email, password): JwtToken
+    +register(dto: RegisterDto): User
+    +validateUser(email, password): User
+    -generateToken(userId, roles): string
+  }
+  AuthController --> AuthService
+}
+
+package "Users" {
+  class UsersController {
+    +findAll(): User[]
+    +findById(id): User
+    +getMyProfile(): User
+    +updateRole(id, role): User
+    +deactivate(id): void
+  }
+  class UsersService {
+    +findAll(page): User[]
+    +findById(id): User
+    +updateRole(userId, role): User
+    +setActive(userId, isActive): void
+  }
+  UsersController --> UsersService
+}
+
+package "Courses" {
+  class CoursesController {
+    +findAll(): Course[]
+    +findById(id): Course
+    +enroll(userId, courseGroupId): Registration
+    +approveRegistration(id): void
+    +createGroup(dto): CourseGroup
+  }
+  class CoursesService {
+    +findAll(): Course[]
+    +findById(id): Course
+    +enroll(userId, groupId): Registration
+    +approveRegistration(id): void
+    +createGroup(dto): CourseGroup
+    +checkAvailability(groupId): boolean
+  }
+  CoursesController --> CoursesService
+}
+
+package "Assignments" {
+  class AssignmentsController {
+    +findAll(): Assignment[]
+    +findById(id): Assignment
+    +create(dto): Assignment
+    +update(id, dto): Assignment
+    +submit(dto): Submission
+    +getSubmissions(assignmentId): Submission[]
+    +setFinalGrade(id, score): Submission
+    +submitPeerReview(dto): PeerReview
+    +getSubmissionsForReview(userId, assignmentId): Submission[]
+  }
+  class AssignmentsService {
+    +findAll(): Assignment[]
+    +findById(id): Assignment
+    +create(dto): Assignment
+    +update(id, dto): Assignment
+    +submit(userId, dto): Submission
+    +getSubmissions(assignmentId): Submission[]
+    +setFinalGrade(id, score): Submission
+    +submitPeerReview(dto): PeerReview
+  }
+  AssignmentsController --> AssignmentsService
+}
+
+package "Circuit" {
+  class CircuitController {
+    +submitCircuit(assignmentId, dto): CircuitSubmission
+  }
+  class CircuitService {
+    +simulate(circuit): Record
+    +validateCircuit(data, testCases): ValidationResult
+    -evaluateNode(node, inputs): boolean
+  }
+  CircuitController --> CircuitService
+}
+
+package "Forum" {
+  class ForumController {
+    +getSections(courseId): ForumSection[]
+    +getTopics(sectionId): ForumTopic[]
+    +createTopic(dto): ForumTopic
+    +createPost(dto): ForumPost
+    +updatePost(id, dto): ForumPost
+    +deletePost(id): void
+  }
+  class ForumService {
+    +getSections(courseId): ForumSection[]
+    +getTopics(sectionId): ForumTopic[]
+    +createTopic(dto): ForumTopic
+    +createPost(dto): ForumPost
+  }
+  ForumController --> ForumService
+}
+
+package "Materials" {
+  class MaterialsController {
+    +getMaterials(courseId): CourseMaterial[]
+    +upload(dto): CourseMaterial
+  }
+  class MaterialsService {
+    +findByCourse(courseId): CourseMaterial[]
+    +upload(dto): CourseMaterial
+  }
+  MaterialsController --> MaterialsService
+}
+
+package "Schedule" {
+  class ScheduleController {
+    +getSchedule(groupId): ScheduleItem[]
+    +create(dto): ScheduleItem
+  }
+  class ScheduleService {
+    +findByGroup(groupId): ScheduleItem[]
+    +create(dto): ScheduleItem
+  }
+  ScheduleController --> ScheduleService
+}
+
+package "Achievements" {
+  class AchievementsController {
+    +findAll(): Achievement[]
+    +getUserAchievements(userId): UserAchievement[]
+  }
+  class AchievementsService {
+    +findAll(): Achievement[]
+    +getUserAchievements(userId): UserAchievement[]
+    +checkAndAward(userId, event): void
+  }
+  AchievementsController --> AchievementsService
+}
+
+AuthService --> UsersService
+AssignmentsService --> AchievementsService
+CircuitService ..> AssignmentsService : uses testCases
+@enduml

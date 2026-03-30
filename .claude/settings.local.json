@@ -26,7 +26,32 @@
       "Bash(ls -la \"c:\\\\Users\\\\vladn\\\\OneDrive\\\\Dokumente\\\\GitHub\\\\ASOI-Diploma\\\\frontend\\\\src\\\\app\\\\profile\"\" 2>/dev/null || echo \"Directory not found or empty \")",
       "Bash(grep \"\\\\.tsx$\")",
       "Read(//c/Users/vladn/OneDrive/Dokumente/GitHub/ASOI-Diploma/**)",
-      "Bash(find /c/Users/vladn/OneDrive/Dokumente/GitHub/ASOI-Diploma/frontend/src/shared/api -type f -name *.ts -o -name *.tsx)"
+      "Bash(find /c/Users/vladn/OneDrive/Dokumente/GitHub/ASOI-Diploma/frontend/src/shared/api -type f -name *.ts -o -name *.tsx)",
+      "Bash(python -c \":*)",
+      "Bash(pip install:*)",
+      "Bash(python -c \"import sys; print\\(sys.executable\\)\")",
+      "Bash(python -m pip show python-docx)",
+      "Bash(C:UsersvladnAppDataLocalProgramsPythonPython311python.exe -m pip install python-docx -q)",
+      "Bash(python -m pip install python-docx)",
+      "Bash(grep -r \"canvas\\\\|Canvas\\\\|SVG\\\\|svg\\\\|konva\\\\|fabric\\\\|d3\\\\|pixi\" c:/Users/vladn/OneDrive/Dokumente/GitHub/ASOI-Diploma/frontend/src/features/ --include=*.tsx -l)",
+      "Bash(for f:*)",
+      "Bash(do)",
+      "Bash(echo \"=== $f ===\")",
+      "Read(//c/Users/vladn/OneDrive/Dokumente/GitHub/ASOI-Diploma/пояснительная записка/**)",
+      "Bash(done)",
+      "Bash(xargs ls:*)",
+      "Bash(mkdir -p \"c:/Users/vladn/OneDrive/Dokumente/GitHub/ASOI-Diploma/пояснительная записка/diagrams\")",
+      "Bash(python \"c:/Users/vladn/OneDrive/Dokumente/GitHub/ASOI-Diploma/generate_diagrams.py\")",
+      "Bash(python \"c:/Users/vladn/OneDrive/Dokumente/GitHub/ASOI-Diploma/generate_xmi.py\")",
+      "Bash(python generate_xmi.py)",
+      "Bash(ls \"c:\\\\Users\\\\vladn\\\\OneDrive\\\\Dokumente\\\\GitHub\\\\ASOI-Diploma\\\\пояснительная записка\\\\diagrams\\\\seq_\"*.puml)",
+      "Bash(python generate_puml.py)",
+      "Bash(python regen_sequences_xmi.py)",
+      "Bash(python build_doc.py)",
+      "Bash(find c:UsersvladnOneDriveDokumenteGitHubASOI-Diplomafrontendsrc -type f \\\\\\(-name *test* -o -name *Test* \\\\\\))",
+      "Bash(grep -r TestCase c:UsersvladnOneDriveDokumenteGitHubASOI-Diplomabackendsrc --include=*.ts -B 2 -A 2)",
+      "Bash(python build_doc2.py)",
+      "Bash(python read_template.py)"
     ]
   }
 }

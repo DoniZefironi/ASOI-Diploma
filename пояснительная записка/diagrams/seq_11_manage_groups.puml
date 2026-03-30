@@ -1,0 +1,62 @@
+@startuml
+title Диаграмма последовательности: Управление учебными группами (администратор)
+
+actor Администратор as A
+participant "GroupsPage\n(React)" as GP
+participant "API Client\n(axios)" as API
+participant "GroupsController\n(NestJS)" as GC
+participant "AdminGuard\n(RoleGuard)" as AG
+database "CourseGroup (БД)" as GDB
+database "UserRole (БД)" as URD
+database "User (БД)" as UDB
+
+A -> GP: открыть /admin/groups
+GP -> API: GET /groups\nAuthorization: Bearer <token>
+API -> AG: canActivate(token, 'admin')
+
+alt Роль не admin
+  AG --> API: 403 Forbidden
+  API --> GP: ошибка 403
+  GP -> A: показать «Нет прав доступа»
+else Роль admin подтверждена
+  AG --> GC: разрешено
+  GC -> GDB: findAll({ relations: course, students })
+  GDB --> GC: CourseGroup[]
+  GC --> API: 200 groups[]
+  API --> GP: groups[]
+  GP -> A: отрисовать таблицу групп
+
+  A -> GP: нажать «Создать группу»
+  A -> GP: ввести название группы
+  A -> GP: выбрать курс
+  A -> GP: нажать «Сохранить»
+  GP -> API: POST /groups\n{ name, courseId }
+  API -> GC: createGroup(dto)
+  GC -> GDB: save({ name, courseId })
+  GDB --> GC: CourseGroup { id }
+  GC --> API: 201 group
+  API --> GP: новая группа
+  GP -> A: добавить строку в таблицу
+
+  A -> GP: выбрать студента для добавления в группу
+  A -> GP: нажать «Добавить в группу»
+  GP -> API: POST /groups/:id/students\n{ userId }
+  API -> GC: addStudentToGroup(groupId, userId)
+  GC -> UDB: findOne(userId)
+
+  alt Пользователь не найден
+    UDB --> GC: null
+    GC --> API: 404 Not Found
+    API --> GP: ошибка 404
+    GP -> A: показать «Пользователь не найден»
+  else Пользователь найден
+    UDB --> GC: User
+    GC -> URD: save({ userId, role: 'student_electronics', groupId })
+    URD --> GC: UserRole
+    GC --> API: 201 успех
+    API --> GP: обновлённый список группы
+    GP -> A: показать обновлённый состав группы
+  end
+end
+
+@enduml

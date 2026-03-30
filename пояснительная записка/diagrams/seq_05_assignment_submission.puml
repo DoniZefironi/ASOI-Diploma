@@ -1,0 +1,51 @@
+@startuml
+title Диаграмма последовательности: Сдача задания студентом
+
+actor Студент as S
+participant "AssignmentPage\n(React)" as AP
+participant "SubmissionStore\n(Zustand)" as SS
+participant "API Client\n(axios)" as API
+participant "AssignmentsController\n(NestJS)" as AC
+database "Assignment (БД)" as ADB
+database "AssignmentSubmission (БД)" as SubDB
+
+S -> AP: открыть /courses/:id/assignments/:assignId
+AP -> API: GET /assignments/:id
+API -> AC: getAssignment(id)
+AC -> ADB: findOne(id, { relations: testCases })
+ADB --> AC: Assignment { title, description, type, testCases }
+AC --> API: 200 Assignment
+API --> AP: assignment
+AP -> S: отрисовать условие задания
+
+S -> AP: написать ответ / решение
+S -> AP: нажать «Отправить»
+AP -> AP: validateContent()
+
+alt Ответ пустой
+  AP -> S: показать «Поле не может быть пустым»
+else Ответ заполнен
+  AP -> SS: setSubmitting(true)
+  AP -> API: POST /assignments/:id/submit\n{ content }\nAuthorization: Bearer <token>
+  API -> AC: submit(assignmentId, userId, content)
+  AC -> AC: validateSubmission(content, testCases[])
+
+  alt Тест-кейсы провалены (score < passingScore)
+    AC -> SubDB: save({ status: 'failed', score })
+    SubDB --> AC: submission
+    AC --> API: 200 { score, maxScore, isPassed: false, feedback }
+    API --> AP: результат
+    AP -> SS: setResult(result)
+    AP -> S: показать результат с ошибками теста
+  else Тест-кейсы пройдены
+    AC -> SubDB: save({ status: 'passed', score })
+    SubDB --> AC: submission
+    AC --> API: 200 { score, maxScore, isPassed: true, feedback }
+    API --> AP: результат
+    AP -> SS: setResult(result)
+    AP -> S: показать «Задание сдано» + баллы
+  end
+  AP -> SS: setSubmitting(false)
+end
+
+@enduml

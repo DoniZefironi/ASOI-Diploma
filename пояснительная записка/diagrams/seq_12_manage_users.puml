@@ -1,0 +1,65 @@
+@startuml
+title Диаграмма последовательности: Управление пользователями (администратор)
+
+actor Администратор as A
+participant "UsersPage\n(React)" as UP
+participant "API Client\n(axios)" as API
+participant "UsersController\n(NestJS)" as UC
+participant "AdminGuard\n(RoleGuard)" as AG
+database "User (БД)" as UDB
+database "UserRole (БД)" as URD
+
+A -> UP: открыть /admin/users
+UP -> API: GET /users?page=1&limit=20\nAuthorization: Bearer <token>
+API -> AG: canActivate(token, 'admin')
+
+alt Роль не admin
+  AG --> API: 403 Forbidden
+  API --> UP: ошибка 403
+  UP -> A: показать «Нет прав доступа»
+else Роль admin подтверждена
+  AG --> UC: разрешено
+  UC -> UDB: findAll({ pagination, relations: roles })
+  UDB --> UC: { users[], total }
+  UC --> API: 200 { users[], meta: { total, page } }
+  API --> UP: users[]
+  UP -> A: отрисовать таблицу пользователей с пагинацией
+
+  A -> UP: ввести запрос в поле поиска
+  UP -> API: GET /users?search=<query>
+  API -> UC: searchUsers(query)
+  UC -> UDB: findByNameOrEmail(query)
+  UDB --> UC: users[]
+  UC --> API: 200 users[]
+  API --> UP: отфильтрованный список
+  UP -> A: обновить таблицу
+
+  A -> UP: выбрать пользователя → нажать «Изменить роль»
+  A -> UP: выбрать новую роль из списка
+  A -> UP: нажать «Сохранить»
+  UP -> API: PATCH /users/:id/role\n{ role: 'mentor_electronics' }
+  API -> UC: updateUserRole(userId, role)
+  UC -> URD: upsert({ userId, role })
+  URD --> UC: UserRole (обновлённый)
+  UC --> API: 200 успех
+  API --> UP: обновлённый пользователь
+  UP -> A: показать обновлённую роль в таблице
+
+  A -> UP: нажать «Заблокировать пользователя»
+  UP -> UP: показать диалог подтверждения
+  A -> UP: подтвердить
+
+  alt Пользователь — единственный администратор
+    UP -> A: показать «Нельзя заблокировать единственного администратора»
+  else Блокировка разрешена
+    UP -> API: PATCH /users/:id\n{ isActive: false }
+    API -> UC: deactivateUser(userId)
+    UC -> UDB: update({ isActive: false })
+    UDB --> UC: обновлено
+    UC --> API: 200 успех
+    API --> UP: успех
+    UP -> A: отметить пользователя как заблокированного
+  end
+end
+
+@enduml

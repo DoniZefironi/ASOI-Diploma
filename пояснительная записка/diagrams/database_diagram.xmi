@@ -1,0 +1,787 @@
+<?xml version='1.0' encoding='utf-8'?>
+<xmi:XMI xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmi:version="2.1">
+  <uml:Model xmi:id="_1cd97c5803f84f68ac9a" name="DatabaseDiagram">
+    <packagedElement xmi:type="uml:Class" xmi:id="_f35d4de1e9ea4672bad3" name="users">
+      <ownedAttribute xmi:id="_b5b763e627ea486da281" name="id" visibility="public">
+        <type xmi:type="uml:PrimitiveType" name="Integer" />
+        <ownedComment xmi:id="_052a47d131334bb8be5d">
+          <body>PK</body>
+        </ownedComment>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_ba9763b8836144e5b1c0" name="email" visibility="public">
+        <type xmi:type="uml:PrimitiveType" name="Text" />
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_17649107864a41e7979b" name="password" visibility="public">
+        <type xmi:type="uml:PrimitiveType" name="Text" />
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_c38d303379f24cc1bd4d" name="firstName" visibility="public">
+        <type xmi:type="uml:PrimitiveType" name="Text" />
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_4d76e21af99647758bf1" name="lastName" visibility="public">
+        <type xmi:type="uml:PrimitiveType" name="Text" />
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_866e5e527c7d416c8d2d" name="avatar" visibility="public">
+        <type xmi:type="uml:PrimitiveType" name="Text" />
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_3b32059a9455443fbb31" name="isActive" visibility="public">
+        <type xmi:type="uml:PrimitiveType" name="Boolean" />
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_482acaff077e4f62861a" name="createdAt" visibility="public">
+        <type xmi:type="uml:PrimitiveType" name="Timestamp" />
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_14b7196fc897482fafcc" name="updatedAt" visibility="public">
+        <type xmi:type="uml:PrimitiveType" name="Timestamp" />
+      </ownedAttribute>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Class" xmi:id="_7759975a5efb4063b2f3" name="user_roles">
+      <ownedAttribute xmi:id="_e5ef2c1e383e4e47b0e1" name="id" visibility="public">
+        <type xmi:type="uml:PrimitiveType" name="Integer" />
+        <ownedComment xmi:id="_7ef4e391db824cb7a935">
+          <body>PK</body>
+        </ownedComment>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_df03b1ae614346f7b70d" name="userId" visibility="public">
+        <type xmi:type="uml:PrimitiveType" name="Integer" />
+        <ownedComment xmi:id="_1da6527c54694b368aab">
+          <body>FK</body>
+        </ownedComment>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_efaa1349e5d345ccbba2" name="role" visibility="public">
+        <type xmi:type="uml:PrimitiveType" name="Enum" />
+      </ownedAttribute>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Class" xmi:id="_cd5fafaad7b244a0b2dc" name="courses">
+      <ownedAttribute xmi:id="_2114cbd60d1847ec8432" name="id" visibility="public">
+        <type xmi:type="uml:PrimitiveType" name="Integer" />
+        <ownedComment xmi:id="_cd43ef14c3864bcf8b4f">
+          <body>PK</body>
+        </ownedComment>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_62eb20de0e6e49f4a0fe" name="name" visibility="public">
+        <type xmi:type="uml:PrimitiveType" name="Text" />
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_896e330ea7b04c2a8d1d" name="type" visibility="public">
+        <type xmi:type="uml:PrimitiveType" name="Enum" />
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_9a43be58a2884eb7acca" name="description" visibility="public">
+        <type xmi:type="uml:PrimitiveType" name="Text" />
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_499ac0ab4c3547599a82" name="duration" visibility="public">
+        <type xmi:type="uml:PrimitiveType" name="Integer" />
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_64e99bf30e4a47a49607" name="isActive" visibility="public">
+        <type xmi:type="uml:PrimitiveType" name="Boolean" />
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_864c83b3172a447dae7d" name="imageUrl" visibility="public">
+        <type xmi:type="uml:PrimitiveType" name="Text" />
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_ccdd3ee7221a4aa080b2" name="createdAt" visibility="public">
+        <type xmi:type="uml:PrimitiveType" name="Timestamp" />
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_fff260bf40244685a2f5" name="updatedAt" visibility="public">
+        <type xmi:type="uml:PrimitiveType" name="Timestamp" />
+      </ownedAttribute>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Class" xmi:id="_42563edb00c0404099c8" name="course_groups">
+      <ownedAttribute xmi:id="_e1032626a1c94887a7e1" name="id" visibility="public">
+        <type xmi:type="uml:PrimitiveType" name="Integer" />
+        <ownedComment xmi:id="_3a2d314dfbd74db1879f">
+          <body>PK</body>
+        </ownedComment>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_7159cafc68c541cfb1f5" name="name" visibility="public">
+        <type xmi:type="uml:PrimitiveType" name="Text" />
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_ce02e7b65db14d10aeae" name="year" visibility="public">
+        <type xmi:type="uml:PrimitiveType" name="Integer" />
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_5167ff3d5f134428af04" name="semester" visibility="public">
+        <type xmi:type="uml:PrimitiveType" name="Integer" />
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_38fa5cff16c04da6a4c2" name="maxStudents" visibility="public">
+        <type xmi:type="uml:PrimitiveType" name="Integer" />
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_55890ac69f644017a662" name="isActive" visibility="public">
+        <type xmi:type="uml:PrimitiveType" name="Boolean" />
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_0b28a63e6ac446c9a254" name="startDate" visibility="public">
+        <type xmi:type="uml:PrimitiveType" name="Date" />
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_4f6f486311d140759eb2" name="endDate" visibility="public">
+        <type xmi:type="uml:PrimitiveType" name="Date" />
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_d686286980374d5c8a83" name="courseId" visibility="public">
+        <type xmi:type="uml:PrimitiveType" name="Integer" />
+        <ownedComment xmi:id="_afc00960f7f24bae844f">
+          <body>FK</body>
+        </ownedComment>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_6d1e2cbaeac9431cb7ef" name="createdAt" visibility="public">
+        <type xmi:type="uml:PrimitiveType" name="Timestamp" />
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_85c3662d96a241cb8775" name="updatedAt" visibility="public">
+        <type xmi:type="uml:PrimitiveType" name="Timestamp" />
+      </ownedAttribute>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Class" xmi:id="_aab17367cae44747ba75" name="course_registrations">
+      <ownedAttribute xmi:id="_c7a994bf49424b73aa6f" name="id" visibility="public">
+        <type xmi:type="uml:PrimitiveType" name="Integer" />
+        <ownedComment xmi:id="_dc317e501c6f4807a327">
+          <body>PK</body>
+        </ownedComment>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_9af0c54d56b54013afca" name="userId" visibility="public">
+        <type xmi:type="uml:PrimitiveType" name="Integer" />
+        <ownedComment xmi:id="_4f29c45f82b54de39bc5">
+          <body>FK</body>
+        </ownedComment>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_cf7b3b51b6354396ba72" name="courseGroupId" visibility="public">
+        <type xmi:type="uml:PrimitiveType" name="Integer" />
+        <ownedComment xmi:id="_96ee036fe04944029c45">
+          <body>FK</body>
+        </ownedComment>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_d20199aacb04437e8c72" name="status" visibility="public">
+        <type xmi:type="uml:PrimitiveType" name="Enum" />
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_e4ec19af5ea74135abed" name="registeredAt" visibility="public">
+        <type xmi:type="uml:PrimitiveType" name="Timestamp" />
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_098434148b924821ba67" name="approvedAt" visibility="public">
+        <type xmi:type="uml:PrimitiveType" name="Timestamp" />
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_91b326c0f9fc4134a4a2" name="approvedBy" visibility="public">
+        <type xmi:type="uml:PrimitiveType" name="Integer" />
+      </ownedAttribute>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Class" xmi:id="_01e3a3f95b6e493ba4e7" name="course_materials">
+      <ownedAttribute xmi:id="_a8328e2bf1ae493bbd2b" name="id" visibility="public">
+        <type xmi:type="uml:PrimitiveType" name="Integer" />
+        <ownedComment xmi:id="_5dcff3e0709145f0a671">
+          <body>PK</body>
+        </ownedComment>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_8fdfaab0474648ffaed6" name="title" visibility="public">
+        <type xmi:type="uml:PrimitiveType" name="Text" />
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_c6c0b56ad9b34462b44a" name="type" visibility="public">
+        <type xmi:type="uml:PrimitiveType" name="Enum" />
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_6e6bcb0519884c9cb158" name="fileUrl" visibility="public">
+        <type xmi:type="uml:PrimitiveType" name="Text" />
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_57b832f5107549709dd3" name="thumbnailUrl" visibility="public">
+        <type xmi:type="uml:PrimitiveType" name="Text" />
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_8dac3c3253b24c5e9fcb" name="isPublic" visibility="public">
+        <type xmi:type="uml:PrimitiveType" name="Boolean" />
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_db2dfa815ee3458589e6" name="courseId" visibility="public">
+        <type xmi:type="uml:PrimitiveType" name="Integer" />
+        <ownedComment xmi:id="_652a10267a474af0a256">
+          <body>FK</body>
+        </ownedComment>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_457093592282469bb569" name="uploadedById" visibility="public">
+        <type xmi:type="uml:PrimitiveType" name="Integer" />
+        <ownedComment xmi:id="_ba9e3a1e73be431f9b4b">
+          <body>FK</body>
+        </ownedComment>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_e077a1d7143d42709fbd" name="createdAt" visibility="public">
+        <type xmi:type="uml:PrimitiveType" name="Timestamp" />
+      </ownedAttribute>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Class" xmi:id="_4c06d0f5b6c043c893f5" name="assignments">
+      <ownedAttribute xmi:id="_84d5c71b23f1482cab65" name="id" visibility="public">
+        <type xmi:type="uml:PrimitiveType" name="Integer" />
+        <ownedComment xmi:id="_969856d03ed646898c7c">
+          <body>PK</body>
+        </ownedComment>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_42fc66e5d22f486e83b8" name="title" visibility="public">
+        <type xmi:type="uml:PrimitiveType" name="Text" />
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_3346f00eb9b44cc5b1e3" name="type" visibility="public">
+        <type xmi:type="uml:PrimitiveType" name="Enum" />
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_1baff07947f64e01b259" name="maxScore" visibility="public">
+        <type xmi:type="uml:PrimitiveType" name="Integer" />
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_79f6c8a680c346d395a9" name="deadline" visibility="public">
+        <type xmi:type="uml:PrimitiveType" name="Timestamp" />
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_c224a0064c244e6ea70d" name="isActive" visibility="public">
+        <type xmi:type="uml:PrimitiveType" name="Boolean" />
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_e7c86b6922784a8e9043" name="peerReviewEnabled" visibility="public">
+        <type xmi:type="uml:PrimitiveType" name="Boolean" />
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_1d3b4049959845d58f19" name="peerReviewsPerStudent" visibility="public">
+        <type xmi:type="uml:PrimitiveType" name="Integer" />
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_8c8a1aa725134a2baf2c" name="courseGroupId" visibility="public">
+        <type xmi:type="uml:PrimitiveType" name="Integer" />
+        <ownedComment xmi:id="_5cccf3ecb02e4cbfb217">
+          <body>FK</body>
+        </ownedComment>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_c94e4a2ef2cf4d0da06e" name="testCases" visibility="public">
+        <type xmi:type="uml:PrimitiveType" name="JSON" />
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_6a31a47c888a42b99b5f" name="createdAt" visibility="public">
+        <type xmi:type="uml:PrimitiveType" name="Timestamp" />
+      </ownedAttribute>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Class" xmi:id="_1f52e52910e14d1c9960" name="assignment_submissions">
+      <ownedAttribute xmi:id="_8c685e8cb481442c80d3" name="id" visibility="public">
+        <type xmi:type="uml:PrimitiveType" name="Integer" />
+        <ownedComment xmi:id="_4f189a9a20cb4de79390">
+          <body>PK</body>
+        </ownedComment>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_f671052529cb4f34a5b2" name="content" visibility="public">
+        <type xmi:type="uml:PrimitiveType" name="Text" />
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_a607a67b3eca40658a08" name="attachments" visibility="public">
+        <type xmi:type="uml:PrimitiveType" name="JSON" />
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_4d2e917df4e345d99f35" name="repositoryUrl" visibility="public">
+        <type xmi:type="uml:PrimitiveType" name="Text" />
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_5087c2a7933f436598a4" name="status" visibility="public">
+        <type xmi:type="uml:PrimitiveType" name="Enum" />
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_0ae90cf5ff45478ca4c5" name="submittedAt" visibility="public">
+        <type xmi:type="uml:PrimitiveType" name="Timestamp" />
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_613c9d07aabc4535a14a" name="finalScore" visibility="public">
+        <type xmi:type="uml:PrimitiveType" name="Integer" />
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_0b2581a6be914ddd8228" name="mentorFeedback" visibility="public">
+        <type xmi:type="uml:PrimitiveType" name="Text" />
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_b5adf9f4ea4843d6a65f" name="userId" visibility="public">
+        <type xmi:type="uml:PrimitiveType" name="Integer" />
+        <ownedComment xmi:id="_d540bb875bd0467e939a">
+          <body>FK</body>
+        </ownedComment>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_1f438f1d86574476a40c" name="assignmentId" visibility="public">
+        <type xmi:type="uml:PrimitiveType" name="Integer" />
+        <ownedComment xmi:id="_cb0eca24b21c4d6dbfc1">
+          <body>FK</body>
+        </ownedComment>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_99371eba14f84702aa8b" name="createdAt" visibility="public">
+        <type xmi:type="uml:PrimitiveType" name="Timestamp" />
+      </ownedAttribute>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Class" xmi:id="_a5e0b758b141488582e9" name="circuit_submissions">
+      <ownedAttribute xmi:id="_3f9d6c58ab58475485bc" name="id" visibility="public">
+        <type xmi:type="uml:PrimitiveType" name="Integer" />
+        <ownedComment xmi:id="_055af24837834a83be79">
+          <body>PK</body>
+        </ownedComment>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_bfc2079f02a949bcb200" name="circuitData" visibility="public">
+        <type xmi:type="uml:PrimitiveType" name="JSON" />
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_85f4c5988f2e4a69bbe5" name="score" visibility="public">
+        <type xmi:type="uml:PrimitiveType" name="Integer" />
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_6c62bce4781b4815adca" name="maxScore" visibility="public">
+        <type xmi:type="uml:PrimitiveType" name="Integer" />
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_b9edba4aa73f45938e0f" name="feedback" visibility="public">
+        <type xmi:type="uml:PrimitiveType" name="Text" />
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_d9b7fa3ee5b74698b78a" name="isPassed" visibility="public">
+        <type xmi:type="uml:PrimitiveType" name="Boolean" />
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_39267fb6783d4ea4bd85" name="submittedAt" visibility="public">
+        <type xmi:type="uml:PrimitiveType" name="Timestamp" />
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_fe9569903e124116b1fc" name="assignmentId" visibility="public">
+        <type xmi:type="uml:PrimitiveType" name="Integer" />
+        <ownedComment xmi:id="_8bde0215d7b54056b3db">
+          <body>FK</body>
+        </ownedComment>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_4e15bfa5392849629779" name="userId" visibility="public">
+        <type xmi:type="uml:PrimitiveType" name="Integer" />
+        <ownedComment xmi:id="_44f45ffd2f2447f89416">
+          <body>FK</body>
+        </ownedComment>
+      </ownedAttribute>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Class" xmi:id="_9424076c1cec4da69b65" name="circuit_element_types">
+      <ownedAttribute xmi:id="_58e9ffcd818a46a4ae73" name="type" visibility="public">
+        <type xmi:type="uml:PrimitiveType" name="Text" />
+        <ownedComment xmi:id="_d45b90486fe54986bf6c">
+          <body>PK</body>
+        </ownedComment>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_6cb88f6218c54389b18d" name="metadata" visibility="public">
+        <type xmi:type="uml:PrimitiveType" name="JSON" />
+      </ownedAttribute>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Class" xmi:id="_ac65a07f873a4fd38e8f" name="peer_reviews">
+      <ownedAttribute xmi:id="_680d99e3ced442b0898d" name="id" visibility="public">
+        <type xmi:type="uml:PrimitiveType" name="Integer" />
+        <ownedComment xmi:id="_eed1dd0c3b954037872c">
+          <body>PK</body>
+        </ownedComment>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_ac5503a9be084a2c8f43" name="reviewerId" visibility="public">
+        <type xmi:type="uml:PrimitiveType" name="Integer" />
+        <ownedComment xmi:id="_5631d145420f4c03948c">
+          <body>FK</body>
+        </ownedComment>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_1adcb91c8fce42bf8eb8" name="submissionId" visibility="public">
+        <type xmi:type="uml:PrimitiveType" name="Integer" />
+        <ownedComment xmi:id="_d72ea2078db34ef8b9f5">
+          <body>FK</body>
+        </ownedComment>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_10f561e35da845bc92a4" name="score" visibility="public">
+        <type xmi:type="uml:PrimitiveType" name="Decimal" />
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_a0a089e2b94b4a78b1c3" name="criteriaScores" visibility="public">
+        <type xmi:type="uml:PrimitiveType" name="JSONB" />
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_893bd45282af448fb98a" name="feedback" visibility="public">
+        <type xmi:type="uml:PrimitiveType" name="Text" />
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_eacf4f9071734384b20e" name="isCompleted" visibility="public">
+        <type xmi:type="uml:PrimitiveType" name="Boolean" />
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_8ed496ce23f2451a95dc" name="createdAt" visibility="public">
+        <type xmi:type="uml:PrimitiveType" name="Timestamp" />
+      </ownedAttribute>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Class" xmi:id="_7820bb49aeb04bb49f73" name="forum_sections">
+      <ownedAttribute xmi:id="_2422fab20f8749a19c6b" name="id" visibility="public">
+        <type xmi:type="uml:PrimitiveType" name="Integer" />
+        <ownedComment xmi:id="_45d7c242370c4f52b81d">
+          <body>PK</body>
+        </ownedComment>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_1d25bcb5458343daaed3" name="courseId" visibility="public">
+        <type xmi:type="uml:PrimitiveType" name="Integer" />
+        <ownedComment xmi:id="_40ceb7293dc64e399b97">
+          <body>FK</body>
+        </ownedComment>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_3d2bcc1fb11f43208bac" name="title" visibility="public">
+        <type xmi:type="uml:PrimitiveType" name="Text" />
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_1fa900e6dd7746d58b52" name="description" visibility="public">
+        <type xmi:type="uml:PrimitiveType" name="Text" />
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_e281e0076e9849fc9eb4" name="orderIndex" visibility="public">
+        <type xmi:type="uml:PrimitiveType" name="Integer" />
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_e6300ebb888e4b3cab3b" name="isActive" visibility="public">
+        <type xmi:type="uml:PrimitiveType" name="Boolean" />
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_3dac5a8189b147a29f09" name="createdAt" visibility="public">
+        <type xmi:type="uml:PrimitiveType" name="Timestamp" />
+      </ownedAttribute>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Class" xmi:id="_4cd2507f092c423c9aed" name="forum_topics">
+      <ownedAttribute xmi:id="_cdc04dba52004faa98c7" name="id" visibility="public">
+        <type xmi:type="uml:PrimitiveType" name="Integer" />
+        <ownedComment xmi:id="_cb0ab38f280b498889c9">
+          <body>PK</body>
+        </ownedComment>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_6a0f970079f145b4875a" name="sectionId" visibility="public">
+        <type xmi:type="uml:PrimitiveType" name="Integer" />
+        <ownedComment xmi:id="_c0e37c2fc7094382842a">
+          <body>FK</body>
+        </ownedComment>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_cc19814b47ad43a8892b" name="authorId" visibility="public">
+        <type xmi:type="uml:PrimitiveType" name="Integer" />
+        <ownedComment xmi:id="_6d628ed1dded4b81ac4d">
+          <body>FK</body>
+        </ownedComment>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_34782bb73c9a4c7b8ca6" name="title" visibility="public">
+        <type xmi:type="uml:PrimitiveType" name="Text" />
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_3c474f3e48464e9d8105" name="content" visibility="public">
+        <type xmi:type="uml:PrimitiveType" name="Text" />
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_59d0f6818dce457682e6" name="isPinned" visibility="public">
+        <type xmi:type="uml:PrimitiveType" name="Boolean" />
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_799195db4d66412ca188" name="isClosed" visibility="public">
+        <type xmi:type="uml:PrimitiveType" name="Boolean" />
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_dda762b5c19142189b95" name="viewsCount" visibility="public">
+        <type xmi:type="uml:PrimitiveType" name="Integer" />
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_7570059182524df2a02d" name="lastPostAt" visibility="public">
+        <type xmi:type="uml:PrimitiveType" name="Timestamp" />
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_cc512ab7b3fe47258b9d" name="createdAt" visibility="public">
+        <type xmi:type="uml:PrimitiveType" name="Timestamp" />
+      </ownedAttribute>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Class" xmi:id="_97f1dfbf888143348f26" name="forum_posts">
+      <ownedAttribute xmi:id="_07ca01120cd241c2b235" name="id" visibility="public">
+        <type xmi:type="uml:PrimitiveType" name="Integer" />
+        <ownedComment xmi:id="_96fb5d980f6243259f6e">
+          <body>PK</body>
+        </ownedComment>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_ca4bde054d9f44aebe3b" name="topicId" visibility="public">
+        <type xmi:type="uml:PrimitiveType" name="Integer" />
+        <ownedComment xmi:id="_e17023bbbcc64bec9910">
+          <body>FK</body>
+        </ownedComment>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_1f814005e33f4ac6a452" name="authorId" visibility="public">
+        <type xmi:type="uml:PrimitiveType" name="Integer" />
+        <ownedComment xmi:id="_1e82b28d996d4933bff6">
+          <body>FK</body>
+        </ownedComment>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_52a0e6009dd04e63a76b" name="content" visibility="public">
+        <type xmi:type="uml:PrimitiveType" name="Text" />
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_8f220070c63f48c0bab7" name="isEdited" visibility="public">
+        <type xmi:type="uml:PrimitiveType" name="Boolean" />
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_cdd4850bf04548b890f4" name="createdAt" visibility="public">
+        <type xmi:type="uml:PrimitiveType" name="Timestamp" />
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_5ffd47d1b11f49e8adb1" name="updatedAt" visibility="public">
+        <type xmi:type="uml:PrimitiveType" name="Timestamp" />
+      </ownedAttribute>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Class" xmi:id="_c09ee4e071b148e7b31c" name="achievements">
+      <ownedAttribute xmi:id="_45ef6b9834004e2c900d" name="id" visibility="public">
+        <type xmi:type="uml:PrimitiveType" name="Integer" />
+        <ownedComment xmi:id="_050eb4b62c02463ba29f">
+          <body>PK</body>
+        </ownedComment>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_ce826417548c44038df9" name="name" visibility="public">
+        <type xmi:type="uml:PrimitiveType" name="Text" />
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_e4ddb2f8fbf4424c817a" name="type" visibility="public">
+        <type xmi:type="uml:PrimitiveType" name="Enum" />
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_284288a9148a430da385" name="icon" visibility="public">
+        <type xmi:type="uml:PrimitiveType" name="Text" />
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_04dfb0677c6440dcbfc9" name="points" visibility="public">
+        <type xmi:type="uml:PrimitiveType" name="Integer" />
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_125d007f39394dec9a2b" name="conditions" visibility="public">
+        <type xmi:type="uml:PrimitiveType" name="JSON" />
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_ea7a6235090a4fa29c15" name="isActive" visibility="public">
+        <type xmi:type="uml:PrimitiveType" name="Boolean" />
+      </ownedAttribute>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Class" xmi:id="_66d59810879149eebace" name="user_achievements">
+      <ownedAttribute xmi:id="_a96e17a54cd54e9d8f7e" name="id" visibility="public">
+        <type xmi:type="uml:PrimitiveType" name="Integer" />
+        <ownedComment xmi:id="_e9fcdf5089d24eeab82e">
+          <body>PK</body>
+        </ownedComment>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_00d61f1f9095480e9a06" name="userId" visibility="public">
+        <type xmi:type="uml:PrimitiveType" name="Integer" />
+        <ownedComment xmi:id="_05873b4d5dd34c6ab1db">
+          <body>FK</body>
+        </ownedComment>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_d3e31299d0da4d83882e" name="achievementId" visibility="public">
+        <type xmi:type="uml:PrimitiveType" name="Integer" />
+        <ownedComment xmi:id="_5ee443b229134b329561">
+          <body>FK</body>
+        </ownedComment>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_ee477fa1add04d65a1c9" name="earnedAt" visibility="public">
+        <type xmi:type="uml:PrimitiveType" name="Timestamp" />
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_9aeb529692f84fe0a313" name="metadata" visibility="public">
+        <type xmi:type="uml:PrimitiveType" name="JSON" />
+      </ownedAttribute>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Class" xmi:id="_0d05741d817b4142912c" name="schedule_items">
+      <ownedAttribute xmi:id="_b831cb13110c4faea61d" name="id" visibility="public">
+        <type xmi:type="uml:PrimitiveType" name="Integer" />
+        <ownedComment xmi:id="_3d64309753af490b833f">
+          <body>PK</body>
+        </ownedComment>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_bb6253f429a64dfda0da" name="title" visibility="public">
+        <type xmi:type="uml:PrimitiveType" name="Text" />
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_f4146de90aaf43119ea8" name="type" visibility="public">
+        <type xmi:type="uml:PrimitiveType" name="Enum" />
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_6f34d9627e8846f6ab01" name="content" visibility="public">
+        <type xmi:type="uml:PrimitiveType" name="Text" />
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_a37c52197e8645f09429" name="videoUrl" visibility="public">
+        <type xmi:type="uml:PrimitiveType" name="Text" />
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_06aab498ea7b4c229b5c" name="startTime" visibility="public">
+        <type xmi:type="uml:PrimitiveType" name="Timestamp" />
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_6099b3fe0bab4cc597f1" name="endTime" visibility="public">
+        <type xmi:type="uml:PrimitiveType" name="Timestamp" />
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_3d1b1ea453df41a09b37" name="location" visibility="public">
+        <type xmi:type="uml:PrimitiveType" name="Text" />
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_d449ef644ecc4f59bc71" name="meetingUrl" visibility="public">
+        <type xmi:type="uml:PrimitiveType" name="Text" />
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_877362a26bc24ea3b5eb" name="courseGroupId" visibility="public">
+        <type xmi:type="uml:PrimitiveType" name="Integer" />
+        <ownedComment xmi:id="_85991e61539249d0a46c">
+          <body>FK</body>
+        </ownedComment>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_569f2cb1e3d5422c820a" name="instructorId" visibility="public">
+        <type xmi:type="uml:PrimitiveType" name="Integer" />
+        <ownedComment xmi:id="_11151cca48e44841bf03">
+          <body>FK</body>
+        </ownedComment>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_75467e57209547849b7a" name="createdAt" visibility="public">
+        <type xmi:type="uml:PrimitiveType" name="Timestamp" />
+      </ownedAttribute>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Association" xmi:id="_57cd6683af3d4895aba7" name="user_roles.userId=users.id">
+      <ownedEnd xmi:id="_3ab63dccff394710aa3e" type="_7759975a5efb4063b2f3" aggregation="none">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_623baf5967db45bf8c8a" value="0" />
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_817ce83888cc482785ff" value="*" />
+      </ownedEnd>
+      <ownedEnd xmi:id="_84e1f7585913476096f6" type="_f35d4de1e9ea4672bad3" aggregation="none">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_8c49536195a746378370" value="1" />
+        <upperValue xmi:type="uml:LiteralInteger" xmi:id="_6f6998887f294933a3f9" value="1" />
+      </ownedEnd>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Association" xmi:id="_cc785ac0568d47f8b10a" name="course_registrations.userId=users.id">
+      <ownedEnd xmi:id="_9f620478f2b14923bed5" type="_aab17367cae44747ba75" aggregation="none">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_377622abcb264cf9bf8b" value="0" />
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_2abc00156da2473998bd" value="*" />
+      </ownedEnd>
+      <ownedEnd xmi:id="_c3a87f73dab54746b23a" type="_f35d4de1e9ea4672bad3" aggregation="none">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_f3a36aa9e86f4396a5f8" value="1" />
+        <upperValue xmi:type="uml:LiteralInteger" xmi:id="_aae5a1ce0f254151917a" value="1" />
+      </ownedEnd>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Association" xmi:id="_618ffd3b90454d098cc3" name="course_registrations.courseGroupId=course_groups.id">
+      <ownedEnd xmi:id="_ce5e201ed7fe49539e45" type="_aab17367cae44747ba75" aggregation="none">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_4b65c6004e494e849f1d" value="0" />
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_c688a35b324d495aafc0" value="*" />
+      </ownedEnd>
+      <ownedEnd xmi:id="_27a6b4f5a7ba431aa60b" type="_42563edb00c0404099c8" aggregation="none">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_05d75406b2b04155bd2c" value="1" />
+        <upperValue xmi:type="uml:LiteralInteger" xmi:id="_5abc9ef819f84d728c01" value="1" />
+      </ownedEnd>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Association" xmi:id="_d1c2c7ba951846b3bd3a" name="assignment_submissions.userId=users.id">
+      <ownedEnd xmi:id="_9bbb6da32c15493799ea" type="_1f52e52910e14d1c9960" aggregation="none">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_a7678f374b8b4edc8c14" value="0" />
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_d11136110bf9495faabf" value="*" />
+      </ownedEnd>
+      <ownedEnd xmi:id="_a43e643ed08840a48b66" type="_f35d4de1e9ea4672bad3" aggregation="none">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_5cdee3ee1e0e46318633" value="1" />
+        <upperValue xmi:type="uml:LiteralInteger" xmi:id="_660a7d390b764d0a927b" value="1" />
+      </ownedEnd>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Association" xmi:id="_5f446cf09e354578b802" name="assignment_submissions.assignmentId=assignments.id">
+      <ownedEnd xmi:id="_a4c3644afe0b4b1691c3" type="_1f52e52910e14d1c9960" aggregation="none">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_be9d2871d8a84137b54a" value="0" />
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_0975728115b947db90a9" value="*" />
+      </ownedEnd>
+      <ownedEnd xmi:id="_823a834161d246638fe3" type="_4c06d0f5b6c043c893f5" aggregation="none">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_95846fa03e424cfd8446" value="1" />
+        <upperValue xmi:type="uml:LiteralInteger" xmi:id="_95a5a414e54a4033a9e1" value="1" />
+      </ownedEnd>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Association" xmi:id="_3ac5fa53c82144e58307" name="circuit_submissions.userId=users.id">
+      <ownedEnd xmi:id="_72d5acb259c94215b35c" type="_a5e0b758b141488582e9" aggregation="none">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_59b2746d32774aa898f2" value="0" />
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_8372e113ec0b4454a6f4" value="*" />
+      </ownedEnd>
+      <ownedEnd xmi:id="_2772fc7d7a6b4be3b672" type="_f35d4de1e9ea4672bad3" aggregation="none">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_719eaadbeca44ec2a23e" value="1" />
+        <upperValue xmi:type="uml:LiteralInteger" xmi:id="_e6f29e0db17346ee858f" value="1" />
+      </ownedEnd>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Association" xmi:id="_99a20b874dfc4130af53" name="circuit_submissions.assignmentId=assignments.id">
+      <ownedEnd xmi:id="_08fcedf2fe6c4228a825" type="_a5e0b758b141488582e9" aggregation="none">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_af4cc2ae224848858411" value="0" />
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_37e568fef3b24289bf7f" value="*" />
+      </ownedEnd>
+      <ownedEnd xmi:id="_44784c6447454bbe8347" type="_4c06d0f5b6c043c893f5" aggregation="none">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_4c6c5efe12034fce9996" value="1" />
+        <upperValue xmi:type="uml:LiteralInteger" xmi:id="_edc12a6eff714995bb08" value="1" />
+      </ownedEnd>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Association" xmi:id="_35945481000447d5a911" name="peer_reviews.reviewerId=users.id">
+      <ownedEnd xmi:id="_9a101eece6fa438891eb" type="_ac65a07f873a4fd38e8f" aggregation="none">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_2c84af1e3a4b4ec09767" value="0" />
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_dccef20009824269819a" value="*" />
+      </ownedEnd>
+      <ownedEnd xmi:id="_0b5888947bdc4b238a92" type="_f35d4de1e9ea4672bad3" aggregation="none">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_3cfaee9561dc4edbbe42" value="1" />
+        <upperValue xmi:type="uml:LiteralInteger" xmi:id="_f687a2ce706148b9ad79" value="1" />
+      </ownedEnd>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Association" xmi:id="_304657d7310c4e35a499" name="peer_reviews.submissionId=assignment_submissions.id">
+      <ownedEnd xmi:id="_f42413e846bd42319ebc" type="_ac65a07f873a4fd38e8f" aggregation="none">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_be750ef0ddc442c6a4ba" value="0" />
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_4b52070235d642e997a0" value="*" />
+      </ownedEnd>
+      <ownedEnd xmi:id="_0edabab1cf7847c7b7bf" type="_1f52e52910e14d1c9960" aggregation="none">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_c5571d5022664592aca6" value="1" />
+        <upperValue xmi:type="uml:LiteralInteger" xmi:id="_648acb093c194c77a0cb" value="1" />
+      </ownedEnd>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Association" xmi:id="_00d0df62756c48e4a780" name="course_materials.courseId=courses.id">
+      <ownedEnd xmi:id="_a05fffd55a7d40558fc5" type="_01e3a3f95b6e493ba4e7" aggregation="none">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_7a9cc6aa06c648f5b8e4" value="0" />
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_12799134b70149648490" value="*" />
+      </ownedEnd>
+      <ownedEnd xmi:id="_3e7661f64cb641a5836d" type="_cd5fafaad7b244a0b2dc" aggregation="none">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_790af066edc44788a9de" value="1" />
+        <upperValue xmi:type="uml:LiteralInteger" xmi:id="_97b63d838e584d6fb3c7" value="1" />
+      </ownedEnd>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Association" xmi:id="_666e73f0250d413fbb9d" name="course_materials.uploadedById=users.id">
+      <ownedEnd xmi:id="_31f03b3df8d348bcb970" type="_01e3a3f95b6e493ba4e7" aggregation="none">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_a73de0e23357484cb873" value="0" />
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_d965bd2ec0f74e6d97a1" value="*" />
+      </ownedEnd>
+      <ownedEnd xmi:id="_56a060a688f14ef19931" type="_f35d4de1e9ea4672bad3" aggregation="none">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_2c75498b374a4c9aa704" value="1" />
+        <upperValue xmi:type="uml:LiteralInteger" xmi:id="_f95c3413e6c24806a9df" value="1" />
+      </ownedEnd>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Association" xmi:id="_cb9122a095c64b7181eb" name="course_groups.courseId=courses.id">
+      <ownedEnd xmi:id="_940db53368d5460689bb" type="_42563edb00c0404099c8" aggregation="none">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_6e93dcf192de4eabb86c" value="0" />
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_7f8691f4c8bb4cf3a8c7" value="*" />
+      </ownedEnd>
+      <ownedEnd xmi:id="_106839a5d1b3403b99f9" type="_cd5fafaad7b244a0b2dc" aggregation="none">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_632a4e309c1a4829ab39" value="1" />
+        <upperValue xmi:type="uml:LiteralInteger" xmi:id="_8eeaf859df8b4bcea9d3" value="1" />
+      </ownedEnd>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Association" xmi:id="_b17c54918f4340e2bbc2" name="assignments.courseGroupId=course_groups.id">
+      <ownedEnd xmi:id="_f4817065e66d4d219252" type="_4c06d0f5b6c043c893f5" aggregation="none">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_3c2b04a15a4c42b880fc" value="0" />
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_39567237a14743a88d55" value="*" />
+      </ownedEnd>
+      <ownedEnd xmi:id="_e77304c9baf941faa024" type="_42563edb00c0404099c8" aggregation="none">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_9cc2b954480548b8b849" value="1" />
+        <upperValue xmi:type="uml:LiteralInteger" xmi:id="_d9001d4f1bc0403fb2cb" value="1" />
+      </ownedEnd>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Association" xmi:id="_38e71fcc614a48e48c2e" name="forum_sections.courseId=courses.id">
+      <ownedEnd xmi:id="_607818ed32d543ce8201" type="_7820bb49aeb04bb49f73" aggregation="none">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_83c1c91d72784f7e96cc" value="0" />
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_68a233384c644417be36" value="*" />
+      </ownedEnd>
+      <ownedEnd xmi:id="_31518ee812664afa9fea" type="_cd5fafaad7b244a0b2dc" aggregation="none">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_86d5aa688bfb45a5ac8c" value="1" />
+        <upperValue xmi:type="uml:LiteralInteger" xmi:id="_b321024120bd4a95844e" value="1" />
+      </ownedEnd>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Association" xmi:id="_14d10055a1e448db8d0e" name="forum_topics.sectionId=forum_sections.id">
+      <ownedEnd xmi:id="_34c969cf295341cfa2a3" type="_4cd2507f092c423c9aed" aggregation="none">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_2eb14c43cedb4255a28d" value="0" />
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_c353e650295744a080d4" value="*" />
+      </ownedEnd>
+      <ownedEnd xmi:id="_49983e74d08a4cfc9d9e" type="_7820bb49aeb04bb49f73" aggregation="none">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_ec43abbcf3f74e849e0b" value="1" />
+        <upperValue xmi:type="uml:LiteralInteger" xmi:id="_6236fe831ad04792854e" value="1" />
+      </ownedEnd>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Association" xmi:id="_3811ea86a007452da51d" name="forum_topics.authorId=users.id">
+      <ownedEnd xmi:id="_1839adf680364de58964" type="_4cd2507f092c423c9aed" aggregation="none">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_876ed2fb8f3746eb8a7d" value="0" />
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_f08794d7d5fe46c2bfd1" value="*" />
+      </ownedEnd>
+      <ownedEnd xmi:id="_0d9f111652894f1d9446" type="_f35d4de1e9ea4672bad3" aggregation="none">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_b548c02262e94e4db7e1" value="1" />
+        <upperValue xmi:type="uml:LiteralInteger" xmi:id="_f35b05fa11f941848f06" value="1" />
+      </ownedEnd>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Association" xmi:id="_3b725bbefee14bd6a52a" name="forum_posts.topicId=forum_topics.id">
+      <ownedEnd xmi:id="_a3bdd8b1f61c47c7a2c6" type="_97f1dfbf888143348f26" aggregation="none">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_a4fe1dc77e4e4d3b949a" value="0" />
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_8f43bef5d9944e098722" value="*" />
+      </ownedEnd>
+      <ownedEnd xmi:id="_cdb5dc95c43b41ed83e4" type="_4cd2507f092c423c9aed" aggregation="none">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_f9b83505967a485ab8d4" value="1" />
+        <upperValue xmi:type="uml:LiteralInteger" xmi:id="_fdac6310fcde49849988" value="1" />
+      </ownedEnd>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Association" xmi:id="_dae717df38694384a62f" name="forum_posts.authorId=users.id">
+      <ownedEnd xmi:id="_f1e1b2267a2440b2befd" type="_97f1dfbf888143348f26" aggregation="none">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_4beec32e321c4265bbad" value="0" />
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_54a84e5c8d82408bb5e9" value="*" />
+      </ownedEnd>
+      <ownedEnd xmi:id="_6426cf444f014cf7bfdb" type="_f35d4de1e9ea4672bad3" aggregation="none">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_66f157658468429287ec" value="1" />
+        <upperValue xmi:type="uml:LiteralInteger" xmi:id="_0e272d3b6838451797d0" value="1" />
+      </ownedEnd>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Association" xmi:id="_31dbfaf615f347079373" name="user_achievements.userId=users.id">
+      <ownedEnd xmi:id="_db5c53f15cd14a3096ce" type="_66d59810879149eebace" aggregation="none">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_4d73db2f8a63407880bc" value="0" />
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_2918eba830584acaa606" value="*" />
+      </ownedEnd>
+      <ownedEnd xmi:id="_0d8a89b29f8447f19261" type="_f35d4de1e9ea4672bad3" aggregation="none">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_46a9d9e151024e62bfe4" value="1" />
+        <upperValue xmi:type="uml:LiteralInteger" xmi:id="_07a7a5fa6cef41089a7e" value="1" />
+      </ownedEnd>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Association" xmi:id="_909b3e980ad744d18249" name="user_achievements.achievementId=achievements.id">
+      <ownedEnd xmi:id="_549d9c52dd8c4f4fa3d8" type="_66d59810879149eebace" aggregation="none">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_e9c619f3616c4236b462" value="0" />
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_aaafd0d5179841c88dd3" value="*" />
+      </ownedEnd>
+      <ownedEnd xmi:id="_4f4b0a31c3184d3985d3" type="_c09ee4e071b148e7b31c" aggregation="none">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_4683761aa381446a9f2d" value="1" />
+        <upperValue xmi:type="uml:LiteralInteger" xmi:id="_78f8e1b5c8dd456191dd" value="1" />
+      </ownedEnd>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Association" xmi:id="_e518a6defd884ead8a91" name="schedule_items.courseGroupId=course_groups.id">
+      <ownedEnd xmi:id="_7734e6b037d84aee97aa" type="_0d05741d817b4142912c" aggregation="none">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_77cce76a0d174cb0a435" value="0" />
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_616390fdef49426994b3" value="*" />
+      </ownedEnd>
+      <ownedEnd xmi:id="_c258348cca314bf1b5de" type="_42563edb00c0404099c8" aggregation="none">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_074434d910e64ab38ef3" value="1" />
+        <upperValue xmi:type="uml:LiteralInteger" xmi:id="_9c666dc095df4ea5827d" value="1" />
+      </ownedEnd>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Association" xmi:id="_931e78058022492da768" name="schedule_items.instructorId=users.id">
+      <ownedEnd xmi:id="_f467400ccf284222b60a" type="_0d05741d817b4142912c" aggregation="none">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_a7d732f019d3477a8a60" value="0" />
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_ad09c1ef51cc47079eb7" value="*" />
+      </ownedEnd>
+      <ownedEnd xmi:id="_ba3a010af9dc480699be" type="_f35d4de1e9ea4672bad3" aggregation="none">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_113c176a1367457697dd" value="1" />
+        <upperValue xmi:type="uml:LiteralInteger" xmi:id="_92e7e0bc1f8a4145a062" value="1" />
+      </ownedEnd>
+    </packagedElement>
+  </uml:Model>
+</xmi:XMI>

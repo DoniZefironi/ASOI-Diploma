@@ -1,0 +1,139 @@
+<?xml version='1.0' encoding='utf-8'?>
+<xmi:XMI xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmi:version="2.1">
+  <uml:Model xmi:id="_0a0bf70745474a97b318" name="ClassDiagram">
+    <packagedElement xmi:type="uml:Package" xmi:id="_bf300bf1783346c89bc4" name="Auth">
+      <packagedElement xmi:type="uml:Class" xmi:id="_a302a69636724ed4bfba" name="AuthController">
+        <ownedOperation xmi:id="_9d70b1a115604076aacf" name="login" visibility="public" />
+        <ownedOperation xmi:id="_3c94a6e6d56d4ec3b3d0" name="register" visibility="public" />
+      </packagedElement>
+      <packagedElement xmi:type="uml:Class" xmi:id="_d6bc32045c5642c1bb4e" name="AuthService">
+        <ownedOperation xmi:id="_ff23b302ff764893a64e" name="login" visibility="public" />
+        <ownedOperation xmi:id="_6963936c694b4f65a366" name="register" visibility="public" />
+        <ownedOperation xmi:id="_115f3e8add3240d1b4da" name="validateUser" visibility="public" />
+        <ownedOperation xmi:id="_118c1a9af1b742f69cac" name="generateToken" visibility="public" />
+      </packagedElement>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Package" xmi:id="_9639000e641a4e84a873" name="Users">
+      <packagedElement xmi:type="uml:Class" xmi:id="_4c5ed40c5b624f4bbf45" name="UsersController">
+        <ownedOperation xmi:id="_e8141242101246cab9dc" name="findAll" visibility="public" />
+        <ownedOperation xmi:id="_d794cfdba98b4493b569" name="findById" visibility="public" />
+        <ownedOperation xmi:id="_00005a65da294b57a278" name="getMyProfile" visibility="public" />
+        <ownedOperation xmi:id="_b054873032734f2f9758" name="updateRole" visibility="public" />
+        <ownedOperation xmi:id="_a52e8c398ec140ddaee3" name="deactivate" visibility="public" />
+      </packagedElement>
+      <packagedElement xmi:type="uml:Class" xmi:id="_37efea5144204742bbee" name="UsersService">
+        <ownedOperation xmi:id="_4b22a1a15fcb40eda519" name="findAll" visibility="public" />
+        <ownedOperation xmi:id="_8dfb21a15f0d41fe897f" name="findById" visibility="public" />
+        <ownedOperation xmi:id="_f091fd281ba74c599253" name="updateRole" visibility="public" />
+        <ownedOperation xmi:id="_9cef3eb8373641069839" name="setActive" visibility="public" />
+      </packagedElement>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Package" xmi:id="_14eb55bef87449f58902" name="Courses">
+      <packagedElement xmi:type="uml:Class" xmi:id="_8474235d806241d1a528" name="CoursesController">
+        <ownedOperation xmi:id="_677eaf1a25ef4d8b8914" name="findAll" visibility="public" />
+        <ownedOperation xmi:id="_14894a6d90944dbeb751" name="findById" visibility="public" />
+        <ownedOperation xmi:id="_ac3bf78048fa455984a0" name="enroll" visibility="public" />
+        <ownedOperation xmi:id="_e2acc17d2aeb4d3987bf" name="approveRegistration" visibility="public" />
+        <ownedOperation xmi:id="_81ccb5359e4b4d4091c2" name="createGroup" visibility="public" />
+      </packagedElement>
+      <packagedElement xmi:type="uml:Class" xmi:id="_3371c9f7f9e54989af24" name="CoursesService">
+        <ownedOperation xmi:id="_c6db4eebc6754cf1beb5" name="findAll" visibility="public" />
+        <ownedOperation xmi:id="_32e953287e0d4bc6a6e1" name="findById" visibility="public" />
+        <ownedOperation xmi:id="_18543924e4e64b09ab20" name="enroll" visibility="public" />
+        <ownedOperation xmi:id="_ce90ea4cb51b430688b8" name="approveRegistration" visibility="public" />
+        <ownedOperation xmi:id="_322ed748f87b4a4ebc27" name="createGroup" visibility="public" />
+        <ownedOperation xmi:id="_7caa8b870a1a48ad86c4" name="checkAvailability" visibility="public" />
+      </packagedElement>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Package" xmi:id="_507edbb2b60449dfa3ab" name="Assignments">
+      <packagedElement xmi:type="uml:Class" xmi:id="_3fac8107a8bc431fb07b" name="AssignmentsController">
+        <ownedOperation xmi:id="_672aca60c07847e792b6" name="findAll" visibility="public" />
+        <ownedOperation xmi:id="_dd16ed8b39ec403d90d9" name="findById" visibility="public" />
+        <ownedOperation xmi:id="_5ee7a10a8ed64f4fbdad" name="create" visibility="public" />
+        <ownedOperation xmi:id="_dc3c061cc08b460fb8ce" name="update" visibility="public" />
+        <ownedOperation xmi:id="_b26300f07b0246ada2f2" name="submit" visibility="public" />
+        <ownedOperation xmi:id="_d1380a7753a0449398c3" name="getSubmissions" visibility="public" />
+        <ownedOperation xmi:id="_ede303bd355a4b2fa067" name="setFinalGrade" visibility="public" />
+        <ownedOperation xmi:id="_a9b0660d451f4bf38068" name="submitPeerReview" visibility="public" />
+      </packagedElement>
+      <packagedElement xmi:type="uml:Class" xmi:id="_e1c29f988d2a4f27844d" name="AssignmentsService">
+        <ownedOperation xmi:id="_45689609e1ec4017a2c1" name="findAll" visibility="public" />
+        <ownedOperation xmi:id="_effef3a7e3f14ef3a1e6" name="findById" visibility="public" />
+        <ownedOperation xmi:id="_a9b444710f3949b48367" name="create" visibility="public" />
+        <ownedOperation xmi:id="_9445de7091364972a543" name="update" visibility="public" />
+        <ownedOperation xmi:id="_76dc4d9ec15043efbdb4" name="submit" visibility="public" />
+        <ownedOperation xmi:id="_97ce74cb34fc499cad33" name="getSubmissions" visibility="public" />
+        <ownedOperation xmi:id="_74eb142311554e5bafb2" name="setFinalGrade" visibility="public" />
+        <ownedOperation xmi:id="_b5a0be3840174903b396" name="getSubmissionsForReview" visibility="public" />
+      </packagedElement>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Package" xmi:id="_d2c0eb05e9874b43b9eb" name="Circuit">
+      <packagedElement xmi:type="uml:Class" xmi:id="_a58bd4403615440298dc" name="CircuitController">
+        <ownedOperation xmi:id="_cd528ac58e3d41048d3f" name="submitCircuit" visibility="public" />
+      </packagedElement>
+      <packagedElement xmi:type="uml:Class" xmi:id="_21aeaace39614a748463" name="CircuitService">
+        <ownedOperation xmi:id="_374a72c8b5b24bf1ac8f" name="simulate" visibility="public" />
+        <ownedOperation xmi:id="_7e9171dcad2843589b63" name="validateCircuit" visibility="public" />
+        <ownedOperation xmi:id="_bb82e8ee8c964fe6ba37" name="evaluateNode" visibility="public" />
+      </packagedElement>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Package" xmi:id="_430aadc96f8840e0b185" name="Forum">
+      <packagedElement xmi:type="uml:Class" xmi:id="_5b6511efbf5f4106b50a" name="ForumController">
+        <ownedOperation xmi:id="_4de095fc928a4a80a332" name="getSections" visibility="public" />
+        <ownedOperation xmi:id="_ac9a2353fdfd48c3b411" name="getTopics" visibility="public" />
+        <ownedOperation xmi:id="_acf99be441684d3e9fbf" name="createTopic" visibility="public" />
+        <ownedOperation xmi:id="_60c82c63cbdd44d1bd6f" name="createPost" visibility="public" />
+        <ownedOperation xmi:id="_1ba709663fcd4c4993b0" name="updatePost" visibility="public" />
+        <ownedOperation xmi:id="_369ee28ea4b74fe6a26a" name="deletePost" visibility="public" />
+      </packagedElement>
+      <packagedElement xmi:type="uml:Class" xmi:id="_b4e9c652fd16458693b8" name="ForumService">
+        <ownedOperation xmi:id="_8d166184e11843d59e1e" name="getSections" visibility="public" />
+        <ownedOperation xmi:id="_a33c7775e1ec48d98336" name="getTopics" visibility="public" />
+        <ownedOperation xmi:id="_b3e8d95d42a247d1b62e" name="createTopic" visibility="public" />
+        <ownedOperation xmi:id="_9224a51dbe734d3ebe9b" name="createPost" visibility="public" />
+      </packagedElement>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Package" xmi:id="_ac2eb8eccf6248b1ae17" name="Materials">
+      <packagedElement xmi:type="uml:Class" xmi:id="_0da3142fcaf048deb488" name="MaterialsController">
+        <ownedOperation xmi:id="_4b7f102eaf424dc08061" name="getMaterials" visibility="public" />
+        <ownedOperation xmi:id="_775d39d7474d44f4a6d5" name="upload" visibility="public" />
+      </packagedElement>
+      <packagedElement xmi:type="uml:Class" xmi:id="_762482b0599a42e5a06f" name="MaterialsService">
+        <ownedOperation xmi:id="_24f3224d68bb46b58508" name="findByCourse" visibility="public" />
+        <ownedOperation xmi:id="_1cea7d7696914dad82e1" name="upload" visibility="public" />
+      </packagedElement>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Package" xmi:id="_05a02a3e7e574a1eb4d2" name="Schedule">
+      <packagedElement xmi:type="uml:Class" xmi:id="_631405a0853b477f8cb6" name="ScheduleController">
+        <ownedOperation xmi:id="_52d59abfebe744a1be22" name="getSchedule" visibility="public" />
+        <ownedOperation xmi:id="_debb1c2a67504130908b" name="create" visibility="public" />
+      </packagedElement>
+      <packagedElement xmi:type="uml:Class" xmi:id="_dcc01a7574fa478e88ae" name="ScheduleService">
+        <ownedOperation xmi:id="_c9f2dfd6259b43fcb0f9" name="findByGroup" visibility="public" />
+        <ownedOperation xmi:id="_001c58e35abf4dd88a0c" name="create" visibility="public" />
+      </packagedElement>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Package" xmi:id="_f87d1cb1ac184ae9889b" name="Achievements">
+      <packagedElement xmi:type="uml:Class" xmi:id="_65598fd776184a88a56e" name="AchievementsController">
+        <ownedOperation xmi:id="_7876580c9a42410a82e1" name="findAll" visibility="public" />
+        <ownedOperation xmi:id="_22cd505c4847410586b8" name="getUserAchievements" visibility="public" />
+      </packagedElement>
+      <packagedElement xmi:type="uml:Class" xmi:id="_30aedae3e661478999da" name="AchievementsService">
+        <ownedOperation xmi:id="_53fc9bdaa49f4f54add8" name="findAll" visibility="public" />
+        <ownedOperation xmi:id="_89ee7b97db6d4c69ad20" name="getUserAchievements" visibility="public" />
+        <ownedOperation xmi:id="_023a153bc2f0436caf35" name="checkAndAward" visibility="public" />
+      </packagedElement>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Usage" xmi:id="_40a5e3c88eda4167ab53" client="_a302a69636724ed4bfba" supplier="_d6bc32045c5642c1bb4e" />
+    <packagedElement xmi:type="uml:Usage" xmi:id="_7a0ca015c74c48d5afc5" client="_4c5ed40c5b624f4bbf45" supplier="_37efea5144204742bbee" />
+    <packagedElement xmi:type="uml:Usage" xmi:id="_1d7f81d352344160bcae" client="_8474235d806241d1a528" supplier="_3371c9f7f9e54989af24" />
+    <packagedElement xmi:type="uml:Usage" xmi:id="_f3037d5befdc405eb0b3" client="_3fac8107a8bc431fb07b" supplier="_e1c29f988d2a4f27844d" />
+    <packagedElement xmi:type="uml:Usage" xmi:id="_11e0b8dbc703426e88af" client="_a58bd4403615440298dc" supplier="_21aeaace39614a748463" />
+    <packagedElement xmi:type="uml:Usage" xmi:id="_dbb0e2591f344040896d" client="_5b6511efbf5f4106b50a" supplier="_b4e9c652fd16458693b8" />
+    <packagedElement xmi:type="uml:Usage" xmi:id="_3e50255f13bc49728881" client="_0da3142fcaf048deb488" supplier="_762482b0599a42e5a06f" />
+    <packagedElement xmi:type="uml:Usage" xmi:id="_62eb26c28fe443afbee9" client="_631405a0853b477f8cb6" supplier="_dcc01a7574fa478e88ae" />
+    <packagedElement xmi:type="uml:Usage" xmi:id="_52c8e28c31524c048d14" client="_65598fd776184a88a56e" supplier="_30aedae3e661478999da" />
+    <packagedElement xmi:type="uml:Usage" xmi:id="_2759ece9d2c44894ba83" client="_d6bc32045c5642c1bb4e" supplier="_37efea5144204742bbee" />
+    <packagedElement xmi:type="uml:Usage" xmi:id="_c6ac07a6a0d04ac8a211" client="_e1c29f988d2a4f27844d" supplier="_30aedae3e661478999da" />
+  </uml:Model>
+</xmi:XMI>
