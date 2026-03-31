@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xmi:XMI xmi:version="2.1" xmlns:xmi="http://schema.omg.org/spec/XMI/2.1"
+         xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML">
+  <uml:Model xmi:id="model_db" name="LMS Database">
+    <packagedElement xmi:type="uml:Package" xmi:id="pkg_db" name="Database">
+
+      <!-- USERS -->
+      <packagedElement xmi:type="uml:Class" xmi:id="cls_users" name="users">
+        <ownedAttribute xmi:id="a_u1" name="id" visibility="public"><type xmi:type="uml:PrimitiveType" href="Integer"/></ownedAttribute>
+        <ownedAttribute xmi:id="a_u2" name="email" visibility="public"><type xmi:type="uml:PrimitiveType" href="String"/></ownedAttribute>
+        <ownedAttribute xmi:id="a_u3" name="password" visibility="public"><type xmi:type="uml:PrimitiveType" href="String"/></ownedAttribute>
+        <ownedAttribute xmi:id="a_u4" name="firstName" visibility="public"><type xmi:type="uml:PrimitiveType" href="String"/></ownedAttribute>
+        <ownedAttribute xmi:id="a_u5" name="lastName" visibility="public"><type xmi:type="uml:PrimitiveType" href="String"/></ownedAttribute>
+        <ownedAttribute xmi:id="a_u6" name="avatar" visibility="public"><type xmi:type="uml:PrimitiveType" href="String"/></ownedAttribute>
+        <ownedAttribute xmi:id="a_u7" name="isActive" visibility="public"><type xmi:type="uml:PrimitiveType" href="Boolean"/></ownedAttribute>
+        <ownedAttribute xmi:id="a_u8" name="createdAt" visibility="public"><type xmi:type="uml:PrimitiveType" href="Date"/></ownedAttribute>
+      </packagedElement>
+
+      <!-- USER_ROLES -->
+      <packagedElement xmi:type="uml:Class" xmi:id="cls_user_roles" name="user_roles">
+        <ownedAttribute xmi:id="a_ur1" name="id" visibility="public"><type xmi:type="uml:PrimitiveType" href="Integer"/></ownedAttribute>
+        <ownedAttribute xmi:id="a_ur2" name="userId" visibility="public"><type xmi:type="uml:PrimitiveType" href="Integer"/></ownedAttribute>
+        <ownedAttribute xmi:id="a_ur3" name="role" visibility="public"><type xmi:type="uml:PrimitiveType" href="String"/></ownedAttribute>
+      </packagedElement>
+
+      <!-- COURSES -->
+      <packagedElement xmi:type="uml:Class" xmi:id="cls_courses" name="courses">
+        <ownedAttribute xmi:id="a_c1" name="id" visibility="public"><type xmi:type="uml:PrimitiveType" href="Integer"/></ownedAttribute>
+        <ownedAttribute xmi:id="a_c2" name="name" visibility="public"><type xmi:type="uml:PrimitiveType" href="String"/></ownedAttribute>
+        <ownedAttribute xmi:id="a_c3" name="type" visibility="public"><type xmi:type="uml:PrimitiveType" href="String"/></ownedAttribute>
+        <ownedAttribute xmi:id="a_c4" name="description" visibility="public"><type xmi:type="uml:PrimitiveType" href="String"/></ownedAttribute>
+        <ownedAttribute xmi:id="a_c5" name="isActive" visibility="public"><type xmi:type="uml:PrimitiveType" href="Boolean"/></ownedAttribute>
+      </packagedElement>
+
+      <!-- COURSE_GROUPS -->
+      <packagedElement xmi:type="uml:Class" xmi:id="cls_course_groups" name="course_groups">
+        <ownedAttribute xmi:id="a_cg1" name="id" visibility="public"><type xmi:type="uml:PrimitiveType" href="Integer"/></ownedAttribute>
+        <ownedAttribute xmi:id="a_cg2" name="name" visibility="public"><type xmi:type="uml:PrimitiveType" href="String"/></ownedAttribute>
+        <ownedAttribute xmi:id="a_cg3" name="year" visibility="public"><type xmi:type="uml:PrimitiveType" href="Integer"/></ownedAttribute>
+        <ownedAttribute xmi:id="a_cg4" name="semester" visibility="public"><type xmi:type="uml:PrimitiveType" href="Integer"/></ownedAttribute>
+        <ownedAttribute xmi:id="a_cg5" name="maxStudents" visibility="public"><type xmi:type="uml:PrimitiveType" href="Integer"/></ownedAttribute>
+        <ownedAttribute xmi:id="a_cg6" name="isActive" visibility="public"><type xmi:type="uml:PrimitiveType" href="Boolean"/></ownedAttribute>
+        <ownedAttribute xmi:id="a_cg7" name="courseId" visibility="public"><type xmi:type="uml:PrimitiveType" href="Integer"/></ownedAttribute>
+      </packagedElement>
+
+      <!-- COURSE_REGISTRATIONS -->
+      <packagedElement xmi:type="uml:Class" xmi:id="cls_course_reg" name="course_registrations">
+        <ownedAttribute xmi:id="a_cr1" name="id" visibility="public"><type xmi:type="uml:PrimitiveType" href="Integer"/></ownedAttribute>
+        <ownedAttribute xmi:id="a_cr2" name="userId" visibility="public"><type xmi:type="uml:PrimitiveType" href="Integer"/></ownedAttribute>
+        <ownedAttribute xmi:id="a_cr3" name="courseGroupId" visibility="public"><type xmi:type="uml:PrimitiveType" href="Integer"/></ownedAttribute>
+        <ownedAttribute xmi:id="a_cr4" name="status" visibility="public"><type xmi:type="uml:PrimitiveType" href="String"/></ownedAttribute>
+        <ownedAttribute xmi:id="a_cr5" name="registeredAt" visibility="public"><type xmi:type="uml:PrimitiveType" href="Date"/></ownedAttribute>
+      </packagedElement>
+
+      <!-- COURSE_MATERIALS -->
+      <packagedElement xmi:type="uml:Class" xmi:id="cls_materials" name="course_materials">
+        <ownedAttribute xmi:id="a_cm1" name="id" visibility="public"><type xmi:type="uml:PrimitiveType" href="Integer"/></ownedAttribute>
+        <ownedAttribute xmi:id="a_cm2" name="title" visibility="public"><type xmi:type="uml:PrimitiveType" href="String"/></ownedAttribute>
+        <ownedAttribute xmi:id="a_cm3" name="type" visibility="public"><type xmi:type="uml:PrimitiveType" href="String"/></ownedAttribute>
+        <ownedAttribute xmi:id="a_cm4" name="fileUrl" visibility="public"><type xmi:type="uml:PrimitiveType" href="String"/></ownedAttribute>
+        <ownedAttribute xmi:id="a_cm5" name="isPublic" visibility="public"><type xmi:type="uml:PrimitiveType" href="Boolean"/></ownedAttribute>
+        <ownedAttribute xmi:id="a_cm6" name="courseId" visibility="public"><type xmi:type="uml:PrimitiveType" href="Integer"/></ownedAttribute>
+        <ownedAttribute xmi:id="a_cm7" name="uploadedById" visibility="public"><type xmi:type="uml:PrimitiveType" href="Integer"/></ownedAttribute>
+      </packagedElement>
+
+      <!-- ASSIGNMENTS -->
+      <packagedElement xmi:type="uml:Class" xmi:id="cls_assignments" name="assignments">
+        <ownedAttribute xmi:id="a_as1" name="id" visibility="public"><type xmi:type="uml:PrimitiveType" href="Integer"/></ownedAttribute>
+        <ownedAttribute xmi:id="a_as2" name="title" visibility="public"><type xmi:type="uml:PrimitiveType" href="String"/></ownedAttribute>
+        <ownedAttribute xmi:id="a_as3" name="type" visibility="public"><type xmi:type="uml:PrimitiveType" href="String"/></ownedAttribute>
+        <ownedAttribute xmi:id="a_as4" name="maxScore" visibility="public"><type xmi:type="uml:PrimitiveType" href="Integer"/></ownedAttribute>
+        <ownedAttribute xmi:id="a_as5" name="startDate" visibility="public"><type xmi:type="uml:PrimitiveType" href="Date"/></ownedAttribute>
+        <ownedAttribute xmi:id="a_as6" name="deadline" visibility="public"><type xmi:type="uml:PrimitiveType" href="Date"/></ownedAttribute>
+        <ownedAttribute xmi:id="a_as7" name="isActive" visibility="public"><type xmi:type="uml:PrimitiveType" href="Boolean"/></ownedAttribute>
+        <ownedAttribute xmi:id="a_as8" name="courseGroupId" visibility="public"><type xmi:type="uml:PrimitiveType" href="Integer"/></ownedAttribute>
+      </packagedElement>
+
+      <!-- ASSIGNMENT_SUBMISSIONS -->
+      <packagedElement xmi:type="uml:Class" xmi:id="cls_submissions" name="assignment_submissions">
+        <ownedAttribute xmi:id="a_sb1" name="id" visibility="public"><type xmi:type="uml:PrimitiveType" href="Integer"/></ownedAttribute>
+        <ownedAttribute xmi:id="a_sb2" name="content" visibility="public"><type xmi:type="uml:PrimitiveType" href="String"/></ownedAttribute>
+        <ownedAttribute xmi:id="a_sb3" name="status" visibility="public"><type xmi:type="uml:PrimitiveType" href="String"/></ownedAttribute>
+        <ownedAttribute xmi:id="a_sb4" name="finalScore" visibility="public"><type xmi:type="uml:PrimitiveType" href="Integer"/></ownedAttribute>
+        <ownedAttribute xmi:id="a_sb5" name="mentorFeedback" visibility="public"><type xmi:type="uml:PrimitiveType" href="String"/></ownedAttribute>
+        <ownedAttribute xmi:id="a_sb6" name="userId" visibility="public"><type xmi:type="uml:PrimitiveType" href="Integer"/></ownedAttribute>
+        <ownedAttribute xmi:id="a_sb7" name="assignmentId" visibility="public"><type xmi:type="uml:PrimitiveType" href="Integer"/></ownedAttribute>
+      </packagedElement>
+
+      <!-- PEER_REVIEWS -->
+      <packagedElement xmi:type="uml:Class" xmi:id="cls_peer_reviews" name="peer_reviews">
+        <ownedAttribute xmi:id="a_pr1" name="id" visibility="public"><type xmi:type="uml:PrimitiveType" href="Integer"/></ownedAttribute>
+        <ownedAttribute xmi:id="a_pr2" name="reviewerId" visibility="public"><type xmi:type="uml:PrimitiveType" href="Integer"/></ownedAttribute>
+        <ownedAttribute xmi:id="a_pr3" name="submissionId" visibility="public"><type xmi:type="uml:PrimitiveType" href="Integer"/></ownedAttribute>
+        <ownedAttribute xmi:id="a_pr4" name="score" visibility="public"><type xmi:type="uml:PrimitiveType" href="Real"/></ownedAttribute>
+        <ownedAttribute xmi:id="a_pr5" name="feedback" visibility="public"><type xmi:type="uml:PrimitiveType" href="String"/></ownedAttribute>
+        <ownedAttribute xmi:id="a_pr6" name="isCompleted" visibility="public"><type xmi:type="uml:PrimitiveType" href="Boolean"/></ownedAttribute>
+      </packagedElement>
+
+      <!-- FORUM_SECTIONS -->
+      <packagedElement xmi:type="uml:Class" xmi:id="cls_forum_sections" name="forum_sections">
+        <ownedAttribute xmi:id="a_fs1" name="id" visibility="public"><type xmi:type="uml:PrimitiveType" href="Integer"/></ownedAttribute>
+        <ownedAttribute xmi:id="a_fs2" name="title" visibility="public"><type xmi:type="uml:PrimitiveType" href="String"/></ownedAttribute>
+        <ownedAttribute xmi:id="a_fs3" name="courseId" visibility="public"><type xmi:type="uml:PrimitiveType" href="Integer"/></ownedAttribute>
+        <ownedAttribute xmi:id="a_fs4" name="orderIndex" visibility="public"><type xmi:type="uml:PrimitiveType" href="Integer"/></ownedAttribute>
+        <ownedAttribute xmi:id="a_fs5" name="isActive" visibility="public"><type xmi:type="uml:PrimitiveType" href="Boolean"/></ownedAttribute>
+      </packagedElement>
+
+      <!-- FORUM_TOPICS -->
+      <packagedElement xmi:type="uml:Class" xmi:id="cls_forum_topics" name="forum_topics">
+        <ownedAttribute xmi:id="a_ft1" name="id" visibility="public"><type xmi:type="uml:PrimitiveType" href="Integer"/></ownedAttribute>
+        <ownedAttribute xmi:id="a_ft2" name="title" visibility="public"><type xmi:type="uml:PrimitiveType" href="String"/></ownedAttribute>
+        <ownedAttribute xmi:id="a_ft3" name="sectionId" visibility="public"><type xmi:type="uml:PrimitiveType" href="Integer"/></ownedAttribute>
+        <ownedAttribute xmi:id="a_ft4" name="authorId" visibility="public"><type xmi:type="uml:PrimitiveType" href="Integer"/></ownedAttribute>
+        <ownedAttribute xmi:id="a_ft5" name="isPinned" visibility="public"><type xmi:type="uml:PrimitiveType" href="Boolean"/></ownedAttribute>
+        <ownedAttribute xmi:id="a_ft6" name="isClosed" visibility="public"><type xmi:type="uml:PrimitiveType" href="Boolean"/></ownedAttribute>
+        <ownedAttribute xmi:id="a_ft7" name="viewsCount" visibility="public"><type xmi:type="uml:PrimitiveType" href="Integer"/></ownedAttribute>
+      </packagedElement>
+
+      <!-- FORUM_POSTS -->
+      <packagedElement xmi:type="uml:Class" xmi:id="cls_forum_posts" name="forum_posts">
+        <ownedAttribute xmi:id="a_fp1" name="id" visibility="public"><type xmi:type="uml:PrimitiveType" href="Integer"/></ownedAttribute>
+        <ownedAttribute xmi:id="a_fp2" name="content" visibility="public"><type xmi:type="uml:PrimitiveType" href="String"/></ownedAttribute>
+        <ownedAttribute xmi:id="a_fp3" name="topicId" visibility="public"><type xmi:type="uml:PrimitiveType" href="Integer"/></ownedAttribute>
+        <ownedAttribute xmi:id="a_fp4" name="authorId" visibility="public"><type xmi:type="uml:PrimitiveType" href="Integer"/></ownedAttribute>
+        <ownedAttribute xmi:id="a_fp5" name="isEdited" visibility="public"><type xmi:type="uml:PrimitiveType" href="Boolean"/></ownedAttribute>
+      </packagedElement>
+
+      <!-- SCHEDULE_ITEMS -->
+      <packagedElement xmi:type="uml:Class" xmi:id="cls_schedule" name="schedule_items">
+        <ownedAttribute xmi:id="a_sc1" name="id" visibility="public"><type xmi:type="uml:PrimitiveType" href="Integer"/></ownedAttribute>
+        <ownedAttribute xmi:id="a_sc2" name="title" visibility="public"><type xmi:type="uml:PrimitiveType" href="String"/></ownedAttribute>
+        <ownedAttribute xmi:id="a_sc3" name="startTime" visibility="public"><type xmi:type="uml:PrimitiveType" href="Date"/></ownedAttribute>
+        <ownedAttribute xmi:id="a_sc4" name="endTime" visibility="public"><type xmi:type="uml:PrimitiveType" href="Date"/></ownedAttribute>
+        <ownedAttribute xmi:id="a_sc5" name="location" visibility="public"><type xmi:type="uml:PrimitiveType" href="String"/></ownedAttribute>
+        <ownedAttribute xmi:id="a_sc6" name="meetingUrl" visibility="public"><type xmi:type="uml:PrimitiveType" href="String"/></ownedAttribute>
+        <ownedAttribute xmi:id="a_sc7" name="courseGroupId" visibility="public"><type xmi:type="uml:PrimitiveType" href="Integer"/></ownedAttribute>
+      </packagedElement>
+
+      <!-- Associations -->
+      <packagedElement xmi:type="uml:Association" xmi:id="assoc_u_ur" name="">
+        <memberEnd xmi:idref="end_u_ur_src"/>
+        <memberEnd xmi:idref="end_u_ur_tgt"/>
+        <ownedEnd xmi:id="end_u_ur_src" type="cls_users" aggregation="composite" lower="1" upper="1"/>
+        <ownedEnd xmi:id="end_u_ur_tgt" type="cls_user_roles" lower="0" upper="*"/>
+      </packagedElement>
+
+      <packagedElement xmi:type="uml:Association" xmi:id="assoc_c_cg" name="">
+        <memberEnd xmi:idref="end_c_cg_src"/>
+        <memberEnd xmi:idref="end_c_cg_tgt"/>
+        <ownedEnd xmi:id="end_c_cg_src" type="cls_courses" aggregation="composite" lower="1" upper="1"/>
+        <ownedEnd xmi:id="end_c_cg_tgt" type="cls_course_groups" lower="0" upper="*"/>
+      </packagedElement>
+
+      <packagedElement xmi:type="uml:Association" xmi:id="assoc_cg_cr" name="">
+        <memberEnd xmi:idref="end_cg_cr_src"/>
+        <memberEnd xmi:idref="end_cg_cr_tgt"/>
+        <ownedEnd xmi:id="end_cg_cr_src" type="cls_course_groups" aggregation="composite" lower="1" upper="1"/>
+        <ownedEnd xmi:id="end_cg_cr_tgt" type="cls_course_reg" lower="0" upper="*"/>
+      </packagedElement>
+
+      <packagedElement xmi:type="uml:Association" xmi:id="assoc_cg_as" name="">
+        <memberEnd xmi:idref="end_cg_as_src"/>
+        <memberEnd xmi:idref="end_cg_as_tgt"/>
+        <ownedEnd xmi:id="end_cg_as_src" type="cls_course_groups" aggregation="composite" lower="1" upper="1"/>
+        <ownedEnd xmi:id="end_cg_as_tgt" type="cls_assignments" lower="0" upper="*"/>
+      </packagedElement>
+
+      <packagedElement xmi:type="uml:Association" xmi:id="assoc_as_sb" name="">
+        <memberEnd xmi:idref="end_as_sb_src"/>
+        <memberEnd xmi:idref="end_as_sb_tgt"/>
+        <ownedEnd xmi:id="end_as_sb_src" type="cls_assignments" aggregation="composite" lower="1" upper="1"/>
+        <ownedEnd xmi:id="end_as_sb_tgt" type="cls_submissions" lower="0" upper="*"/>
+      </packagedElement>
+
+      <packagedElement xmi:type="uml:Association" xmi:id="assoc_sb_pr" name="">
+        <memberEnd xmi:idref="end_sb_pr_src"/>
+        <memberEnd xmi:idref="end_sb_pr_tgt"/>
+        <ownedEnd xmi:id="end_sb_pr_src" type="cls_submissions" aggregation="composite" lower="1" upper="1"/>
+        <ownedEnd xmi:id="end_sb_pr_tgt" type="cls_peer_reviews" lower="0" upper="*"/>
+      </packagedElement>
+
+      <packagedElement xmi:type="uml:Association" xmi:id="assoc_c_cm" name="">
+        <memberEnd xmi:idref="end_c_cm_src"/>
+        <memberEnd xmi:idref="end_c_cm_tgt"/>
+        <ownedEnd xmi:id="end_c_cm_src" type="cls_courses" aggregation="composite" lower="1" upper="1"/>
+        <ownedEnd xmi:id="end_c_cm_tgt" type="cls_materials" lower="0" upper="*"/>
+      </packagedElement>
+
+      <packagedElement xmi:type="uml:Association" xmi:id="assoc_c_fs" name="">
+        <memberEnd xmi:idref="end_c_fs_src"/>
+        <memberEnd xmi:idref="end_c_fs_tgt"/>
+        <ownedEnd xmi:id="end_c_fs_src" type="cls_courses" aggregation="composite" lower="1" upper="1"/>
+        <ownedEnd xmi:id="end_c_fs_tgt" type="cls_forum_sections" lower="0" upper="*"/>
+      </packagedElement>
+
+      <packagedElement xmi:type="uml:Association" xmi:id="assoc_fs_ft" name="">
+        <memberEnd xmi:idref="end_fs_ft_src"/>
+        <memberEnd xmi:idref="end_fs_ft_tgt"/>
+        <ownedEnd xmi:id="end_fs_ft_src" type="cls_forum_sections" aggregation="composite" lower="1" upper="1"/>
+        <ownedEnd xmi:id="end_fs_ft_tgt" type="cls_forum_topics" lower="0" upper="*"/>
+      </packagedElement>
+
+      <packagedElement xmi:type="uml:Association" xmi:id="assoc_ft_fp" name="">
+        <memberEnd xmi:idref="end_ft_fp_src"/>
+        <memberEnd xmi:idref="end_ft_fp_tgt"/>
+        <ownedEnd xmi:id="end_ft_fp_src" type="cls_forum_topics" aggregation="composite" lower="1" upper="1"/>
+        <ownedEnd xmi:id="end_ft_fp_tgt" type="cls_forum_posts" lower="0" upper="*"/>
+      </packagedElement>
+
+      <packagedElement xmi:type="uml:Association" xmi:id="assoc_cg_sc" name="">
+        <memberEnd xmi:idref="end_cg_sc_src"/>
+        <memberEnd xmi:idref="end_cg_sc_tgt"/>
+        <ownedEnd xmi:id="end_cg_sc_src" type="cls_course_groups" aggregation="composite" lower="1" upper="1"/>
+        <ownedEnd xmi:id="end_cg_sc_tgt" type="cls_schedule" lower="0" upper="*"/>
+      </packagedElement>
+
+    </packagedElement>
+  </uml:Model>
+</xmi:XMI>

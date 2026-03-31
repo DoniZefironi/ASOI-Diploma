@@ -1,0 +1,152 @@
+@startuml class_diagram_controllers
+title Диаграмма классов — Контроллеры NestJS
+
+skinparam classAttributeIconSize 0
+skinparam classBorderColor #555
+skinparam classBackgroundColor #FFF3E0
+skinparam linetype ortho
+skinparam nodesep 40
+skinparam ranksep 50
+
+interface CanActivate {
+  + canActivate(ctx: ExecutionContext): boolean
+}
+
+class JwtAuthGuard {
+  - jwtService: JwtService
+  + canActivate(ctx: ExecutionContext): boolean
+}
+
+class RolesGuard {
+  - reflector: Reflector
+  + canActivate(ctx: ExecutionContext): boolean
+}
+
+class AuthController {
+  - authService: AuthService
+  + login(dto: LoginDto): TokenResponse
+  + register(dto: RegisterDto): User
+  + debug(req: Request): DebugInfo
+}
+
+class UsersController {
+  - usersService: UsersService
+  + findAll(): User[]
+  + findOne(id: int): User
+  + getProfile(req: Request): User
+  + findMentorsByCourseType(type: string): User[]
+  + updateRoles(id: int, roles: string[]): void
+}
+
+class CoursesController {
+  - coursesService: CoursesService
+  + findAll(): Course[]
+  + findOne(id: int): Course
+  + findByType(type: string): Course[]
+  + create(dto: CreateCourseDto): Course
+  + update(id: int, dto: UpdateCourseDto): Course
+  + remove(id: int): void
+}
+
+class CourseGroupsController {
+  - courseGroupsService: CourseGroupsService
+  + findAll(search: GroupSearchDto): CourseGroup[]
+  + findOne(id: int): CourseGroup
+  + getGroupsByCourse(courseId: int): CourseGroup[]
+  + getGroupStudents(id: int): User[]
+  + create(dto: CreateCourseGroupDto): CourseGroup
+  + update(id: int, dto: UpdateCourseGroupDto): CourseGroup
+  + remove(id: int): void
+  + register(dto: RegisterToCourseDto): void
+  + approveRegistration(id: int): void
+  + rejectRegistration(id: int): void
+}
+
+class AssignmentsController {
+  - assignmentsService: AssignmentsService
+  + findAllAssignments(search: SearchDto): Assignment[]
+  + findAssignmentById(id: int): Assignment
+  + getCourseGroupAssignments(groupId: int): Assignment[]
+  + createAssignment(dto: CreateAssignmentDto): Assignment
+  + updateAssignment(id: int, dto: UpdateAssignmentDto): Assignment
+  + removeAssignment(id: int): void
+  + createSubmission(dto: CreateSubmissionDto): Submission
+  + getMySubmissions(req: Request): Submission[]
+  + getSubmissionById(id: int): Submission
+  + getAssignmentSubmissions(assignmentId: int): Submission[]
+  + createPeerReview(dto: CreatePeerReviewDto): PeerReview
+  + calculateFinalGrade(id: int): void
+  + getCourseGroupGrades(groupId: int): Grade[]
+}
+
+class MaterialsController {
+  - materialsService: MaterialsService
+  + findAll(search: SearchDto): CourseMaterial[]
+  + getPublicMaterials(): CourseMaterial[]
+  + findByCourse(courseId: int): CourseMaterial[]
+  + findByType(type: string): CourseMaterial[]
+  + findOne(id: int): CourseMaterial
+  + create(dto: CreateCourseMaterialDto): CourseMaterial
+  + update(id: int, dto: UpdateCourseMaterialDto): CourseMaterial
+  + remove(id: int): void
+}
+
+class ForumController {
+  - forumService: ForumService
+  + findAllSections(): ForumSection[]
+  + getSectionsByCourse(courseId: int): ForumSection[]
+  + createSection(dto: CreateForumSectionDto): ForumSection
+  + updateSection(id: int, dto): ForumSection
+  + deleteSection(id: int): void
+  + getTopicsBySection(sectionId: int): ForumTopic[]
+  + findTopicById(id: int): ForumTopic
+  + createTopic(dto: CreateForumTopicDto): ForumTopic
+  + toggleTopicPinned(id: int): void
+  + toggleTopicClosed(id: int): void
+  + deleteTopic(id: int): void
+  + getPostsByTopic(topicId: int): ForumPost[]
+  + createPost(dto: CreateForumPostDto): ForumPost
+  + updatePost(id: int, content: string): ForumPost
+  + deletePost(id: int): void
+}
+
+class ScheduleController {
+  - scheduleService: ScheduleService
+  + findAll(search: ScheduleSearchDto): ScheduleItem[]
+  + getUserSchedule(req: Request): ScheduleItem[]
+  + findByCourseGroup(groupId: int): ScheduleItem[]
+  + findByDateRange(start: Date, end: Date): ScheduleItem[]
+  + findOne(id: int): ScheduleItem
+  + create(dto: CreateScheduleItemDto): ScheduleItem
+  + update(id: int, dto: UpdateScheduleItemDto): ScheduleItem
+  + remove(id: int): void
+}
+
+class CircuitController {
+  - circuitService: CircuitService
+  + submitCircuit(assignmentId: int, dto, req): CircuitSubmission
+  + getMySubmissions(req: Request): CircuitSubmission[]
+  + getSubmission(id: int): CircuitSubmission
+}
+
+JwtAuthGuard ..|> CanActivate
+RolesGuard ..|> CanActivate
+
+AuthController ..> JwtAuthGuard : @UseGuards
+UsersController ..> JwtAuthGuard : @UseGuards
+UsersController ..> RolesGuard : @UseGuards
+CoursesController ..> JwtAuthGuard : @UseGuards
+CoursesController ..> RolesGuard : @UseGuards
+CourseGroupsController ..> JwtAuthGuard : @UseGuards
+CourseGroupsController ..> RolesGuard : @UseGuards
+AssignmentsController ..> JwtAuthGuard : @UseGuards
+AssignmentsController ..> RolesGuard : @UseGuards
+MaterialsController ..> JwtAuthGuard : @UseGuards
+MaterialsController ..> RolesGuard : @UseGuards
+ForumController ..> JwtAuthGuard : @UseGuards
+ForumController ..> RolesGuard : @UseGuards
+ScheduleController ..> JwtAuthGuard : @UseGuards
+ScheduleController ..> RolesGuard : @UseGuards
+CircuitController ..> JwtAuthGuard : @UseGuards
+
+@enduml

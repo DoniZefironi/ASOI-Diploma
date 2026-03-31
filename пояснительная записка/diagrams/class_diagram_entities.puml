@@ -1,0 +1,185 @@
+@startuml class_diagram_entities
+title Диаграмма классов — Сущности бэкенда
+
+skinparam classAttributeIconSize 0
+skinparam classBorderColor #555
+skinparam classBackgroundColor #FFF8E1
+skinparam linetype ortho
+skinparam nodesep 50
+skinparam ranksep 60
+
+class User {
+  + id: int
+  + email: string
+  + firstName: string
+  + lastName: string
+  - password: string
+  + avatar: string
+  + isActive: boolean
+  + createdAt: Date
+}
+
+class UserRole {
+  + id: int
+  + userId: int
+  + role: UserRoleEnum
+}
+
+enum UserRoleEnum {
+  ADMIN
+  REGISTERED_USER
+  STUDENT_ELECTRONICS
+  MENTOR_ELECTRONICS
+}
+
+class Course {
+  + id: int
+  + name: string
+  + type: string
+  + description: string
+  + isActive: boolean
+  + imageUrl: string
+}
+
+class CourseGroup {
+  + id: int
+  + name: string
+  + year: int
+  + semester: int
+  + maxStudents: int
+  + isActive: boolean
+  + courseId: int
+  + startDate: Date
+  + endDate: Date
+}
+
+class CourseRegistration {
+  + id: int
+  + userId: int
+  + courseGroupId: int
+  + status: string
+  + registeredAt: Date
+  + approvedAt: Date
+  - approvedBy: int
+}
+
+class CourseMaterial {
+  + id: int
+  + title: string
+  + type: string
+  + fileUrl: string
+  + thumbnailUrl: string
+  + isPublic: boolean
+  + courseId: int
+  + uploadedById: int
+  + createdAt: Date
+}
+
+class Assignment {
+  + id: int
+  + title: string
+  + description: string
+  + type: AssignmentType
+  + maxScore: int
+  + startDate: Date
+  + deadline: Date
+  + isActive: boolean
+  + courseGroupId: int
+}
+
+enum AssignmentType {
+  PRACTICE
+  TEST
+  PRACTICE_REVIEW
+  HACKATHON
+  OLYMPIAD
+}
+
+class AssignmentSubmission {
+  + id: int
+  + content: string
+  + status: string
+  + finalScore: int
+  + mentorFeedback: string
+  + submittedAt: Date
+  + userId: int
+  + assignmentId: int
+}
+
+class PeerReview {
+  + id: int
+  + reviewerId: int
+  + submissionId: int
+  + score: float
+  + feedback: string
+  + isCompleted: boolean
+  + createdAt: Date
+}
+
+class ForumSection {
+  + id: int
+  + title: string
+  + description: string
+  + courseId: int
+  + orderIndex: int
+  + isActive: boolean
+}
+
+class ForumTopic {
+  + id: int
+  + title: string
+  + content: string
+  + sectionId: int
+  + authorId: int
+  + isPinned: boolean
+  + isClosed: boolean
+  + viewsCount: int
+  + createdAt: Date
+}
+
+class ForumPost {
+  + id: int
+  + content: string
+  + topicId: int
+  + authorId: int
+  + isEdited: boolean
+  + createdAt: Date
+  + updatedAt: Date
+}
+
+class ScheduleItem {
+  + id: int
+  + title: string
+  + startTime: Date
+  + endTime: Date
+  + location: string
+  + meetingUrl: string
+  + courseGroupId: int
+  + instructorId: int
+}
+
+User "1" *-- "0..*" UserRole : имеет >
+UserRole --> UserRoleEnum : использует
+
+Course "1" *-- "0..*" CourseGroup : содержит >
+Course "1" *-- "0..*" CourseMaterial : имеет >
+Course "1" *-- "0..*" ForumSection : имеет >
+
+CourseGroup "1" *-- "0..*" CourseRegistration : принимает >
+CourseGroup "1" *-- "0..*" Assignment : содержит >
+CourseGroup "1" *-- "0..*" ScheduleItem : имеет >
+
+User "1" o-- "0..*" CourseRegistration : записывается >
+User "1" o-- "0..*" AssignmentSubmission : сдаёт >
+User "1" o-- "0..*" PeerReview : пишет >
+User "1" o-- "0..*" ForumTopic : создаёт >
+User "1" o-- "0..*" ForumPost : пишет >
+
+Assignment "1" *-- "0..*" AssignmentSubmission : принимает >
+AssignmentSubmission "1" *-- "0..*" PeerReview : получает >
+Assignment --> AssignmentType : использует
+
+ForumSection "1" *-- "0..*" ForumTopic : содержит >
+ForumTopic "1" *-- "0..*" ForumPost : содержит >
+
+@enduml

@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xmi:XMI xmi:version="2.1" xmlns:xmi="http://schema.omg.org/spec/XMI/2.1"
+         xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML">
+  <uml:Model xmi:id="model_ui" name="Frontend UI Classes">
+
+    <!-- ===== STORES ===== -->
+    <packagedElement xmi:type="uml:Package" xmi:id="pkg_stores" name="shared/store">
+      <packagedElement xmi:type="uml:Class" xmi:id="cls_auth_store" name="AuthStore">
+        <ownedAttribute xmi:id="a_as1" name="user" visibility="public"/>
+        <ownedAttribute xmi:id="a_as2" name="token" visibility="public"/>
+        <ownedAttribute xmi:id="a_as3" name="isAuthenticated" visibility="public"/>
+        <ownedOperation xmi:id="op_as1" name="login" visibility="public"/>
+        <ownedOperation xmi:id="op_as2" name="logout" visibility="public"/>
+        <ownedOperation xmi:id="op_as3" name="hasRole" visibility="public"/>
+      </packagedElement>
+      <packagedElement xmi:type="uml:Class" xmi:id="cls_circuit_store" name="CircuitStore">
+        <ownedAttribute xmi:id="a_cs1" name="nodes" visibility="public"/>
+        <ownedAttribute xmi:id="a_cs2" name="wires" visibility="public"/>
+        <ownedAttribute xmi:id="a_cs3" name="connectionInProgress" visibility="public"/>
+        <ownedOperation xmi:id="op_cs1" name="addNode" visibility="public"/>
+        <ownedOperation xmi:id="op_cs2" name="removeNode" visibility="public"/>
+        <ownedOperation xmi:id="op_cs3" name="connectWire" visibility="public"/>
+        <ownedOperation xmi:id="op_cs4" name="removeWire" visibility="public"/>
+        <ownedOperation xmi:id="op_cs5" name="toggleInputValue" visibility="public"/>
+        <ownedOperation xmi:id="op_cs6" name="runSimulation" visibility="public"/>
+        <ownedOperation xmi:id="op_cs7" name="exportCircuit" visibility="public"/>
+        <ownedOperation xmi:id="op_cs8" name="importCircuit" visibility="public"/>
+        <ownedOperation xmi:id="op_cs9" name="clear" visibility="public"/>
+      </packagedElement>
+    </packagedElement>
+
+    <!-- ===== SHARED COMPONENTS ===== -->
+    <packagedElement xmi:type="uml:Package" xmi:id="pkg_shared" name="shared/components">
+      <packagedElement xmi:type="uml:Class" xmi:id="cls_protected_route" name="ProtectedRoute">
+        <ownedAttribute xmi:id="a_pr1" name="requiredRole" visibility="private"/>
+        <ownedOperation xmi:id="op_pr1" name="checkAuth" visibility="public"/>
+        <ownedOperation xmi:id="op_pr2" name="checkRole" visibility="public"/>
+      </packagedElement>
+      <packagedElement xmi:type="uml:Class" xmi:id="cls_navbar" name="Navbar">
+        <ownedOperation xmi:id="op_nb1" name="renderLinks" visibility="public"/>
+        <ownedOperation xmi:id="op_nb2" name="handleLogout" visibility="public"/>
+      </packagedElement>
+    </packagedElement>
+
+    <!-- ===== AUTH PAGE ===== -->
+    <packagedElement xmi:type="uml:Package" xmi:id="pkg_auth_page" name="app/auth">
+      <packagedElement xmi:type="uml:Class" xmi:id="cls_auth_page" name="AuthPage">
+        <ownedAttribute xmi:id="a_ap1" name="mode" visibility="private"/>
+        <ownedAttribute xmi:id="a_ap2" name="email" visibility="private"/>
+        <ownedAttribute xmi:id="a_ap3" name="password" visibility="private"/>
+        <ownedAttribute xmi:id="a_ap4" name="captchaAnswer" visibility="private"/>
+        <ownedOperation xmi:id="op_ap1" name="handleLogin" visibility="public"/>
+        <ownedOperation xmi:id="op_ap2" name="handleRegister" visibility="public"/>
+        <ownedOperation xmi:id="op_ap3" name="validateForm" visibility="public"/>
+      </packagedElement>
+    </packagedElement>
+
+    <!-- ===== COURSES PAGES ===== -->
+    <packagedElement xmi:type="uml:Package" xmi:id="pkg_courses_page" name="app/courses">
+      <packagedElement xmi:type="uml:Class" xmi:id="cls_courses_page" name="CoursesPage">
+        <ownedAttribute xmi:id="a_cp1" name="courses" visibility="private"/>
+        <ownedAttribute xmi:id="a_cp2" name="loading" visibility="private"/>
+        <ownedOperation xmi:id="op_cp1" name="fetchCourses" visibility="public"/>
+        <ownedOperation xmi:id="op_cp2" name="handleEnroll" visibility="public"/>
+      </packagedElement>
+      <packagedElement xmi:type="uml:Class" xmi:id="cls_course_detail" name="CourseDetailPage">
+        <ownedAttribute xmi:id="a_cd1" name="course" visibility="private"/>
+        <ownedAttribute xmi:id="a_cd2" name="groups" visibility="private"/>
+        <ownedOperation xmi:id="op_cd1" name="fetchCourse" visibility="public"/>
+        <ownedOperation xmi:id="op_cd2" name="handleRegister" visibility="public"/>
+      </packagedElement>
+    </packagedElement>
+
+    <!-- ===== ASSIGNMENT PAGE ===== -->
+    <packagedElement xmi:type="uml:Package" xmi:id="pkg_assign_page" name="app/assignments">
+      <packagedElement xmi:type="uml:Class" xmi:id="cls_assign_page" name="AssignmentPage">
+        <ownedAttribute xmi:id="a_asgp1" name="assignment" visibility="private"/>
+        <ownedAttribute xmi:id="a_asgp2" name="submission" visibility="private"/>
+        <ownedAttribute xmi:id="a_asgp3" name="answer" visibility="private"/>
+        <ownedOperation xmi:id="op_asgp1" name="fetchAssignment" visibility="public"/>
+        <ownedOperation xmi:id="op_asgp2" name="handleSubmit" visibility="public"/>
+        <ownedOperation xmi:id="op_asgp3" name="validateContent" visibility="public"/>
+      </packagedElement>
+    </packagedElement>
+
+    <!-- ===== CIRCUIT PAGES ===== -->
+    <packagedElement xmi:type="uml:Package" xmi:id="pkg_circuit_page" name="app/circuit">
+      <packagedElement xmi:type="uml:Class" xmi:id="cls_circuit_page" name="CircuitPage">
+        <ownedAttribute xmi:id="a_circp1" name="assignmentId" visibility="private"/>
+        <ownedOperation xmi:id="op_circp1" name="handleSimulate" visibility="public"/>
+        <ownedOperation xmi:id="op_circp2" name="handleSubmit" visibility="public"/>
+      </packagedElement>
+      <packagedElement xmi:type="uml:Class" xmi:id="cls_circuit_canvas" name="CircuitCanvas">
+        <ownedOperation xmi:id="op_cc1" name="renderNodes" visibility="public"/>
+        <ownedOperation xmi:id="op_cc2" name="renderWires" visibility="public"/>
+        <ownedOperation xmi:id="op_cc3" name="handleDrop" visibility="public"/>
+        <ownedOperation xmi:id="op_cc4" name="handleConnect" visibility="public"/>
+      </packagedElement>
+      <packagedElement xmi:type="uml:Class" xmi:id="cls_circuit_node" name="CircuitNode">
+        <ownedAttribute xmi:id="a_cn1" name="node" visibility="public"/>
+        <ownedOperation xmi:id="op_cn1" name="onMove" visibility="public"/>
+        <ownedOperation xmi:id="op_cn2" name="onStartConnect" visibility="public"/>
+      </packagedElement>
+    </packagedElement>
+
+    <!-- ===== FORUM PAGES ===== -->
+    <packagedElement xmi:type="uml:Package" xmi:id="pkg_forum_page" name="app/forum">
+      <packagedElement xmi:type="uml:Class" xmi:id="cls_forum_page" name="ForumPage">
+        <ownedAttribute xmi:id="a_fp1" name="sections" visibility="private"/>
+        <ownedOperation xmi:id="op_fp1" name="fetchSections" visibility="public"/>
+      </packagedElement>
+      <packagedElement xmi:type="uml:Class" xmi:id="cls_forum_sec_page" name="ForumSectionPage">
+        <ownedAttribute xmi:id="a_fsp1" name="topics" visibility="private"/>
+        <ownedOperation xmi:id="op_fsp1" name="fetchTopics" visibility="public"/>
+        <ownedOperation xmi:id="op_fsp2" name="handleCreateTopic" visibility="public"/>
+      </packagedElement>
+      <packagedElement xmi:type="uml:Class" xmi:id="cls_forum_topic_page" name="ForumTopicPage">
+        <ownedAttribute xmi:id="a_ftp1" name="topic" visibility="private"/>
+        <ownedAttribute xmi:id="a_ftp2" name="posts" visibility="private"/>
+        <ownedOperation xmi:id="op_ftp1" name="fetchPosts" visibility="public"/>
+        <ownedOperation xmi:id="op_ftp2" name="handleReply" visibility="public"/>
+      </packagedElement>
+    </packagedElement>
+
+    <!-- ===== LIBRARY PAGE ===== -->
+    <packagedElement xmi:type="uml:Package" xmi:id="pkg_library" name="app/library">
+      <packagedElement xmi:type="uml:Class" xmi:id="cls_library_page" name="LibraryPage">
+        <ownedAttribute xmi:id="a_lp1" name="materials" visibility="private"/>
+        <ownedAttribute xmi:id="a_lp2" name="search" visibility="private"/>
+        <ownedAttribute xmi:id="a_lp3" name="filter" visibility="private"/>
+        <ownedOperation xmi:id="op_lp1" name="fetchMaterials" visibility="public"/>
+        <ownedOperation xmi:id="op_lp2" name="handleDownload" visibility="public"/>
+      </packagedElement>
+    </packagedElement>
+
+    <!-- ===== SCHEDULE PAGE ===== -->
+    <packagedElement xmi:type="uml:Package" xmi:id="pkg_sched_page" name="app/schedule">
+      <packagedElement xmi:type="uml:Class" xmi:id="cls_sched_page" name="SchedulePage">
+        <ownedAttribute xmi:id="a_sp1" name="schedule" visibility="private"/>
+        <ownedAttribute xmi:id="a_sp2" name="weekOffset" visibility="private"/>
+        <ownedOperation xmi:id="op_sp1" name="fetchSchedule" visibility="public"/>
+        <ownedOperation xmi:id="op_sp2" name="handleAddItem" visibility="public"/>
+        <ownedOperation xmi:id="op_sp3" name="setWeekOffset" visibility="public"/>
+      </packagedElement>
+    </packagedElement>
+
+    <!-- ===== ADMIN PAGES ===== -->
+    <packagedElement xmi:type="uml:Package" xmi:id="pkg_admin" name="app/admin">
+      <packagedElement xmi:type="uml:Class" xmi:id="cls_admin_groups" name="AdminGroupsPage">
+        <ownedAttribute xmi:id="a_ag1" name="groups" visibility="private"/>
+        <ownedOperation xmi:id="op_ag1" name="createGroup" visibility="public"/>
+        <ownedOperation xmi:id="op_ag2" name="addStudentToGroup" visibility="public"/>
+      </packagedElement>
+      <packagedElement xmi:type="uml:Class" xmi:id="cls_admin_users" name="AdminUsersPage">
+        <ownedAttribute xmi:id="a_au1" name="users" visibility="private"/>
+        <ownedAttribute xmi:id="a_au2" name="search" visibility="private"/>
+        <ownedOperation xmi:id="op_au1" name="fetchUsers" visibility="public"/>
+        <ownedOperation xmi:id="op_au2" name="updateRole" visibility="public"/>
+        <ownedOperation xmi:id="op_au3" name="deactivateUser" visibility="public"/>
+      </packagedElement>
+      <packagedElement xmi:type="uml:Class" xmi:id="cls_admin_assign" name="AdminAssignmentsPage">
+        <ownedAttribute xmi:id="a_aa1" name="assignments" visibility="private"/>
+        <ownedOperation xmi:id="op_aa1" name="createAssignment" visibility="public"/>
+        <ownedOperation xmi:id="op_aa2" name="gradeSubmission" visibility="public"/>
+      </packagedElement>
+    </packagedElement>
+
+    <!-- Dependencies on AuthStore -->
+    <packagedElement xmi:type="uml:Dependency" xmi:id="dep_ap_auth" client="cls_auth_page" supplier="cls_auth_store"/>
+    <packagedElement xmi:type="uml:Dependency" xmi:id="dep_circp_store" client="cls_circuit_page" supplier="cls_circuit_store"/>
+    <packagedElement xmi:type="uml:Dependency" xmi:id="dep_cp_auth" client="cls_courses_page" supplier="cls_auth_store"/>
+    <packagedElement xmi:type="uml:Dependency" xmi:id="dep_asgp_auth" client="cls_assign_page" supplier="cls_auth_store"/>
+    <packagedElement xmi:type="uml:Dependency" xmi:id="dep_fp_auth" client="cls_forum_page" supplier="cls_auth_store"/>
+    <packagedElement xmi:type="uml:Dependency" xmi:id="dep_au_auth" client="cls_admin_users" supplier="cls_auth_store"/>
+    <packagedElement xmi:type="uml:Dependency" xmi:id="dep_pr_auth" client="cls_protected_route" supplier="cls_auth_store"/>
+    <packagedElement xmi:type="uml:Dependency" xmi:id="dep_nb_auth" client="cls_navbar" supplier="cls_auth_store"/>
+
+    <!-- Composition: CircuitPage contains CircuitCanvas, CircuitCanvas contains CircuitNode -->
+    <packagedElement xmi:type="uml:Association" xmi:id="assoc_cp_cc">
+      <memberEnd xmi:idref="ae_cp_cc_src"/>
+      <memberEnd xmi:idref="ae_cp_cc_tgt"/>
+      <ownedEnd xmi:id="ae_cp_cc_src" type="cls_circuit_page" aggregation="composite" lower="1" upper="1"/>
+      <ownedEnd xmi:id="ae_cp_cc_tgt" type="cls_circuit_canvas" lower="1" upper="1"/>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Association" xmi:id="assoc_cc_cn">
+      <memberEnd xmi:idref="ae_cc_cn_src"/>
+      <memberEnd xmi:idref="ae_cc_cn_tgt"/>
+      <ownedEnd xmi:id="ae_cc_cn_src" type="cls_circuit_canvas" aggregation="composite" lower="1" upper="1"/>
+      <ownedEnd xmi:id="ae_cc_cn_tgt" type="cls_circuit_node" lower="0" upper="*"/>
+    </packagedElement>
+
+    <!-- Forum navigation -->
+    <packagedElement xmi:type="uml:Association" xmi:id="assoc_forum_nav1">
+      <memberEnd xmi:idref="ae_fn1_src"/>
+      <memberEnd xmi:idref="ae_fn1_tgt"/>
+      <ownedEnd xmi:id="ae_fn1_src" type="cls_forum_page" lower="1" upper="1"/>
+      <ownedEnd xmi:id="ae_fn1_tgt" type="cls_forum_sec_page" lower="0" upper="*"/>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Association" xmi:id="assoc_forum_nav2">
+      <memberEnd xmi:idref="ae_fn2_src"/>
+      <memberEnd xmi:idref="ae_fn2_tgt"/>
+      <ownedEnd xmi:id="ae_fn2_src" type="cls_forum_sec_page" lower="1" upper="1"/>
+      <ownedEnd xmi:id="ae_fn2_tgt" type="cls_forum_topic_page" lower="0" upper="*"/>
+    </packagedElement>
+
+  </uml:Model>
+</xmi:XMI>
