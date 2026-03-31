@@ -20,22 +20,22 @@ API --> SP: schedule[]
 SP -> SS: setSchedule(schedule)
 SP -> U: отрисовать расписание (календарный вид)
 
-U -> SP: переключить неделю / фильтр
+U -> SP: переключить неделю
 SP -> SS: setWeekOffset(offset)
-SS --> SP: отфильтрованные элементы
+SS --> SP: отфильтрованные элементы текущей недели
 SP -> U: обновить отображение
 
 alt Роль — студент
-  SP -> U: отрисовать расписание в режиме просмотра (read-only)
+  SP -> U: расписание в режиме просмотра (read-only)
 else Роль — ментор или admin
   SP -> U: отрисовать кнопку «Добавить занятие»
 
   U -> SP: нажать «Добавить занятие»
-  SP -> U: открыть форму нового занятия
+  SP -> U: открыть форму
   U -> SP: ввести тему занятия
   U -> SP: выбрать группу
-  U -> SP: выбрать дату и время
-  U -> SP: ввести аудиторию / ссылку (онлайн)
+  U -> SP: выбрать дату и время начала / окончания
+  U -> SP: ввести аудиторию или ссылку (онлайн)
   U -> SP: нажать «Сохранить»
   SP -> SP: validateForm()
 
@@ -43,12 +43,12 @@ else Роль — ментор или admin
     SP -> U: показать ошибки валидации
   else Форма корректна
     SP -> API: POST /schedule\n{ title, groupId, startTime, endTime, location }\nAuthorization: Bearer <token>
-    API -> RG: canActivate(token, ['mentor_electronics','admin'])
+    API -> RG: canActivate(token, ['mentor_electronics', 'admin'])
 
     alt Нет прав доступа
       RG --> API: 403 Forbidden
       API --> SP: ошибка 403
-      SP -> U: показать «Нет прав для редактирования расписания»
+      SP -> U: «Нет прав для редактирования расписания»
     else Доступ разрешён
       RG --> SC: разрешено
       SC -> GDB: findOne(groupId)

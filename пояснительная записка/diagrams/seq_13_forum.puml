@@ -11,7 +11,7 @@ database "ForumTopic (БД)" as TopDB
 database "ForumPost (БД)" as PostDB
 
 U -> FP: открыть /courses/:id/forum
-FP -> API: GET /forum/sections?courseId=:id
+FP -> API: GET /forum/sections?courseId=:id\nAuthorization: Bearer <token>
 API -> FC: getSections(courseId)
 FC -> SecDB: findByCourseId(courseId)
 SecDB --> FC: ForumSection[]

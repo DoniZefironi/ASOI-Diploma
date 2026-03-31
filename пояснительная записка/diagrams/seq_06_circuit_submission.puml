@@ -1,5 +1,5 @@
 @startuml
-title Диаграмма последовательности: Сдача схемотехнического задания
+title Диаграмма последовательности: Работа с симулятором схем
 
 actor Студент as S
 participant "CircuitSimulatorPage\n(React)" as CSP
@@ -8,45 +8,37 @@ participant "API Client\n(axios)" as API
 participant "CircuitController\n(NestJS)" as CC
 database "CircuitSubmission (БД)" as CDB
 
-S -> CSP: открыть страницу задания
+S -> CSP: открыть страницу задания с симулятором
 CSP -> CS: initStore()
 
-S -> CSP: перетащить логический элемент на холст
+S -> CSP: перетащить компонент на холст
 CSP -> CS: addNode({ type, x, y })
 CS -> CS: обновить nodes[]
 
-S -> CSP: соединить выходы и входы элементов
-CSP -> CS: addWire({ from: {nodeId,slot}, to: {nodeId,slot} })
+S -> CSP: соединить компоненты проводом
+CSP -> CS: addWire({ from: {nodeId, slot}, to: {nodeId, slot} })
 CS -> CS: обновить wires[]
 
 S -> CSP: нажать «Симулировать»
 CSP -> CS: getCircuitData()
 CS --> CSP: { nodes[], wires[] }
-CSP -> CC: simulate(circuitData) [локально или через API]
-CC -> CC: propagateSignals() — итеративный алгоритм\n(макс. 50 итераций)
-CC --> CSP: сигналы на узлах обновлены
-CSP -> S: отрисовать результат симуляции на SVG
+CSP -> CSP: propagateSignals(nodes, wires) — локально\n(макс. 50 итераций)
 
-S -> CSP: нажать «Сдать схему»
-CSP -> CS: getCircuitData()
-CS --> CSP: { nodes[], wires[] }
-CSP -> API: POST /circuit/submit\n{ assignmentId, circuitData }\nAuthorization: Bearer <token>
-API -> CC: submitCircuit(assignmentId, userId, circuitData)
-CC -> CC: simulate(circuitData)
-CC -> CC: validateCircuit(circuitData, testCases[])
+alt Схема содержит ошибки соединений
+  CSP -> S: подсветить некорректные соединения
+else Схема корректна
+  CSP -> S: показать сигналы на элементах (SVG)
 
-alt Схема не прошла тест-кейсы
-  CC -> CDB: save({ status: 'failed', score, feedback })
-  CDB --> CC: submission
-  CC --> API: 200 { score, maxScore, isPassed: false, feedback }
-  API --> CSP: результат
-  CSP -> S: показать ошибочные тест-кейсы и обратную связь
-else Схема прошла все тест-кейсы
-  CC -> CDB: save({ status: 'passed', score: maxScore })
-  CDB --> CC: submission
-  CC --> API: 200 { score, maxScore, isPassed: true }
-  API --> CSP: результат
-  CSP -> S: показать «Схема принята» + баллы
+  S -> CSP: нажать «Сдать схему»
+  CSP -> CS: getCircuitData()
+  CS --> CSP: { nodes[], wires[] }
+  CSP -> API: POST /circuit/assignments/:assignmentId/submit\n{ circuitData }\nAuthorization: Bearer <token>
+  API -> CC: submitCircuit(assignmentId, userId, circuitData)
+  CC -> CDB: save({ userId, assignmentId, circuitData, submittedAt })
+  CDB --> CC: CircuitSubmission { id }
+  CC --> API: 201 { submissionId }
+  API --> CSP: успех
+  CSP -> S: «Схема успешно отправлена на проверку»
 end
 
 @enduml

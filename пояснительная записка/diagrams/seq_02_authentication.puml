@@ -3,39 +3,37 @@ title Диаграмма последовательности: Проверка 
 
 actor Пользователь as User
 participant "ProtectedRoute\n(Next.js)" as PR
-participant "AuthContext\n(React)" as AC
-participant "API Client\n(fetch)" as API
+participant "AuthStore\n(Zustand)" as AS
+participant "API Client\n(axios)" as API
 participant "JwtAuthGuard\n(NestJS)" as JG
-database "User (БД)" as DB
 
 User -> PR: переход на защищённую страницу
-PR -> AC: getToken() из localStorage
+PR -> AS: getToken() из localStorage
 
-alt Токен отсутствует в localStorage
-  AC --> PR: null
+alt Токен отсутствует
+  AS --> PR: null
   PR -> User: redirect('/auth')
 else Токен присутствует
-  AC --> PR: accessToken
+  AS --> PR: accessToken
   PR -> PR: декодировать payload
-  PR -> PR: проверить роль пользователя
+  PR -> PR: проверить соответствие роли маршруту
 
-  alt Роль недостаточна для маршрута
+  alt Роль не соответствует маршруту
     PR -> User: redirect('/')
   else Роль соответствует
-    PR -> API: GET /auth/debug\nAuthorization: Bearer <token>
+    PR -> API: GET /auth/me\nAuthorization: Bearer <token>
     API -> JG: canActivate(context)
     JG -> JG: jwt.verify(token, secret)
 
     alt Токен истёк или невалиден
       JG --> API: 401 Unauthorized
       API --> PR: ошибка 401
-      PR -> AC: clearToken()
-      AC -> AC: localStorage.removeItem('access_token')
+      PR -> AS: clearToken()
       PR -> User: redirect('/auth')
     else Токен валиден
       JG --> API: { userId, roles }
-      API --> PR: 200 { user, roles }
-      PR -> AC: setUser(user)
+      API --> PR: 200 { user }
+      PR -> AS: setUser(user)
       PR -> User: отрисовать защищённую страницу
     end
   end

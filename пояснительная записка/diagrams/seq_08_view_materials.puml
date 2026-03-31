@@ -1,50 +1,48 @@
 @startuml
-title Диаграмма последовательности: Просмотр учебных материалов
+title Диаграмма последовательности: Просмотр библиотеки материалов
 
 actor Студент as S
-participant "CoursePage\n(React)" as CP
-participant "MaterialsStore\n(Zustand)" as MS
+participant "LibraryPage\n(React)" as LP
 participant "API Client\n(axios)" as API
 participant "MaterialsController\n(NestJS)" as MC
 database "CourseMaterial (БД)" as MatDB
-database "CourseRegistration (БД)" as RegDB
 
-S -> CP: открыть /courses/:id/materials
-CP -> API: GET /courses/:id/materials\nAuthorization: Bearer <token>
-API -> MC: getMaterials(courseId, userId)
-MC -> RegDB: findOne({ courseId, userId })
+S -> LP: открыть /library
+LP -> API: GET /materials/public?page=1&limit=18
+API -> MC: getPublicMaterials(query)
+MC -> MatDB: findAll({ isPublic: true, pagination })
+MatDB --> MC: CourseMaterial[]
+MC --> API: 200 { materials[], meta }
+API --> LP: { materials[], meta }
+LP -> S: отрисовать книжную полку
 
-alt Студент не записан на курс
-  RegDB --> MC: null
-  MC --> API: 403 Forbidden
-  API --> CP: ошибка 403
-  CP -> S: показать «Запишитесь на курс для доступа»
-else Студент записан
-  RegDB --> MC: CourseRegistration
-  MC -> MatDB: findByCourseId(courseId, { order: orderIndex })
-  MatDB --> MC: CourseMaterial[]
-  MC --> API: 200 materials[]
-  API --> CP: materials[]
-  CP -> MS: setMaterials(materials)
-  CP -> S: отрисовать список тем
+S -> LP: ввести поисковый запрос
+LP -> API: GET /materials/public?search=<text>&page=1
+API -> MC: getPublicMaterials({ search })
+MC -> MatDB: findAll({ where: LIKE search })
+MatDB --> MC: CourseMaterial[]
+MC --> API: 200 materials[]
+API --> LP: materials[]
+LP -> S: обновить список материалов
 
-  S -> CP: выбрать тему / материал
-  CP -> MS: setCurrentMaterial(materialId)
-  MS --> CP: material { type, title, content, fileUrl }
+S -> LP: выбрать фильтр по типу материала
+S -> LP: выбрать фильтр по курсу
+LP -> API: GET /materials/public?type=<type>&courseId=<id>
+API -> MC: getPublicMaterials({ type, courseId })
+MC -> MatDB: findAll({ type, courseId })
+MatDB --> MC: CourseMaterial[]
+MC --> API: 200 materials[]
+API --> LP: materials[]
+LP -> S: отрисовать отфильтрованный список
 
-  alt Тип материала — видео
-    CP -> S: отрисовать видеоплеер + описание
-  else Тип материала — статья / текст
-    CP -> S: отрисовать текстовый редактор (read-only)
-  else Тип материала — файл
-    CP -> S: отрисовать кнопку скачать + превью
-    S -> CP: нажать «Скачать»
-    CP -> API: GET /materials/:id/download
-    API -> MC: downloadFile(materialId, userId)
-    MC --> API: fileStream
-    API --> CP: файл
-    CP -> S: инициировать загрузку файла
-  end
-end
+S -> LP: нажать на карточку материала
+LP -> S: открыть детали материала\n(title, description, type, fileUrl)
+
+S -> LP: нажать «Скачать / Открыть»
+LP -> API: GET /materials/:id/download
+API -> MC: downloadFile(materialId)
+MC --> API: fileStream
+API --> LP: файл
+LP -> S: инициировать загрузку файла
 
 @enduml

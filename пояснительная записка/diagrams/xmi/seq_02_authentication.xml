@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xmi:XMI xmi:version="2.1" xmlns:xmi="http://schema.omg.org/spec/XMI/2.1"
+         xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML">
+  <uml:Model xmi:id="model_02" name="Аутентификация">
+    <packagedElement xmi:type="uml:Interaction" xmi:id="int_02" name="Аутентификация">
+
+      <lifeline xmi:id="ll_02_1" name="Пользователь"/>
+      <lifeline xmi:id="ll_02_2" name="ProtectedRoute (Next.js)"/>
+      <lifeline xmi:id="ll_02_3" name="AuthStore (Zustand)"/>
+      <lifeline xmi:id="ll_02_4" name="API Client (axios)"/>
+      <lifeline xmi:id="ll_02_5" name="JwtAuthGuard (NestJS)"/>
+
+      <message xmi:id="m_02_01" name="переход на защищённую страницу" messageSort="synchCall"
+               sendEvent="occ_02_01s" receiveEvent="occ_02_01r"/>
+      <message xmi:id="m_02_02" name="getToken() из localStorage" messageSort="synchCall"
+               sendEvent="occ_02_02s" receiveEvent="occ_02_02r"/>
+      <message xmi:id="m_02_03" name="null" messageSort="reply"
+               sendEvent="occ_02_03s" receiveEvent="occ_02_03r"/>
+      <message xmi:id="m_02_04" name="redirect('/auth')" messageSort="synchCall"
+               sendEvent="occ_02_04s" receiveEvent="occ_02_04r"/>
+      <message xmi:id="m_02_05" name="accessToken" messageSort="reply"
+               sendEvent="occ_02_05s" receiveEvent="occ_02_05r"/>
+      <message xmi:id="m_02_06" name="декодировать payload" messageSort="synchCall"
+               sendEvent="occ_02_06s" receiveEvent="occ_02_06r"/>
+      <message xmi:id="m_02_07" name="проверить соответствие роли маршруту" messageSort="synchCall"
+               sendEvent="occ_02_07s" receiveEvent="occ_02_07r"/>
+      <message xmi:id="m_02_08" name="redirect('/')" messageSort="synchCall"
+               sendEvent="occ_02_08s" receiveEvent="occ_02_08r"/>
+      <message xmi:id="m_02_09" name="GET /auth/me Authorization: Bearer token" messageSort="synchCall"
+               sendEvent="occ_02_09s" receiveEvent="occ_02_09r"/>
+      <message xmi:id="m_02_10" name="canActivate(context)" messageSort="synchCall"
+               sendEvent="occ_02_10s" receiveEvent="occ_02_10r"/>
+      <message xmi:id="m_02_11" name="jwt.verify(token, secret)" messageSort="synchCall"
+               sendEvent="occ_02_11s" receiveEvent="occ_02_11r"/>
+      <message xmi:id="m_02_12" name="401 Unauthorized" messageSort="reply"
+               sendEvent="occ_02_12s" receiveEvent="occ_02_12r"/>
+      <message xmi:id="m_02_13" name="ошибка 401" messageSort="reply"
+               sendEvent="occ_02_13s" receiveEvent="occ_02_13r"/>
+      <message xmi:id="m_02_14" name="clearToken()" messageSort="synchCall"
+               sendEvent="occ_02_14s" receiveEvent="occ_02_14r"/>
+      <message xmi:id="m_02_15" name="redirect('/auth')" messageSort="synchCall"
+               sendEvent="occ_02_15s" receiveEvent="occ_02_15r"/>
+      <message xmi:id="m_02_16" name="{ userId, roles }" messageSort="reply"
+               sendEvent="occ_02_16s" receiveEvent="occ_02_16r"/>
+      <message xmi:id="m_02_17" name="200 { user }" messageSort="reply"
+               sendEvent="occ_02_17s" receiveEvent="occ_02_17r"/>
+      <message xmi:id="m_02_18" name="setUser(user)" messageSort="synchCall"
+               sendEvent="occ_02_18s" receiveEvent="occ_02_18r"/>
+      <message xmi:id="m_02_19" name="отрисовать защищённую страницу" messageSort="synchCall"
+               sendEvent="occ_02_19s" receiveEvent="occ_02_19r"/>
+
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_02_01s" covered="ll_02_1" message="m_02_01"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_02_01r" covered="ll_02_2" message="m_02_01"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_02_02s" covered="ll_02_2" message="m_02_02"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_02_02r" covered="ll_02_3" message="m_02_02"/>
+
+      <fragment xmi:type="uml:CombinedFragment" xmi:id="cf_02_1" interactionOperator="alt">
+        <covered>ll_02_1</covered><covered>ll_02_2</covered><covered>ll_02_3</covered>
+        <covered>ll_02_4</covered><covered>ll_02_5</covered>
+        <operand xmi:type="uml:InteractionOperand" xmi:id="op_02_1a">
+          <guard xmi:id="g_02_1a"><specification xmi:type="uml:LiteralString" xmi:id="gs_02_1a" value="Токен отсутствует"/></guard>
+          <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_02_03s" covered="ll_02_3" message="m_02_03"/>
+          <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_02_03r" covered="ll_02_2" message="m_02_03"/>
+          <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_02_04s" covered="ll_02_2" message="m_02_04"/>
+          <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_02_04r" covered="ll_02_1" message="m_02_04"/>
+        </operand>
+        <operand xmi:type="uml:InteractionOperand" xmi:id="op_02_1b">
+          <guard xmi:id="g_02_1b"><specification xmi:type="uml:LiteralString" xmi:id="gs_02_1b" value="Токен присутствует"/></guard>
+          <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_02_05s" covered="ll_02_3" message="m_02_05"/>
+          <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_02_05r" covered="ll_02_2" message="m_02_05"/>
+          <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_02_06s" covered="ll_02_2" message="m_02_06"/>
+          <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_02_06r" covered="ll_02_2" message="m_02_06"/>
+          <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_02_07s" covered="ll_02_2" message="m_02_07"/>
+          <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_02_07r" covered="ll_02_2" message="m_02_07"/>
+          <fragment xmi:type="uml:CombinedFragment" xmi:id="cf_02_2" interactionOperator="alt">
+            <covered>ll_02_1</covered><covered>ll_02_2</covered><covered>ll_02_4</covered><covered>ll_02_5</covered>
+            <operand xmi:type="uml:InteractionOperand" xmi:id="op_02_2a">
+              <guard xmi:id="g_02_2a"><specification xmi:type="uml:LiteralString" xmi:id="gs_02_2a" value="Роль не соответствует маршруту"/></guard>
+              <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_02_08s" covered="ll_02_2" message="m_02_08"/>
+              <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_02_08r" covered="ll_02_1" message="m_02_08"/>
+            </operand>
+            <operand xmi:type="uml:InteractionOperand" xmi:id="op_02_2b">
+              <guard xmi:id="g_02_2b"><specification xmi:type="uml:LiteralString" xmi:id="gs_02_2b" value="Роль соответствует"/></guard>
+              <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_02_09s" covered="ll_02_2" message="m_02_09"/>
+              <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_02_09r" covered="ll_02_4" message="m_02_09"/>
+              <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_02_10s" covered="ll_02_4" message="m_02_10"/>
+              <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_02_10r" covered="ll_02_5" message="m_02_10"/>
+              <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_02_11s" covered="ll_02_5" message="m_02_11"/>
+              <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_02_11r" covered="ll_02_5" message="m_02_11"/>
+              <fragment xmi:type="uml:CombinedFragment" xmi:id="cf_02_3" interactionOperator="alt">
+                <covered>ll_02_1</covered><covered>ll_02_2</covered><covered>ll_02_3</covered>
+                <covered>ll_02_4</covered><covered>ll_02_5</covered>
+                <operand xmi:type="uml:InteractionOperand" xmi:id="op_02_3a">
+                  <guard xmi:id="g_02_3a"><specification xmi:type="uml:LiteralString" xmi:id="gs_02_3a" value="Токен истёк или невалиден"/></guard>
+                  <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_02_12s" covered="ll_02_5" message="m_02_12"/>
+                  <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_02_12r" covered="ll_02_4" message="m_02_12"/>
+                  <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_02_13s" covered="ll_02_4" message="m_02_13"/>
+                  <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_02_13r" covered="ll_02_2" message="m_02_13"/>
+                  <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_02_14s" covered="ll_02_2" message="m_02_14"/>
+                  <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_02_14r" covered="ll_02_3" message="m_02_14"/>
+                  <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_02_15s" covered="ll_02_2" message="m_02_15"/>
+                  <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_02_15r" covered="ll_02_1" message="m_02_15"/>
+                </operand>
+                <operand xmi:type="uml:InteractionOperand" xmi:id="op_02_3b">
+                  <guard xmi:id="g_02_3b"><specification xmi:type="uml:LiteralString" xmi:id="gs_02_3b" value="Токен валиден"/></guard>
+                  <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_02_16s" covered="ll_02_5" message="m_02_16"/>
+                  <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_02_16r" covered="ll_02_4" message="m_02_16"/>
+                  <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_02_17s" covered="ll_02_4" message="m_02_17"/>
+                  <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_02_17r" covered="ll_02_2" message="m_02_17"/>
+                  <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_02_18s" covered="ll_02_2" message="m_02_18"/>
+                  <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_02_18r" covered="ll_02_3" message="m_02_18"/>
+                  <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_02_19s" covered="ll_02_2" message="m_02_19"/>
+                  <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_02_19r" covered="ll_02_1" message="m_02_19"/>
+                </operand>
+              </fragment>
+            </operand>
+          </fragment>
+        </operand>
+      </fragment>
+
+    </packagedElement>
+  </uml:Model>
+</xmi:XMI>

@@ -4,7 +4,7 @@ title Диаграмма последовательности: Авториза�
 actor Пользователь as User
 participant "AuthPage\n(React)" as AP
 participant "AuthStore\n(Zustand)" as AS
-participant "API Client\n(fetch)" as API
+participant "API Client\n(axios)" as API
 participant "AuthController\n(NestJS)" as AC
 database "User (БД)" as DB
 
@@ -25,18 +25,18 @@ else Форма заполнена корректно
 
   alt Пользователь не найден или пароль неверный
     DB --> AC: null / bcrypt.compare → false
-    AC --> API: 401 Unauthorized\n{ message: 'Invalid credentials' }
+    AC --> API: 401 Unauthorized
     API --> AP: ошибка 401
     AP -> User: alert «Неверный email или пароль»
   else Данные верны
     DB --> AC: User { id, passwordHash, roles }
     AC -> AC: bcrypt.compare(password, passwordHash) → true
-    AC -> AC: jwt.sign({ email, sub, roles, enrolledCourseType })
+    AC -> AC: jwt.sign({ sub, email, roles })
     AC --> API: 200 { access_token, user }
     API --> AP: { access_token, user }
-    AP -> AS: localStorage.setItem('access_token', token)
-    AP -> AS: login(token, userData)
-    AP -> AP: window.location.href = '/'
+    AP -> AS: setToken(access_token)
+    AP -> AS: setUser(user)
+    AP -> AP: router.push('/')
   end
 end
 

@@ -16,14 +16,14 @@ API -> AG: canActivate(token, 'admin')
 alt Роль не admin
   AG --> API: 403 Forbidden
   API --> UP: ошибка 403
-  UP -> A: показать «Нет прав доступа»
+  UP -> A: «Нет прав доступа»
 else Роль admin подтверждена
   AG --> UC: разрешено
-  UC -> UDB: findAll({ pagination, relations: roles })
+  UC -> UDB: findAll({ pagination, relations: ['roles'] })
   UDB --> UC: { users[], total }
   UC --> API: 200 { users[], meta: { total, page } }
   API --> UP: users[]
-  UP -> A: отрисовать таблицу пользователей с пагинацией
+  UP -> A: отрисовать таблицу пользователей
 
   A -> UP: ввести запрос в поле поиска
   UP -> API: GET /users?search=<query>
@@ -34,7 +34,7 @@ else Роль admin подтверждена
   API --> UP: отфильтрованный список
   UP -> A: обновить таблицу
 
-  A -> UP: выбрать пользователя → нажать «Изменить роль»
+  A -> UP: выбрать пользователя → «Изменить роль»
   A -> UP: выбрать новую роль из списка
   A -> UP: нажать «Сохранить»
   UP -> API: PATCH /users/:id/role\n{ role: 'mentor_electronics' }
@@ -43,14 +43,14 @@ else Роль admin подтверждена
   URD --> UC: UserRole (обновлённый)
   UC --> API: 200 успех
   API --> UP: обновлённый пользователь
-  UP -> A: показать обновлённую роль в таблице
+  UP -> A: показать обновлённую роль
 
   A -> UP: нажать «Заблокировать пользователя»
   UP -> UP: показать диалог подтверждения
   A -> UP: подтвердить
 
   alt Пользователь — единственный администратор
-    UP -> A: показать «Нельзя заблокировать единственного администратора»
+    UP -> A: «Нельзя заблокировать единственного администратора»
   else Блокировка разрешена
     UP -> API: PATCH /users/:id\n{ isActive: false }
     API -> UC: deactivateUser(userId)

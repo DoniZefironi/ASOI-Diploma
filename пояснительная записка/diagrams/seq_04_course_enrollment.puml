@@ -2,8 +2,7 @@
 title Диаграмма последовательности: Запись на курс
 
 actor Студент as S
-participant "CourseCatalogPage\n(React)" as CP
-participant "CoursesStore\n(Zustand)" as CS
+participant "CoursesPage\n(React)" as CP
 participant "API Client\n(axios)" as API
 participant "CoursesController\n(NestJS)" as CC
 database "Course (БД)" as CourseDB
@@ -12,24 +11,23 @@ database "CourseRegistration (БД)" as RegDB
 S -> CP: открыть /courses
 CP -> API: GET /courses
 API -> CC: getCourses()
-CC -> CourseDB: findAll({ isPublished: true })
+CC -> CourseDB: findAll({ where: { isActive: true } })
 CourseDB --> CC: Course[]
 CC --> API: 200 Course[]
 API --> CP: courses[]
-CP -> CS: setCourses(courses)
-CP -> S: отрисовать список курсов
+CP -> S: отрисовать карточки курсов
 
 S -> CP: нажать «Подробнее» на курсе
 CP -> API: GET /courses/:id
 API -> CC: getCourseById(id)
-CC -> CourseDB: findOne(id)
-CourseDB --> CC: Course { groups, mentor }
+CC -> CourseDB: findOne(id, { relations: ['groups'] })
+CourseDB --> CC: Course { groups[], description }
 CC --> API: 200 courseDetails
 API --> CP: courseDetails
-CP -> S: отрисовать страницу курса
+CP -> S: отрисовать страницу курса с группами
 
 S -> CP: нажать «Записаться»
-CP -> API: POST /courses/:id/enroll\nAuthorization: Bearer <token>
+CP -> API: POST /course-registrations\n{ courseId }\nAuthorization: Bearer <token>
 API -> CC: enroll(courseId, userId)
 CC -> RegDB: findOne({ courseId, userId })
 
@@ -37,15 +35,14 @@ alt Студент уже записан
   RegDB --> CC: CourseRegistration (существующая)
   CC --> API: 409 Conflict
   API --> CP: ошибка 409
-  CP -> S: показать «Вы уже записаны на этот курс»
-else Запись прошла успешно
+  CP -> S: «Вы уже записаны на этот курс»
+else Запись свободна
   RegDB --> CC: null
   CC -> RegDB: save({ courseId, userId, enrolledAt })
-  RegDB --> CC: CourseRegistration
+  RegDB --> CC: CourseRegistration { id }
   CC --> API: 201 { registrationId }
   API --> CP: успех
-  CP -> CS: addEnrollment(courseId)
-  CP -> S: показать «Вы успешно записаны»
+  CP -> S: «Вы успешно записаны»
 end
 
 @enduml

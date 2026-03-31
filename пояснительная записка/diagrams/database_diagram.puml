@@ -5,6 +5,7 @@ hide methods
 skinparam classAttributeIconSize 0
 skinparam classBorderColor #666
 skinparam classBackgroundColor #FFFDE7
+skinparam linetype ortho
 
 entity users {
   * id : Integer <<PK>>
@@ -86,9 +87,9 @@ entity assignments {
   * maxScore : Integer
   * deadline : Timestamp
   * isActive : Boolean
-  peerReviewEnabled : Boolean
+  * peerReviewEnabled : Boolean
   * peerReviewsPerStudent : Integer
-  courseGroupId : Integer <<FK>>
+  * courseGroupId : Integer <<FK>>
   testCases : JSON
   * createdAt : Timestamp
 }
@@ -108,25 +109,6 @@ entity assignment_submissions {
   * createdAt : Timestamp
 }
 
-entity circuit_submissions {
-  * id : Integer <<PK>>
-  --
-  * circuitData : JSON
-  * score : Integer
-  * maxScore : Integer
-  feedback : Text
-  * isPassed : Boolean
-  * submittedAt : Timestamp
-  * assignmentId : Integer <<FK>>
-  * userId : Integer <<FK>>
-}
-
-entity circuit_element_types {
-  * type : Text <<PK>>
-  --
-  * metadata : JSON
-}
-
 entity peer_reviews {
   * id : Integer <<PK>>
   --
@@ -142,7 +124,7 @@ entity peer_reviews {
 entity forum_sections {
   * id : Integer <<PK>>
   --
-  * courseId : Integer <<FK>>
+  courseId : Integer <<FK>>
   * title : Text
   description : Text
   * orderIndex : Integer
@@ -156,7 +138,7 @@ entity forum_topics {
   * sectionId : Integer <<FK>>
   * authorId : Integer <<FK>>
   * title : Text
-  * content : Text
+  content : Text
   * isPinned : Boolean
   * isClosed : Boolean
   * viewsCount : Integer
@@ -175,60 +157,46 @@ entity forum_posts {
   updatedAt : Timestamp
 }
 
-entity achievements {
-  * id : Integer <<PK>>
-  --
-  * name : Text
-  * type : Enum
-  * icon : Text
-  * points : Integer
-  * conditions : JSON
-  * isActive : Boolean
-}
-
-entity user_achievements {
-  * id : Integer <<PK>>
-  --
-  * userId : Integer <<FK>>
-  * achievementId : Integer <<FK>>
-  * earnedAt : Timestamp
-  metadata : JSON
-}
-
 entity schedule_items {
   * id : Integer <<PK>>
   --
   * title : Text
-  * type : Enum
-  content : Text
-  videoUrl : Text
   * startTime : Timestamp
   * endTime : Timestamp
   * location : Text
   meetingUrl : Text
-  courseGroupId : Integer <<FK>>
+  * courseGroupId : Integer <<FK>>
   instructorId : Integer <<FK>>
   * createdAt : Timestamp
 }
 
+' Пользователи и роли
 users ||--o{ user_roles : "имеет"
-users ||--o{ course_registrations : "подаёт"
-users ||--o{ assignment_submissions : "сдаёт"
-users ||--o{ circuit_submissions : "сдаёт"
-users ||--o{ peer_reviews : "пишет"
-users ||--o{ forum_posts : "пишет"
-users ||--o{ user_achievements : "получает"
-users ||--o{ course_materials : "загружает"
+
+' Курсы и группы
 courses ||--o{ course_groups : "содержит"
 courses ||--o{ course_materials : "имеет"
 courses ||--o{ forum_sections : "имеет"
+
+' Группы
 course_groups ||--o{ course_registrations : "принимает"
 course_groups ||--o{ assignments : "содержит"
 course_groups ||--o{ schedule_items : "имеет"
+
+' Пользователи и учёба
+users ||--o{ course_registrations : "записывается"
+users ||--o{ assignment_submissions : "сдаёт"
+users ||--o{ peer_reviews : "пишет"
+users ||--o{ course_materials : "загружает"
+
+' Задания
 assignments ||--o{ assignment_submissions : "принимает"
-assignments ||--o{ circuit_submissions : "принимает"
 assignment_submissions ||--o{ peer_reviews : "получает"
+
+' Форум
 forum_sections ||--o{ forum_topics : "содержит"
 forum_topics ||--o{ forum_posts : "содержит"
-achievements ||--o{ user_achievements : "присваивается"
+users ||--o{ forum_topics : "создаёт"
+users ||--o{ forum_posts : "пишет"
+
 @enduml
