@@ -1,0 +1,41 @@
+@startuml seq_06_inference_engine
+title Диаграмма последовательности: Механизм прямого вывода (Forward Chaining + MYCIN)
+
+participant "ProfOrientationService\n(NestJS)" as PS
+participant "InferenceEngineService\n(NestJS)" as IE
+participant "knowledgeBase.ts\n(правила и профили)" as KB
+
+PS -> IE: runInference(traitsVector)
+IE -> KB: loadRules()
+KB --> IE: rules[]: { profession, conditions[], CF }
+IE -> KB: loadProfessionProfiles()
+KB --> IE: profiles{}: { description, skills[], tools[] }
+
+IE -> IE: normalizeScores(rawScores)\ntraits[i] = round((raw / MAX_RAW) × 10 × 10) / 10
+
+note right of IE
+  Нормализация:
+  trait_norm = round((raw / MAX_RAW) × 10 × 10) / 10
+  traits[i] ∈ [0..10]
+end note
+
+IE -> IE: initCFMap() — CF[profession] = 0 для всех специальностей
+
+loop Для каждого правила rules[i]
+  IE -> IE: checkConditions(traits, rule.conditions)
+  alt Все условия выполнены (rule fired)
+    IE -> IE: combineMYCIN(CF[profession], rule.CF)\nCF_new = CF_old + rule.CF × (1 − CF_old)
+  end
+end
+
+IE -> IE: filter: CF × 100 >= 35%
+IE -> IE: sort: по убыванию CF
+IE -> IE: slice: топ-5 специальностей
+
+IE -> IE: buildPersonalityProfile(traits)\n→ архетип из 12 предустановленных профилей
+IE -> IE: extractStrengths(traits) → traits[i] >= 7
+IE -> IE: extractWeaknesses(traits) → traits[i] < 5
+
+IE --> PS: InferenceResult {\n  topProfessions[],\n  personalityProfile,\n  strengths[],\n  weaknesses[]\n}
+
+@enduml

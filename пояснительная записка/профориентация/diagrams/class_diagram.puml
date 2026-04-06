@@ -1,0 +1,108 @@
+@startuml class_diagram
+title Диаграмма классов — Платформа профориентации
+
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+hide empty members
+
+package "Auth" {
+  class AuthController {
+    +login(dto: LoginDto): JwtToken
+    +register(dto: RegisterDto): User
+  }
+  class AuthService {
+    +login(email, password): JwtToken
+    +register(dto: RegisterDto): User
+    +validateUser(email, password): User
+    -generateToken(userId, roles): string
+  }
+  AuthController --> AuthService
+}
+
+package "Users" {
+  class UsersController {
+    +findAll(): User[]
+    +findById(id): User
+    +getMyProfile(): User
+    +updateRole(id, role): User
+    +deactivate(id): void
+  }
+  class UsersService {
+    +findAll(): User[]
+    +findById(id): User
+    +updateRole(userId, role): User
+    +setActive(userId, isActive): void
+  }
+  UsersController --> UsersService
+}
+
+package "ProfessionalOrientation" {
+  class ProfOrientationController {
+    +getTests(): CareerTest[]
+    +getTestQuestions(type): TestQuestion[]
+    +submitTest(dto): OrientationResult
+    +getResults(): FullResultDto
+    +getHistory(): HistoryDto[]
+    +getHistoryItem(id): HistoryItemDto
+    +generateRoadmap(dto): RoadmapDto
+  }
+  class ProfOrientationService {
+    +submitTest(userId, dto): OrientationResult
+    +getResults(userId): FullResultDto
+    +getHistory(userId): HistoryDto[]
+    +getHistoryItem(userId, id): HistoryItemDto
+  }
+  ProfOrientationController --> ProfOrientationService
+}
+
+package "InferenceEngine" {
+  class InferenceEngineService {
+    +runInference(traits): InferenceResult
+    +normalizeScores(raw): TraitsVector
+    +runForwardChaining(traits, rules): ProfessionCF[]
+    +combineMYCIN(cfOld, cfNew): number
+    +buildPersonalityProfile(traits): PersonalityProfile
+    +extractStrengths(traits): string[]
+    +extractWeaknesses(traits): string[]
+  }
+}
+
+package "Roadmap" {
+  class RoadmapService {
+    +generateRoadmap(userId, professionId, orientationId): RoadmapDto
+    +generateWithGemini(prompt): RoadmapPhase[]
+    +generateFromTemplate(professionId): RoadmapPhase[]
+    -buildPrompt(profession, traits, matchPct): string
+  }
+}
+
+package "Admin" {
+  class AdminController {
+    +getAllTests(): CareerTest[]
+    +updateTest(id, dto): CareerTest
+    +toggleTestActive(id): CareerTest
+    +addQuestion(testId, dto): TestQuestion
+    +updateQuestion(id, dto): TestQuestion
+    +deleteQuestion(id): void
+    +getAnalytics(): AnalyticsDto
+    +getUsers(): User[]
+    +updateUserRole(id, role): User
+  }
+  class AdminService {
+    +getAllTests(): CareerTest[]
+    +updateTest(id, dto): CareerTest
+    +toggleTestActive(id): CareerTest
+    +addQuestion(testId, dto): TestQuestion
+    +deleteQuestion(id): void
+    +getAnalytics(): AnalyticsDto
+  }
+  AdminController --> AdminService
+}
+
+' Зависимости между модулями
+AuthService --> UsersService
+ProfOrientationService --> InferenceEngineService : запускает вывод
+ProfOrientationService --> RoadmapService : генерирует карту
+AdminService ..> UsersService : управляет пользователями
+
+@enduml

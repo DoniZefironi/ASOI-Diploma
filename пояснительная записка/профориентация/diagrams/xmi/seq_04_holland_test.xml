@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xmi:XMI xmi:version="2.1" xmlns:xmi="http://schema.omg.org/spec/XMI/2.1"
+         xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML">
+  <uml:Model xmi:id="model_seq04" name="Прохождение теста Голланда">
+    <packagedElement xmi:type="uml:Interaction" xmi:id="ia_holland" name="Прохождение теста Голланда (RIASEC)">
+
+      <lifeline xmi:id="ll_user"   name="Студент"                   represents="ll_user"/>
+      <lifeline xmi:id="ll_client" name="Браузер (Next.js)"          represents="ll_client"/>
+      <lifeline xmi:id="ll_pc"     name="ProfOrientationController"  represents="ll_pc"/>
+      <lifeline xmi:id="ll_ps"     name="ProfOrientationService"     represents="ll_ps"/>
+      <lifeline xmi:id="ll_db"     name="PostgreSQL"                 represents="ll_db"/>
+
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="m1s" covered="ll_user"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="m1r" covered="ll_client"/>
+      <message xmi:id="msg1" name="Открыть /tests/holland" sendEvent="m1s" receiveEvent="m1r" messageSort="synchCall"/>
+
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="m2s" covered="ll_client"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="m2r" covered="ll_pc"/>
+      <message xmi:id="msg2" name="GET /professional-orientation/tests/holland/questions" sendEvent="m2s" receiveEvent="m2r" messageSort="synchCall"/>
+
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="m3s" covered="ll_pc"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="m3r" covered="ll_db"/>
+      <message xmi:id="msg3" name="SELECT career_tests WHERE type=holland AND isActive=true" sendEvent="m3s" receiveEvent="m3r" messageSort="synchCall"/>
+
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="m4s" covered="ll_db"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="m4r" covered="ll_client"/>
+      <message xmi:id="msg4" name="TestConfig {30 вопросов, yes_no}" sendEvent="m4s" receiveEvent="m4r" messageSort="reply"/>
+
+      <fragment xmi:type="uml:CombinedFragment" xmi:id="cf_loop" interactionOperator="loop">
+        <operand xmi:id="op_loop">
+          <guard xmi:id="g_loop"><specification value="30 вопросов"/></guard>
+          <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="m5s" covered="ll_user"/>
+          <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="m5r" covered="ll_client"/>
+          <message xmi:id="msg5" name="Ответить Да / Нет" sendEvent="m5s" receiveEvent="m5r" messageSort="synchCall"/>
+        </operand>
+      </fragment>
+
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="m6s" covered="ll_client"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="m6r" covered="ll_pc"/>
+      <message xmi:id="msg6" name="POST /professional-orientation/tests/submit {testType:holland, answers:[]}" sendEvent="m6s" receiveEvent="m6r" messageSort="synchCall"/>
+
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="m7s" covered="ll_pc"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="m7r" covered="ll_ps"/>
+      <message xmi:id="msg7" name="submitTest(userId, dto)" sendEvent="m7s" receiveEvent="m7r" messageSort="synchCall"/>
+
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="m8s" covered="ll_ps"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="m8r" covered="ll_db"/>
+      <message xmi:id="msg8" name="UPSERT professional_orientations {testResult, recommendedProfession}" sendEvent="m8s" receiveEvent="m8r" messageSort="synchCall"/>
+
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="m9s" covered="ll_pc"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="m9r" covered="ll_client"/>
+      <message xmi:id="msg9" name="200 OK {result}" sendEvent="m9s" receiveEvent="m9r" messageSort="reply"/>
+
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="m10s" covered="ll_client"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="m10r" covered="ll_user"/>
+      <message xmi:id="msg10" name="Редирект на /tests/klimov" sendEvent="m10s" receiveEvent="m10r" messageSort="reply"/>
+    </packagedElement>
+  </uml:Model>
+</xmi:XMI>

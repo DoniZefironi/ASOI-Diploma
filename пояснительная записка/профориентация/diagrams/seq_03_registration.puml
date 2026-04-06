@@ -1,0 +1,47 @@
+@startuml seq_03_registration
+title Диаграмма последовательности: Регистрация нового пользователя
+
+actor Пользователь as User
+participant "AuthPage\n(React)" as AP
+participant "API Client\n(axios)" as API
+participant "AuthController\n(NestJS)" as AC
+participant "AuthService\n(NestJS)" as AS
+database "users (БД)" as UserDB
+database "user_roles (БД)" as RolesDB
+
+User -> AP: открыть /auth, выбрать вкладку «Регистрация»
+User -> AP: ввести firstName, lastName, email, пароль
+User -> AP: нажать «Зарегистрироваться»
+AP -> AP: validateForm()
+
+alt Поля заполнены некорректно
+  AP -> User: отобразить ошибки валидации
+else Форма корректна
+  AP -> API: POST /auth/register\n{ firstName, lastName, email, password }
+  API -> AC: register(registerDto)
+  AC -> AS: register(dto)
+  AS -> UserDB: findOne({ where: { email } })
+
+  alt Email уже занят
+    UserDB --> AS: User (существующий)
+    AS --> AC: ConflictException
+    AC --> API: 409 Conflict
+    API --> AP: ошибка 409
+    AP -> User: «Пользователь с таким email уже существует»
+  else Email свободен
+    UserDB --> AS: null
+    AS -> AS: bcrypt.hash(password, 12)
+    AS -> UserDB: save({ email, passwordHash, firstName, lastName })
+    UserDB --> AS: User { id }
+    AS -> RolesDB: save({ userId: id, role: 'student' })
+    RolesDB --> AS: UserRole
+    AS -> AS: jwt.sign({ sub: id, email, roles })
+    AS --> AC: { access_token, user }
+    AC --> API: 201 Created { access_token, user }
+    API --> AP: { access_token, user }
+    AP -> AP: localStorage.setItem('token', access_token)
+    AP -> User: редирект на /career
+  end
+end
+
+@enduml

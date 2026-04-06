@@ -1,0 +1,54 @@
+@startuml seq_05_klimov_test
+title Диаграмма последовательности: Прохождение теста Климова и запуск механизма вывода
+
+actor Студент as S
+participant "CareerTestPage\n(React)" as TP
+participant "API Client\n(axios)" as API
+participant "ProfOrientationController\n(NestJS)" as PC
+participant "ProfOrientationService\n(NestJS)" as PS
+participant "InferenceEngineService\n(NestJS)" as IE
+database "career_tests (БД)" as TestDB
+database "professional_orientations (БД)" as OrDB
+
+S -> TP: открыть /career/test/klimov
+TP -> API: GET /professional-orientation/tests/klimov/questions
+API -> PC: getQuestions('klimov')
+PC -> TestDB: findOne({ where: { type: 'klimov' } })
+TestDB --> PC: CareerTest { questions[20], answerFormat: 'choice' }
+PC --> API: 200 TestConfig
+API --> TP: TestConfig
+TP -> S: отобразить пару 1 из 20
+
+loop 20 вопросов (попарный выбор А / Б)
+  S -> TP: выбрать вариант А или Б
+  TP -> TP: setAnswers(prev => ({ ...prev, [id]: answer }))
+  TP -> S: следующая пара
+end
+
+S -> TP: нажать «Завершить тест»
+TP -> API: POST /professional-orientation/tests/submit\n{ testType: 'klimov', answers: [...] }\nAuthorization: Bearer <token>
+API -> PC: submitTest(userId, dto)
+PC -> PS: submitTest(userId, dto)
+
+PS -> PS: подсчёт баллов по 5 типам ДДО\n(ЧЧ, ЧТ, ЧП, ЧЗ, ЧХ)
+PS -> OrDB: findOne({ where: { userId } })
+OrDB --> PS: previousResult (результаты Голланда)
+PS -> PS: объединить RIASEC + ДДО → трейты[9]\n(logical, analytical, technical, creative,\nsocial, managerial, research, detail, risk)
+
+PS -> IE: runInference(traitsVector)
+IE -> IE: normalizeScores(raw) → traits[i] ∈ [0..10]
+IE -> IE: runForwardChaining(traits, rules)
+IE -> IE: combineMYCIN(cfOld, rule.CF)
+IE -> IE: buildPersonalityProfile(traits)
+IE -> IE: extractStrengths(traits) → traits >= 7
+IE -> IE: extractWeaknesses(traits) → traits < 5
+IE --> PS: InferenceResult { topProfessions[], personalityProfile, strengths[], weaknesses[] }
+
+PS -> OrDB: update({ testResult: { riasec, klimov, traits },\nrecommendedProfession: topProfessions[0] })
+OrDB --> PS: ok
+PS --> PC: FullOrientationResult
+PC --> API: 200 OK { result }
+API --> TP: result
+TP -> S: редирект на /prof-orientation
+
+@enduml

@@ -1,0 +1,36 @@
+@startuml seq_07_view_results
+title Диаграмма последовательности: Просмотр результатов анализа
+
+actor Студент as S
+participant "ExpertSystemPage\n(React)" as EP
+participant "API Client\n(axios)" as API
+participant "ProfOrientationController\n(NestJS)" as PC
+participant "ProfOrientationService\n(NestJS)" as PS
+participant "InferenceEngineService\n(NestJS)" as IE
+database "professional_orientations (БД)" as OrDB
+
+S -> EP: открыть /prof-orientation
+EP -> API: GET /professional-orientation/expert-analysis\nAuthorization: Bearer <token>
+API -> PC: getExpertAnalysis(userId)
+PC -> PS: getExpertAnalysis(userId)
+PS -> OrDB: findOne({ where: { userId }, order: { createdAt: 'DESC' } })
+
+alt Тесты не пройдены
+  OrDB --> PS: null
+  PS --> PC: NotFoundException
+  PC --> API: 404 Not Found
+  API --> EP: ошибка 404
+  EP -> S: «Вы ещё не проходили тесты. Начать?»
+else Результаты найдены
+  OrDB --> PS: ProfessionalOrientation { testResult, recommendedProfession }
+  PS -> IE: runInference(testResult.traits)
+  IE --> PS: InferenceResult { topProfessions[], personalityProfile, strengths[], weaknesses[] }
+  PS --> PC: ExpertAnalysisDto { topMatches[], profileTitle, traitScores{}, strengths[], weaknesses[] }
+  PC --> API: 200 OK { analysis }
+  API --> EP: analysis
+  EP -> EP: построить радарную диаграмму трейтов\n(Recharts RadarChart, 9 осей)
+  EP -> EP: построить прогресс-бары совместимости\n(топ-5 специальностей, % confidence)
+  EP -> S: отобразить:\n— Топ-5 IT-специальностей с %\n— Радарная диаграмма профиля\n— Личностный архетип\n— Сильные стороны (traits >= 7)\n— Зоны развития (traits < 5)
+end
+
+@enduml
