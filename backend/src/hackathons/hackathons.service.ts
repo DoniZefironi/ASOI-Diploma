@@ -6,6 +6,8 @@ import { HackathonTeam } from './entities/hackathon-team.entity';
 import { HackathonTeamMember } from './entities/hackathon-team-member.entity';
 import { HackathonSubmission } from './entities/hackathon-submission.entity';
 import { HackathonGrade } from './entities/hackathon-grade.entity';
+import { HackathonStage } from './entities/hackathon-stage.entity';
+import { HackathonTask } from './entities/hackathon-task.entity';
 import { CreateHackathonDto } from './dto/create-hackathon.dto';
 import { CreateTeamDto } from './dto/create-team.dto';
 import { SubmitProjectDto } from './dto/submit-project.dto';
@@ -40,16 +42,50 @@ export class HackathonsService {
     private readonly submissionRepo: Repository<HackathonSubmission>,
     @InjectRepository(HackathonGrade)
     private readonly gradeRepo: Repository<HackathonGrade>,
+    @InjectRepository(HackathonStage)
+    private readonly stageRepo: Repository<HackathonStage>,
+    @InjectRepository(HackathonTask)
+    private readonly taskRepo: Repository<HackathonTask>,
   ) {}
 
   async createHackathon(dto: CreateHackathonDto): Promise<Hackathon> {
+    const { stages: stagesDto, ...rest } = dto;
     const hackathon = this.hackathonRepo.create({
-      ...dto,
+      ...rest,
       startDate: new Date(dto.startDate),
       endDate: new Date(dto.endDate),
       registrationDeadline: dto.registrationDeadline ? new Date(dto.registrationDeadline) : null,
     });
-    return await this.hackathonRepo.save(hackathon);
+    const saved = await this.hackathonRepo.save(hackathon);
+
+    if (stagesDto?.length) {
+      await this.saveStages(saved.id, stagesDto);
+    }
+
+    return this.findOne(saved.id);
+  }
+
+  private async saveStages(hackathonId: number, stagesDto: CreateHackathonDto['stages']): Promise<void> {
+    for (const [i, sd] of (stagesDto || []).entries()) {
+      const { tasks: tasksDto, ...stageRest } = sd;
+      const stage = this.stageRepo.create({
+        ...stageRest,
+        hackathonId,
+        order: sd.order ?? i,
+        startDate: sd.startDate ? new Date(sd.startDate) : null,
+        endDate: sd.endDate ? new Date(sd.endDate) : null,
+      });
+      const savedStage = await this.stageRepo.save(stage);
+
+      if (tasksDto?.length) {
+        const tasks = tasksDto.map((td, j) => this.taskRepo.create({
+          ...td,
+          stageId: savedStage.id,
+          order: td.order ?? j,
+        }));
+        await this.taskRepo.save(tasks);
+      }
+    }
   }
 
   async findAll(searchDto?: SearchDto): Promise<Hackathon[]> {
@@ -78,11 +114,23 @@ export class HackathonsService {
   async findOne(id: number): Promise<Hackathon> {
     const hackathon = await this.hackathonRepo.findOne({
       where: { id },
-      relations: ['course', 'teams', 'teams.members', 'teams.members.user', 'teams.submissions', 'teams.submissions.grades'],
+      relations: [
+        'course',
+        'teams', 'teams.members', 'teams.members.user', 'teams.submissions', 'teams.submissions.grades',
+        'stages', 'stages.tasks',
+      ],
+      order: { stages: { order: 'ASC' } } as any,
     });
 
     if (!hackathon) {
       throw new NotFoundException('Hackathon not found');
+    }
+
+    // sort tasks within each stage
+    if (hackathon.stages) {
+      hackathon.stages.forEach(s => {
+        if (s.tasks) s.tasks.sort((a, b) => a.order - b.order);
+      });
     }
 
     return hackathon;
@@ -360,12 +408,21 @@ export class HackathonsService {
       throw new NotFoundException('Hackathon not found');
     }
 
-    Object.assign(hackathon, dto);
+    const { stages: stagesDto, ...rest } = dto;
+    Object.assign(hackathon, rest);
     if (dto.startDate) hackathon.startDate = new Date(dto.startDate);
     if (dto.endDate) hackathon.endDate = new Date(dto.endDate);
     if (dto.registrationDeadline) hackathon.registrationDeadline = new Date(dto.registrationDeadline);
+    await this.hackathonRepo.save(hackathon);
 
-    return this.hackathonRepo.save(hackathon);
+    if (stagesDto !== undefined) {
+      // Replace all stages for this hackathon
+      const existing = await this.stageRepo.find({ where: { hackathonId: id } });
+      if (existing.length) await this.stageRepo.remove(existing);
+      if (stagesDto.length) await this.saveStages(id, stagesDto);
+    }
+
+    return this.findOne(id);
   }
 
   async deleteHackathon(id: number): Promise<void> {

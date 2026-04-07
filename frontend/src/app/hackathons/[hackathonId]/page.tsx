@@ -3,14 +3,233 @@
 import { useState, useEffect, useRef } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { hackathonsApi, Hackathon, HackathonTeam, CreateTeamDto } from '@/shared/api/hackathons';
+import { hackathonsApi, Hackathon, HackathonTeam, HackathonStage, CreateTeamDto } from '@/shared/api/hackathons';
 import { useAuth } from '@/shared/lib/auth-context';
 
+// ── Styles ─────────────────────────────────────────────────────────
+const S = {
+  bg: '#0d1117', surface: '#161b22', border: '#30363d',
+  text: '#e6edf3', muted: '#8b949e', accent: '#2f81f7',
+  success: '#3fb950', danger: '#f85149', warning: '#e3b341',
+  purple: '#a371f7', cyan: '#39c5cf',
+};
+
+// ── Icons ──────────────────────────────────────────────────────────
+const CalIcon = () => (
+  <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
+    <path d="M4.75 0a.75.75 0 0 1 .75.75V2h5V.75a.75.75 0 0 1 1.5 0V2h1.25c.966 0 1.75.784 1.75 1.75v10.5A1.75 1.75 0 0 1 13.25 16H2.75A1.75 1.75 0 0 1 1 14.25V3.75C1 2.784 1.784 2 2.75 2H4V.75A.75.75 0 0 1 4.75 0ZM2.5 7.5v6.75c0 .138.112.25.25.25h10.5a.25.25 0 0 0 .25-.25V7.5Z"/>
+  </svg>
+);
+const PeopleIcon = () => (
+  <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
+    <path d="M2 5.5a3.5 3.5 0 1 1 5.898 2.549 5.508 5.508 0 0 1 3.034 4.084.75.75 0 1 1-1.482.235 4 4 0 0 0-7.9 0 .75.75 0 0 1-1.482-.236A5.507 5.507 0 0 1 3.102 8.05 3.493 3.493 0 0 1 2 5.5ZM11 4a3.001 3.001 0 0 1 2.22 5.018 5.01 5.01 0 0 1 2.57 4.111.75.75 0 1 1-1.498.101 3.51 3.51 0 0 0-2.984-3.187L11 9.5a.75.75 0 0 1 0-1.5A1.5 1.5 0 0 0 11 5.5a.75.75 0 0 1 0-1.5ZM5.5 5a2 2 0 1 0 0 4 2 2 0 0 0 0-4Z"/>
+  </svg>
+);
+const TrophyIcon = () => (
+  <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
+    <path d="M10.737 2.5H13A1.5 1.5 0 0 1 14.5 4v.5c0 1.32-.76 2.463-1.875 3.006a4.995 4.995 0 0 1-2.813 3.072L9.5 11.5v1h1.25a.75.75 0 0 1 0 1.5h-5.5a.75.75 0 0 1 0-1.5H6.5v-1l-.312-.922A4.995 4.995 0 0 1 3.375 7.506 3.5 3.5 0 0 1 1.5 4.5V4A1.5 1.5 0 0 1 3 2.5h2.263A4.498 4.498 0 0 1 8 2c.98 0 1.887.31 2.737.5ZM3 4v.5c0 .832.397 1.572 1.01 2.04A3.5 3.5 0 0 1 3.5 4.5v-.5H3a.5.5 0 0 0 0 1V4ZM13 4a.5.5 0 0 0-.5-.5H12v.5c0 .744-.215 1.438-.586 2.025A2.5 2.5 0 0 0 13 4Zm-5 5a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"/>
+  </svg>
+);
+const CheckIcon = () => (
+  <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
+    <path d="M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z"/>
+  </svg>
+);
+const BookIcon = () => (
+  <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
+    <path d="M0 1.75A.75.75 0 0 1 .75 1h4.253c1.227 0 2.317.59 3 1.501A3.743 3.743 0 0 1 11.006 1h4.245a.75.75 0 0 1 .75.75v10.5a.75.75 0 0 1-.75.75h-4.507a2.25 2.25 0 0 0-1.591.659l-.622.621a.75.75 0 0 1-1.062 0l-.622-.621A2.25 2.25 0 0 0 5.258 13H.75a.75.75 0 0 1-.75-.75Zm7.251 10.324.004-5.073-.002-2.253A2.25 2.25 0 0 0 5.003 2.5H1.5v9h3.757a3.75 3.75 0 0 1 1.994.574ZM8.755 4.75l-.004 7.322a3.752 3.752 0 0 1 1.992-.572H14.5v-9h-3.495a2.25 2.25 0 0 0-2.25 2.25Z"/>
+  </svg>
+);
+const StarIcon = () => (
+  <svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor">
+    <path d="M8 .25a.75.75 0 0 1 .673.418l1.882 3.815 4.21.612a.75.75 0 0 1 .416 1.279l-3.046 2.97.719 4.192a.751.751 0 0 1-1.088.791L8 12.347l-3.766 1.98a.75.75 0 0 1-1.088-.79l.72-4.194L.818 6.374a.75.75 0 0 1 .416-1.28l4.21-.611L7.327.668A.75.75 0 0 1 8 .25Z"/>
+  </svg>
+);
+const TagIcon = () => (
+  <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
+    <path d="M1 7.775V2.75C1 1.784 1.784 1 2.75 1h5.025c.464 0 .91.184 1.238.513l6.25 6.25a1.75 1.75 0 0 1 0 2.474l-5.026 5.026a1.75 1.75 0 0 1-2.474 0l-6.25-6.25A1.752 1.752 0 0 1 1 7.775Zm1.5 0c0 .066.026.13.073.177l6.25 6.25a.25.25 0 0 0 .354 0l5.025-5.025a.25.25 0 0 0 0-.354l-6.25-6.25a.25.25 0 0 0-.177-.073H2.75a.25.25 0 0 0-.25.25ZM6 5a1 1 0 1 1 0 2 1 1 0 0 1 0-2Z"/>
+  </svg>
+);
+const ChevronDownIcon = () => (
+  <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
+    <path d="M12.78 5.22a.749.749 0 0 1 0 1.06l-4.25 4.25a.749.749 0 0 1-1.06 0L3.22 6.28a.749.749 0 1 1 1.06-1.06L8 8.939l3.72-3.719a.749.749 0 0 1 1.06 0Z"/>
+  </svg>
+);
+const ChevronRightIcon = () => (
+  <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
+    <path d="M6.22 3.22a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 0 1 0 1.06l-4.25 4.25a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042L9.94 8 6.22 4.28a.75.75 0 0 1 0-1.06Z"/>
+  </svg>
+);
+const UploadIcon = () => (
+  <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
+    <path d="M8.75 1.75a.75.75 0 0 0-1.5 0V7H3.25c-.41 0-.6.4-.34.65l4.75 4.75a.47.47 0 0 0 .68 0l4.75-4.75c.26-.25.07-.65-.34-.65H8.75V1.75Zm-6 9.5h10.5a.75.75 0 0 1 0 1.5H2.75a.75.75 0 0 1 0-1.5Z"/>
+  </svg>
+);
+
+// ── Helpers ────────────────────────────────────────────────────────
+function formatDate(iso: string) {
+  return new Date(iso).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' });
+}
+function formatDateTime(iso: string) {
+  return new Date(iso).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+}
+
+function getStatus(h: Hackathon) {
+  const now = new Date();
+  const start = new Date(h.startDate), end = new Date(h.endDate);
+  const reg = h.registrationDeadline ? new Date(h.registrationDeadline) : null;
+  if (now > end) return { key: 'completed', label: 'Завершён', color: S.muted, bg: 'rgba(139,148,158,0.1)', border: 'rgba(139,148,158,0.25)' };
+  if (now >= start) return { key: 'active', label: '● Идёт', color: S.success, bg: 'rgba(63,185,80,0.1)', border: 'rgba(63,185,80,0.3)' };
+  if (reg && now > reg) return { key: 'reg-closed', label: 'Регистрация закрыта', color: S.warning, bg: 'rgba(227,179,65,0.1)', border: 'rgba(227,179,65,0.3)' };
+  return { key: 'registration', label: '● Регистрация', color: S.accent, bg: 'rgba(47,129,247,0.1)', border: 'rgba(47,129,247,0.3)' };
+}
+
+// ── StageTimeline ──────────────────────────────────────────────────
+function StageTimeline({ stages }: { stages: HackathonStage[] }) {
+  const [openStages, setOpenStages] = useState<Record<number, boolean>>(
+    Object.fromEntries(stages.map((_, i) => [i, true]))
+  );
+
+  const toggle = (i: number) => setOpenStages(s => ({ ...s, [i]: !s[i] }));
+
+  const stageColors = [S.accent, S.success, S.purple, S.warning, S.cyan, S.danger];
+
+  return (
+    <div>
+      {stages.map((stage, si) => {
+        const color = stageColors[si % stageColors.length];
+        const open = openStages[si];
+        const totalScore = stage.tasks?.reduce((s, t) => s + (t.maxScore || 0), 0) || 0;
+
+        return (
+          <div key={stage.id} style={{ display: 'flex', gap: 0, marginBottom: si < stages.length - 1 ? 0 : 0 }}>
+            {/* Timeline line */}
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: 32, flexShrink: 0 }}>
+              <div style={{
+                width: 12, height: 12, borderRadius: '50%',
+                background: color, border: `2px solid ${color}`, boxShadow: `0 0 0 3px ${color}22`,
+                marginTop: 14, flexShrink: 0,
+              }} />
+              {si < stages.length - 1 && (
+                <div style={{ width: 2, flex: 1, background: `${S.border}`, minHeight: 20 }} />
+              )}
+            </div>
+
+            {/* Stage card */}
+            <div style={{
+              flex: 1, marginBottom: 16,
+              background: S.surface, border: `1px solid ${S.border}`,
+              borderRadius: 8, overflow: 'hidden',
+            }}>
+              {/* Stage header */}
+              <button
+                type="button"
+                onClick={() => toggle(si)}
+                style={{
+                  width: '100%', display: 'flex', alignItems: 'center', gap: 10,
+                  padding: '12px 16px', background: 'none', border: 'none', cursor: 'pointer',
+                  borderBottom: open ? `1px solid ${S.border}` : 'none',
+                  textAlign: 'left',
+                }}
+              >
+                <span style={{
+                  fontSize: 10, fontWeight: 700, color, padding: '2px 8px',
+                  background: `${color}1a`, border: `1px solid ${color}40`,
+                  borderRadius: 12, whiteSpace: 'nowrap', flexShrink: 0,
+                }}>
+                  ЭТАП {si + 1}
+                </span>
+                <span style={{ flex: 1, fontSize: 14, fontWeight: 700, color: S.text }}>{stage.title}</span>
+                {stage.tasks?.length > 0 && (
+                  <span style={{ fontSize: 11, color: S.muted, flexShrink: 0 }}>
+                    {stage.tasks.length} задан. · {totalScore} балл.
+                  </span>
+                )}
+                {(stage.startDate || stage.endDate) && (
+                  <span style={{ fontSize: 11, color: S.muted, display: 'flex', alignItems: 'center', gap: 4, flexShrink: 0 }}>
+                    <CalIcon />
+                    {stage.startDate ? formatDate(stage.startDate) : '?'} — {stage.endDate ? formatDate(stage.endDate) : '?'}
+                  </span>
+                )}
+                <span style={{ color: S.muted }}>{open ? <ChevronDownIcon /> : <ChevronRightIcon />}</span>
+              </button>
+
+              {open && (
+                <div style={{ padding: '12px 16px' }}>
+                  {stage.description && (
+                    <p style={{ fontSize: 13, color: S.muted, marginBottom: 12, lineHeight: 1.6 }}>{stage.description}</p>
+                  )}
+
+                  {stage.tasks?.length > 0 ? (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                      {stage.tasks.map((task, ti) => (
+                        <div key={task.id} style={{
+                          background: S.bg, border: `1px solid ${S.border}`,
+                          borderRadius: 6, padding: '12px 14px',
+                        }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: task.description || task.scoringCriteria ? 8 : 0 }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                              <span style={{
+                                width: 22, height: 22, borderRadius: '50%', flexShrink: 0,
+                                background: `${color}1a`, border: `1px solid ${color}40`,
+                                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                fontSize: 10, fontWeight: 700, color,
+                              }}>
+                                {ti + 1}
+                              </span>
+                              <span style={{ fontSize: 13, fontWeight: 700, color: S.text }}>{task.title}</span>
+                            </div>
+                            <div style={{
+                              display: 'flex', alignItems: 'center', gap: 4, flexShrink: 0,
+                              padding: '2px 10px', borderRadius: 12,
+                              background: 'rgba(227,179,65,0.1)', border: '1px solid rgba(227,179,65,0.3)',
+                              fontSize: 11, fontWeight: 700, color: S.warning,
+                            }}>
+                              <StarIcon /> {task.maxScore} балл.
+                            </div>
+                          </div>
+
+                          {task.description && (
+                            <p style={{ fontSize: 12, color: S.muted, marginLeft: 30, marginBottom: task.scoringCriteria ? 8 : 0, lineHeight: 1.6 }}>
+                              {task.description}
+                            </p>
+                          )}
+
+                          {task.scoringCriteria && (
+                            <div style={{
+                              marginLeft: 30,
+                              background: 'rgba(47,129,247,0.05)', border: `1px solid rgba(47,129,247,0.15)`,
+                              borderRadius: 6, padding: '8px 12px',
+                            }}>
+                              <div style={{ fontSize: 10, fontWeight: 700, color: S.accent, marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                                Критерии оценивания
+                              </div>
+                              <p style={{ fontSize: 12, color: S.muted, lineHeight: 1.6, margin: 0, whiteSpace: 'pre-line' }}>
+                                {task.scoringCriteria}
+                              </p>
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p style={{ fontSize: 12, color: S.muted }}>Задания этапа не указаны</p>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+// ── Main ───────────────────────────────────────────────────────────
 export default function HackathonDetailPage() {
   const params = useParams();
   const router = useRouter();
   const { user } = useAuth();
-
   const [hackathonId, setHackathonId] = useState<number | null>(null);
   const [hackathon, setHackathon] = useState<Hackathon | null>(null);
   const [teams, setTeams] = useState<HackathonTeam[]>([]);
@@ -21,352 +240,407 @@ export default function HackathonDetailPage() {
   const [rankings, setRankings] = useState<any[]>([]);
   const [userTeam, setUserTeam] = useState<HackathonTeam | null>(null);
   const [teamSubmission, setTeamSubmission] = useState<any | null>(null);
+  const [activeTab, setActiveTab] = useState<'overview' | 'stages' | 'rules' | 'teams'>('overview');
 
   useEffect(() => {
-    if (params?.hackathonId) {
-      setHackathonId(parseInt(params.hackathonId as string));
-    } else {
-      router.push('/hackathons');
-    }
+    if (params?.hackathonId) setHackathonId(parseInt(params.hackathonId as string));
+    else router.push('/hackathons');
   }, [params, router]);
 
-  useEffect(() => {
-    if (hackathonId) loadData();
-  }, [hackathonId]);
+  useEffect(() => { if (hackathonId) loadData(); }, [hackathonId]);
 
   const loadData = async () => {
     if (!hackathonId) return;
     try {
-      const [hackathonData, rankingsData, userTeamsData] = await Promise.all([
+      const [hData, rankData, userTeamsData] = await Promise.all([
         hackathonsApi.getOne(hackathonId),
         hackathonsApi.getRankings(hackathonId).catch(() => []),
         hackathonsApi.getUserTeams().catch(() => []),
       ]);
-      setHackathon(hackathonData);
-      setTeams(hackathonData?.teams || []);
-      setRankings(rankingsData || []);
-
-      const userTeamData = userTeamsData?.find((t: any) => t.hackathonId === hackathonId);
-      setUserTeam(userTeamData || null);
-
-      if (userTeamData) {
-        hackathonsApi.getTeamSubmission(userTeamData.id)
-          .then(setTeamSubmission)
-          .catch(() => setTeamSubmission(null));
+      setHackathon(hData);
+      setTeams(hData?.teams || []);
+      setRankings(rankData || []);
+      const ut = userTeamsData?.find((t: any) => t.hackathonId === hackathonId);
+      setUserTeam(ut || null);
+      if (ut) {
+        hackathonsApi.getTeamSubmission(ut.id).then(setTeamSubmission).catch(() => setTeamSubmission(null));
       }
-    } catch (error) {
-      console.error('Failed to load data:', error);
-    } finally {
-      setIsLoading(false);
-    }
+    } catch { /* ignore */ }
+    finally { setIsLoading(false); }
   };
 
-  const handleCreateTeam = async (data: CreateTeamDto) => {
-    try {
-      await hackathonsApi.createTeam(data);
-      setShowCreateTeamModal(false);
-      loadData();
-    } catch {
-      alert('Не удалось создать команду');
-    }
-  };
+  if (isLoading) return (
+    <div style={{ minHeight: '100vh', background: S.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', color: S.muted }}>
+      Загрузка...
+    </div>
+  );
+  if (!hackathon) return (
+    <div style={{ minHeight: '100vh', background: S.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', color: S.muted }}>
+      Хакатон не найден
+    </div>
+  );
 
-  const handleJoinTeam = async (teamId: number) => {
-    try {
-      await hackathonsApi.joinTeam(teamId);
-      setShowJoinModal(false);
-      loadData();
-      alert('Вы успешно присоединились к команде!');
-    } catch {
-      alert('Не удалось присоединиться к команде');
-    }
-  };
+  const status = getStatus(hackathon);
+  const canRegister = status.key === 'registration';
+  const isActive = status.key === 'active';
+  const isLeader = userTeam && user?.id && String(userTeam.leaderId) === String(user.id);
+  const stages = hackathon.stages || [];
+  const totalTaskScore = stages.reduce((s, st) => s + (st.tasks || []).reduce((ss, t) => ss + (t.maxScore || 0), 0), 0);
 
-  const getStatusInfo = () => {
-    if (!hackathon) return null;
-    const now = new Date();
-    const startDate = new Date(hackathon.startDate);
-    const endDate = new Date(hackathon.endDate);
-    const regDeadline = hackathon.registrationDeadline ? new Date(hackathon.registrationDeadline) : null;
-
-    if (now > endDate) return { status: 'completed', text: 'Хакатон завершён', color: 'gray' };
-    if (now > startDate) return { status: 'active', text: 'Хакатон идёт', color: 'green' };
-    if (regDeadline && now > regDeadline) return { status: 'registration-closed', text: 'Регистрация закрыта', color: 'yellow' };
-    return { status: 'registration', text: 'Открыта регистрация', color: 'blue' };
-  };
-
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-[#0D1117] py-12">
-        <div className="container mx-auto px-4 text-center text-white">Загрузка...</div>
-      </div>
-    );
-  }
-
-  if (!hackathon) {
-    return (
-      <div className="min-h-screen bg-[#0D1117] py-12">
-        <div className="container mx-auto px-4 text-center text-white">Хакатон не найден</div>
-      </div>
-    );
-  }
-
-  const statusInfo = getStatusInfo();
-  const canRegister = statusInfo?.status === 'registration';
-  const isLeader = userTeam && user?.id && userTeam.leaderId?.toString() === user.id;
+  const tabs = [
+    { key: 'overview', label: 'Обзор' },
+    ...(stages.length > 0 ? [{ key: 'stages', label: `Этапы (${stages.length})` }] : []),
+    ...(hackathon.rules ? [{ key: 'rules', label: 'Правила' }] : []),
+    { key: 'teams', label: `Команды (${teams.length})` },
+  ] as const;
 
   return (
-    <div className="min-h-screen bg-[#0D1117] py-12">
-      <div className="container mx-auto px-4">
-        <div className="mb-8">
-          <Link href="/hackathons" className="text-blue-400 hover:text-blue-300">
-            ← Назад к хакатонам
-          </Link>
-        </div>
+    <div style={{ minHeight: '100vh', background: S.bg, color: S.text, fontFamily: '-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif' }}>
+      <div style={{ maxWidth: 1100, margin: '0 auto', padding: '24px 16px 64px' }}>
 
-        {/* Header */}
-        <div className="bg-[#161B22] rounded-xl p-8 border border-gray-700 mb-8">
-          <div className="flex justify-between items-start mb-6">
-            <div>
-              <h1 className="text-3xl font-bold text-white mb-2">{hackathon.title}</h1>
-              {hackathon.theme && <p className="text-blue-400 text-lg">🏷️ {hackathon.theme}</p>}
-            </div>
-            {statusInfo && (
-              <span className={`px-4 py-2 bg-${statusInfo.color}-600 text-white text-sm rounded-full`}>
-                {statusInfo.text}
+        {/* Back link */}
+        <Link href="/hackathons" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, color: S.muted, fontSize: 13, textDecoration: 'none', marginBottom: 20 }}>
+          ← Все хакатоны
+        </Link>
+
+        {/* Header card */}
+        <div style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: 10, padding: '24px 28px', marginBottom: 0, borderBottom: 'none', borderRadius: '10px 10px 0 0' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 12, marginBottom: 12 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+              <span style={{
+                padding: '3px 12px', borderRadius: 12, fontSize: 12, fontWeight: 600,
+                color: status.color, background: status.bg, border: `1px solid ${status.border}`,
+              }}>
+                {status.label}
               </span>
-            )}
-          </div>
-
-          <p className="text-gray-300 text-lg mb-6">{hackathon.description}</p>
-
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div className="bg-[#0D1117] rounded-lg p-4">
-              <div className="text-gray-400 text-sm mb-1">📅 Начало</div>
-              <div className="text-white font-semibold">
-                {new Date(hackathon.startDate).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
-              </div>
+              {hackathon.theme && (
+                <span style={{
+                  display: 'flex', alignItems: 'center', gap: 5, padding: '3px 10px',
+                  borderRadius: 12, fontSize: 12, color: S.purple,
+                  background: 'rgba(163,113,247,0.1)', border: '1px solid rgba(163,113,247,0.25)',
+                }}>
+                  <TagIcon /> {hackathon.theme}
+                </span>
+              )}
             </div>
-            <div className="bg-[#0D1117] rounded-lg p-4">
-              <div className="text-gray-400 text-sm mb-1">🏁 Конец</div>
-              <div className="text-white font-semibold">
-                {new Date(hackathon.endDate).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
-              </div>
-            </div>
-            {hackathon.registrationDeadline && (
-              <div className="bg-[#0D1117] rounded-lg p-4">
-                <div className="text-gray-400 text-sm mb-1">⏰ Регистрация до</div>
-                <div className="text-white font-semibold">
-                  {new Date(hackathon.registrationDeadline).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
-                </div>
-              </div>
-            )}
             {hackathon.prizePool && (
-              <div className="bg-[#0D1117] rounded-lg p-4">
-                <div className="text-gray-400 text-sm mb-1">💰 Призовой фонд</div>
-                <div className="text-green-400 font-semibold text-xl">{hackathon.prizePool.toLocaleString()} ₽</div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '4px 14px', borderRadius: 8, background: 'rgba(227,179,65,0.08)', border: '1px solid rgba(227,179,65,0.2)' }}>
+                <TrophyIcon />
+                <span style={{ color: S.warning, fontWeight: 700, fontSize: 16 }}>
+                  {Number(hackathon.prizePool).toLocaleString('ru-RU')} ₽
+                </span>
               </div>
             )}
           </div>
 
-          {canRegister && user && hackathonId && (
-            <div className="mt-6 flex gap-4">
-              <button onClick={() => setShowCreateTeamModal(true)}
-                className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-                Создать команду
-              </button>
-              <button onClick={() => setShowJoinModal(true)}
-                className="px-6 py-3 bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition-colors">
-                Присоединиться к команде
-              </button>
-            </div>
-          )}
+          <h1 style={{ fontSize: 26, fontWeight: 700, color: S.text, margin: '0 0 10px' }}>{hackathon.title}</h1>
+          <p style={{ fontSize: 14, color: S.muted, lineHeight: 1.7, margin: '0 0 20px', maxWidth: 800 }}>{hackathon.description}</p>
 
-          {userTeam && (
-            <div className="mt-6 p-4 bg-green-900/20 border border-green-700 rounded-lg">
-              <p className="text-green-400 font-semibold mb-1">✅ Вы в команде: {userTeam.name}</p>
-              {userTeam.members && (
-                <p className="text-sm text-gray-400">👥 Участников: {userTeam.members.length} / {hackathon.maxTeamSize || 5}</p>
-              )}
-            </div>
-          )}
-
-          {/* Кнопка сдачи проекта — только лидер, только во время хакатона */}
-          {userTeam && statusInfo?.status === 'active' && isLeader && (
-            <div className="mt-4">
-              <button onClick={() => setShowSubmitModal(true)}
-                className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
-                {teamSubmission ? 'Обновить проект' : 'Загрузить проект'}
-              </button>
-              {teamSubmission && (
-                <p className="text-sm text-gray-400 mt-2">
-                  Последняя загрузка: {new Date(teamSubmission.submittedAt).toLocaleString('ru-RU')}
-                </p>
-              )}
-            </div>
-          )}
-          {userTeam && statusInfo?.status === 'active' && !isLeader && (
-            <p className="mt-4 text-sm text-gray-500">Только лидер команды может сдать проект</p>
-          )}
+          {/* Meta row */}
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 20, borderTop: `1px solid ${S.border}`, paddingTop: 16 }}>
+            <MetaItem icon={<CalIcon />} label="Начало" value={formatDateTime(hackathon.startDate)} />
+            <MetaItem icon={<CalIcon />} label="Конец" value={formatDateTime(hackathon.endDate)} />
+            {hackathon.registrationDeadline && (
+              <MetaItem icon={<CalIcon />} label="Регистрация до" value={formatDateTime(hackathon.registrationDeadline)} />
+            )}
+            <MetaItem icon={<PeopleIcon />} label="Команда" value={`${hackathon.minTeamSize}–${hackathon.maxTeamSize} чел.`} />
+            {stages.length > 0 && <MetaItem icon={<BookIcon />} label="Этапов" value={String(stages.length)} />}
+            {totalTaskScore > 0 && <MetaItem icon={<StarIcon />} label="Макс. баллов" value={String(totalTaskScore)} />}
+          </div>
         </div>
 
-        {/* Podium — shown only after hackathon ends */}
-        {statusInfo?.status === 'completed' && rankings.length > 0 && (
-          <PodiumSection rankings={rankings} />
-        )}
+        {/* Tabs */}
+        <div style={{ background: S.surface, borderLeft: `1px solid ${S.border}`, borderRight: `1px solid ${S.border}`, borderBottom: `1px solid ${S.border}`, display: 'flex', gap: 0, overflowX: 'auto' }}>
+          {tabs.map(tab => (
+            <button key={tab.key} onClick={() => setActiveTab(tab.key)}
+              style={{
+                padding: '10px 18px', background: 'none', border: 'none',
+                borderBottom: activeTab === tab.key ? `2px solid ${S.accent}` : '2px solid transparent',
+                color: activeTab === tab.key ? S.text : S.muted,
+                fontSize: 13, fontWeight: activeTab === tab.key ? 600 : 400,
+                cursor: 'pointer', whiteSpace: 'nowrap',
+              }}>
+              {tab.label}
+            </button>
+          ))}
+        </div>
 
-        {/* Teams */}
-        <div className="bg-[#161B22] rounded-xl p-6 border border-gray-700">
-          <h2 className="text-2xl font-bold text-white mb-6">Команды ({teams.length})</h2>
-          {teams.length === 0 ? (
-            <p className="text-gray-400 text-center py-8">Пока нет зарегистрированных команд</p>
-          ) : (
-            <div className="grid gap-4 md:grid-cols-2">
-              {teams.map((team) => (
-                <Link
-                  key={team.id}
-                  href={`/hackathons/${hackathonId}/team/${team.id}`}
-                  className="bg-[#0D1117] rounded-lg p-4 border border-gray-700 hover:border-blue-600 transition-colors block"
-                >
-                  <h3 className="text-lg font-semibold text-white mb-2">{team.name}</h3>
-                  <div className="text-sm text-gray-400 mb-2">
-                    👤 Лидер: {team.members?.find(m => m.role === 'leader')?.user?.firstName || 'Неизвестно'}
-                  </div>
-                  <div className="text-sm text-gray-500 mb-2">
-                    👥 Участников: {team.members?.length || 0} / {hackathon.maxTeamSize}
-                  </div>
-                  {team.projectName && (
-                    <div className="text-sm text-blue-400">📝 {team.projectName}</div>
+        {/* Action bar — registration */}
+        {user && (canRegister || isActive || userTeam) && (
+          <div style={{
+            background: S.surface, border: `1px solid ${S.border}`, borderTop: 'none',
+            borderRadius: '0 0 8px 8px', padding: '14px 20px',
+            display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap', marginBottom: 20,
+          }}>
+            {userTeam ? (
+              <>
+                <div style={{
+                  display: 'flex', alignItems: 'center', gap: 8, padding: '6px 14px',
+                  borderRadius: 6, background: 'rgba(63,185,80,0.1)', border: '1px solid rgba(63,185,80,0.3)',
+                }}>
+                  <CheckIcon />
+                  <span style={{ color: S.success, fontSize: 13, fontWeight: 600 }}>Команда: {userTeam.name}</span>
+                  {userTeam.members && (
+                    <span style={{ color: S.muted, fontSize: 12 }}>· {userTeam.members.length}/{hackathon.maxTeamSize} уч.</span>
                   )}
-                  {team.submissions && team.submissions.length > 0 && (
-                    <div className="mt-2 text-xs text-green-400">✓ Работа сдана</div>
-                  )}
+                </div>
+                <Link href={`/hackathons/${hackathonId}/team/${userTeam.id}`}
+                  style={{ padding: '7px 16px', borderRadius: 6, background: S.bg, border: `1px solid ${S.border}`, color: S.text, fontSize: 13, textDecoration: 'none' }}>
+                  Страница команды
                 </Link>
-              ))}
+                {isActive && isLeader && (
+                  <button onClick={() => setShowSubmitModal(true)}
+                    style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '7px 16px', borderRadius: 6, background: S.accent, border: 'none', color: '#fff', fontSize: 13, cursor: 'pointer', fontWeight: 600 }}>
+                    <UploadIcon /> {teamSubmission ? 'Обновить проект' : 'Сдать проект'}
+                  </button>
+                )}
+              </>
+            ) : canRegister ? (
+              <>
+                <button onClick={() => setShowCreateTeamModal(true)}
+                  style={{ padding: '7px 18px', borderRadius: 6, background: S.accent, border: 'none', color: '#fff', fontSize: 13, cursor: 'pointer', fontWeight: 600 }}>
+                  Создать команду
+                </button>
+                <button onClick={() => setShowJoinModal(true)}
+                  style={{ padding: '7px 16px', borderRadius: 6, background: S.surface, border: `1px solid ${S.border}`, color: S.text, fontSize: 13, cursor: 'pointer' }}>
+                  Присоединиться
+                </button>
+              </>
+            ) : null}
+          </div>
+        )}
+
+        {/* Tab content */}
+        <div style={{ marginTop: 20 }}>
+          {activeTab === 'overview' && (
+            <div style={{ display: 'grid', gridTemplateColumns: stages.length > 0 ? '1fr 300px' : '1fr', gap: 20 }}>
+              {/* Left: judging criteria */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                {hackathon.judgingCriteria && (
+                  <Section title="Критерии оценивания" icon="⬡" color={S.accent}>
+                    {typeof hackathon.judgingCriteria === 'object' ? (
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                        {Object.entries(hackathon.judgingCriteria).map(([k, v]) => (
+                          <div key={k} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 12px', background: S.bg, borderRadius: 6, border: `1px solid ${S.border}` }}>
+                            <span style={{ fontSize: 13, color: S.text, textTransform: 'capitalize' }}>{k}</span>
+                            <span style={{ fontSize: 13, color: S.accent, fontWeight: 700 }}>{String(v)}</span>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <p style={{ fontSize: 13, color: S.muted, whiteSpace: 'pre-line', lineHeight: 1.7 }}>{String(hackathon.judgingCriteria)}</p>
+                    )}
+                  </Section>
+                )}
+
+                {stages.length > 0 && (
+                  <Section title="Структура хакатона" icon="📋" color={S.cyan}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                      {stages.map((s, i) => {
+                        const pts = (s.tasks || []).reduce((sum, t) => sum + (t.maxScore || 0), 0);
+                        return (
+                          <div key={s.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 14px', background: S.bg, borderRadius: 6, border: `1px solid ${S.border}` }}>
+                            <div>
+                              <span style={{ fontSize: 11, color: S.accent, fontWeight: 700, marginRight: 8 }}>Этап {i + 1}</span>
+                              <span style={{ fontSize: 13, color: S.text }}>{s.title}</span>
+                            </div>
+                            <div style={{ display: 'flex', gap: 8 }}>
+                              {s.tasks?.length > 0 && <span style={{ fontSize: 11, color: S.muted }}>{s.tasks.length} задан.</span>}
+                              {pts > 0 && <span style={{ fontSize: 11, color: S.warning, fontWeight: 600 }}>{pts} балл.</span>}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </Section>
+                )}
+              </div>
+
+              {/* Right: quick info sidebar */}
+              {stages.length > 0 && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                  <div style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: 8, padding: '14px 16px' }}>
+                    <div style={{ fontSize: 12, fontWeight: 700, color: S.muted, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 12 }}>Быстрая информация</div>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                      <InfoRow label="Статус" value={<span style={{ color: status.color }}>{status.label}</span>} />
+                      <InfoRow label="Этапов" value={stages.length} />
+                      <InfoRow label="Заданий" value={stages.reduce((s, st) => s + (st.tasks?.length || 0), 0)} />
+                      {totalTaskScore > 0 && <InfoRow label="Макс. баллов" value={totalTaskScore} />}
+                      <InfoRow label="Размер команды" value={`${hackathon.minTeamSize}–${hackathon.maxTeamSize}`} />
+                      <InfoRow label="Участвует команд" value={teams.length} />
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {activeTab === 'stages' && stages.length > 0 && (
+            <div>
+              <div style={{ marginBottom: 16, padding: '10px 14px', background: 'rgba(47,129,247,0.06)', border: `1px solid rgba(47,129,247,0.2)`, borderRadius: 8, fontSize: 13, color: S.muted }}>
+                Хакатон разбит на <strong style={{ color: S.text }}>{stages.length} этапа</strong>. Всего заданий: <strong style={{ color: S.text }}>{stages.reduce((s, st) => s + (st.tasks?.length || 0), 0)}</strong>. Максимальный суммарный балл: <strong style={{ color: S.warning }}>{totalTaskScore}</strong>.
+              </div>
+              <StageTimeline stages={stages} />
+            </div>
+          )}
+
+          {activeTab === 'rules' && hackathon.rules && (
+            <Section title="Правила участия" icon="📜" color={S.purple}>
+              <div style={{ fontSize: 14, color: S.muted, lineHeight: 1.8, whiteSpace: 'pre-line' }}>
+                {hackathon.rules}
+              </div>
+            </Section>
+          )}
+
+          {activeTab === 'teams' && (
+            <div>
+              {status.key === 'completed' && rankings.length > 0 && (
+                <div style={{ marginBottom: 24 }}>
+                  <PodiumSection rankings={rankings} />
+                </div>
+              )}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 12 }}>
+                {teams.length === 0 ? (
+                  <p style={{ color: S.muted, fontSize: 14, gridColumn: '1/-1', textAlign: 'center', padding: 32 }}>
+                    Команд пока нет
+                  </p>
+                ) : teams.map(team => (
+                  <Link key={team.id} href={`/hackathons/${hackathonId}/team/${team.id}`}
+                    style={{
+                      display: 'block', textDecoration: 'none',
+                      background: S.surface, border: `1px solid ${S.border}`, borderRadius: 8, padding: '14px 16px',
+                    }}>
+                    <div style={{ fontSize: 14, fontWeight: 700, color: S.text, marginBottom: 6 }}>{team.name}</div>
+                    {team.projectName && <div style={{ fontSize: 12, color: S.accent, marginBottom: 6 }}>{team.projectName}</div>}
+                    <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+                      <span style={{ fontSize: 12, color: S.muted, display: 'flex', alignItems: 'center', gap: 4 }}>
+                        <PeopleIcon /> {team.members?.length || 0}/{hackathon.maxTeamSize}
+                      </span>
+                      {team.submissions && team.submissions.length > 0 && (
+                        <span style={{ fontSize: 11, color: S.success, display: 'flex', alignItems: 'center', gap: 3 }}>
+                          <CheckIcon /> Сдано
+                        </span>
+                      )}
+                    </div>
+                  </Link>
+                ))}
+              </div>
             </div>
           )}
         </div>
-
-        {/* Modals */}
-        {showCreateTeamModal && hackathonId && (
-          <CreateTeamModal
-            hackathonId={hackathonId}
-            onClose={() => setShowCreateTeamModal(false)}
-            onSuccess={handleCreateTeam}
-          />
-        )}
-
-        {showJoinModal && (
-          <JoinTeamModal
-            teams={teams}
-            onClose={() => setShowJoinModal(false)}
-            onSelectTeam={(team) => {
-              setShowJoinModal(false);
-              if (confirm(`Присоединиться к команде "${team.name}"?`)) {
-                handleJoinTeam(team.id);
-              }
-            }}
-          />
-        )}
-
-        {showSubmitModal && userTeam && (
-          <SubmitProjectModal
-            team={userTeam}
-            existingSubmission={teamSubmission}
-            onClose={() => setShowSubmitModal(false)}
-            onSuccess={() => { setShowSubmitModal(false); loadData(); }}
-          />
-        )}
       </div>
+
+      {/* Modals */}
+      {showCreateTeamModal && hackathonId && (
+        <CreateTeamModal hackathonId={hackathonId} onClose={() => setShowCreateTeamModal(false)}
+          onSuccess={async (data) => { await hackathonsApi.createTeam(data); setShowCreateTeamModal(false); loadData(); }} />
+      )}
+      {showJoinModal && (
+        <JoinTeamModal teams={teams} onClose={() => setShowJoinModal(false)}
+          onSelectTeam={async (team) => {
+            if (!confirm(`Присоединиться к команде "${team.name}"?`)) return;
+            await hackathonsApi.joinTeam(team.id);
+            setShowJoinModal(false); loadData();
+          }} />
+      )}
+      {showSubmitModal && userTeam && (
+        <SubmitProjectModal team={userTeam} existingSubmission={teamSubmission}
+          onClose={() => setShowSubmitModal(false)}
+          onSuccess={() => { setShowSubmitModal(false); loadData(); }} />
+      )}
     </div>
   );
 }
 
-const ITEMS_PER_PAGE = 5;
+// ── Helper components ──────────────────────────────────────────────
+function MetaItem({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
+  return (
+    <div>
+      <div style={{ fontSize: 11, color: S.muted, marginBottom: 3, display: 'flex', alignItems: 'center', gap: 4 }}>
+        {icon} {label}
+      </div>
+      <div style={{ fontSize: 13, fontWeight: 600, color: S.text }}>{value}</div>
+    </div>
+  );
+}
 
+function InfoRow({ label, value }: { label: string; value: React.ReactNode }) {
+  return (
+    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+      <span style={{ fontSize: 12, color: S.muted }}>{label}</span>
+      <span style={{ fontSize: 12, color: S.text, fontWeight: 600 }}>{value}</span>
+    </div>
+  );
+}
+
+function Section({ title, icon, color, children }: { title: string; icon: string; color: string; children: React.ReactNode }) {
+  return (
+    <div style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: 8, overflow: 'hidden' }}>
+      <div style={{ padding: '12px 16px', borderBottom: `1px solid ${S.border}`, display: 'flex', alignItems: 'center', gap: 8 }}>
+        <span style={{ fontSize: 14 }}>{icon}</span>
+        <span style={{ fontSize: 13, fontWeight: 700, color: S.text }}>{title}</span>
+      </div>
+      <div style={{ padding: '14px 16px' }}>{children}</div>
+    </div>
+  );
+}
+
+// ── Podium ─────────────────────────────────────────────────────────
+const ITEMS_PER_PAGE = 5;
 function PodiumSection({ rankings }: { rankings: any[] }) {
   const [page, setPage] = useState(0);
   const top3 = rankings.slice(0, 3);
   const rest = rankings.slice(3);
   const totalPages = Math.ceil(rest.length / ITEMS_PER_PAGE);
   const paginated = rest.slice(page * ITEMS_PER_PAGE, (page + 1) * ITEMS_PER_PAGE);
-
-  // Visual order: 2nd place left, 1st place centre (tallest), 3rd place right
-  const podiumSlots = [
-    { team: top3[1], medal: '🥈', place: 2, height: 'h-28', border: 'border-gray-400', text: 'text-gray-300', bg: 'bg-gray-700/30' },
-    { team: top3[0], medal: '🥇', place: 1, height: 'h-36', border: 'border-yellow-400', text: 'text-yellow-300', bg: 'bg-yellow-700/20' },
-    { team: top3[2], medal: '🥉', place: 3, height: 'h-24', border: 'border-orange-400', text: 'text-orange-300', bg: 'bg-orange-700/20' },
+  const slots = [
+    { team: top3[1], medal: '🥈', place: 2, height: 112, color: '#9ea7b3' },
+    { team: top3[0], medal: '🥇', place: 1, height: 144, color: S.warning },
+    { team: top3[2], medal: '🥉', place: 3, height: 96, color: '#cd7f32' },
   ];
-
   return (
-    <div className="bg-[#161B22] rounded-xl p-6 border border-gray-700 mb-8">
-      <h2 className="text-2xl font-bold text-white mb-8 text-center">Итоги хакатона</h2>
-
-      {/* Podium */}
-      <div className="flex items-end justify-center gap-4 mb-10">
-        {podiumSlots.map(({ team, medal, place, height, border, text, bg }) => {
-          if (!team) return <div key={`empty-${place}`} className="flex-1 max-w-[220px]" />;
+    <div style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: 8, padding: '20px 24px' }}>
+      <div style={{ fontSize: 14, fontWeight: 700, color: S.text, marginBottom: 20, textAlign: 'center' }}>Итоги хакатона</div>
+      <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'center', gap: 12, marginBottom: 20 }}>
+        {slots.map(({ team, medal, place, height, color }) => {
+          if (!team) return <div key={place} style={{ width: 160 }} />;
           return (
-            <div key={`place-${place}`} className="flex-1 max-w-[220px] flex flex-col items-center">
-              <div className="text-4xl mb-2">{medal}</div>
-              <div className={`w-full rounded-t-xl border-t-2 border-x-2 ${border} ${bg} p-4 text-center`}>
-                <p className={`font-bold text-base ${text} truncate`}>{team.teamName}</p>
-                {team.projectName && (
-                  <p className="text-xs text-gray-500 mt-1 truncate">{team.projectName}</p>
-                )}
-                <p className={`text-3xl font-bold mt-3 ${text}`}>{team.totalScore}</p>
-                <p className="text-xs text-gray-500 mt-0.5">баллов</p>
+            <div key={place} style={{ width: 160, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+              <div style={{ fontSize: 32, marginBottom: 6 }}>{medal}</div>
+              <div style={{ width: '100%', background: `${color}18`, border: `1px solid ${color}50`, borderBottom: 'none', borderRadius: '6px 6px 0 0', padding: '10px 8px', textAlign: 'center' }}>
+                <div style={{ fontSize: 13, fontWeight: 700, color: S.text }}>{team.teamName}</div>
+                {team.projectName && <div style={{ fontSize: 11, color: S.muted, marginTop: 2 }}>{team.projectName}</div>}
+                <div style={{ fontSize: 22, fontWeight: 700, color, marginTop: 6 }}>{team.totalScore}</div>
+                <div style={{ fontSize: 10, color: S.muted }}>баллов</div>
               </div>
-              <div className={`w-full ${height} ${bg} border-x-2 border-b-2 ${border} rounded-b-lg flex items-center justify-center`}>
-                <span className={`text-lg font-bold ${text} opacity-50`}>{place}</span>
+              <div style={{ width: '100%', height, background: `${color}10`, border: `1px solid ${color}50`, borderTop: 'none', borderRadius: '0 0 4px 4px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <span style={{ fontSize: 18, fontWeight: 700, color, opacity: 0.4 }}>{place}</span>
               </div>
             </div>
           );
         })}
       </div>
-
-      {/* Teams below 3rd place */}
       {rest.length > 0 && (
         <div>
-          <h3 className="text-base font-semibold text-gray-400 mb-3 pl-1">Остальные участники</h3>
-          <div className="space-y-2">
-            {paginated.map((team, i) => (
-              <div
-                key={team.teamId}
-                className="flex items-center justify-between bg-[#0D1117] rounded-lg px-4 py-3 border border-gray-800"
-              >
-                <div className="flex items-center gap-4">
-                  <span className="text-gray-600 text-sm w-5 text-right shrink-0">
-                    {page * ITEMS_PER_PAGE + i + 4}
-                  </span>
-                  <div>
-                    <p className="text-white font-medium">{team.teamName}</p>
-                    {team.projectName && (
-                      <p className="text-xs text-gray-500">{team.projectName}</p>
-                    )}
-                  </div>
-                </div>
-                <span className="text-green-400 font-semibold shrink-0">{team.totalScore}</span>
+          {paginated.map((team, i) => (
+            <div key={team.teamId} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 12px', background: S.bg, borderRadius: 6, border: `1px solid ${S.border}`, marginBottom: 4 }}>
+              <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+                <span style={{ fontSize: 11, color: S.muted, width: 20, textAlign: 'right' }}>{page * ITEMS_PER_PAGE + i + 4}</span>
+                <span style={{ fontSize: 13, color: S.text }}>{team.teamName}</span>
               </div>
-            ))}
-          </div>
-
+              <span style={{ fontSize: 13, fontWeight: 600, color: S.success }}>{team.totalScore}</span>
+            </div>
+          ))}
           {totalPages > 1 && (
-            <div className="flex items-center justify-center gap-3 mt-4">
-              <button
-                onClick={() => setPage(p => Math.max(0, p - 1))}
-                disabled={page === 0}
-                className="px-4 py-1.5 text-sm bg-gray-700 text-white rounded-lg hover:bg-gray-600 disabled:opacity-40 disabled:cursor-not-allowed"
-              >
-                ← Назад
+            <div style={{ display: 'flex', justifyContent: 'center', gap: 8, marginTop: 10 }}>
+              <button onClick={() => setPage(p => Math.max(0, p - 1))} disabled={page === 0}
+                style={{ padding: '4px 12px', background: S.surface, border: `1px solid ${S.border}`, borderRadius: 6, color: S.muted, cursor: 'pointer', fontSize: 12 }}>
+                ←
               </button>
-              <span className="text-gray-400 text-sm">{page + 1} / {totalPages}</span>
-              <button
-                onClick={() => setPage(p => Math.min(totalPages - 1, p + 1))}
-                disabled={page === totalPages - 1}
-                className="px-4 py-1.5 text-sm bg-gray-700 text-white rounded-lg hover:bg-gray-600 disabled:opacity-40 disabled:cursor-not-allowed"
-              >
-                Вперёд →
+              <span style={{ fontSize: 12, color: S.muted, padding: '4px 0' }}>{page + 1}/{totalPages}</span>
+              <button onClick={() => setPage(p => Math.min(totalPages - 1, p + 1))} disabled={page === totalPages - 1}
+                style={{ padding: '4px 12px', background: S.surface, border: `1px solid ${S.border}`, borderRadius: 6, color: S.muted, cursor: 'pointer', fontSize: 12 }}>
+                →
               </button>
             </div>
           )}
@@ -376,235 +650,130 @@ function PodiumSection({ rankings }: { rankings: any[] }) {
   );
 }
 
-function CreateTeamModal({ hackathonId, onClose, onSuccess }: {
-  hackathonId: number;
-  onClose: () => void;
-  onSuccess: (data: CreateTeamDto) => void;
-}) {
+// ── Modals (kept from original) ────────────────────────────────────
+function CreateTeamModal({ hackathonId, onClose, onSuccess }: { hackathonId: number; onClose: () => void; onSuccess: (d: CreateTeamDto) => void }) {
   const { user } = useAuth();
-  const [formData, setFormData] = useState({ name: '', projectName: '', projectDescription: '' });
-  const [isLoading, setIsLoading] = useState(false);
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
-    try {
-      await onSuccess({
-        name: formData.name,
-        hackathonId,
-        memberIds: user?.id ? [parseInt(user.id)] : [],
-        projectName: formData.projectName || undefined,
-        projectDescription: formData.projectDescription || undefined,
-      });
-    } finally {
-      setIsLoading(false);
-    }
+  const [form, setForm] = useState({ name: '', projectName: '', projectDescription: '' });
+  const [loading, setLoading] = useState(false);
+  const submit = async (e: React.FormEvent) => {
+    e.preventDefault(); setLoading(true);
+    try { await onSuccess({ name: form.name, hackathonId, memberIds: user?.id ? [parseInt(user.id)] : [], projectName: form.projectName || undefined, projectDescription: form.projectDescription || undefined }); }
+    finally { setLoading(false); }
   };
-
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div className="bg-[#161B22] rounded-xl p-8 max-w-md w-full mx-4 border border-gray-700">
-        <h2 className="text-2xl font-bold text-white mb-6">Создать команду</h2>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">Название команды</label>
-            <input type="text" value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-              className="w-full px-4 py-2 bg-[#0D1117] border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-blue-500"
-              required />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">Название проекта</label>
-            <input type="text" value={formData.projectName}
-              onChange={(e) => setFormData({ ...formData, projectName: e.target.value })}
-              className="w-full px-4 py-2 bg-[#0D1117] border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-blue-500" />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">Описание проекта</label>
-            <textarea value={formData.projectDescription}
-              onChange={(e) => setFormData({ ...formData, projectDescription: e.target.value })}
-              className="w-full px-4 py-2 bg-[#0D1117] border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-blue-500"
-              rows={3} />
-          </div>
-          <div className="flex gap-4 pt-4">
-            <button type="button" onClick={onClose}
-              className="flex-1 px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600">Отмена</button>
-            <button type="submit" disabled={isLoading}
-              className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50">
-              {isLoading ? 'Создание...' : 'Создать'}
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
+    <Modal title="Создать команду" onClose={onClose}>
+      <form onSubmit={submit} style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+        <Field label="Название команды *"><input required value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} style={modalInput} /></Field>
+        <Field label="Название проекта"><input value={form.projectName} onChange={e => setForm(f => ({ ...f, projectName: e.target.value }))} style={modalInput} /></Field>
+        <Field label="Описание проекта"><textarea rows={3} value={form.projectDescription} onChange={e => setForm(f => ({ ...f, projectDescription: e.target.value }))} style={{ ...modalInput, resize: 'vertical', fontFamily: 'inherit' }} /></Field>
+        <ModalActions onCancel={onClose} submitLabel={loading ? 'Создание...' : 'Создать'} disabled={loading} />
+      </form>
+    </Modal>
   );
 }
 
-function JoinTeamModal({ teams, onClose, onSelectTeam }: {
-  teams: HackathonTeam[];
-  onClose: () => void;
-  onSelectTeam: (team: HackathonTeam) => void;
-}) {
+function JoinTeamModal({ teams, onClose, onSelectTeam }: { teams: HackathonTeam[]; onClose: () => void; onSelectTeam: (t: HackathonTeam) => void }) {
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div className="bg-[#161B22] rounded-xl p-8 max-w-md w-full mx-4 border border-gray-700">
-        <h2 className="text-2xl font-bold text-white mb-6">Присоединиться к команде</h2>
-        <div className="space-y-2 max-h-96 overflow-y-auto">
-          {teams.map((team) => (
-            <button key={team.id} onClick={() => onSelectTeam(team)}
-              className="w-full p-4 bg-[#0D1117] border border-gray-700 rounded-lg hover:border-blue-600 transition-colors text-left">
-              <div className="text-white font-semibold">{team.name}</div>
-              <div className="text-sm text-gray-400">👥 {team.members?.length || 0} участников</div>
-            </button>
-          ))}
+    <Modal title="Присоединиться к команде" onClose={onClose}>
+      <div style={{ maxHeight: 360, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 8 }}>
+        {teams.map(t => (
+          <button key={t.id} onClick={() => onSelectTeam(t)} style={{ textAlign: 'left', padding: '10px 14px', background: S.bg, border: `1px solid ${S.border}`, borderRadius: 6, cursor: 'pointer', color: S.text }}>
+            <div style={{ fontSize: 13, fontWeight: 700 }}>{t.name}</div>
+            <div style={{ fontSize: 12, color: S.muted }}>👥 {t.members?.length || 0} участников</div>
+          </button>
+        ))}
+      </div>
+      <div style={{ marginTop: 12 }}>
+        <button onClick={onClose} style={{ width: '100%', padding: '8px', background: S.surface, border: `1px solid ${S.border}`, borderRadius: 6, color: S.muted, cursor: 'pointer' }}>Отмена</button>
+      </div>
+    </Modal>
+  );
+}
+
+function SubmitProjectModal({ team, existingSubmission, onClose, onSuccess }: { team: HackathonTeam; existingSubmission: any; onClose: () => void; onSuccess: () => void }) {
+  const [form, setForm] = useState({ sourceCodeUrl: existingSubmission?.sourceCodeUrl || '', archiveUrl: existingSubmission?.archiveUrl || '', documentationUrl: existingSubmission?.documentationUrl || '', presentationUrl: existingSubmission?.presentationUrl || '', videoDemoUrl: existingSubmission?.videoDemoUrl || '', submissionNote: existingSubmission?.submissionNote || '' });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [uploading, setUploading] = useState(false);
+  const fileRef = useRef<HTMLInputElement>(null);
+
+  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]; if (!file) return;
+    setUploading(true);
+    try { const r = await hackathonsApi.uploadArchive(team.id, file); setForm(f => ({ ...f, archiveUrl: r.archiveUrl })); }
+    catch (err: any) { setError(err.message || 'Ошибка загрузки'); }
+    finally { setUploading(false); if (fileRef.current) fileRef.current.value = ''; }
+  };
+
+  const submit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!form.sourceCodeUrl && !form.archiveUrl) { setError('Укажите GitHub или загрузите архив'); return; }
+    setLoading(true); setError('');
+    try { await hackathonsApi.submitProject({ teamId: team.id, ...form }); onSuccess(); }
+    catch (err: any) { setError(err.message || 'Ошибка'); }
+    finally { setLoading(false); }
+  };
+
+  return (
+    <Modal title="Загрузка проекта" onClose={onClose}>
+      <form onSubmit={submit} style={{ display: 'flex', flexDirection: 'column', gap: 12, maxHeight: '60vh', overflowY: 'auto', paddingRight: 4 }}>
+        <Field label="GitHub / ссылка на код"><input type="url" value={form.sourceCodeUrl} onChange={e => setForm(f => ({ ...f, sourceCodeUrl: e.target.value }))} placeholder="https://github.com/..." style={modalInput} /></Field>
+        <Field label="Архив проекта (.zip, макс. 50 МБ)">
+          {form.archiveUrl ? (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 10px', background: 'rgba(63,185,80,0.08)', border: '1px solid rgba(63,185,80,0.3)', borderRadius: 6 }}>
+              <span style={{ flex: 1, fontSize: 12, color: S.success }}>{form.archiveUrl.split('/').pop()}</span>
+              <button type="button" onClick={() => setForm(f => ({ ...f, archiveUrl: '' }))} style={{ background: 'none', border: 'none', color: S.danger, cursor: 'pointer', fontSize: 11 }}>✕</button>
+            </div>
+          ) : (
+            <div onClick={() => fileRef.current?.click()} style={{ padding: '20px', border: `2px dashed ${S.border}`, borderRadius: 6, textAlign: 'center', cursor: 'pointer', color: S.muted, fontSize: 13 }}>
+              {uploading ? 'Загрузка...' : 'Нажмите для выбора файла'}
+              <input ref={fileRef} type="file" accept=".zip,.tar,.gz,.rar,.7z" hidden onChange={handleUpload} />
+            </div>
+          )}
+        </Field>
+        <Field label="Документация"><input type="url" value={form.documentationUrl} onChange={e => setForm(f => ({ ...f, documentationUrl: e.target.value }))} placeholder="https://..." style={modalInput} /></Field>
+        <Field label="Презентация"><input type="url" value={form.presentationUrl} onChange={e => setForm(f => ({ ...f, presentationUrl: e.target.value }))} placeholder="https://..." style={modalInput} /></Field>
+        <Field label="Видео демо"><input type="url" value={form.videoDemoUrl} onChange={e => setForm(f => ({ ...f, videoDemoUrl: e.target.value }))} placeholder="https://youtube.com/..." style={modalInput} /></Field>
+        <Field label="Комментарий"><textarea rows={3} value={form.submissionNote} onChange={e => setForm(f => ({ ...f, submissionNote: e.target.value }))} style={{ ...modalInput, resize: 'vertical', fontFamily: 'inherit' }} /></Field>
+        {error && <p style={{ fontSize: 12, color: S.danger }}>{error}</p>}
+        <ModalActions onCancel={onClose} submitLabel={loading ? 'Сохранение...' : existingSubmission ? 'Обновить' : 'Загрузить'} disabled={loading || uploading} />
+      </form>
+    </Modal>
+  );
+}
+
+// ── Modal primitives ───────────────────────────────────────────────
+function Modal({ title, onClose, children }: { title: string; onClose: () => void; children: React.ReactNode }) {
+  return (
+    <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100, padding: 16 }}>
+      <div style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: 10, width: '100%', maxWidth: 540, maxHeight: '90vh', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px 20px', borderBottom: `1px solid ${S.border}` }}>
+          <span style={{ fontSize: 15, fontWeight: 700, color: S.text }}>{title}</span>
+          <button onClick={onClose} style={{ background: 'none', border: 'none', color: S.muted, cursor: 'pointer', fontSize: 18, padding: 0 }}>✕</button>
         </div>
-        <button onClick={onClose}
-          className="w-full mt-4 px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600">Отмена</button>
+        <div style={{ padding: '16px 20px', overflowY: 'auto' }}>{children}</div>
       </div>
     </div>
   );
 }
-
-function SubmitProjectModal({ team, existingSubmission, onClose, onSuccess }: {
-  team: HackathonTeam;
-  existingSubmission: any | null;
-  onClose: () => void;
-  onSuccess: () => void;
-}) {
-  const [formData, setFormData] = useState({
-    sourceCodeUrl: existingSubmission?.sourceCodeUrl || '',
-    archiveUrl: existingSubmission?.archiveUrl || '',
-    documentationUrl: existingSubmission?.documentationUrl || '',
-    presentationUrl: existingSubmission?.presentationUrl || '',
-    videoDemoUrl: existingSubmission?.videoDemoUrl || '',
-    submissionNote: existingSubmission?.submissionNote || '',
-  });
-  const [isLoading, setIsLoading] = useState(false);
-  const [isUploading, setIsUploading] = useState(false);
-  const [uploadError, setUploadError] = useState<string | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
-  const handleArchiveUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    setIsUploading(true);
-    setUploadError(null);
-    try {
-      const result = await hackathonsApi.uploadArchive(team.id, file);
-      setFormData(prev => ({ ...prev, archiveUrl: result.archiveUrl }));
-    } catch (err: any) {
-      setUploadError(err.message || 'Ошибка загрузки файла');
-    } finally {
-      setIsUploading(false);
-      if (fileInputRef.current) fileInputRef.current.value = '';
-    }
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!formData.sourceCodeUrl && !formData.archiveUrl) {
-      setUploadError('Укажите ссылку на GitHub или загрузите архив проекта');
-      return;
-    }
-    setIsLoading(true);
-    setUploadError(null);
-    try {
-      await hackathonsApi.submitProject({ teamId: team.id, ...formData });
-      onSuccess();
-    } catch (err: any) {
-      setUploadError(err.message || 'Не удалось загрузить проект');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
+function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 overflow-y-auto">
-      <div className="bg-[#161B22] rounded-xl p-8 max-w-2xl w-full mx-4 my-8 border border-gray-700">
-        <h2 className="text-2xl font-bold text-white mb-2">Загрузка проекта</h2>
-        <p className="text-gray-400 mb-6">Команда: {team.name}</p>
-
-        {existingSubmission && (
-          <div className="mb-6 p-4 bg-blue-900/20 border border-blue-700 rounded-lg">
-            <p className="text-blue-400 text-sm">Проект уже загружен. Вы можете обновить ссылки или заменить архив.</p>
-            <p className="text-gray-400 text-xs mt-2">
-              Последняя загрузка: {new Date(existingSubmission.submittedAt).toLocaleString('ru-RU')}
-            </p>
-          </div>
-        )}
-
-        <form onSubmit={handleSubmit} className="space-y-4 max-h-[60vh] overflow-y-auto pr-1">
-          <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
-              Ссылка на GitHub <span className="text-gray-500">(или загрузите архив ниже)</span>
-            </label>
-            <input type="url" value={formData.sourceCodeUrl}
-              onChange={(e) => setFormData({ ...formData, sourceCodeUrl: e.target.value })}
-              className="w-full px-4 py-2 bg-[#0D1117] border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-blue-500 focus:outline-none"
-              placeholder="https://github.com/username/project" />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
-              Архив проекта (.zip, .tar, .gz, .rar, .7z — макс. 50 МБ)
-            </label>
-            {formData.archiveUrl ? (
-              <div className="flex items-center gap-2 p-3 bg-green-900/20 border border-green-700 rounded-lg">
-                <span className="text-green-300 text-sm flex-1 truncate">{formData.archiveUrl.split('/').pop()}</span>
-                <button type="button" onClick={() => setFormData({ ...formData, archiveUrl: '' })}
-                  className="text-gray-400 hover:text-red-400 text-xs shrink-0">Удалить</button>
-              </div>
-            ) : (
-              <div onClick={() => fileInputRef.current?.click()}
-                className="flex flex-col items-center justify-center p-6 border-2 border-dashed border-gray-600 rounded-lg cursor-pointer hover:border-blue-500 transition-colors">
-                <p className="text-gray-400 text-sm">{isUploading ? 'Загрузка...' : 'Нажмите для выбора файла'}</p>
-                <input ref={fileInputRef} type="file" accept=".zip,.tar,.gz,.rar,.7z"
-                  className="hidden" onChange={handleArchiveUpload} disabled={isUploading} />
-              </div>
-            )}
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">Документация</label>
-            <input type="url" value={formData.documentationUrl}
-              onChange={(e) => setFormData({ ...formData, documentationUrl: e.target.value })}
-              className="w-full px-4 py-2 bg-[#0D1117] border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-blue-500 focus:outline-none"
-              placeholder="https://..." />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">Презентация</label>
-            <input type="url" value={formData.presentationUrl}
-              onChange={(e) => setFormData({ ...formData, presentationUrl: e.target.value })}
-              className="w-full px-4 py-2 bg-[#0D1117] border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-blue-500 focus:outline-none"
-              placeholder="https://..." />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">Видео демо</label>
-            <input type="url" value={formData.videoDemoUrl}
-              onChange={(e) => setFormData({ ...formData, videoDemoUrl: e.target.value })}
-              className="w-full px-4 py-2 bg-[#0D1117] border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-blue-500 focus:outline-none"
-              placeholder="https://youtube.com/..." />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">Комментарий</label>
-            <textarea value={formData.submissionNote}
-              onChange={(e) => setFormData({ ...formData, submissionNote: e.target.value })}
-              className="w-full px-4 py-2 bg-[#0D1117] border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-blue-500 focus:outline-none"
-              rows={3} placeholder="Краткое описание проекта..." />
-          </div>
-
-          {uploadError && <p className="text-red-400 text-sm">{uploadError}</p>}
-
-          <div className="flex gap-4 pt-4 border-t border-gray-700">
-            <button type="button" onClick={onClose}
-              className="flex-1 px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600">Отмена</button>
-            <button type="submit" disabled={isLoading || isUploading}
-              className="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50">
-              {isLoading ? 'Сохранение...' : existingSubmission ? 'Обновить' : 'Загрузить'}
-            </button>
-          </div>
-        </form>
-      </div>
+    <div>
+      <label style={{ display: 'block', fontSize: 12, color: S.muted, marginBottom: 5 }}>{label}</label>
+      {children}
     </div>
   );
 }
+function ModalActions({ onCancel, submitLabel, disabled }: { onCancel: () => void; submitLabel: string; disabled?: boolean }) {
+  return (
+    <div style={{ display: 'flex', gap: 8, paddingTop: 8 }}>
+      <button type="button" onClick={onCancel} style={{ flex: 1, padding: '8px', background: S.bg, border: `1px solid ${S.border}`, borderRadius: 6, color: S.muted, cursor: 'pointer' }}>Отмена</button>
+      <button type="submit" disabled={disabled} style={{ flex: 1, padding: '8px', background: S.accent, border: 'none', borderRadius: 6, color: '#fff', cursor: 'pointer', fontWeight: 600, opacity: disabled ? 0.6 : 1 }}>{submitLabel}</button>
+    </div>
+  );
+}
+const modalInput: React.CSSProperties = {
+  width: '100%', padding: '7px 10px', boxSizing: 'border-box',
+  background: S.bg, border: `1px solid ${S.border}`, borderRadius: 6,
+  color: S.text, fontSize: 13, outline: 'none',
+};

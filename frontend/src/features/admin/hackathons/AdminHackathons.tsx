@@ -5,6 +5,7 @@ import { useState, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
 import { Button } from '@/shared/ui/button';
 import { useHackathons, useHackathonStats } from '@/shared/api/admin/hackathons';
+import { hackathonsApi } from '@/shared/api/hackathons';
 import { Award, Plus, Edit, Trash2, Users, Calendar, Loader2, Eye, Trophy, Code, GitBranch } from 'lucide-react';
 import HackathonForm from './HackathonForm';
 import Link from 'next/link';
@@ -126,6 +127,7 @@ export default function AdminHackathons() {
   const { stats } = useHackathonStats();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingHackathon, setEditingHackathon] = useState<any>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [activeTab, setActiveTab] = useState('list');
 
   // Поиск, сортировка
@@ -405,7 +407,7 @@ export default function AdminHackathons() {
       )}
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent>
+        <DialogContent className="sm:max-w-3xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
               {editingHackathon ? 'Редактировать хакатон' : 'Создать хакатон'}
@@ -413,12 +415,25 @@ export default function AdminHackathons() {
           </DialogHeader>
           <HackathonForm
             hackathon={editingHackathon}
-            onSave={() => {
-              mutate();
-              setIsDialogOpen(false);
+            onSave={async (data) => {
+              setIsSubmitting(true);
+              try {
+                if (editingHackathon?.id) {
+                  await hackathonsApi.update(editingHackathon.id, data);
+                } else {
+                  await hackathonsApi.create(data);
+                }
+                mutate();
+                setIsDialogOpen(false);
+                setEditingHackathon(null);
+              } catch (e) {
+                alert('Ошибка сохранения');
+              } finally {
+                setIsSubmitting(false);
+              }
             }}
-            onCancel={() => setIsDialogOpen(false)}
-            isSubmitting={false}
+            onCancel={() => { setIsDialogOpen(false); setEditingHackathon(null); }}
+            isSubmitting={isSubmitting}
           />
         </DialogContent>
       </Dialog>

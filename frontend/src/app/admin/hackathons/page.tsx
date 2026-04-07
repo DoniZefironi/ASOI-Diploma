@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import { hackathonsApi, Hackathon, HackathonTeam, CreateHackathonDto } from '@/shared/api/hackathons';
+import HackathonForm from '@/features/admin/hackathons/HackathonForm';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
 import { Button } from '@/shared/ui/button';
 import { Award, Plus, Edit, Trash2, Users, Calendar, Loader2, Eye, Code, GitBranch, Trophy } from 'lucide-react';
@@ -412,22 +413,32 @@ export default function AdminHackathons() {
         setShowCreateModal(false);
         setEditingHackathon(null);
       }}>
-        <DialogContent>
+        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
               {editingHackathon ? 'Редактировать хакатон' : 'Создать хакатон'}
             </DialogTitle>
           </DialogHeader>
-          <HackathonFormModal
+          <HackathonForm
             hackathon={editingHackathon || undefined}
-            onClose={() => {
+            isSubmitting={false}
+            onCancel={() => {
               setShowCreateModal(false);
               setEditingHackathon(null);
             }}
-            onSuccess={() => {
-              setShowCreateModal(false);
-              setEditingHackathon(null);
-              loadData();
+            onSave={async (data) => {
+              try {
+                if (editingHackathon) {
+                  await hackathonsApi.update(editingHackathon.id, data);
+                } else {
+                  await hackathonsApi.create(data);
+                }
+                setShowCreateModal(false);
+                setEditingHackathon(null);
+                loadData();
+              } catch {
+                alert('Не удалось сохранить хакатон');
+              }
             }}
           />
         </DialogContent>
@@ -444,184 +455,6 @@ export default function AdminHackathons() {
   );
 }
 
-interface HackathonFormModalProps {
-  hackathon?: Hackathon;
-  onClose: () => void;
-  onSuccess: () => void;
-}
-
-function HackathonFormModal({ hackathon, onClose, onSuccess }: HackathonFormModalProps) {
-  const [formData, setFormData] = useState({
-    title: hackathon?.title || '',
-    description: hackathon?.description || '',
-    theme: hackathon?.theme || '',
-    startDate: hackathon?.startDate ? new Date(hackathon.startDate).toISOString().slice(0, 16) : '',
-    endDate: hackathon?.endDate ? new Date(hackathon.endDate).toISOString().slice(0, 16) : '',
-    registrationDeadline: hackathon?.registrationDeadline
-      ? new Date(hackathon.registrationDeadline).toISOString().slice(0, 16)
-      : '',
-    maxTeamSize: hackathon?.maxTeamSize?.toString() || '5',
-    minTeamSize: hackathon?.minTeamSize?.toString() || '3',
-    prizePool: hackathon?.prizePool?.toString() || '',
-    isActive: hackathon?.isActive !== false,
-  });
-  const [isLoading, setIsLoading] = useState(false);
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
-
-    try {
-      const data: Partial<CreateHackathonDto> = {
-        title: formData.title,
-        description: formData.description,
-        theme: formData.theme || undefined,
-        startDate: new Date(formData.startDate).toISOString(),
-        endDate: new Date(formData.endDate).toISOString(),
-        registrationDeadline: formData.registrationDeadline
-          ? new Date(formData.registrationDeadline).toISOString()
-          : undefined,
-        maxTeamSize: parseInt(formData.maxTeamSize),
-        minTeamSize: parseInt(formData.minTeamSize),
-        prizePool: formData.prizePool ? parseFloat(formData.prizePool) : undefined,
-        isActive: formData.isActive,
-      };
-
-      if (hackathon) {
-        await hackathonsApi.update(hackathon.id, data);
-      } else {
-        await hackathonsApi.create(data as CreateHackathonDto);
-      }
-      onSuccess();
-    } catch (error) {
-      console.error('Failed to save hackathon:', error);
-      alert('Не удалось сохранить хакатон');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <div>
-        <label className="block text-sm font-medium text-gray-300 mb-2">Название</label>
-        <input
-          type="text"
-          value={formData.title}
-          onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-          className="w-full px-4 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          required
-        />
-      </div>
-      <div>
-        <label className="block text-sm font-medium text-gray-300 mb-2">Описание</label>
-        <textarea
-          value={formData.description}
-          onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-          className="w-full px-4 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          rows={3}
-          required
-        />
-      </div>
-      <div>
-        <label className="block text-sm font-medium text-gray-300 mb-2">Тема</label>
-        <input
-          type="text"
-          value={formData.theme}
-          onChange={(e) => setFormData({ ...formData, theme: e.target.value })}
-          className="w-full px-4 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
-      </div>
-      <div className="grid grid-cols-2 gap-4">
-        <div>
-          <label className="block text-sm font-medium text-gray-300 mb-2">Начало</label>
-          <input
-            type="datetime-local"
-            value={formData.startDate}
-            onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
-            className="w-full px-4 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-            required
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-300 mb-2">Конец</label>
-          <input
-            type="datetime-local"
-            value={formData.endDate}
-            onChange={(e) => setFormData({ ...formData, endDate: e.target.value })}
-            className="w-full px-4 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-            required
-          />
-        </div>
-      </div>
-      <div>
-        <label className="block text-sm font-medium text-gray-300 mb-2">Регистрация до</label>
-        <input
-          type="datetime-local"
-          value={formData.registrationDeadline}
-          onChange={(e) => setFormData({ ...formData, registrationDeadline: e.target.value })}
-          className="w-full px-4 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
-      </div>
-      <div className="grid grid-cols-3 gap-4">
-        <div>
-          <label className="block text-sm font-medium text-gray-300 mb-2">Мин. команда</label>
-          <input
-            type="number"
-            value={formData.minTeamSize}
-            onChange={(e) => setFormData({ ...formData, minTeamSize: e.target.value })}
-            className="w-full px-4 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-300 mb-2">Макс. команда</label>
-          <input
-            type="number"
-            value={formData.maxTeamSize}
-            onChange={(e) => setFormData({ ...formData, maxTeamSize: e.target.value })}
-            className="w-full px-4 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-300 mb-2">Призовой фонд</label>
-          <input
-            type="number"
-            value={formData.prizePool}
-            onChange={(e) => setFormData({ ...formData, prizePool: e.target.value })}
-            className="w-full px-4 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="₽"
-          />
-        </div>
-      </div>
-      <div className="flex items-center gap-2">
-        <input
-          type="checkbox"
-          id="isActive"
-          checked={formData.isActive}
-          onChange={(e) => setFormData({ ...formData, isActive: e.target.checked })}
-          className="w-4 h-4"
-        />
-        <label htmlFor="isActive" className="text-sm font-medium text-gray-300">Активен</label>
-      </div>
-      <div className="flex gap-4 pt-4">
-        <button
-          type="button"
-          onClick={onClose}
-          className="flex-1 px-4 py-2 bg-gray-700 rounded-lg hover:bg-gray-600 text-white"
-        >
-          Отмена
-        </button>
-        <button
-          type="submit"
-          disabled={isLoading}
-          className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
-        >
-          {isLoading ? 'Сохранение...' : 'Сохранить'}
-        </button>
-      </div>
-    </form>
-  );
-}
 
 interface HackathonDetailsModalProps {
   hackathon: Hackathon;

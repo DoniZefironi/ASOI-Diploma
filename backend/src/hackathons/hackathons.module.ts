@@ -5,6 +5,8 @@ import { HackathonTeam } from './entities/hackathon-team.entity';
 import { HackathonTeamMember } from './entities/hackathon-team-member.entity';
 import { HackathonSubmission } from './entities/hackathon-submission.entity';
 import { HackathonGrade } from './entities/hackathon-grade.entity';
+import { HackathonStage } from './entities/hackathon-stage.entity';
+import { HackathonTask } from './entities/hackathon-task.entity';
 import { HackathonsService } from './hackathons.service';
 import { HackathonsController } from './hackathons.controller';
 
@@ -15,7 +17,9 @@ import { HackathonsController } from './hackathons.controller';
       HackathonTeam,
       HackathonTeamMember,
       HackathonSubmission,
-      HackathonGrade
+      HackathonGrade,
+      HackathonStage,
+      HackathonTask,
     ])
   ],
   providers: [HackathonsService],

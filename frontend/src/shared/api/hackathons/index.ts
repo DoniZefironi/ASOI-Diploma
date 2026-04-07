@@ -1,5 +1,26 @@
 import { apiClient } from '../client';
 
+export interface HackathonTask {
+  id: number;
+  stageId: number;
+  title: string;
+  description: string | null;
+  maxScore: number;
+  scoringCriteria: string | null;
+  order: number;
+}
+
+export interface HackathonStage {
+  id: number;
+  hackathonId: number;
+  title: string;
+  description: string | null;
+  order: number;
+  startDate: string | null;
+  endDate: string | null;
+  tasks: HackathonTask[];
+}
+
 export interface Hackathon {
   id: number;
   courseId: number | null;
@@ -14,12 +35,14 @@ export interface Hackathon {
   prizePool: number | null;
   isActive: boolean;
   judgingCriteria: any;
+  rules: string | null;
   createdAt: string;
   course?: {
     id: number;
     name: string;
   };
   teams?: HackathonTeam[];
+  stages?: HackathonStage[];
 }
 
 export interface HackathonTeam {
@@ -79,6 +102,23 @@ export interface HackathonGrade {
   judgedAt: string;
 }
 
+export interface CreateHackathonTaskDto {
+  title: string;
+  description?: string;
+  maxScore?: number;
+  scoringCriteria?: string;
+  order?: number;
+}
+
+export interface CreateHackathonStageDto {
+  title: string;
+  description?: string;
+  order?: number;
+  startDate?: string;
+  endDate?: string;
+  tasks?: CreateHackathonTaskDto[];
+}
+
 export interface CreateHackathonDto {
   title: string;
   description: string;
@@ -92,6 +132,8 @@ export interface CreateHackathonDto {
   isActive?: boolean;
   courseId?: number;
   judgingCriteria?: any;
+  rules?: string;
+  stages?: CreateHackathonStageDto[];
 }
 
 export interface CreateTeamDto {

@@ -4,6 +4,7 @@ import { useState, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
 import { Button } from '@/shared/ui/button';
 import { useHackathons, useHackathonStats } from '@/shared/api/admin/hackathons';
+import { hackathonsApi } from '@/shared/api/hackathons';
 import { Award, Plus, Edit, Trash2, Users, Calendar, Loader2, Eye } from 'lucide-react';
 import HackathonForm from './HackathonForm';
 import Link from 'next/link';
@@ -402,41 +403,39 @@ export default function HackathonManagement() {
       <HackathonDialog
         hackathon={editingHackathon}
         isOpen={isDialogOpen}
-        onClose={() => {
+        onClose={() => { setIsDialogOpen(false); setEditingHackathon(null); }}
+        onSave={async (data: any) => {
+          if (editingHackathon?.id) {
+            await hackathonsApi.update(editingHackathon.id, data);
+          } else {
+            await hackathonsApi.create(data);
+          }
           setIsDialogOpen(false);
           setEditingHackathon(null);
-        }}
-        onSave={() => {
-          console.log('Сохранить хакатон');
-          setIsDialogOpen(false);
           mutate();
         }}
-        isSubmitting={false}
       />
     </div>
   );
 }
 
-function HackathonDialog({
-  hackathon,
-  isOpen,
-  onClose,
-  onSave,
-  isSubmitting,
-}: any) {
+function HackathonDialog({ hackathon, isOpen, onClose, onSave }: any) {
+  const [isSubmitting, setIsSubmitting] = useState(false);
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-2xl">
+      <DialogContent className="sm:max-w-3xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Award className="h-5 w-5" />
             {hackathon ? 'Редактирование хакатона' : 'Создание хакатона'}
           </DialogTitle>
         </DialogHeader>
-
         <HackathonForm
           hackathon={hackathon}
-          onSave={onSave}
+          onSave={async (data: any) => {
+            setIsSubmitting(true);
+            try { await onSave(data); } finally { setIsSubmitting(false); }
+          }}
           onCancel={onClose}
           isSubmitting={isSubmitting}
         />

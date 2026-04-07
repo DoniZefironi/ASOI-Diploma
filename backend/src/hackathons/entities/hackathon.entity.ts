@@ -1,6 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, CreateDateColumn } from 'typeorm';
 import { Course } from '../../courses/entities/course.entity';
 import { HackathonTeam } from './hackathon-team.entity';
+import { HackathonStage } from './hackathon-stage.entity';
 
 @Entity('hackathons')
 export class Hackathon {
@@ -49,6 +50,12 @@ export class Hackathon {
   @CreateDateColumn()
   createdAt: Date;
 
+  @Column({ type: 'text', nullable: true })
+  rules: string;
+
   @OneToMany(() => HackathonTeam, team => team.hackathon)
   teams: HackathonTeam[];
+
+  @OneToMany(() => HackathonStage, stage => stage.hackathon, { cascade: true, eager: false })
+  stages: HackathonStage[];
 }

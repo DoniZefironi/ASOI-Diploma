@@ -55,6 +55,8 @@ import { HackathonTeam } from './hackathons/entities/hackathon-team.entity';
 import { HackathonTeamMember } from './hackathons/entities/hackathon-team-member.entity';
 import { HackathonSubmission } from './hackathons/entities/hackathon-submission.entity';
 import { HackathonGrade } from './hackathons/entities/hackathon-grade.entity';
+import { HackathonStage } from './hackathons/entities/hackathon-stage.entity';
+import { HackathonTask } from './hackathons/entities/hackathon-task.entity';
 import { CircuitElementType } from './circuit/entities/circuit-element-type.entity';
 import { CircuitSolution } from './assignments/entities/circuit-solution.entity';
 import { PeerReviewSession } from './assignments/entities/peer-review-session.entity';
@@ -100,6 +102,8 @@ import { PeerReviewSession } from './assignments/entities/peer-review-session.en
             HackathonTeamMember,
             HackathonSubmission,
             HackathonGrade,
+            HackathonStage,
+            HackathonTask,
             PeerReviewSession,
             Elective,
             ElectiveEnrollment,
