@@ -58,7 +58,8 @@
       "Bash(find c:UsersvladnOneDriveDokumenteGitHubASOI-Diplomabackendsrc -name *.controller.ts)",
       "Bash(grep -E \"\\\\.\\(md|MD\\)$\")",
       "Bash(find /c/Users/vladn/OneDrive/Dokumente/GitHub/ASOI-Diploma/frontend/src/app -name *.tsx -o -name *.ts)",
-      "Bash(find /c/Users/vladn/OneDrive/Dokumente/GitHub/ASOI-Diploma/frontend/src/features -path *hackathon* -type f)"
+      "Bash(find /c/Users/vladn/OneDrive/Dokumente/GitHub/ASOI-Diploma/frontend/src/features -path *hackathon* -type f)",
+      "Bash(python -c ' *)"
     ]
   }
 }
