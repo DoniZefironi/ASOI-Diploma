@@ -59,7 +59,9 @@
       "Bash(grep -E \"\\\\.\\(md|MD\\)$\")",
       "Bash(find /c/Users/vladn/OneDrive/Dokumente/GitHub/ASOI-Diploma/frontend/src/app -name *.tsx -o -name *.ts)",
       "Bash(find /c/Users/vladn/OneDrive/Dokumente/GitHub/ASOI-Diploma/frontend/src/features -path *hackathon* -type f)",
-      "Bash(python -c ' *)"
+      "Bash(python -c ' *)",
+      "Bash(Get-ChildItem -Path \"c:\\\\Users\\\\hohol\\\\Documents\\\\GitHub\\\\ASOI-Diploma\" -Force)",
+      "Bash(Select-Object Name, Mode)"
     ]
   }
 }
