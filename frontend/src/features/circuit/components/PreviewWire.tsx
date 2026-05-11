@@ -1,5 +1,5 @@
 import React from 'react';
-import { ID, NodeDef, Wire } from '../types/circuit.types';
+import { ID, NodeDef, getOutputCount, getOutputPortY } from '../types/circuit.types';
 
 const wirePath = (from: { x: number; y: number }, to: { x: number; y: number }) => {
   const dx = Math.abs(to.x - from.x);
@@ -23,11 +23,14 @@ export const PreviewWire: React.FC<PreviewWireProps> = ({
   if (!connectionInProgress || !preview) return null;
   const fromNode = nodes[connectionInProgress.fromNodeId];
   if (!fromNode) return null;
+  const fromInfo = nodePositions[connectionInProgress.fromNodeId];
+  if (!fromInfo) return null;
 
-  const fromNodeInfo = nodePositions[connectionInProgress.fromNodeId];
-  if (!fromNodeInfo) return null;
+  const outputCount = getOutputCount(fromNode.type);
+  const fromY = getOutputPortY(connectionInProgress.fromSlot, outputCount, fromInfo.height);
 
-  const from = { x: fromNode.x + fromNodeInfo.width / 2, y: fromNode.y };
+  const from = { x: fromNode.x + fromInfo.width / 2, y: fromNode.y + fromY };
+
   return (
     <path
       d={wirePath(from, preview)}
@@ -35,6 +38,7 @@ export const PreviewWire: React.FC<PreviewWireProps> = ({
       strokeDasharray="6 6"
       strokeWidth={2}
       fill="none"
+      style={{ pointerEvents: 'none' }}
     />
   );
 };

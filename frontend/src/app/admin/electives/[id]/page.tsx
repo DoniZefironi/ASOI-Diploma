@@ -1,4 +1,5 @@
 import AdminElectiveDetailPage from '@/features/electives/AdminElectiveDetailPage';
-export default function Page({ params }: { params: { id: string } }) {
-  return <AdminElectiveDetailPage electiveId={Number(params.id)} />;
+export default async function Page({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  return <AdminElectiveDetailPage electiveId={Number(id)} />;
 }

@@ -26,6 +26,8 @@ COPY --from=builder --chown=nestjs:nodejs /app/dist ./dist
 # Фикс для crypto в Alpine - устанавливаем необходимые пакеты
 RUN apk add --no-cache curl
 
+RUN mkdir -p /app/uploads && chown -R nestjs:nodejs /app/uploads
+
 # Явный фикс для crypto.randomUUID() в Alpine
 RUN echo "const crypto = require('crypto');" > crypto-fix.js && \
     echo "global.crypto = { randomUUID: () => crypto.randomUUID() };" >> crypto-fix.js

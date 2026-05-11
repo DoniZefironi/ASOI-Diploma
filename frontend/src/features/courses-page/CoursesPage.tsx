@@ -149,7 +149,7 @@ export const CoursesPage = () => {
 
         <div className="w-24 h-1 bg-blue-600 mx-auto mb-16 animate-slide-in-left"></div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+        <div className="max-w-3xl mx-auto rounded-xl overflow-hidden border border-gray-700/50 divide-y divide-gray-700/50">
           {filteredCourses.map((course, index) => (
             <CourseCardWithRegistration
               key={course.id}

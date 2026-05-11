@@ -61,7 +61,13 @@
       "Bash(find /c/Users/vladn/OneDrive/Dokumente/GitHub/ASOI-Diploma/frontend/src/features -path *hackathon* -type f)",
       "Bash(python -c ' *)",
       "Bash(Get-ChildItem -Path \"c:\\\\Users\\\\hohol\\\\Documents\\\\GitHub\\\\ASOI-Diploma\" -Force)",
-      "Bash(Select-Object Name, Mode)"
+      "Bash(Select-Object Name, Mode)",
+      "Bash(docker-compose build *)",
+      "Bash(node -e \"console.log\\(require\\('./node_modules/uuid/package.json'\\).version\\)\")",
+      "Bash(docker-compose down *)",
+      "Bash(docker rmi *)",
+      "Bash(docker exec *)",
+      "Bash(node -e \"const bcrypt = require\\('c:/Users/hohol/Documents/GitHub/ASOI-Diploma/backend/node_modules/bcrypt'\\); bcrypt.hash\\('admin123', 10\\).then\\(h => console.log\\(h\\)\\);\")"
     ]
   }
 }

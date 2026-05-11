@@ -1,4 +1,5 @@
 import ElectiveDetailPage from '@/features/electives/ElectiveDetailPage';
-export default function ElectiveDetail({ params }: { params: { id: string } }) {
-  return <ElectiveDetailPage id={Number(params.id)} />;
+export default async function ElectiveDetail({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  return <ElectiveDetailPage id={Number(id)} />;
 }

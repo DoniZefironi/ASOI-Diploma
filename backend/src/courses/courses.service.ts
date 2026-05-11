@@ -51,6 +51,6 @@ export class CoursesService {
   }
 
   async remove(id: number): Promise<void> {
-    await this.coursesRepository.softDelete(id);
+    await this.coursesRepository.delete(id);
   }
 }

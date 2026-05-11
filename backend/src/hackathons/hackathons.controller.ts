@@ -2,7 +2,7 @@ import { Controller, Get, Post, Body, Param, Delete, UseGuards, Request, ParseIn
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import * as path from 'path';
-import { v4 as uuidv4 } from 'uuid';
+import { randomUUID } from 'crypto';
 import { HackathonsService } from './hackathons.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
@@ -86,10 +86,10 @@ export class HackathonsController {
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(FileInterceptor('file', {
     storage: diskStorage({
-      destination: './uploads/hackathons',
+      destination: '/tmp/uploads/hackathons',
       filename: (_req, file, cb) => {
         const ext = path.extname(file.originalname);
-        cb(null, `${uuidv4()}${ext}`);
+        cb(null, `${randomUUID()}${ext}`);
       },
     }),
     fileFilter: (_req, file, cb) => {
@@ -118,7 +118,7 @@ export class HackathonsController {
       throw new BadRequestException('Only the team leader can upload the archive');
     }
 
-    const archiveUrl = `/uploads/hackathons/${file.filename}`;
+    const archiveUrl = `/tmp/uploads/hackathons/${file.filename}`;
     return { archiveUrl, originalName: file.originalname, size: file.size };
   }
 
