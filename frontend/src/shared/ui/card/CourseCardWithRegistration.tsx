@@ -159,7 +159,14 @@ export const CourseCardWithRegistration = ({ course, index }: CourseCardWithRegi
         </div>
 
         <div className="flex-1 min-w-0">
-          <h3 className="font-semibold text-white text-base leading-tight truncate">{course.title}</h3>
+          <div className="flex items-center gap-2 flex-wrap">
+            <h3 className="font-semibold text-white text-base leading-tight truncate">{course.title}</h3>
+            {course.category === 'language' && (
+              <span className="text-xs bg-purple-900/50 text-purple-300 border border-purple-700/50 rounded-full px-2 py-0.5 shrink-0">
+                🌍 Доступно всем
+              </span>
+            )}
+          </div>
           <p className="text-gray-400 text-sm mt-0.5 line-clamp-1">{course.description}</p>
         </div>
 

@@ -7,6 +7,7 @@ import { CodeEditor } from './CodeEditor';
 import { ControlPanel } from './ControlPanel';
 import { SerialMonitor } from './SerialMonitor';
 import { SensorPanel } from './SensorPanel';
+import { AiAssistantIot } from './AiAssistantIot';
 import { useSchematicStore } from '../store/useSchematicStore';
 import { ComponentType } from '../types';
 import { getComponentDef } from '../engine/componentDefs';
@@ -14,6 +15,7 @@ import { getComponentDef } from '../engine/componentDefs';
 export function SimulatorClientWrapper() {
   const { addComponent, selectedBoard, setSelectedBoard, components } = useSchematicStore();
   const [rightTab, setRightTab] = useState<'serial' | 'sensors'>('serial');
+  const [showAi, setShowAi] = useState(false);
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
@@ -71,8 +73,20 @@ export function SimulatorClientWrapper() {
             SIG
           </div>
 
-          <div className="ml-auto text-xs text-gray-600">
-            Drag компоненты · Клик на пин — начать провод · ПКМ — удалить
+          <div className="ml-auto flex items-center gap-3">
+            <span className="text-xs text-gray-600 hidden lg:block">
+              Drag компоненты · Клик на пин — начать провод · ПКМ — удалить
+            </span>
+            <button
+              onClick={() => setShowAi(s => !s)}
+              className={`flex items-center gap-1.5 rounded-lg px-3 py-1 text-xs transition-colors ${
+                showAi
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-gray-800 hover:bg-gray-700 text-gray-300 border border-gray-700'
+              }`}
+            >
+              🤖 ИИ-помощник
+            </button>
           </div>
         </div>
 
@@ -87,6 +101,13 @@ export function SimulatorClientWrapper() {
             <CodeEditor />
             <ControlPanel />
           </div>
+
+          {/* Right: AI panel */}
+          {showAi && (
+            <div className="w-64 shrink-0">
+              <AiAssistantIot onClose={() => setShowAi(false)} />
+            </div>
+          )}
 
           {/* Right: Serial + Sensors */}
           <div className="w-56 bg-gray-950 border-l border-gray-800 flex flex-col">

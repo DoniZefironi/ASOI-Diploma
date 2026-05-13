@@ -11,6 +11,97 @@ interface AiAssistantProps {
   onClose: () => void;
 }
 
+const LOCAL_ANSWERS: Record<string, string> = {
+  'Что такое XOR?': `XOR (исключающее ИЛИ) — логический вентиль, выход которого равен 1 только если входы различаются.
+
+Таблица истинности:
+A | B | A XOR B
+0 | 0 |   0
+0 | 1 |   1
+1 | 0 |   1
+1 | 1 |   0
+
+Применение: детектор несовпадения, сумматор (бит суммы = A XOR B), генератор чётности.`,
+
+  'Как работает D-триггер?': `D-триггер (Data Flip-Flop) — элемент памяти, запоминающий состояние по фронту тактового сигнала.
+
+Входы:
+  D   — данные для записи
+  CLK — тактовый сигнал
+
+Работа: при переходе CLK 0→1 (фронт) значение D записывается в выход Q.
+Между фронтами Q не меняется, независимо от D.
+
+D | CLK↑ | Q (после)
+0 |  ↑   |  0
+1 |  ↑   |  1
+
+Используется в регистрах, конвейерах, синхронных схемах.`,
+
+  'Таблица истинности AND': `AND (логическое И) — выход 1 только если ОБА входа равны 1.
+
+A | B | A AND B
+0 | 0 |   0
+0 | 1 |   0
+1 | 0 |   0
+1 | 1 |   1
+
+Формула: F = A · B
+Применение: маскирование битов, условная логика.`,
+
+  'Как работает сумматор?': `Полный сумматор (Full Adder) складывает три бита: A, B и перенос Cin.
+
+Выходы:
+  SUM  = A XOR B XOR Cin
+  Cout = (A AND B) OR (B AND Cin) OR (A AND Cin)
+
+A | B | Cin | SUM | Cout
+0 | 0 |  0  |  0  |  0
+0 | 1 |  0  |  1  |  0
+1 | 0 |  0  |  1  |  0
+1 | 1 |  0  |  0  |  1
+0 | 0 |  1  |  1  |  0
+1 | 1 |  1  |  1  |  1
+
+Для сложения N-битных чисел последовательно соединяют N сумматоров: Cout каждого → Cin следующего.`,
+
+  'Что такое триггер?': `Триггер — элемент памяти с двумя устойчивыми состояниями (0 и 1).
+
+Виды триггеров:
+  D  — запоминает D по фронту CLK
+  T  — переключает состояние при T=1 и CLK↑
+  SR — S устанавливает 1, R сбрасывает в 0
+  JK — комбинация SR без запрещённого состояния
+
+Триггеры — основа регистров, счётчиков, памяти.`,
+
+  'Что такое MUX?': `MUX (мультиплексор) — коммутатор, выбирающий один из нескольких входов на выход.
+
+MUX 2→1:
+  Входы: D0, D1
+  Управление: S
+  Выход: Y = S ? D1 : D0
+
+S=0 → Y = D0
+S=1 → Y = D1
+
+Применение: выбор источника данных, экономия проводов, реализация логических функций.`,
+
+  'Как работает счётчик?': `Счётчик — последовательностная схема, увеличивающая значение по тактовому сигналу.
+
+Входы (в эмуляторе):
+  CLK — тактовый сигнал (считает по фронту)
+  RST — сброс в 0
+  EN  — разрешение счёта
+
+Работа: при CLK↑ и EN=1 значение +1. При RST=1 → 0.
+По достижении максимума — сброс в 0 (счёт по модулю).
+
+4-битный счётчик считает от 0 до 15.`,
+};
+
+const QUICK_PROMPTS = Object.keys(LOCAL_ANSWERS);
+
 const SYSTEM_PROMPT = `Ты — помощник по цифровой электронике и логическим схемам.
 Отвечай на русском языке. Помогай пользователям разбираться с:
 - Логическими вентилями (AND, OR, NOT, XOR и др.)
@@ -41,9 +132,23 @@ export const AiAssistant: React.FC<AiAssistantProps> = ({ onClose }) => {
     setShowSettings(false);
   };
 
+  const sendLocal = (question: string) => {
+    const answer = LOCAL_ANSWERS[question];
+    if (!answer) return false;
+    setMessages(prev => [
+      ...prev,
+      { role: 'user', text: question },
+      { role: 'assistant', text: answer },
+    ]);
+    return true;
+  };
+
   const sendMessage = async () => {
     const text = input.trim();
     if (!text || loading) return;
+
+    if (sendLocal(text)) { setInput(''); return; }
+
     if (!apiKey || !folderId) { setShowSettings(true); return; }
 
     const userMsg: Message = { role: 'user', text };
@@ -157,10 +262,10 @@ export const AiAssistant: React.FC<AiAssistantProps> = ({ onClose }) => {
 
       {/* Quick prompts */}
       <div className="px-3 pb-2 flex flex-wrap gap-1">
-        {['Что такое XOR?', 'Как работает D-триггер?', 'Таблица истинности AND'].map(q => (
+        {QUICK_PROMPTS.map(q => (
           <button
             key={q}
-            onClick={() => { setInput(q); }}
+            onClick={() => { setInput(''); sendLocal(q); }}
             className="text-xs bg-gray-700 hover:bg-gray-600 text-gray-300 rounded px-2 py-0.5 border border-gray-600"
           >
             {q}

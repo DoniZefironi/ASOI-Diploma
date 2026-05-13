@@ -169,6 +169,25 @@ export const CoursesPage = () => {
             </Link>
           </div>
         )}
+
+        {/* Блок технического английского */}
+        {(filterType === 'all' || filterType === 'language') && (
+          <div className="max-w-3xl mx-auto mt-6">
+            <Link
+              href="/courses/english-vocab"
+              className="flex items-center justify-between gap-4 bg-gradient-to-r from-purple-900/40 to-blue-900/40 border border-purple-700/50 rounded-xl px-6 py-4 hover:border-purple-500 transition-colors group"
+            >
+              <div className="flex items-center gap-4">
+                <span className="text-3xl">📖</span>
+                <div>
+                  <div className="text-white font-semibold">Technical English Vocabulary</div>
+                  <div className="text-gray-400 text-sm">50 IT-терминов с транскрипцией, переводом и примерами · режим карточек</div>
+                </div>
+              </div>
+              <span className="text-purple-400 group-hover:text-white transition-colors text-sm shrink-0">Открыть →</span>
+            </Link>
+          </div>
+        )}
       </div>
     </div>
   );

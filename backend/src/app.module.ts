@@ -29,6 +29,8 @@ import { AnalyticsModule } from './analytics/analytics.module';
 import { SiteVisit } from './analytics/entities/site-visit.entity';
 import { NotificationsModule } from './notifications/notifications.module';
 import { Notification } from './notifications/entities/notification.entity';
+import { VocabularyModule } from './vocabulary/vocabulary.module';
+import { VocabTerm } from './vocabulary/entities/vocab-term.entity';
 import { InternshipsModule } from './internships/internships.module';
 import { Internship } from './internships/entities/internship.entity';
 import { ElectiveEnrollment } from './electives/entities/elective-enrollment.entity';
@@ -112,6 +114,7 @@ import { PeerReviewSession } from './assignments/entities/peer-review-session.en
             InternshipView,
             SiteVisit,
             Notification,
+            VocabTerm,
           ],
           synchronize: configService.get('NODE_ENV') !== 'production',
           logging: configService.get('NODE_ENV') !== 'production',
@@ -143,6 +146,7 @@ import { PeerReviewSession } from './assignments/entities/peer-review-session.en
     InternshipsModule,
     AnalyticsModule,
     NotificationsModule,
+    VocabularyModule,
   ],
   controllers: [AppController],
   providers: [AppService],

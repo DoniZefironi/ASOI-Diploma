@@ -29,6 +29,7 @@ const menuItems: SidebarItem[] = [
   { href: '/admin/assignments',              label: 'Задания',              icon: <FileTextIcon /> },
   { href: '/admin/electives',                label: 'Факультативы',         icon: <GraduationIcon /> },
   { href: '/admin/materials',                label: 'Материалы',            icon: <FolderIcon /> },
+  { href: '/admin/vocabulary',               label: 'English Vocabulary',   icon: <BookIcon /> },
   { href: '/admin/forum',                    label: 'Форум',                icon: <ChatIcon /> },
   { href: '/admin/hackathons',               label: 'Хакатоны',             icon: <TrophyIcon /> },
   { href: '/admin/internships',              label: 'Стажировки',           icon: <BriefcaseIcon /> },

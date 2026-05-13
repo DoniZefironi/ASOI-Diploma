@@ -3,6 +3,122 @@ import React, { useState, useMemo } from 'react';
 import useSWR from 'swr';
 import { apiClient } from '@/shared/api/client';
 
+// ── Vocab Types ───────────────────────────────────────────────────
+interface VocabTerm {
+  id: number;
+  term: string;
+  transcription: string;
+  translation: string;
+  category: string;
+  definition: string;
+  example: string;
+  level: string;
+}
+
+const VOCAB_CATEGORY_COLOR: Record<string, { spine: string; cover: string }> = {
+  'Программирование': { spine: '#1d4ed8', cover: 'linear-gradient(160deg,#1e3a8a 0%,#2563eb 100%)' },
+  'Сети':             { spine: '#0e7490', cover: 'linear-gradient(160deg,#155e75 0%,#0891b2 100%)' },
+  'IoT / Железо':     { spine: '#15803d', cover: 'linear-gradient(160deg,#14532d 0%,#16a34a 100%)' },
+  'Безопасность':     { spine: '#b91c1c', cover: 'linear-gradient(160deg,#7f1d1d 0%,#dc2626 100%)' },
+  'Базы данных':      { spine: '#7c3aed', cover: 'linear-gradient(160deg,#4c1d95 0%,#7c3aed 100%)' },
+  'ИИ / ML':          { spine: '#b45309', cover: 'linear-gradient(160deg,#78350f 0%,#d97706 100%)' },
+  'Общее':            { spine: '#475569', cover: 'linear-gradient(160deg,#1e293b 0%,#475569 100%)' },
+};
+
+const LEVEL_BADGE: Record<string, { bg: string; color: string; label: string }> = {
+  basic:        { bg: 'rgba(22,163,74,0.2)',  color: '#4ade80', label: 'Базовый' },
+  intermediate: { bg: 'rgba(234,179,8,0.2)',  color: '#facc15', label: 'Средний' },
+  advanced:     { bg: 'rgba(239,68,68,0.2)',  color: '#f87171', label: 'Продвинутый' },
+};
+
+function VocabBookCard({ term }: { term: VocabTerm }) {
+  const [hovered, setHovered] = useState(false);
+  const colors = VOCAB_CATEGORY_COLOR[term.category] || VOCAB_CATEGORY_COLOR['Общее'];
+  const lvl = LEVEL_BADGE[term.level] || LEVEL_BADGE.basic;
+
+  return (
+    <div style={{ position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+      <div
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
+        style={{
+          display: 'flex', flexDirection: 'column',
+          width: 120, height: 160,
+          borderRadius: '2px 6px 6px 2px',
+          background: colors.cover,
+          border: '1px solid rgba(255,255,255,0.08)',
+          boxShadow: hovered
+            ? '0 12px 28px rgba(0,0,0,0.6), -4px 0 0 rgba(0,0,0,0.4), inset 2px 0 0 rgba(255,255,255,0.12)'
+            : '-4px 0 0 rgba(0,0,0,0.3), inset 2px 0 0 rgba(255,255,255,0.08), 2px 4px 12px rgba(0,0,0,0.4)',
+          transform: hovered ? 'translateY(-12px) rotate(-1deg)' : 'translateY(0)',
+          transition: 'transform 0.2s ease, box-shadow 0.2s ease',
+          cursor: 'default',
+          position: 'relative',
+          overflow: 'hidden',
+        }}
+      >
+        {/* Spine */}
+        <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: 6, background: 'rgba(0,0,0,0.35)', borderRadius: '2px 0 0 2px' }} />
+
+        {/* EN icon */}
+        <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', paddingTop: 20 }}>
+          <span style={{ fontSize: 22, fontWeight: 900, color: 'rgba(255,255,255,0.9)', letterSpacing: -1 }}>EN</span>
+        </div>
+
+        {/* Term */}
+        <div style={{ padding: '8px 10px 10px 14px' }}>
+          <div style={{
+            fontSize: 10, fontWeight: 700, lineHeight: 1.3, color: '#fff',
+            display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden',
+            wordBreak: 'break-word', textShadow: '0 1px 3px rgba(0,0,0,0.5)',
+          }}>
+            {term.term}
+          </div>
+        </div>
+      </div>
+
+      {/* Tooltip */}
+      {hovered && (
+        <div style={{
+          position: 'absolute', bottom: 'calc(100% + 8px)', left: '50%', transform: 'translateX(-50%)',
+          width: 220, background: S.surface, border: `1px solid ${S.border}`,
+          borderRadius: 8, padding: '10px 12px', zIndex: 100,
+          pointerEvents: 'none', boxShadow: '0 8px 24px rgba(0,0,0,0.5)',
+        }}>
+          <div style={{ fontSize: 14, fontWeight: 700, color: '#60a5fa', marginBottom: 2 }}>{term.term}</div>
+          {term.transcription && <div style={{ fontSize: 11, color: S.muted, fontFamily: 'monospace', marginBottom: 4 }}>{term.transcription}</div>}
+          <div style={{ fontSize: 13, fontWeight: 600, color: S.text, marginBottom: 6 }}>{term.translation}</div>
+          {term.definition && (
+            <div style={{ fontSize: 11, color: S.muted, lineHeight: 1.4, marginBottom: 4,
+              display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+              {term.definition}
+            </div>
+          )}
+          {term.example && (
+            <div style={{ fontSize: 11, color: S.muted, fontStyle: 'italic', marginBottom: 6,
+              display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+              "{term.example}"
+            </div>
+          )}
+          <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
+            <span style={{ fontSize: 10, padding: '2px 6px', borderRadius: 4, background: lvl.bg, color: lvl.color }}>{lvl.label}</span>
+            <span style={{ fontSize: 10, padding: '2px 6px', borderRadius: 4, background: 'rgba(255,255,255,0.06)', color: S.muted }}>{term.category}</span>
+          </div>
+          <div style={{ position: 'absolute', bottom: -5, left: '50%', transform: 'translateX(-50%)',
+            width: 8, height: 8, background: S.surface, border: `1px solid ${S.border}`,
+            borderTop: 'none', borderLeft: 'none', rotate: '45deg' }} />
+        </div>
+      )}
+
+      {/* Label */}
+      <div style={{ marginTop: 6, width: 120, textAlign: 'center', fontSize: 10, color: S.muted,
+        overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+        {term.translation}
+      </div>
+    </div>
+  );
+}
+
 // ── Types ──────────────────────────────────────────────────────────
 type MaterialType = 'lecture_slides' | 'video' | 'document' | 'code_example' | 'project_template' | 'reference';
 
@@ -337,9 +453,18 @@ export default function LibraryPage() {
   const [typeFilter, setTypeFilter] = useState<MaterialType | 'all'>('all');
   const [sort, setSort] = useState('createdAt_desc');
   const [page, setPage] = useState(1);
+  const [vocabSearch, setVocabSearch] = useState('');
+  const [vocabCategory, setVocabCategory] = useState('');
+  const [vocabPage, setVocabPage] = useState(1);
 
   const { data, isLoading, error } = useSWR<Material[]>(
     `/materials`,
+    (url: string) => apiClient.get(url),
+    { revalidateOnFocus: false, dedupingInterval: 60000 },
+  );
+
+  const { data: vocabData } = useSWR<VocabTerm[]>(
+    '/vocabulary',
     (url: string) => apiClient.get(url),
     { revalidateOnFocus: false, dedupingInterval: 60000 },
   );
@@ -510,6 +635,94 @@ export default function LibraryPage() {
             );
           })}
         </div>
+
+        {/* ── Vocab Section ──────────────────────────────────────── */}
+        {vocabData && vocabData.length > 0 && (() => {
+          const VOCAB_PER_SHELF = 6;
+          const VOCAB_PER_PAGE = 18;
+          const vocabCategories = Array.from(new Set(vocabData.map(t => t.category)));
+          const filteredVocab = vocabData.filter(t =>
+            (!vocabSearch || t.term.toLowerCase().includes(vocabSearch.toLowerCase()) || t.translation.toLowerCase().includes(vocabSearch.toLowerCase())) &&
+            (!vocabCategory || t.category === vocabCategory)
+          );
+          const totalVocabPages = Math.max(1, Math.ceil(filteredVocab.length / VOCAB_PER_PAGE));
+          const curVocabPage = Math.min(vocabPage, totalVocabPages);
+          const pageVocab = filteredVocab.slice((curVocabPage - 1) * VOCAB_PER_PAGE, curVocabPage * VOCAB_PER_PAGE);
+          const vocabShelves: VocabTerm[][] = [];
+          for (let i = 0; i < pageVocab.length; i += VOCAB_PER_SHELF) vocabShelves.push(pageVocab.slice(i, i + VOCAB_PER_SHELF));
+          if (vocabShelves.length === 0) vocabShelves.push([]);
+
+          return (
+            <div style={{ marginBottom: 48 }}>
+              {/* Vocab header */}
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 10, marginBottom: 16 }}>
+                <div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                    <span style={{ fontSize: 22 }}>📖</span>
+                    <span style={{ fontSize: 20, fontWeight: 700, color: S.text }}>Technical English</span>
+                    <span style={{ fontSize: 12, padding: '2px 8px', borderRadius: 10, background: 'rgba(47,129,247,0.15)', color: S.accent, border: `1px solid rgba(47,129,247,0.25)` }}>
+                      {filteredVocab.length} терминов
+                    </span>
+                  </div>
+                  <div style={{ fontSize: 13, color: S.muted, marginTop: 4 }}>IT-словарь с транскрипцией, переводом и примерами</div>
+                </div>
+                <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                  <div style={{ position: 'relative' }}>
+                    <span style={{ position: 'absolute', left: 8, top: '50%', transform: 'translateY(-50%)', color: S.muted, pointerEvents: 'none' }}><SearchIcon /></span>
+                    <input
+                      value={vocabSearch}
+                      onChange={e => { setVocabSearch(e.target.value); setVocabPage(1); }}
+                      placeholder="Поиск термина..."
+                      style={{ paddingLeft: 28, paddingRight: 12, paddingTop: 6, paddingBottom: 6, background: S.surface, border: `1px solid ${S.border}`, borderRadius: 6, color: S.text, fontSize: 13, outline: 'none', width: 180 }}
+                    />
+                  </div>
+                  <select value={vocabCategory} onChange={e => { setVocabCategory(e.target.value); setVocabPage(1); }}
+                    style={{ padding: '6px 10px', background: S.surface, border: `1px solid ${S.border}`, borderRadius: 6, color: S.text, fontSize: 13, outline: 'none' }}>
+                    <option value="">Все категории</option>
+                    {vocabCategories.map(c => <option key={c} value={c}>{c}</option>)}
+                  </select>
+                </div>
+              </div>
+
+              {/* Vocab shelves */}
+              {vocabShelves.map((shelf, si) => {
+                const filled = [...shelf];
+                while (filled.length < VOCAB_PER_SHELF) filled.push(null as any);
+                return (
+                  <div key={si} style={{ marginBottom: 32 }}>
+                    <div style={{ display: 'flex', gap: 16, alignItems: 'flex-end', padding: '24px 24px 0',
+                      background: S.surface, borderRadius: '8px 8px 0 0', border: `1px solid ${S.border}`,
+                      borderBottom: 'none', minHeight: 210, flexWrap: 'nowrap', overflowX: 'auto' }}>
+                      {filled.map((t, i) => t
+                        ? <VocabBookCard key={t.id} term={t} />
+                        : <div key={`ev-${i}`} style={{ width: 120, height: 160, opacity: 0.1 }}>
+                            <div style={{ width: 120, height: 160, borderRadius: '2px 6px 6px 2px', border: `2px dashed ${S.border}` }} />
+                          </div>
+                      )}
+                    </div>
+                    <div style={{ height: 14, background: 'linear-gradient(180deg,#3d2b1f 0%,#2a1d13 60%,#1a1108 100%)',
+                      borderRadius: '0 0 4px 4px', border: `1px solid #4a3525`, borderTop: '2px solid #5c3d28',
+                      boxShadow: '0 4px 12px rgba(0,0,0,0.5)' }} />
+                  </div>
+                );
+              })}
+
+              {/* Vocab pagination */}
+              {totalVocabPages > 1 && (
+                <div style={{ display: 'flex', justifyContent: 'center', gap: 4, marginTop: 8 }}>
+                  <PaginationButton onClick={() => setVocabPage(p => Math.max(1, p - 1))} disabled={curVocabPage === 1}><ChevronLeftIcon /></PaginationButton>
+                  {Array.from({ length: totalVocabPages }, (_, i) => i + 1).map(n => (
+                    <PaginationButton key={n} onClick={() => setVocabPage(n)} active={curVocabPage === n}>{n}</PaginationButton>
+                  ))}
+                  <PaginationButton onClick={() => setVocabPage(p => Math.min(totalVocabPages, p + 1))} disabled={curVocabPage === totalVocabPages}><ChevronRightIcon /></PaginationButton>
+                </div>
+              )}
+
+              {/* Divider */}
+              <div style={{ height: 1, background: S.border, margin: '32px 0 0' }} />
+            </div>
+          );
+        })()}
 
         {/* Content */}
         {isLoading ? (

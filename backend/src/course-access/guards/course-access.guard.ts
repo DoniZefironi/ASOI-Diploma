@@ -25,9 +25,15 @@ export class CourseAccessGuard implements CanActivate {
 
     const request = context.switchToHttp().getRequest();
     const userId = request.user?.userId;
+    const userRoles: string[] = request.user?.roles || [];
 
     if (!userId) {
       throw new ForbiddenException('Необходимо авторизоваться');
+    }
+
+    // Администратор имеет доступ ко всем курсам
+    if (userRoles.includes('admin')) {
+      return true;
     }
 
     const access = await this.courseAccessService.checkAccess(userId, requiredCourseType);

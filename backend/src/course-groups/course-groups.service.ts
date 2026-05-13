@@ -180,15 +180,20 @@ export class CourseGroupsService {
     });
 
     if (userApprovedRegistrations.length > 0) {
-      // Проверяем направление курса
-      const existingCourseType = userApprovedRegistrations[0].courseGroup.course.type;
       const newCourseType = courseGroup.course.type;
 
-      if (existingCourseType !== newCourseType) {
-        throw new ConflictException(
-          `Вы уже записаны на курс другого направления (${existingCourseType}).
-           Нельзя быть записанным на курсы разных направлений одновременно.`
+      // Английский курс доступен всем — можно записаться параллельно с основным
+      if (newCourseType !== 'english') {
+        const nonEnglishReg = userApprovedRegistrations.find(
+          r => r.courseGroup.course.type !== 'english'
         );
+        if (nonEnglishReg && nonEnglishReg.courseGroup.course.type !== newCourseType) {
+          throw new ConflictException(
+            `Вы уже записаны на курс другого направления (${nonEnglishReg.courseGroup.course.type}). ` +
+            `Нельзя одновременно быть записанным на курсы разных направлений. ` +
+            `Курс английского языка можно добавить к любому направлению.`
+          );
+        }
       }
     }
 
@@ -267,16 +272,14 @@ export class CourseGroupsService {
     console.log(`[addStudentRole] hasThisStudentRole: ${hasThisStudentRole}, hasAnyStudentRole: ${hasAnyStudentRole}`);
 
     if (!hasThisStudentRole) {
-      // Если есть другая роль студента - не даём вторую
-      if (hasAnyStudentRole) {
-        console.log(`User ${userId} already has a student role: ${userRoles.find(r => r.role.startsWith('student_'))?.role}`);
+      // Английский курс — можно добавить роль поверх уже существующей основной
+      const isEnglish = studentRole === UserRoleEnum.STUDENT_ENGLISH;
+      if (hasAnyStudentRole && !isEnglish) {
+        console.log(`User ${userId} already has a student role, skipping non-english role`);
         return;
       }
 
-      const newRole = this.userRoleRepository.create({
-        userId,
-        role: studentRole,
-      });
+      const newRole = this.userRoleRepository.create({ userId, role: studentRole });
       await this.userRoleRepository.save(newRole);
       console.log(`✅ Added ${studentRole} role to user ${userId}`);
     } else {

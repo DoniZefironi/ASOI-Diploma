@@ -7,6 +7,7 @@ import { apiClient } from '@/shared/api/client';
 import { useAuth } from '@/shared/lib/auth-context';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
 import { Button } from '@/shared/ui/button';
+import { TechVocabulary } from '@/features/english/TechVocabulary';
 
 interface Course {
   id: number;
@@ -72,6 +73,7 @@ export default function CoursePage() {
   const [userGroup, setUserGroup] = useState<CourseGroup | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isRegistering, setIsRegistering] = useState(false);
+  const [activeTab, setActiveTab] = useState<'overview' | 'vocab'>('overview');
 
   useEffect(() => {
     loadData();
@@ -147,11 +149,35 @@ export default function CoursePage() {
   return (
     <div className="min-h-screen bg-[#0D1117] py-12">
       <div className="container mx-auto px-4">
-        <div className="mb-8">
+        <div className="mb-8 flex items-center justify-between flex-wrap gap-3">
           <Link href="/courses" className="text-blue-400 hover:text-blue-300">
             ← Назад к курсам
           </Link>
+          {course?.type === 'english' && (
+            <div className="flex gap-2">
+              <button
+                onClick={() => setActiveTab('overview')}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${activeTab === 'overview' ? 'bg-blue-600 text-white' : 'bg-gray-800 text-gray-300 hover:bg-gray-700'}`}
+              >
+                📋 Курс
+              </button>
+              <button
+                onClick={() => setActiveTab('vocab')}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${activeTab === 'vocab' ? 'bg-purple-600 text-white' : 'bg-gray-800 text-gray-300 hover:bg-gray-700'}`}
+              >
+                📖 Tech Vocabulary
+              </button>
+            </div>
+          )}
         </div>
+
+        {/* Вкладка словаря для английских курсов */}
+        {course?.type === 'english' && activeTab === 'vocab' && (
+          <TechVocabulary />
+        )}
+
+        {(course?.type !== 'english' || activeTab === 'overview') && (
+        <>
 
         {/* Информация о курсе */}
         <div className="bg-[#161B22] rounded-xl p-8 border border-gray-700 mb-8">
@@ -275,6 +301,8 @@ export default function CoursePage() {
             </div>
           )}
         </div>
+        </>
+        )}
       </div>
     </div>
   );
