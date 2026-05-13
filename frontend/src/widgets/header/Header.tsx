@@ -206,12 +206,21 @@ export const Header = () => {
                     onMouseEnter={e => (e.currentTarget.style.background = 'var(--color-neutral-2)')}
                     onMouseLeave={e => !isDropdownOpen && (e.currentTarget.style.background = 'transparent')}
                   >
-                    <div
-                      className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold flex-shrink-0"
-                      style={{ background: 'var(--color-accent-emphasis)', color: '#fff' }}
-                    >
-                      {getAvatarLetter()}
-                    </div>
+                    {user.avatar ? (
+                      <img
+                        src={user.avatar}
+                        alt="Аватар"
+                        className="w-8 h-8 rounded-full object-cover flex-shrink-0"
+                        style={{ border: '1px solid var(--color-border-default)' }}
+                      />
+                    ) : (
+                      <div
+                        className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold flex-shrink-0"
+                        style={{ background: 'var(--color-accent-emphasis)', color: '#fff' }}
+                      >
+                        {getAvatarLetter()}
+                      </div>
+                    )}
                     <ChevronDownIcon />
                   </button>
 

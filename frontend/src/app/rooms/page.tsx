@@ -28,31 +28,31 @@ function NewRoomModal({ onClose, onCreated }: { onClose: () => void; onCreated: 
 
   return (
     <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4" onClick={onClose}>
-      <div className="bg-gh-canvas-overlay border border-[#30363d] rounded-xl w-full max-w-lg p-6" onClick={e => e.stopPropagation()}>
+      <div className="bg-gh-canvas-overlay border border-gh-border rounded-xl w-full max-w-lg p-6" onClick={e => e.stopPropagation()}>
         <h2 className="text-xl font-bold text-gh-fg mb-5">Создать комнату</h2>
         <div className="space-y-4">
           <div>
             <label className="text-sm text-gray-400 block mb-1">Название *</label>
             <input value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
-              className="w-full bg-gh-canvas border border-[#30363d] rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-blue-500" />
+              className="w-full bg-gh-canvas border border-gh-border rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-blue-500" />
           </div>
           <div>
             <label className="text-sm text-gray-400 block mb-1">Описание</label>
             <textarea value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))} rows={2}
-              className="w-full bg-gh-canvas border border-[#30363d] rounded-lg px-3 py-2 text-white text-sm resize-none focus:outline-none focus:border-blue-500" />
+              className="w-full bg-gh-canvas border border-gh-border rounded-lg px-3 py-2 text-white text-sm resize-none focus:outline-none focus:border-blue-500" />
           </div>
           <div>
             <label className="text-sm text-gray-400 block mb-2">Тип симулятора</label>
             <div className="flex gap-3">
               {(['circuit', 'iot'] as const).map(t => (
                 <button key={t} onClick={() => setForm(f => ({ ...f, type: t }))}
-                  className={`flex-1 py-3 rounded-lg border text-sm font-medium transition-colors ${form.type === t ? 'border-blue-500 bg-blue-900/30 text-blue-300' : 'border-[#30363d] bg-gh-canvas text-gray-400 hover:border-gray-500'}`}>
+                  className={`flex-1 py-3 rounded-lg border text-sm font-medium transition-colors ${form.type === t ? 'border-blue-500 bg-blue-900/30 text-blue-300' : 'border-gh-border bg-gh-canvas text-gray-400 hover:border-gray-500'}`}>
                   {TYPE_ICON[t]} {TYPE_LABEL[t]}
                 </button>
               ))}
             </div>
           </div>
-          <div className="bg-gh-canvas border border-[#30363d] rounded-lg p-4">
+          <div className="bg-gh-canvas border border-gh-border rounded-lg p-4">
             <div className="flex items-center justify-between">
               <div>
                 <div className="text-sm font-medium text-white">{form.isPublic ? '🌍 Публичная' : '🔒 Приватная'}</div>
@@ -74,7 +74,7 @@ function NewRoomModal({ onClose, onCreated }: { onClose: () => void; onCreated: 
               className="flex-1 bg-green-700 hover:bg-green-600 disabled:bg-gray-700 text-white rounded-lg py-2 text-sm font-medium transition-colors">
               {saving ? 'Создание...' : 'Создать комнату'}
             </button>
-            <button onClick={onClose} className="px-4 py-2 bg-[#21262d] hover:bg-[#30363d] text-gray-300 rounded-lg text-sm transition-colors">
+            <button onClick={onClose} className="px-4 py-2 bg-gh-neutral-2 hover:bg-gh-neutral-3 text-gh-fg-muted rounded-lg text-sm transition-colors">
               Отмена
             </button>
           </div>
@@ -86,7 +86,7 @@ function NewRoomModal({ onClose, onCreated }: { onClose: () => void; onCreated: 
 
 function RoomCard({ room, myRole }: { room: Room; myRole?: string }) {
   return (
-    <div className="group bg-gh-canvas-overlay border border-[#30363d] rounded-xl p-5 hover:border-[#8b949e] transition-colors">
+    <div className="group bg-gh-canvas-overlay border border-gh-border rounded-xl p-5 hover:border-gh-fg-muted transition-colors">
       <div className="flex items-start justify-between gap-4">
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-3 flex-wrap mb-1">
@@ -102,8 +102,8 @@ function RoomCard({ room, myRole }: { room: Room; myRole?: string }) {
               {room.isPublic ? '🌍 Публичная' : '🔒 Приватная'}
             </span>
           </div>
-          {room.description && <p className="text-[#8b949e] text-sm mb-2 line-clamp-1">{room.description}</p>}
-          <div className="flex items-center gap-4 text-xs text-[#8b949e]">
+          {room.description && <p className="text-gh-fg-muted text-sm mb-2 line-clamp-1">{room.description}</p>}
+          <div className="flex items-center gap-4 text-xs text-gh-fg-muted">
             <span>{TYPE_LABEL[room.type]}</span>
             <span>· {room.members.length} участников</span>
             <span>· Обновлено {new Date(room.updatedAt).toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' })}</span>
@@ -114,19 +114,19 @@ function RoomCard({ room, myRole }: { room: Room; myRole?: string }) {
           <div className="flex -space-x-2">
             {room.members.slice(0, 4).map(m => (
               <div key={m.id}
-                className="w-7 h-7 rounded-full bg-blue-700 border-2 border-[#161b22] flex items-center justify-center text-xs text-white font-medium"
+                className="w-7 h-7 rounded-full bg-blue-700 border-2 border-gh-canvas-overlay flex items-center justify-center text-xs text-white font-medium"
                 title={`${m.user.firstName} ${m.user.lastName}`}>
                 {m.user.firstName?.[0]}{m.user.lastName?.[0]}
               </div>
             ))}
             {room.members.length > 4 && (
-              <div className="w-7 h-7 rounded-full bg-gray-700 border-2 border-[#161b22] flex items-center justify-center text-xs text-gray-300">
+              <div className="w-7 h-7 rounded-full bg-gray-700 border-2 border-gh-canvas-overlay flex items-center justify-center text-xs text-gray-300">
                 +{room.members.length - 4}
               </div>
             )}
           </div>
           <Link href={`/rooms/${room.id}/editor`}
-            className="ml-2 px-3 py-1.5 bg-[#21262d] hover:bg-[#30363d] border border-[#30363d] text-sm text-white rounded-lg transition-colors">
+            className="ml-2 px-3 py-1.5 bg-gh-neutral-2 hover:bg-gh-neutral-3 border border-gh-border text-sm text-gh-fg rounded-lg transition-colors">
             Открыть
           </Link>
         </div>
@@ -184,7 +184,7 @@ export default function RoomsPage() {
         <div className="flex items-center justify-between mb-8">
           <div>
             <h1 className="text-2xl font-bold text-gh-fg">Комнаты</h1>
-            <p className="text-[#8b949e] text-sm mt-1">Совместная разработка схем и IoT-проектов</p>
+            <p className="text-gh-fg-muted text-sm mt-1">Совместная разработка схем и IoT-проектов</p>
           </div>
           <button onClick={() => setShowNew(true)}
             className="flex items-center gap-2 bg-green-700 hover:bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
@@ -199,23 +199,23 @@ export default function RoomsPage() {
             onChange={e => setInviteInput(e.target.value)}
             onKeyDown={e => e.key === 'Enter' && handleJoin()}
             placeholder="Вставьте инвайт-ссылку или код..."
-            className="flex-1 min-w-[200px] bg-gh-canvas-overlay border border-[#30363d] rounded-lg px-3 py-2 text-sm text-white placeholder-[#8b949e] focus:outline-none focus:border-blue-500"
+            className="flex-1 min-w-[200px] bg-gh-canvas-overlay border border-gh-border rounded-lg px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
           />
           <button onClick={handleJoin} disabled={joining || !inviteInput.trim()}
-            className="bg-[#21262d] hover:bg-[#30363d] disabled:opacity-50 text-white px-4 py-2 rounded-lg text-sm border border-[#30363d] transition-colors">
+            className="bg-gh-neutral-2 hover:bg-gh-neutral-3 disabled:opacity-50 text-gh-fg border border-gh-border transition-colors">
             {joining ? 'Вход...' : 'Войти по инвайту'}
           </button>
           {joinError && <p className="text-red-400 text-sm self-center">{joinError}</p>}
         </div>
 
         {/* Tabs */}
-        <div className="flex gap-1 mb-6 border-b border-[#30363d]">
+        <div className="flex gap-1 mb-6 border-b border-gh-border">
           {[
             { key: 'mine',   label: `Мои комнаты (${myRooms.length})` },
             { key: 'public', label: `Публичные (${publicRooms.length})` },
           ].map(t => (
             <button key={t.key} onClick={() => setTab(t.key as any)}
-              className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${tab === t.key ? 'border-[#f78166] text-white' : 'border-transparent text-[#8b949e] hover:text-white'}`}>
+              className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${tab === t.key ? 'border-[#f78166] text-white' : 'border-transparent text-gh-fg-muted hover:text-white'}`}>
               {t.label}
             </button>
           ))}
@@ -224,11 +224,11 @@ export default function RoomsPage() {
         {/* Content */}
         {loading ? (
           <div className="space-y-3">
-            {[1,2,3].map(i => <div key={i} className="h-24 bg-gh-canvas-overlay border border-[#30363d] rounded-xl animate-pulse" />)}
+            {[1,2,3].map(i => <div key={i} className="h-24 bg-gh-canvas-overlay border border-gh-border rounded-xl animate-pulse" />)}
           </div>
         ) : tab === 'mine' ? (
           myRooms.length === 0 ? (
-            <div className="text-center py-20 text-[#8b949e]">
+            <div className="text-center py-20 text-gh-fg-muted">
               <div className="text-5xl mb-4">⚡</div>
               <p className="text-lg font-medium text-white mb-2">Нет комнат</p>
               <p className="text-sm">Создайте первую комнату или войдите по инвайт-ссылке</p>
@@ -240,7 +240,7 @@ export default function RoomsPage() {
           )
         ) : (
           publicRooms.length === 0 ? (
-            <div className="text-center py-20 text-[#8b949e]">
+            <div className="text-center py-20 text-gh-fg-muted">
               <div className="text-5xl mb-4">🌍</div>
               <p className="text-lg font-medium text-white mb-2">Нет публичных комнат</p>
               <p className="text-sm">Создайте публичную комнату чтобы другие могли к ней присоединиться</p>

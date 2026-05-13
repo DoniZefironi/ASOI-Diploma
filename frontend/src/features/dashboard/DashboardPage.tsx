@@ -230,8 +230,8 @@ export const DashboardPage = () => {
           )}
         </div>
 
-        {/* ── Main 2-col grid ─────────────────────────────────── */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+        {/* ── Main grid: расписание широкое | рейтинг+ссылки ── */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1.6fr) minmax(0,1fr)', gap: 16 }}>
 
           {/* Schedule card */}
           <Card noPadding>
@@ -413,40 +413,19 @@ export const DashboardPage = () => {
               )}
             </div>
           </Card>
-        </div>
 
-        {/* ── Quick links row ─────────────────────────────────── */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 12, marginTop: 16 }}>
-          <QuickLink
-            href="/electives"
-            title="Факультативы"
-            subtitle="Дополнительные занятия"
-            icon={<GraduationCapIcon />}
-            color="career"
-          />
-          <QuickLink
-            href="/internships"
-            title="Стажировки"
-            subtitle="Вакансии и открытые позиции"
-            icon={<BriefcaseIconLg />}
-            color="accent"
-          />
-          <QuickLink
-            href="/hackathons"
-            title="Хакатоны"
-            subtitle="Соревнования и события"
-            icon={<TrophyIcon />}
-            color="attention"
-          />
-          <QuickLink
-            href="/peer-review"
-            title="Peer Review"
-            subtitle="Задания на проверку"
-            icon={<CheckCircleIcon />}
-            color="success"
-          />
-        </div>
+          {/* ── Quick links внутри правой колонки ── */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--color-fg-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 4 }}>
+              Быстрый доступ
+            </div>
+            <QuickLink href="/electives"    title="Факультативы"  subtitle="Дополнительные занятия"   icon={<GraduationCapIcon />} color="career" />
+            <QuickLink href="/internships"  title="Стажировки"    subtitle="Вакансии и позиции"        icon={<BriefcaseIconLg />}  color="accent" />
+            <QuickLink href="/hackathons"   title="Хакатоны"      subtitle="Соревнования и события"    icon={<TrophyIcon />}       color="attention" />
+            <QuickLink href="/peer-review"  title="Peer Review"   subtitle="Задания на проверку"       icon={<CheckCircleIcon />}  color="success" />
+          </div>
 
+        </div>
       </div>
 
       {/* spin keyframe */}

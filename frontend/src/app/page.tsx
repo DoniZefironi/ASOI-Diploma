@@ -1,17 +1,19 @@
 import { VideoBackground } from '@/widgets/video-background/VideoBackground';
-import { CoursesSection } from '@/features/courses';
 import { CareerSection } from '@/features/career';
 import { Hero } from '@/widgets/hero';
 
 export default function Home() {
   return (
     <main className="min-h-screen">
-      <div className="relative h-screen flex items-center justify-center">
-        <VideoBackground />
+      <VideoBackground />
+
+      {/* Hero — поверх кубов */}
+      <div className="relative h-screen flex items-center justify-center" style={{ zIndex: 2 }}>
         <Hero />
       </div>
-      <div className="relative z-10">
-        <CoursesSection />
+
+      {/* CareerSection — со своим фоном, перекрывает кубы при скролле */}
+      <div className="relative" style={{ zIndex: 2, background: 'var(--color-canvas-default)' }}>
         <CareerSection />
       </div>
     </main>

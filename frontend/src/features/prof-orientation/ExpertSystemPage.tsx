@@ -287,48 +287,59 @@ export default function CareerOrientationPage() {
   // ── Welcome ────────────────────────────────────────────────────────────────
   if (step === 'welcome') {
     return (
-      <div className="min-h-screen bg-gh-canvas flex items-center justify-center p-4">
-        <div className="max-w-lg w-full">
-          <div className="text-center mb-10">
-            <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-blue-500/20 to-purple-500/20 border border-blue-500/30 rounded-2xl mb-6">
-              <span className="text-4xl">🧭</span>
-            </div>
-            <h1 className="text-3xl font-bold text-gh-fg mb-3 leading-snug">
-              Какая IT-профессия<br />тебе подойдёт?
-            </h1>
-            <p className="text-gray-400 leading-relaxed">
-              Ответь честно на 40 вопросов о том, как ты думаешь и работаешь.
-              Мы предложим направления, где ты будешь расти с удовольствием —
-              и построим дорожную карту.
-            </p>
-          </div>
+      <div className="min-h-screen bg-gh-canvas py-12 px-4">
+        <div className="max-w-5xl mx-auto">
 
-          <div className="grid grid-cols-2 gap-3 mb-8">
-            {Object.values(STAGE_INFO).map(({ label, icon }) => (
-              <div key={label} className="bg-gh-canvas-overlay border border-[#30363d] rounded-xl p-4 flex items-center gap-3">
-                <span className="text-2xl">{icon}</span>
-                <span className="text-sm text-gray-300 font-medium">{label}</span>
+          {/* Hero — two columns */}
+          <div className="grid md:grid-cols-2 gap-10 items-center mb-12">
+            <div>
+              <div className="inline-flex items-center gap-2 bg-blue-500/10 border border-blue-500/20 text-blue-400 rounded-full px-4 py-1.5 text-sm mb-6">
+                🧭 Профориентация
               </div>
-            ))}
+              <h1 className="text-4xl font-bold text-gh-fg mb-4 leading-tight">
+                Какая IT-профессия<br />тебе подойдёт?
+              </h1>
+              <p className="text-gh-fg-muted leading-relaxed mb-6 text-base">
+                Ответь честно на 40 вопросов о том, как ты думаешь и работаешь.
+                Система подберёт направления и построит персональную дорожную карту.
+              </p>
+              <div className="flex items-center gap-6 text-sm text-gh-fg-muted mb-8">
+                <span>📋 40 вопросов</span>
+                <span>⏱ ~7 минут</span>
+                <span>🎯 12 направлений</span>
+              </div>
+              <button
+                onClick={() => setStep('questions')}
+                className="px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl transition-colors text-lg"
+              >
+                Начать тестирование →
+              </button>
+            </div>
+
+            <div className="space-y-3">
+              {Object.values(STAGE_INFO).map(({ label, icon }, i) => (
+                <div key={label} className="bg-gh-canvas-overlay border border-gh-border rounded-xl p-4 flex items-center gap-4">
+                  <div className="w-10 h-10 bg-blue-500/10 border border-blue-500/20 rounded-xl flex items-center justify-center text-xl flex-shrink-0">
+                    {icon}
+                  </div>
+                  <div>
+                    <div className="text-xs text-gh-fg-muted mb-0.5">Блок {i + 1}</div>
+                    <div className="text-sm text-gh-fg font-medium">{label}</div>
+                  </div>
+                  <div className="ml-auto text-xs text-gh-fg-muted">
+                    {Math.ceil(QUESTIONS.filter(q => q.stage === i + 1).length)} вопросов
+                  </div>
+                </div>
+              ))}
+              <div className="bg-gh-canvas-overlay border border-gh-border rounded-xl p-4 flex items-start gap-3">
+                <span className="text-blue-400 text-lg mt-0.5">ℹ️</span>
+                <p className="text-sm text-gh-fg-muted leading-relaxed">
+                  Нет правильных или неправильных ответов — чем честнее ты отвечаешь, тем точнее результат.
+                </p>
+              </div>
+            </div>
           </div>
 
-          <div className="bg-gh-canvas-overlay border border-[#30363d] rounded-xl p-4 mb-6 flex items-start gap-3">
-            <span className="text-blue-400 mt-0.5">ℹ️</span>
-            <p className="text-sm text-gray-400 leading-relaxed">
-              Нет правильных или неправильных ответов. Чем честнее ты отвечаешь,
-              тем точнее будет результат и дорожная карта.
-            </p>
-          </div>
-
-          <button
-            onClick={() => setStep('questions')}
-            className="w-full py-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl transition-colors text-lg"
-          >
-            Начать →
-          </button>
-          <p className="text-center text-xs text-gray-600 mt-4">
-            40 вопросов · ~7 минут · 12 направлений
-          </p>
         </div>
       </div>
     );
@@ -341,7 +352,7 @@ export default function CareerOrientationPage() {
 
     return (
       <div className="min-h-screen bg-gh-canvas flex flex-col items-center justify-center p-4">
-        <div className="max-w-xl w-full">
+        <div className="max-w-2xl w-full">
           {/* Progress */}
           <div className="mb-6">
             <div className="flex items-center justify-between mb-2">
@@ -424,7 +435,7 @@ export default function CareerOrientationPage() {
         <RoadmapView match={roadmapMatch} onClose={() => setRoadmapMatch(null)} />
       )}
 
-      <div className="max-w-3xl mx-auto">
+      <div className="max-w-5xl mx-auto">
         {/* Status indicator */}
         <div className="mb-4 flex items-center justify-center gap-2">
           {isSaving ? (
@@ -442,18 +453,24 @@ export default function CareerOrientationPage() {
           ) : null}
         </div>
 
+        {/* Two-column layout: left = profile+traits, right = careers */}
+        <div className="grid md:grid-cols-[1fr_1.3fr] gap-5 items-start">
+
+        {/* Left column */}
+        <div className="space-y-5">
+
         {/* Profile */}
-        <div className="relative overflow-hidden bg-gradient-to-br from-[#1a2030] to-[#161b22] border border-[#30363d] rounded-2xl p-6 mb-5">
+        <div className="relative overflow-hidden bg-gh-canvas-overlay border border-gh-border rounded-2xl p-6">
           <div className="absolute top-0 right-0 w-40 h-40 bg-blue-500/5 rounded-full -mr-10 -mt-10 pointer-events-none" />
-          <div className="flex items-start gap-4">
+          <div className="flex items-start gap-4 mb-4">
             <div className="w-14 h-14 bg-blue-500/15 border border-blue-500/30 rounded-xl flex items-center justify-center text-3xl flex-shrink-0">🪞</div>
             <div className="flex-1">
               <p className="text-xs text-blue-400 font-medium uppercase tracking-wider mb-1">Твой профиль</p>
               <h2 className="text-xl font-bold text-gh-fg mb-2">{result.profileTitle}</h2>
-              <p className="text-gray-400 text-sm leading-relaxed">{result.profileDescription}</p>
+              <p className="text-gh-fg-muted text-sm leading-relaxed">{result.profileDescription}</p>
             </div>
           </div>
-          <div className="flex flex-wrap gap-2 mt-4">
+          <div className="flex flex-wrap gap-2">
             {result.dominantTraits.map(t => (
               <span key={t} className="px-3 py-1 rounded-full text-xs font-medium"
                 style={{ background: TRAIT_COLORS[t] + '20', color: TRAIT_COLORS[t], border: `1px solid ${TRAIT_COLORS[t]}40` }}>
@@ -464,16 +481,16 @@ export default function CareerOrientationPage() {
         </div>
 
         {/* Trait bars */}
-        <div className="bg-gh-canvas-overlay border border-[#30363d] rounded-2xl p-5 mb-5">
-          <h3 className="text-xs font-semibold text-gray-500 mb-4 uppercase tracking-wide">Характеристики</h3>
+        <div className="bg-gh-canvas-overlay border border-gh-border rounded-2xl p-5">
+          <h3 className="text-xs font-semibold text-gh-fg-muted mb-4 uppercase tracking-wide">Характеристики</h3>
           <div className="space-y-3">
             {(Object.entries(result.traitScores) as [TraitKey, number][])
               .sort((a, b) => b[1] - a[1])
               .map(([key, score]) => (
                 <div key={key} className="flex items-center gap-3">
                   <span className="text-base w-5 text-center flex-shrink-0">{TRAIT_ICONS[key]}</span>
-                  <div className="w-40 text-xs text-gray-400 flex-shrink-0 truncate">{TRAIT_LABELS[key]}</div>
-                  <div className="flex-1 bg-[#21262d] rounded-full h-1.5">
+                  <div className="w-36 text-xs text-gh-fg-muted flex-shrink-0 truncate">{TRAIT_LABELS[key]}</div>
+                  <div className="flex-1 bg-gh-neutral-2 rounded-full h-1.5">
                     <div className="h-1.5 rounded-full transition-all"
                       style={{ width: `${score * 10}%`, background: TRAIT_COLORS[key] }} />
                   </div>
@@ -484,8 +501,10 @@ export default function CareerOrientationPage() {
               ))}
           </div>
         </div>
+        </div>{/* end left column */}
 
-        {/* Career matches */}
+        {/* Right column — Career matches */}
+        <div>
         <h3 className="font-semibold text-gh-fg mb-3">Подходящие направления</h3>
         <div className="space-y-2 mb-8">
           {result.topMatches.map((match, i) => (
@@ -632,10 +651,12 @@ export default function CareerOrientationPage() {
         </div>
 
         <div className="text-center pb-4">
-          <button onClick={restart} className="px-6 py-3 border border-[#30363d] hover:border-[#58a6ff] text-gray-400 hover:text-white rounded-xl text-sm transition-colors">
+          <button onClick={restart} className="px-6 py-3 border border-gh-border hover:border-blue-400 text-gh-fg-muted hover:text-gh-fg rounded-xl text-sm transition-colors">
             Пройти заново
           </button>
         </div>
+        </div>{/* end right column */}
+        </div>{/* end two-column grid */}
       </div>
     </div>
   );

@@ -4,28 +4,18 @@ import { useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { useAuth, hasStudentRole, hasMentorRole, hasAdminRole, getCourseTypeFromRole } from '@/shared/lib/auth-context';
 
-// Список публичных страниц, доступных БЕЗ авторизации
-const PUBLIC_PATHS = [
-  '/',
-  '/auth',
-  '/about',
-  '/contacts',
-  '/faq',
-  '/privacy',
-  '/terms',
-];
-
-// Страницы, доступные только АВТОРИЗОВАННЫМ пользователям (любая роль кроме registered_user)
-const AUTHORIZED_ONLY_PATHS = [
+// Пути, требующие авторизации (любая роль)
+const AUTH_REQUIRED = [
+  '/profile',
   '/dashboard',
   '/schedule',
   '/hackathons',
   '/forum',
   '/career',
-];
-
-// Страницы, доступные только СТУДЕНТАМ и выше (не registered_user)
-const STUDENT_ONLY_PATHS = [
+  '/rooms',
+  '/peer-review',
+  '/library',
+  '/prof-orientation',
   '/complilier',
   '/compiler',
   '/circuit',
@@ -33,21 +23,23 @@ const STUDENT_ONLY_PATHS = [
   '/simulator',
 ];
 
-// Страницы, доступные только МЕНТОРАМ и ADMIN
-const MENTOR_ONLY_PATHS = [
-  '/mentor',
+// Только менторы и админы
+const MENTOR_ONLY_PATHS = ['/mentor'];
+
+// Только админы
+const ADMIN_ONLY_PATHS = ['/admin'];
+
+// Студенты + менторы + админы (не просто registered_user)
+const ENROLLED_ONLY_PATHS = [
+  '/complilier',
+  '/compiler',
+  '/circuit',
+  '/shematic',
+  '/simulator',
 ];
 
-// Страницы, доступные только ADMIN
-const ADMIN_ONLY_PATHS = [
-  '/admin',
-];
-
-// Страницы по типам курсов
-const COURSE_TYPE_PATHS: Record<string, string[]> = {
-  'computer_science': ['/complilier', '/compiler'],
-  'electronics': ['/circuit', '/shematic', '/simulator'],
-};
+const matches = (pathname: string, paths: string[]) =>
+  paths.some(p => pathname === p || pathname.startsWith(p + '/'));
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -65,101 +57,73 @@ export function ProtectedRoute({
   const { user, isLoading } = useAuth();
 
   useEffect(() => {
-    if (isLoading) return;
-    if (!pathname) return;
+    if (isLoading || !pathname) return;
 
     const userRoles = user?.roles || [];
+    const isStudent = hasStudentRole(userRoles);
+    const isMentor = hasMentorRole(userRoles);
+    const isAdmin = hasAdminRole(userRoles);
+    const isRegisteredOnly = !!user && !isStudent && !isMentor && !isAdmin;
     const userCourseType = getCourseTypeFromRole(userRoles) || (user as any)?.enrolledCourseType;
 
-    // 1. Проверка публичных страниц (доступны всем, включая неавторизованных)
-    const isPublicPath = PUBLIC_PATHS.some(path => pathname.startsWith(path));
-    if (isPublicPath) {
-      return;
-    }
-
-    // 2. Если не авторизован - редирект на страницу авторизации
-    if (!user) {
+    // 1. Если путь требует авторизации и пользователь не вошёл
+    if (!user && matches(pathname, AUTH_REQUIRED)) {
       router.push('/auth?redirect=' + encodeURIComponent(pathname));
       return;
     }
 
-    const isStudent = hasStudentRole(userRoles);
-    const isMentor = hasMentorRole(userRoles);
-    const isAdmin = hasAdminRole(userRoles);
-    const isRegisteredUser = userRoles.includes('registered_user') && !isStudent && !isMentor && !isAdmin;
-
-    // 3. Проверка ADMIN_ONLY
-    const isAdminOnlyPath = ADMIN_ONLY_PATHS.some(path => pathname.startsWith(path));
-    if (isAdminOnlyPath && !isAdmin) {
+    // 2. Только менторы и админы
+    if (matches(pathname, MENTOR_ONLY_PATHS) && !isMentor && !isAdmin) {
       router.push('/profile');
       return;
     }
 
-    // 4. Проверка MENTOR_ONLY
-    const isMentorOnlyPath = MENTOR_ONLY_PATHS.some(path => pathname.startsWith(path));
-    if (isMentorOnlyPath && !isMentor && !isAdmin) {
+    // 3. Только админы
+    if (matches(pathname, ADMIN_ONLY_PATHS) && !isAdmin) {
       router.push('/profile');
       return;
     }
 
-    // 5. Проверка STUDENT_ONLY (студенты, менторы, админы)
-    const isStudentOnlyPath = STUDENT_ONLY_PATHS.some(path => pathname.startsWith(path));
-    if (isStudentOnlyPath && !isStudent && !isMentor && !isAdmin) {
-      router.push('/profile');
+    // 4. Студенты / менторы / админы (не просто registered_user)
+    if (matches(pathname, ENROLLED_ONLY_PATHS) && isRegisteredOnly) {
+      router.push('/courses');
       return;
     }
 
-    // 6. Проверка AUTHORIZED_ONLY (все авторизованные кроме registered_user)
-    const isAuthorizedOnlyPath = AUTHORIZED_ONLY_PATHS.some(path => pathname.startsWith(path));
-    if (isAuthorizedOnlyPath && isRegisteredUser) {
-      router.push('/profile');
-      return;
-    }
-
-    // 7. Проверка доступа по типу курса
+    // 5. Проверка доступа по типу курса (компилятор — CS, эмулятор — electronics)
     if (userCourseType) {
+      const COURSE_TYPE_PATHS: Record<string, string[]> = {
+        computer_science: ['/complilier', '/compiler'],
+        electronics: ['/circuit', '/shematic', '/simulator'],
+      };
       for (const [courseType, paths] of Object.entries(COURSE_TYPE_PATHS)) {
-        const isCourseTypePath = paths.some(path => pathname.startsWith(path));
-        if (isCourseTypePath && userCourseType !== courseType) {
-          // Если это страница другого курса
-          if (courseType === 'computer_science' && userCourseType !== 'computer_science') {
-            router.push('/course-access?wrong-course-type=true');
-            return;
-          }
-          if (courseType === 'electronics' && userCourseType !== 'electronics') {
-            router.push('/course-access?wrong-course-type=true');
-            return;
-          }
+        if (matches(pathname, paths) && userCourseType !== courseType) {
+          router.push('/course-access?wrong-course-type=true');
+          return;
         }
       }
     }
 
-    // 8. Если требуется запись на курс
     if (requireCourseEnrollment && !userCourseType) {
       router.push('/courses?enrollment-required=true');
       return;
     }
-
-    // 9. Если требуется определённое направление курса
     if (allowedCourseType && userCourseType !== allowedCourseType) {
       router.push('/courses?wrong-course-type=true');
       return;
     }
   }, [user, isLoading, pathname, router, requireCourseEnrollment, allowedCourseType]);
 
-  // Показываем loading во время проверки
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gh-canvas flex items-center justify-center">
-        <div className="text-white text-xl">Загрузка...</div>
+      <div style={{ minHeight: '100vh', background: 'var(--color-canvas-default)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ color: 'var(--color-fg-muted)', fontSize: 16 }}>Загрузка...</div>
       </div>
     );
   }
 
-  const isPublicPath = PUBLIC_PATHS.some(path => pathname?.startsWith(path));
-  const isAuthorized = user || isPublicPath;
-
-  if (!isAuthorized) {
+  // Блокируем рендер только для явно защищённых путей без авторизации
+  if (!user && matches(pathname ?? '', AUTH_REQUIRED)) {
     return null;
   }
 

@@ -1,5 +1,5 @@
 // src/users/users.controller.ts
-import { Controller, Get, Param, Put, Body, UseGuards, Request, Query } from '@nestjs/common';
+import { Controller, Get, Param, Put, Patch, Body, UseGuards, Request, Query } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
@@ -40,6 +40,14 @@ export class UsersController {
   @Get('profile')
   getProfile(@Request() req) {
     return this.usersService.getProfile(req.user.userId);
+  }
+
+  @Patch('profile')
+  updateProfile(
+    @Request() req,
+    @Body() body: { firstName?: string; lastName?: string; avatar?: string },
+  ) {
+    return this.usersService.updateProfile(req.user.userId, body);
   }
 
   @Get(':id')

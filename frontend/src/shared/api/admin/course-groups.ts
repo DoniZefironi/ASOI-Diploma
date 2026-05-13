@@ -38,8 +38,9 @@ export interface RegisterToCourseDto {
   courseGroupId: number;
 }
 
-export function useCourseGroups(courseId?: number) {
-  const url = courseId ? `/course-groups/course/${courseId}` : '/course-groups';
+export function useCourseGroups(courseId?: number | null) {
+  // null → SWR не делает запрос (lazy loading)
+  const url = courseId != null ? `/course-groups/course/${courseId}` : null;
 
   const { data, error, isLoading, mutate } = useSWR<CourseGroup[]>(
     url,

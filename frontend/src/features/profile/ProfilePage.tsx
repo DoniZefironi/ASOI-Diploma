@@ -8,10 +8,11 @@ import { Button } from '@/shared/ui/button';
 import { Badge } from '@/shared/ui/badge';
 import Link from 'next/link';
 import { MyCoursesModal } from './components/MyCoursesModal';
-import { useInformaticsCourseRegistration } from '@/shared/api/admin/registrations';
+import { useUserCourseRegistrations } from '@/shared/api/admin/registrations';
 import { useProfessionalOrientation } from '@/shared/api/admin/professional-orientation';
 import { ProfOrientationTestModal } from './components/ProfOrientationTestModal';
 import { hackathonsApi, HackathonTeam, HackathonSubmission } from '@/shared/api/hackathons';
+import { apiClient } from '@/shared/api/client';
 import { AchievementsSection } from './AchievementsSection';
 import { User, BookOpen, Trophy, Compass, Pencil, Check, X, GitPullRequest, Play, GraduationCap } from 'lucide-react';
 
@@ -77,6 +78,7 @@ function SidebarLink({ href, icon, children, onClick }: {
 // ── Main component ────────────────────────────────────────────────
 export const ProfilePage = () => {
   const { user, login } = useAuth();
+  const [activeTab, setActiveTab] = useState<'profile' | 'achievements'>('profile');
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isCoursesModalOpen, setIsCoursesModalOpen] = useState(false);
@@ -87,12 +89,19 @@ export const ProfilePage = () => {
 
   const { data: profOrientationResult } = useProfessionalOrientation();
   const {
-    registration: informaticsRegistration,
-    hasAccess: hasInformaticsAccess,
+    registrations,
     isLoading: registrationsLoading,
-  } = useInformaticsCourseRegistration();
+  } = useUserCourseRegistrations();
+
+  // Любая одобренная регистрация на любой курс
+  const approvedRegistration = registrations?.find(r => r.status?.toLowerCase() === 'approved');
+  const pendingRegistration  = registrations?.find(r => r.status?.toLowerCase() === 'pending');
+  const anyRegistration = approvedRegistration || pendingRegistration || registrations?.[0];
+
+  const hasInformaticsAccess = !!approvedRegistration;
 
   const [editForm, setEditForm] = useState({ firstName: '', lastName: '', email: '' });
+  const [avatarUploading, setAvatarUploading] = useState(false);
 
   const userRoles = user?.roles || [];
   const hasStudentAccess = hasStudentRole(userRoles);
@@ -140,39 +149,118 @@ export const ProfilePage = () => {
   const handleSave = async () => {
     setIsSaving(true);
     try {
-      await new Promise(r => setTimeout(r, 800));
-      const updatedUser = { ...user, ...editForm };
+      const updated = await apiClient.patch('/users/profile', {
+        firstName: editForm.firstName,
+        lastName: editForm.lastName,
+      });
       const token = localStorage.getItem('access_token');
-      if (token) login(token, updatedUser);
+      if (token) login(token, { ...user, ...updated });
       setIsEditing(false);
     } catch {
       alert('Ошибка при обновлении профиля');
     } finally { setIsSaving(false); }
   };
 
-  const statusBadge = informaticsRegistration?.status;
+  const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 2 * 1024 * 1024) { alert('Файл слишком большой (макс. 2 МБ)'); return; }
+    setAvatarUploading(true);
+    try {
+      const base64 = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result as string);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+      const updated = await apiClient.patch('/users/profile', { avatar: base64 });
+      const token = localStorage.getItem('access_token');
+      if (token) login(token, { ...user, ...updated });
+    } catch { alert('Ошибка загрузки аватара'); }
+    finally { setAvatarUploading(false); }
+  };
+
+  const statusBadge = anyRegistration?.status;
+
+  const getShortCourseName = (name?: string): string => {
+    if (!name) return 'Курс';
+    const n = name.toLowerCase();
+    if (n.includes('english') || n.includes('английск')) return 'Английский';
+    if (n.includes('electronics') || n.includes('электрон')) return 'Электроника';
+    if (n.includes('iot')) return 'IoT';
+    if (n.includes('computer') || n.includes('информатик') || n.includes('cs')) return 'Информатика';
+    return name;
+  };
 
   return (
     <div style={{ minHeight: '100vh', background: 'var(--color-canvas-default)', padding: '24px 0' }}>
       <div className="gh-container">
 
         {/* ── Page header ───────────────────────────────────── */}
-        <div style={{ marginBottom: 24, paddingBottom: 16, borderBottom: '1px solid #21262d', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div style={{ marginBottom: 0, paddingBottom: 0, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <h1 style={{ fontSize: 20, fontWeight: 600, color: 'var(--color-fg-default)', margin: 0 }}>Профиль</h1>
         </div>
 
+        {/* ── Tabs ─────────────────────────────────────────── */}
+        <div style={{ display: 'flex', borderBottom: '1px solid var(--color-border-muted)', margin: '16px 0 24px', gap: 0 }}>
+          {(['profile', 'achievements'] as const).map(tab => (
+            <button
+              key={tab}
+              onClick={() => setActiveTab(tab)}
+              style={{
+                padding: '8px 16px', fontSize: 14, fontWeight: 500,
+                background: 'transparent', border: 'none', cursor: 'pointer',
+                color: activeTab === tab ? 'var(--color-fg-default)' : 'var(--color-fg-muted)',
+                borderBottom: activeTab === tab ? '2px solid var(--color-accent-fg)' : '2px solid transparent',
+                marginBottom: -1, transition: 'color 80ms',
+              }}
+            >
+              {tab === 'profile' ? 'Профиль' : `Достижения`}
+            </button>
+          ))}
+        </div>
+
+        {activeTab === 'achievements' && (
+          <AchievementsSection />
+        )}
+
+        {activeTab === 'profile' && (
         <div style={{ display: 'grid', gridTemplateColumns: '260px 1fr', gap: 24, alignItems: 'start' }}>
 
           {/* ── Left sidebar ──────────────────────────────────── */}
           <aside>
             {/* Avatar & name */}
             <div style={{ textAlign: 'center', marginBottom: 16 }}>
-              <div style={{
-                width: 80, height: 80, borderRadius: '50%', background: '#2f81f7',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                fontSize: 32, fontWeight: 700, color: '#fff', margin: '0 auto 12px',
-              }}>
-                {getDisplayName().charAt(0).toUpperCase()}
+              <div style={{ position: 'relative', display: 'inline-block', marginBottom: 12 }}>
+                {user.avatar ? (
+                  <img
+                    src={user.avatar}
+                    alt="Аватар"
+                    style={{ width: 80, height: 80, borderRadius: '50%', objectFit: 'cover', border: '2px solid var(--color-border-default)' }}
+                  />
+                ) : (
+                  <div style={{
+                    width: 80, height: 80, borderRadius: '50%', background: 'var(--color-accent-emphasis)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    fontSize: 32, fontWeight: 700, color: '#fff',
+                  }}>
+                    {getDisplayName().charAt(0).toUpperCase()}
+                  </div>
+                )}
+                {/* Кнопка смены аватара */}
+                <label
+                  title="Изменить аватар"
+                  style={{
+                    position: 'absolute', bottom: 0, right: 0,
+                    width: 26, height: 26, borderRadius: '50%',
+                    background: 'var(--color-canvas-overlay)', border: '1px solid var(--color-border-default)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    cursor: avatarUploading ? 'wait' : 'pointer', fontSize: 13,
+                  }}
+                >
+                  {avatarUploading ? '⏳' : '📷'}
+                  <input type="file" accept="image/*" onChange={handleAvatarChange} style={{ display: 'none' }} />
+                </label>
               </div>
               <h2 style={{ fontSize: 20, fontWeight: 600, color: 'var(--color-fg-default)', margin: '0 0 2px' }}>
                 {getDisplayName()}
@@ -180,15 +268,15 @@ export const ProfilePage = () => {
               <p style={{ fontSize: 13, color: 'var(--color-fg-muted)', margin: 0 }}>{user.email}</p>
 
               {/* Course registration status */}
-              {hasStudentAccess && !registrationsLoading && (
+              {!registrationsLoading && (
                 <div style={{ marginTop: 12 }}>
-                  {informaticsRegistration ? (
+                  {anyRegistration ? (
                     <Badge
-                      variant={statusBadge === 'approved' ? 'success' : statusBadge === 'pending' ? 'attention' : 'danger'}
+                      variant={statusBadge?.toLowerCase() === 'approved' ? 'success' : statusBadge?.toLowerCase() === 'pending' ? 'attention' : 'danger'}
                       dot
                     >
-                      Информатика:{' '}
-                      {statusBadge === 'approved' ? 'одобрено' : statusBadge === 'pending' ? 'ожидает' : 'отклонено'}
+                      {getShortCourseName(anyRegistration.courseGroup?.course?.name)}:{' '}
+                      {statusBadge?.toLowerCase() === 'approved' ? 'зачислен' : statusBadge?.toLowerCase() === 'pending' ? 'ожидает' : 'отклонено'}
                     </Badge>
                   ) : (
                     <Badge variant="default" size="sm">Не зачислен на курс</Badge>
@@ -466,11 +554,7 @@ export const ProfilePage = () => {
 
           </div>
         </div>
-
-        {/* Achievements */}
-        <div style={{ maxWidth: 900, margin: '0 auto', padding: '0 16px 32px' }}>
-          <AchievementsSection />
-        </div>
+        )}
       </div>
 
       <MyCoursesModal isOpen={isCoursesModalOpen} onClose={() => setIsCoursesModalOpen(false)} />

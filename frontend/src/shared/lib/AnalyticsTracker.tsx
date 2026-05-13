@@ -11,6 +11,9 @@ export function AnalyticsTracker() {
   useEffect(() => {
     if (!pathname || pathname === lastTracked.current) return;
     if (pathname.startsWith('/admin') || pathname.startsWith('/auth')) return;
+    // Трекаем только авторизованных пользователей — гостям не отправляем запрос
+    const token = typeof window !== 'undefined' ? localStorage.getItem('access_token') : null;
+    if (!token) return;
     lastTracked.current = pathname;
     apiClient.post('/analytics/track', { path: pathname }).catch(() => {});
   }, [pathname]);

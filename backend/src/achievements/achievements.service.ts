@@ -10,14 +10,16 @@ import { NotificationsService } from '../notifications/notifications.service';
 import { NotificationType } from '../notifications/entities/notification.entity';
 
 const SEED_ACHIEVEMENTS = [
+  // ── Регистрация ───────────────────────────────────────────────────
   {
     name: 'Добро пожаловать!',
-    description: 'Зарегистрировался на сайте',
+    description: 'Зарегистрировался на платформе',
     type: AchievementType.FIRST_REGISTRATION,
     icon: '🎉',
     points: 5,
     conditions: {},
   },
+  // ── Курсы ─────────────────────────────────────────────────────────
   {
     name: 'Студент',
     description: 'Записался на первый курс',
@@ -26,6 +28,23 @@ const SEED_ACHIEVEMENTS = [
     points: 10,
     conditions: { minRegistrations: 1 },
   },
+  {
+    name: 'Ранняя пташка',
+    description: 'Записался на курс за 7+ дней до начала',
+    type: AchievementType.EARLY_BIRD,
+    icon: '🐦',
+    points: 15,
+    conditions: { minDaysBeforeStart: 7 },
+  },
+  {
+    name: 'Активный студент',
+    description: 'Зачислен хотя бы на один курс',
+    type: AchievementType.COURSE_COMPLETION,
+    icon: '🎓',
+    points: 40,
+    conditions: { minCourses: 1 },
+  },
+  // ── Задания ───────────────────────────────────────────────────────
   {
     name: 'Первые шаги',
     description: 'Сдал первое задание',
@@ -43,12 +62,45 @@ const SEED_ACHIEVEMENTS = [
     conditions: { minSubmissions: 5 },
   },
   {
+    name: 'Труженик',
+    description: 'Сдал 10 заданий',
+    type: AchievementType.MULTIPLE_SUBMISSIONS,
+    icon: '💪',
+    points: 40,
+    conditions: { minSubmissions: 10 },
+  },
+  {
+    name: 'Мастер сдачи',
+    description: 'Сдал 25 заданий',
+    type: AchievementType.MULTIPLE_SUBMISSIONS,
+    icon: '🧠',
+    points: 75,
+    conditions: { minSubmissions: 25 },
+  },
+  {
+    name: 'Легенда',
+    description: 'Сдал 50 заданий',
+    type: AchievementType.MULTIPLE_SUBMISSIONS,
+    icon: '🌟',
+    points: 150,
+    conditions: { minSubmissions: 50 },
+  },
+  // ── Качество ─────────────────────────────────────────────────────
+  {
     name: 'Отличник',
-    description: 'Получил 90 и более баллов за задание',
+    description: 'Получил 90+ баллов за задание',
     type: AchievementType.ASSIGNMENT_EXCELLENCE,
     icon: '⭐',
     points: 20,
     conditions: { minScore: 90, minAssignments: 1 },
+  },
+  {
+    name: 'Постоянный отличник',
+    description: 'Получил 90+ баллов за 5 заданий',
+    type: AchievementType.ASSIGNMENT_EXCELLENCE,
+    icon: '🌠',
+    points: 60,
+    conditions: { minScore: 90, minAssignments: 5 },
   },
   {
     name: 'Перфекционист',
@@ -58,6 +110,15 @@ const SEED_ACHIEVEMENTS = [
     points: 30,
     conditions: { minPerfectScores: 1 },
   },
+  {
+    name: 'Безупречный',
+    description: 'Получил максимальный балл за 5 заданий',
+    type: AchievementType.PERFECT_SCORE,
+    icon: '💎',
+    points: 100,
+    conditions: { minPerfectScores: 5 },
+  },
+  // ── Форум ────────────────────────────────────────────────────────
   {
     name: 'Участник форума',
     description: 'Написал первое сообщение на форуме',
@@ -83,6 +144,15 @@ const SEED_ACHIEVEMENTS = [
     conditions: { minPosts: 50 },
   },
   {
+    name: 'Форумная легенда',
+    description: 'Написал 100 сообщений на форуме',
+    type: AchievementType.FORUM_CONTRIBUTOR,
+    icon: '🏛️',
+    points: 100,
+    conditions: { minPosts: 100 },
+  },
+  // ── Peer Review ──────────────────────────────────────────────────
+  {
     name: 'Рецензент',
     description: 'Выполнил первую взаимооценку',
     type: AchievementType.PEER_REVIEWER,
@@ -99,13 +169,22 @@ const SEED_ACHIEVEMENTS = [
     conditions: { minReviews: 5 },
   },
   {
-    name: 'Ранняя пташка',
-    description: 'Записался на курс, когда до начала оставалось больше 7 дней',
-    type: AchievementType.EARLY_BIRD,
-    icon: '🐦',
-    points: 15,
-    conditions: { minDaysBeforeStart: 7 },
+    name: 'Эксперт-рецензент',
+    description: 'Выполнил 10 взаимооценок',
+    type: AchievementType.PEER_REVIEWER,
+    icon: '🎯',
+    points: 60,
+    conditions: { minReviews: 10 },
   },
+  {
+    name: 'Мастер-рецензент',
+    description: 'Выполнил 25 взаимооценок',
+    type: AchievementType.PEER_REVIEWER,
+    icon: '🔬',
+    points: 120,
+    conditions: { minReviews: 25 },
+  },
+  // ── Хакатоны ─────────────────────────────────────────────────────
   {
     name: 'Участник хакатона',
     description: 'Подал первый проект на хакатон',
@@ -113,6 +192,14 @@ const SEED_ACHIEVEMENTS = [
     icon: '🚀',
     points: 20,
     conditions: {},
+  },
+  {
+    name: 'Финалист хакатона',
+    description: 'Набрал 75+ баллов на хакатоне',
+    type: AchievementType.HACKATHON_WINNER,
+    icon: '🥉',
+    points: 35,
+    conditions: { minScore: 75 },
   },
   {
     name: 'Победитель хакатона',
@@ -123,12 +210,21 @@ const SEED_ACHIEVEMENTS = [
     conditions: { minScore: 90 },
   },
   {
-    name: 'Активный студент',
-    description: 'Записан хотя бы на один курс',
-    type: AchievementType.COURSE_COMPLETION,
-    icon: '🎓',
-    points: 40,
-    conditions: { minCourses: 1 },
+    name: 'Чемпион хакатонов',
+    description: 'Участвовал в трёх и более хакатонах',
+    type: AchievementType.HACKATHON_PARTICIPANT,
+    icon: '🎖️',
+    points: 60,
+    conditions: { minHackathons: 3 },
+  },
+  // ── Олимпиады ────────────────────────────────────────────────────
+  {
+    name: 'Призёр олимпиады',
+    description: 'Занял призовое место на олимпиаде',
+    type: AchievementType.OLYMPIAD_WINNER,
+    icon: '🥇',
+    points: 80,
+    conditions: {},
   },
 ];
 
@@ -145,11 +241,13 @@ export class AchievementsService implements OnModuleInit {
   ) {}
 
   async onModuleInit() {
-    const count = await this.achievementRepo.count();
-    if (count === 0) {
-      await this.achievementRepo.save(
-        SEED_ACHIEVEMENTS.map(a => this.achievementRepo.create(a)),
-      );
+    for (const seed of SEED_ACHIEVEMENTS) {
+      const exists = await this.achievementRepo.findOne({
+        where: { type: seed.type, name: seed.name },
+      });
+      if (!exists) {
+        await this.achievementRepo.save(this.achievementRepo.create(seed));
+      }
     }
   }
 

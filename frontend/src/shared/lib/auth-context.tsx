@@ -5,7 +5,7 @@ import React, { createContext, useContext, useState, useEffect, useCallback } fr
 
 export type CourseType = 'english' | 'electronics' | 'computer_science' | 'iot';
 
-export type UserRole = 
+export type UserRole =
   | 'registered_user'
   | 'student_english'
   | 'student_electronics'
@@ -24,12 +24,13 @@ interface User {
   lastName: string;
   roles: UserRole[];
   enrolledCourseType?: CourseType;
+  avatar?: string;
 }
 
 interface AuthContextType {
   user: User | null;
   token: string | null;
-  login: (token: string, user: User) => void;
+  login: (token: string, user: any) => void;
   logout: () => void;
   updateUserFromToken: () => void;
   isLoading: boolean;
@@ -38,7 +39,15 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// Функция для декодирования JWT токена
+// Backend returns roles as objects { id, userId, role: 'student_english' } or plain strings.
+// Always normalize to plain strings.
+function normalizeRoles(rawRoles: any[]): UserRole[] {
+  if (!Array.isArray(rawRoles)) return [];
+  return rawRoles
+    .map(r => (typeof r === 'string' ? r : r?.role))
+    .filter((r): r is UserRole => typeof r === 'string' && r.length > 0);
+}
+
 const decodeToken = (token: string): any => {
   try {
     const base64Url = token.split('.')[1];
@@ -55,12 +64,23 @@ const decodeToken = (token: string): any => {
   }
 };
 
+function buildUserFromRaw(raw: any): User {
+  return {
+    id: String(raw.id ?? ''),
+    email: raw.email ?? '',
+    firstName: raw.firstName ?? '',
+    lastName: raw.lastName ?? '',
+    roles: normalizeRoles(raw.roles ?? []),
+    enrolledCourseType: raw.enrolledCourseType ?? undefined,
+    avatar: raw.avatar ?? undefined,
+  };
+}
+
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Обновление данных пользователя из токена
   const updateUserFromToken = useCallback(() => {
     const savedToken = localStorage.getItem('access_token');
     if (!savedToken) return;
@@ -76,11 +96,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       email: decoded.email || currentUser?.email || '',
       firstName: currentUser?.firstName || '',
       lastName: currentUser?.lastName || '',
-      roles: decoded.roles || currentUser?.roles || [],
+      roles: normalizeRoles(decoded.roles || currentUser?.roles || []),
       enrolledCourseType: decoded.enrolledCourseType || currentUser?.enrolledCourseType,
+      avatar: currentUser?.avatar,
     };
 
-    // Обновляем только если данные изменились
     if (JSON.stringify(updatedUser) !== JSON.stringify(currentUser)) {
       setToken(savedToken);
       setUser(updatedUser);
@@ -93,25 +113,30 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const savedUser = localStorage.getItem('user');
 
     if (savedToken && savedUser) {
-      setToken(savedToken);
-      setUser(JSON.parse(savedUser));
+      try {
+        const raw = JSON.parse(savedUser);
+        setToken(savedToken);
+        setUser(buildUserFromRaw(raw));
+      } catch {
+        localStorage.removeItem('user');
+      }
     }
 
     setIsLoading(false);
   }, []);
 
-  // Обновление данных пользователя из токена при изменении токена
   useEffect(() => {
     if (token && !isLoading) {
       updateUserFromToken();
     }
   }, [token, isLoading, updateUserFromToken]);
 
-  const login = (newToken: string, newUser: User) => {
+  const login = (newToken: string, newUser: any) => {
+    const normalized = buildUserFromRaw(newUser);
     setToken(newToken);
-    setUser(newUser);
+    setUser(normalized);
     localStorage.setItem('access_token', newToken);
-    localStorage.setItem('user', JSON.stringify(newUser));
+    localStorage.setItem('user', JSON.stringify(normalized));
   };
 
   const logout = () => {
@@ -148,26 +173,24 @@ export const useAuth = () => {
   return context;
 };
 
-// Helper функции для проверки ролей
+// Helper functions — safe against both string[] and object[] inputs
 export function hasStudentRole(roles: UserRole[]): boolean {
-  return roles.some(role => role.startsWith('student_'));
+  return normalizeRoles(roles).some(r => r.startsWith('student_'));
 }
 
 export function hasMentorRole(roles: UserRole[]): boolean {
-  return roles.some(role => role.startsWith('mentor_'));
+  return normalizeRoles(roles).some(r => r.startsWith('mentor_'));
 }
 
 export function hasAdminRole(roles: UserRole[]): boolean {
-  return roles.includes('admin');
+  return normalizeRoles(roles).includes('admin');
 }
 
 export function getCourseTypeFromRole(roles: UserRole[]): CourseType | null {
-  const studentRole = roles.find(r => r.startsWith('student_'));
-  const mentorRole = roles.find(r => r.startsWith('mentor_'));
-  const role = studentRole || mentorRole;
-  
+  const normalized = normalizeRoles(roles);
+  const role = normalized.find(r => r.startsWith('student_')) || normalized.find(r => r.startsWith('mentor_'));
   if (!role) return null;
-  
-  const type = role.split('_')[1] as CourseType;
-  return ['english', 'electronics', 'computer_science', 'iot'].includes(type) ? type : null;
+  // Remove prefix: student_computer_science → computer_science
+  const type = role.replace(/^(student|mentor)_/, '') as CourseType;
+  return (['english', 'electronics', 'computer_science', 'iot'] as CourseType[]).includes(type) ? type : null;
 }

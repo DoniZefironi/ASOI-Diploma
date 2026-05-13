@@ -124,4 +124,13 @@ export class UsersService {
     const { password, ...result } = user;
     return result;
   }
+
+  async updateProfile(userId: number, data: { firstName?: string; lastName?: string; avatar?: string }) {
+    await this.usersRepository.update(userId, {
+      ...(data.firstName !== undefined && { firstName: data.firstName }),
+      ...(data.lastName  !== undefined && { lastName:  data.lastName  }),
+      ...(data.avatar    !== undefined && { avatar:    data.avatar    }),
+    });
+    return this.getProfile(userId);
+  }
 }

@@ -3,6 +3,7 @@ import { useRouter } from 'next/navigation';
 import { Button } from '@/shared/ui/button';
 import { useCourseGroups, useRegisterToCourse, useUserRegistrations } from '@/shared/api/admin';
 import { useAuth } from '@/shared/lib/auth-context';
+import { ChevronDown } from 'lucide-react';
 
 interface Course {
   id: number;
@@ -25,10 +26,12 @@ export const CourseCardWithRegistration = ({ course, index }: CourseCardWithRegi
   const router = useRouter();
   const { logout } = useAuth();
   const [showGroups, setShowGroups] = useState(false);
+  const [expanded, setExpanded] = useState(false);
   const [registrationError, setRegistrationError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
-  const { groups, isLoading: groupsLoading, error: groupsError, mutate } = useCourseGroups(course.id);
+  // Загружаем группы только когда пользователь открыл панель записи
+  const { groups, isLoading: groupsLoading, error: groupsError, mutate } = useCourseGroups(showGroups ? course.id : null);
   const { register, isRegistering } = useRegisterToCourse();
   const { registrations, isLoading: registrationsLoading, error: registrationsError, mutate: mutateRegistrations } = useUserRegistrations();
   
@@ -153,7 +156,11 @@ export const CourseCardWithRegistration = ({ course, index }: CourseCardWithRegi
 
   return (
     <div className={`border-l-4 ${cfg.border} bg-gray-800/60 hover:bg-gray-800 transition-colors duration-200`}>
-      <div className="flex items-center gap-4 px-5 py-4">
+      {/* Кликабельная строка — раскрывает описание */}
+      <div
+        className="flex items-center gap-4 px-5 py-4 cursor-pointer select-none"
+        onClick={() => setExpanded(v => !v)}
+      >
         <div className={`w-11 h-11 rounded-lg flex items-center justify-center flex-shrink-0 text-xl ${cfg.bg}`}>
           {cfg.icon}
         </div>
@@ -177,10 +184,15 @@ export const CourseCardWithRegistration = ({ course, index }: CourseCardWithRegi
           <span className={`text-xs px-2 py-0.5 rounded-full font-medium whitespace-nowrap hidden md:block ${course.levelColor}`}>
             {course.level}
           </span>
+          <ChevronDown
+            size={16}
+            className="text-gray-400 transition-transform duration-200 flex-shrink-0"
+            style={{ transform: expanded ? 'rotate(180deg)' : 'rotate(0deg)' }}
+          />
           <Button
             variant="primary"
             size="sm"
-            onClick={() => setShowGroups(!showGroups)}
+            onClick={e => { e.stopPropagation(); setShowGroups(!showGroups); }}
             disabled={registrationsLoading}
             className="whitespace-nowrap"
           >
@@ -188,6 +200,17 @@ export const CourseCardWithRegistration = ({ course, index }: CourseCardWithRegi
           </Button>
         </div>
       </div>
+
+      {/* Раскрытое описание */}
+      {expanded && (
+        <div className="px-5 pb-4 ml-15 border-t border-gray-700/50 pt-3">
+          <p className="text-gray-300 text-sm leading-relaxed">{course.description}</p>
+          {course.duration && (
+            <p className="text-gray-500 text-xs mt-2">Продолжительность: {course.duration} часов</p>
+          )}
+        </div>
+      )}
+
 
       {registrationError && (
         <div className="mx-5 mb-3 p-2 bg-red-900 border border-red-700 text-red-200 rounded text-sm">

@@ -6,11 +6,15 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 import { AppModule } from './app.module';
 import * as path from 'path';
 import crypto from 'crypto';
+import * as bodyParser from 'body-parser';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
   app.useStaticAssets(path.join(process.cwd(), 'uploads'), { prefix: '/uploads' });
+
+  app.use(bodyParser.json({ limit: '10mb' }));
+  app.use(bodyParser.urlencoded({ limit: '10mb', extended: true }));
 
   app.useGlobalPipes(new ValidationPipe({
     whitelist: true,

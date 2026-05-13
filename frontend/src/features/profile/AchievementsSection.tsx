@@ -28,13 +28,12 @@ interface AllAchievement {
   type: string;
 }
 
-function timeAgo(iso: string) {
-  const d = new Date(iso);
-  return d.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' });
+function formatDate(iso: string) {
+  return new Date(iso).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' });
 }
 
 interface Props {
-  userId?: number; // if viewing another user's profile
+  userId?: number;
 }
 
 export function AchievementsSection({ userId }: Props) {
@@ -47,16 +46,17 @@ export function AchievementsSection({ userId }: Props) {
 
   return (
     <div style={{
-      background: 'var(--color-canvas-overlay)', border: '1px solid var(--color-border-default)',
+      background: 'var(--color-canvas-overlay)',
+      border: '1px solid var(--color-border-default)',
       borderRadius: 8, overflow: 'hidden',
     }}>
       {/* Header */}
       <div style={{
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        padding: '12px 16px', borderBottom: '1px solid #21262d',
+        padding: '12px 16px', borderBottom: '1px solid var(--color-border-muted)',
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <Trophy size={16} color="#f1c40f" />
+          <Trophy size={16} color="#d4a017" />
           <span style={{ color: 'var(--color-fg-default)', fontSize: 14, fontWeight: 600 }}>Достижения</span>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
@@ -64,9 +64,9 @@ export function AchievementsSection({ userId }: Props) {
             {earned.length} / {all.length}
           </span>
           <span style={{
-            background: 'rgba(241,196,15,0.15)', color: '#f1c40f',
+            background: 'rgba(212,160,23,0.15)', color: '#d4a017',
             fontSize: 12, fontWeight: 600, padding: '2px 8px', borderRadius: 12,
-            border: '1px solid rgba(241,196,15,0.3)',
+            border: '1px solid rgba(212,160,23,0.4)',
           }}>
             {totalPoints} очков
           </span>
@@ -91,14 +91,16 @@ export function AchievementsSection({ userId }: Props) {
               return (
                 <div
                   key={a.id}
-                  title={isEarned ? `Получено: ${timeAgo(ua!.earnedAt)}` : 'Не получено'}
+                  title={isEarned ? `Получено: ${formatDate(ua!.earnedAt)}` : 'Не получено'}
                   style={{
                     display: 'flex', flexDirection: 'column', alignItems: 'center',
                     gap: 6, padding: '14px 10px',
-                    background: isEarned ? 'rgba(241,196,15,0.08)' : '#0d1117',
-                    border: `1px solid ${isEarned ? 'rgba(241,196,15,0.3)' : '#21262d'}`,
+                    background: isEarned
+                      ? 'rgba(212,160,23,0.08)'
+                      : 'var(--color-canvas-subtle)',
+                    border: `1px solid ${isEarned ? 'rgba(212,160,23,0.35)' : 'var(--color-border-muted)'}`,
                     borderRadius: 8,
-                    opacity: isEarned ? 1 : 0.45,
+                    opacity: isEarned ? 1 : 0.55,
                     transition: 'border-color 0.15s, opacity 0.15s',
                     cursor: 'default',
                   }}
@@ -107,27 +109,30 @@ export function AchievementsSection({ userId }: Props) {
                     {a.icon}
                   </span>
                   <span style={{
-                    color: isEarned ? '#e6edf3' : '#8b949e',
+                    color: isEarned ? 'var(--color-fg-default)' : 'var(--color-fg-muted)',
                     fontSize: 12, fontWeight: 600,
                     textAlign: 'center', lineHeight: 1.3,
                   }}>
                     {a.name}
                   </span>
-                  <span style={{ color: 'var(--color-fg-muted)', fontSize: 11, textAlign: 'center', lineHeight: 1.3 }}>
+                  <span style={{
+                    color: 'var(--color-fg-muted)',
+                    fontSize: 11, textAlign: 'center', lineHeight: 1.3,
+                  }}>
                     {a.description}
                   </span>
                   <span style={{
                     fontSize: 11, fontWeight: 600,
-                    color: isEarned ? '#f1c40f' : '#484f58',
+                    color: isEarned ? '#d4a017' : 'var(--color-fg-subtle)',
                   }}>
                     +{a.points} очков
                   </span>
                   {isEarned && (
                     <span style={{
-                      fontSize: 10, color: '#2da44e',
-                      background: 'rgba(45,164,78,0.1)',
+                      fontSize: 10, color: 'var(--color-success-fg)',
+                      background: 'var(--color-success-subtle)',
                       padding: '1px 6px', borderRadius: 10,
-                      border: '1px solid rgba(45,164,78,0.3)',
+                      border: '1px solid var(--color-success-muted)',
                     }}>
                       ✓ Получено
                     </span>
