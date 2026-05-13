@@ -208,52 +208,24 @@ const SORT_OPTIONS = [
   { value: 'title_desc', label: 'По названию (Я–А)' },
 ];
 
-// ── Icons ──────────────────────────────────────────────────────────
-const SearchIcon = () => (
-  <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
-    <path d="M10.68 11.74a6 6 0 0 1-7.922-8.982 6 6 0 0 1 8.982 7.922l3.04 3.04a.749.749 0 0 1-.326 1.275.749.749 0 0 1-.734-.215ZM11.5 7a4.499 4.499 0 1 0-8.997 0A4.499 4.499 0 0 0 11.5 7Z"/>
-  </svg>
-);
-
-const ChevronLeftIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
-    <path d="M9.78 12.78a.75.75 0 0 1-1.06 0L4.47 8.53a.75.75 0 0 1 0-1.06l4.25-4.25a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042L6.06 8l3.72 3.72a.75.75 0 0 1 0 1.06Z"/>
-  </svg>
-);
-
-const ChevronRightIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
-    <path d="M6.22 3.22a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 0 1 0 1.06l-4.25 4.25a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042L9.94 8 6.22 4.28a.75.75 0 0 1 0-1.06Z"/>
-  </svg>
-);
-
-const ExternalLinkIcon = () => (
-  <svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor">
-    <path d="M3.75 2h3.5a.75.75 0 0 1 0 1.5h-3.5a.25.25 0 0 0-.25.25v8.5c0 .138.112.25.25.25h8.5a.25.25 0 0 0 .25-.25v-3.5a.75.75 0 0 1 1.5 0v3.5A1.75 1.75 0 0 1 12.25 14h-8.5A1.75 1.75 0 0 1 2 12.25v-8.5C2 2.784 2.784 2 3.75 2Zm6.854-1h4.146a.25.25 0 0 1 .25.25v4.146a.25.25 0 0 1-.427.177L13.03 4.03 9.28 7.78a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042l3.75-3.75-1.543-1.543A.25.25 0 0 1 10.604 1Z"/>
-  </svg>
-);
-
-const LibraryIcon = () => (
-  <svg width="24" height="24" viewBox="0 0 16 16" fill="currentColor">
-    <path d="M1.75 1h2.5c.966 0 1.75.784 1.75 1.75v10.5A1.75 1.75 0 0 1 4.25 15h-2.5A1.75 1.75 0 0 1 0 13.25V2.75C0 1.784.784 1 1.75 1ZM1.5 2.75v10.5c0 .138.112.25.25.25h2.5a.25.25 0 0 0 .25-.25V2.75a.25.25 0 0 0-.25-.25h-2.5a.25.25 0 0 0-.25.25Zm5.75-1H9.5c.966 0 1.75.784 1.75 1.75v10.5A1.75 1.75 0 0 1 9.5 15H7.25A1.75 1.75 0 0 1 5.5 13.25V2.75C5.5 1.784 6.284 1 7.25 1Zm-.25 1.75v10.5c0 .138.112.25.25.25H9.5a.25.25 0 0 0 .25-.25V2.75a.25.25 0 0 0-.25-.25H7.25a.25.25 0 0 0-.25.25Zm7.014-.067 1.929 10.54c.173.948-.543 1.805-1.444 1.805a1.587 1.587 0 0 1-.295-.028L11.5 14.8a1.75 1.75 0 0 1-1.36-2.046L12.069 2.217a.876.876 0 0 1 1.434-.534Zm-1.048 1.383L11.07 13.328a.25.25 0 0 0 .194.292l2.709.494a.094.094 0 0 0 .08-.022.182.182 0 0 0 .055-.153L12.179 3.84Z"/>
-  </svg>
-);
-
-const XIcon = () => (
-  <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
-    <path d="M3.72 3.72a.75.75 0 0 1 1.06 0L8 6.94l3.22-3.22a.749.749 0 0 1 1.275.326.749.749 0 0 1-.215.734L9.06 8l3.22 3.22a.749.749 0 0 1-.326 1.275.749.749 0 0 1-.734-.215L8 9.06l-3.22 3.22a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042L6.94 8 3.72 4.78a.75.75 0 0 1 0-1.06Z"/>
-  </svg>
-);
+// ── Icons (lucide-react) ───────────────────────────────────────────
+import { Search, ChevronLeft, ChevronRight, ExternalLink, Library, X } from 'lucide-react';
+const SearchIcon      = () => <Search       size={14} />;
+const ChevronLeftIcon  = () => <ChevronLeft  size={16} />;
+const ChevronRightIcon = () => <ChevronRight size={16} />;
+const ExternalLinkIcon = () => <ExternalLink size={13} />;
+const LibraryIcon      = () => <Library      size={24} />;
+const XIcon            = () => <X            size={14} />;
 
 // ── Styles ─────────────────────────────────────────────────────────
 const S = {
-  bg: '#0d1117',
-  surface: '#161b22',
-  border: '#30363d',
-  text: '#e6edf3',
-  muted: '#8b949e',
+  bg: 'var(--color-canvas-default)',
+  surface: 'var(--color-canvas-overlay)',
+  border: 'var(--color-border-default)',
+  text: 'var(--color-fg-default)',
+  muted: 'var(--color-fg-muted)',
   accent: '#2f81f7',
-  hover: '#1c2128',
+  hover: 'var(--color-neutral-1)',
 } as const;
 
 // ── BookCard ───────────────────────────────────────────────────────

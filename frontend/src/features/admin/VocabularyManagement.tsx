@@ -49,7 +49,7 @@ function TermForm({ initial, onSave, onCancel, saving }: {
   return (
     <div className="p-6 space-y-4">
       <div className="mb-4 border-b border-gray-700 pb-4">
-        <h3 className="text-lg font-semibold text-white flex items-center gap-2">
+        <h3 className="text-lg font-semibold text-gh-fg flex items-center gap-2">
           <BookOpen className="h-5 w-5" />
           {initial?.id ? 'Редактировать термин' : 'Добавить термин'}
         </h3>
@@ -158,7 +158,7 @@ export default function VocabularyManagement() {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold text-white">Словарь Technical English</h1>
+          <h1 className="text-3xl font-bold text-gh-fg">Словарь Technical English</h1>
           <p className="text-gray-400">Управление карточками технического английского</p>
         </div>
         <div className="flex items-center gap-2">
@@ -253,7 +253,7 @@ export default function VocabularyManagement() {
         <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4" onClick={() => setDeleteId(null)}>
           <div className="bg-gray-800 rounded-lg max-w-md w-full p-6" onClick={e => e.stopPropagation()}>
             <div className="mb-4 border-b border-gray-700 pb-4">
-              <h3 className="text-lg font-semibold text-white flex items-center gap-2">
+              <h3 className="text-lg font-semibold text-gh-fg flex items-center gap-2">
                 <AlertTriangle className="h-5 w-5 text-yellow-500" /> Удалить термин?
               </h3>
             </div>

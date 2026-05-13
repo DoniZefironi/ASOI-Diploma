@@ -84,7 +84,7 @@ export const FAQPage = () => {
   })).filter(category => category.items.length > 0);
 
   return (
-    <div className="min-h-screen bg-[#0D1117] py-12">
+    <div className="min-h-screen bg-gh-canvas py-12">
       <div className="container mx-auto px-4">
         <div className="text-center mb-12 animate-fade-in-up">
           <h1 className="text-4xl md:text-5xl font-bold text-white mb-6">
@@ -113,7 +113,7 @@ export const FAQPage = () => {
         <div className="max-w-4xl mx-auto space-y-8">
           {filteredFAQs.map((category, categoryIndex) => (
             <div key={categoryIndex} className="animate-fade-in-up">
-              <h2 className="text-2xl font-bold text-white mb-6">
+              <h2 className="text-2xl font-bold text-gh-fg mb-6">
                 {category.category}
               </h2>
 
@@ -131,7 +131,7 @@ export const FAQPage = () => {
                         onClick={() => toggleItem(globalIndex)}
                         className="w-full text-left flex items-center justify-between"
                       >
-                        <h3 className="text-lg font-semibold text-white pr-4">
+                        <h3 className="text-lg font-semibold text-gh-fg pr-4">
                           {item.question}
                         </h3>
                         <span className="text-white text-xl transform transition-transform">
@@ -157,7 +157,7 @@ export const FAQPage = () => {
         {filteredFAQs.length === 0 && (
           <div className="text-center mt-16 animate-fade-in-up">
             <div className="text-6xl mb-4">🤔</div>
-            <h3 className="text-2xl font-bold text-white mb-4">
+            <h3 className="text-2xl font-bold text-gh-fg mb-4">
               Ничего не найдено
             </h3>
             <p className="text-white mb-6">
@@ -168,7 +168,7 @@ export const FAQPage = () => {
 
         <div className="text-center mt-20 animate-fade-in-up">
           <Card className="p-8 bg-blue-50 border-blue-200">
-            <h3 className="text-2xl font-bold text-white mb-4">
+            <h3 className="text-2xl font-bold text-gh-fg mb-4">
               Остались вопросы?
             </h3>
             <p className="text-white mb-6">

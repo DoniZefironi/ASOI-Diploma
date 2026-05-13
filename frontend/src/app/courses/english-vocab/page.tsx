@@ -3,7 +3,7 @@ import Link from 'next/link';
 
 export default function EnglishVocabPage() {
   return (
-    <div className="min-h-screen bg-[#0D1117] py-10">
+    <div className="min-h-screen bg-gh-canvas py-10">
       <div className="container mx-auto px-4 max-w-5xl">
         <div className="mb-6 flex items-center justify-between">
           <Link href="/courses" className="text-blue-400 hover:text-blue-300 text-sm">

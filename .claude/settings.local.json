@@ -71,7 +71,30 @@
       "Bash(Get-ChildItem -Path \"c:\\\\Users\\\\hohol\\\\Documents\\\\GitHub\\\\ASOI-Diploma\\\\frontend\\\\src\\\\features\" -Recurse -Directory)",
       "Bash(Select-Object FullName)",
       "Bash(Get-Content \"c:\\\\Users\\\\hohol\\\\Documents\\\\GitHub\\\\ASOI-Diploma\\\\frontend\\\\src\\\\shared\\\\store\\\\useSchematicStore.ts\")",
-      "Bash(dir /s /b)"
+      "Bash(dir /s /b)",
+      "Bash(ls -la \"c:\\\\Users\\\\hohol\\\\Documents\\\\GitHub\\\\ASOI-Diploma\\\\backend\\\\src\\\\hackathons\\\\\\\\\")",
+      "Bash(node -e \"const p = require\\('./backend/package.json'\\); const keys = Object.keys\\({...p.dependencies,...p.devDependencies}\\); console.log\\(keys.filter\\(k => k.includes\\('socket'\\)||k.includes\\('ws'\\)||k.includes\\('websocket'\\)\\).join\\('\\\\n'\\)\\)\")",
+      "Bash(node -e \"const p=require\\('./backend/package.json'\\); console.log\\(JSON.stringify\\({...p.dependencies,...p.devDependencies}, null, 0\\)\\)\")",
+      "Bash(mkdir \"c:\\\\Users\\\\hohol\\\\Documents\\\\GitHub\\\\ASOI-Diploma\\\\frontend\\\\src\\\\app\\\\rooms\\\\[id]\")",
+      "Bash(mkdir \"c:\\\\Users\\\\hohol\\\\Documents\\\\GitHub\\\\ASOI-Diploma\\\\frontend\\\\src\\\\app\\\\rooms\\\\[id]\\\\editor\")",
+      "Bash(mkdir \"c:\\\\Users\\\\hohol\\\\Documents\\\\GitHub\\\\ASOI-Diploma\\\\frontend\\\\src\\\\app\\\\rooms\\\\join\\\\[code]\" 2>/dev/null && echo done)",
+      "Bash(Get-ChildItem -Path \"c:\\\\Users\\\\hohol\\\\Documents\\\\GitHub\\\\ASOI-Diploma\\\\backend\\\\src\\\\hackathons\\\\entities\\\\\" -File | Select-Object Name)",
+      "Bash(xargs sed -i \"s|background: '#0D1117'|background: 'var\\(--color-canvas-default\\)'|g; s|background: '#0d1117'|background: 'var\\(--color-canvas-default\\)'|g; s|background-color: '#0D1117'|background-color: 'var\\(--color-canvas-default\\)'|g; s|background-color: '#0d1117'|background-color: 'var\\(--color-canvas-default\\)'|g\")",
+      "Bash(xargs sed -i \"s|background: '#161b22'|background: 'var\\(--color-canvas-overlay\\)'|g; s|background: '#161B22'|background: 'var\\(--color-canvas-overlay\\)'|g; s|background-color: '#161b22'|background-color: 'var\\(--color-canvas-overlay\\)'|g\")",
+      "Bash(xargs sed -i \"s|background: '#30363d'|background: 'var\\(--color-border-default\\)'|g; s|background: '#21262d'|background: 'var\\(--color-border-muted\\)'|g; s|border: '1px solid #30363d'|border: '1px solid var\\(--color-border-default\\)'|g; s|border: '1px solid #21262d'|border: '1px solid var\\(--color-border-muted\\)'|g\")",
+      "Bash(xargs sed -i \"s|color: '#e6edf3'|color: 'var\\(--color-fg-default\\)'|g; s|color: '#E6EDF3'|color: 'var\\(--color-fg-default\\)'|g; s|color: '#8b949e'|color: 'var\\(--color-fg-muted\\)'|g; s|color: '#6e7681'|color: 'var\\(--color-fg-subtle\\)'|g\")",
+      "Bash(xargs sed -i \"s|background: S\\\\.bg|background: 'var\\(--color-canvas-default\\)'|g; s|background: S\\\\.surface|background: 'var\\(--color-canvas-overlay\\)'|g\")",
+      "Bash(xargs sed -i \"s|background: 'var\\(--color-canvas-default\\)'|background: S.bg|g; s|background: 'var\\(--color-canvas-overlay\\)'|background: S.surface|g\")",
+      "Bash(xargs sed -i 's|bg-\\\\[#0D1117\\\\]|bg-gh-canvas|g; s|bg-\\\\[#0d1117\\\\]|bg-gh-canvas|g')",
+      "Bash(xargs sed -i 's|bg-\\\\[#161B22\\\\]|bg-gh-canvas-overlay|g; s|bg-\\\\[#161b22\\\\]|bg-gh-canvas-overlay|g')",
+      "Bash(xargs sed -i \"s|style={{ background: '#0d1117' }}|style={{ background: 'var\\(--color-canvas-default\\)' }}|g; s|style={{ minHeight: '100vh', background: '#0d1117'|style={{ minHeight: '100vh', background: 'var\\(--color-canvas-default\\)'|g; s|style={{ background: '#0D1117' }}|style={{ background: 'var\\(--color-canvas-default\\)' }}|g\")",
+      "Bash(grep -v \"^$\")",
+      "Bash(xargs sed -i 's/className=\"text-3xl font-bold text-white/className=\"text-3xl font-bold text-gh-fg/g; s/className=\"text-4xl font-bold text-white/className=\"text-4xl font-bold text-gh-fg/g; s/className=\"text-5xl font-bold text-white/className=\"text-5xl font-bold text-gh-fg/g; s/className=\"text-2xl font-bold text-white/className=\"text-2xl font-bold text-gh-fg/g; s/className=\"text-xl font-bold text-white/className=\"text-xl font-bold text-gh-fg/g; s/className=\"text-lg font-bold text-white/className=\"text-lg font-bold text-gh-fg/g; s/className=\"font-bold text-white/className=\"font-bold text-gh-fg/g')",
+      "Bash(xargs sed -i 's/className=\"text-lg font-semibold text-white/className=\"text-lg font-semibold text-gh-fg/g; s/className=\"text-xl font-semibold text-white/className=\"text-xl font-semibold text-gh-fg/g; s/className=\"text-sm font-semibold text-white/className=\"text-sm font-semibold text-gh-fg/g; s/className=\"font-semibold text-white/className=\"font-semibold text-gh-fg/g; s/className=\"font-medium text-white/className=\"font-medium text-gh-fg/g')",
+      "Bash(xargs sed -i \"s|e.currentTarget.style.background = '#161b22'|e.currentTarget.style.background = 'var\\(--color-canvas-overlay\\)'|g; s|e.currentTarget.style.background = '#21262d'|e.currentTarget.style.background = 'var\\(--color-neutral-2\\)'|g\")"
+    ],
+    "additionalDirectories": [
+      "c:\\Users\\hohol\\Documents\\GitHub\\ASOI-Diploma\\frontend\\src\\app\\rooms\\join"
     ]
   }
 }

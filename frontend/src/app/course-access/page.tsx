@@ -28,7 +28,7 @@ export default function CourseAccessPage() {
   }, [searchParams]);
 
   return (
-    <div className="min-h-screen bg-[#0D1117] py-12">
+    <div className="min-h-screen bg-gh-canvas py-12">
       <div className="container mx-auto px-4">
         <Card className="max-w-2xl mx-auto">
           <CardHeader>

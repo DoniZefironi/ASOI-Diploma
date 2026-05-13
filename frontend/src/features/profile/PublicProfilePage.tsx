@@ -9,6 +9,7 @@ import { Button } from '@/shared/ui/button';
 import Link from 'next/link';
 import { apiClient } from '@/shared/api/client';
 import { hackathonsApi, HackathonTeam } from '@/shared/api/hackathons';
+import { User, Trophy, ArrowLeft, Calendar } from 'lucide-react';
 
 interface PublicUser {
   id: number;
@@ -25,23 +26,9 @@ interface PublicProfilePageProps {
 }
 
 // ── Icon helpers ──────────────────────────────────────────────────
-const PersonIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
-    <path d="M10.561 8.073a6.005 6.005 0 0 1 3.432 5.142.75.75 0 1 1-1.498.07 4.5 4.5 0 0 0-8.99 0 .75.75 0 0 1-1.498-.07 6.004 6.004 0 0 1 3.431-5.142 3.999 3.999 0 1 1 5.123 0ZM10.5 5a2.5 2.5 0 1 0-5 0 2.5 2.5 0 0 0 5 0Z" />
-  </svg>
-);
-
-const TrophyIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
-    <path d="M10.737 2.5H13A1.5 1.5 0 0 1 14.5 4v.5c0 1.32-.76 2.463-1.875 3.006a4.995 4.995 0 0 1-2.813 3.072L9.5 11.5v1h1.25a.75.75 0 0 1 0 1.5h-5.5a.75.75 0 0 1 0-1.5H6.5v-1l-.312-.922A4.995 4.995 0 0 1 3.375 7.506 3.5 3.5 0 0 1 1.5 4.5V4A1.5 1.5 0 0 1 3 2.5h2.263A4.498 4.498 0 0 1 8 2c.98 0 1.887.31 2.737.5Z" />
-  </svg>
-);
-
-const ArrowLeftIcon = () => (
-  <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
-    <path d="M7.78 12.53a.75.75 0 0 1-1.06 0L2.47 8.28a.75.75 0 0 1 0-1.06l4.25-4.25a.749.749 0 0 1 1.275.326.749.749 0 0 1-.215.734L4.81 7h7.44a.75.75 0 0 1 0 1.5H4.81l2.97 2.97a.75.75 0 0 1 0 1.06Z" />
-  </svg>
-);
+const PersonIcon = () => <User size={16} />;
+const TrophyIcon = () => <Trophy size={16} />;
+const ArrowLeftIcon = () => <ArrowLeft size={14} />;
 
 // ── Determine a display-friendly label for user type ─────────────
 function getUserType(roles: any[]): { label: string; variant: 'done' | 'success' | 'accent' | 'danger' } {
@@ -82,9 +69,9 @@ export const PublicProfilePage = ({ userId }: PublicProfilePageProps) => {
   // Redirect to own profile
   if (isOwnProfile) {
     return (
-      <div style={{ minHeight: '100vh', background: '#0d1117', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div style={{ minHeight: '100vh', background: 'var(--color-canvas-default)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <Card style={{ padding: 32, textAlign: 'center', maxWidth: 360 }}>
-          <p style={{ color: '#e6edf3', marginBottom: 16 }}>Это ваш профиль.</p>
+          <p style={{ color: 'var(--color-fg-default)', marginBottom: 16 }}>Это ваш профиль.</p>
           <Link href="/profile">
             <Button variant="primary">Перейти к своему профилю</Button>
           </Link>
@@ -94,20 +81,20 @@ export const PublicProfilePage = ({ userId }: PublicProfilePageProps) => {
   }
 
   if (isLoading) return (
-    <div style={{ minHeight: '100vh', background: '#0d1117', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+    <div style={{ minHeight: '100vh', background: 'var(--color-canvas-default)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
       <div style={{ textAlign: 'center' }}>
         <div style={{ width: 24, height: 24, border: '2px solid #30363d', borderTopColor: '#2f81f7', borderRadius: '50%', animation: 'spin 1s linear infinite', margin: '0 auto 12px' }} />
-        <p style={{ color: '#8b949e', fontSize: 14 }}>Загрузка профиля...</p>
+        <p style={{ color: 'var(--color-fg-muted)', fontSize: 14 }}>Загрузка профиля...</p>
       </div>
       <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
     </div>
   );
 
   if (notFound) return (
-    <div style={{ minHeight: '100vh', background: '#0d1117', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+    <div style={{ minHeight: '100vh', background: 'var(--color-canvas-default)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
       <Card style={{ padding: 32, textAlign: 'center', maxWidth: 360 }}>
-        <h2 style={{ color: '#e6edf3', marginBottom: 8 }}>Пользователь не найден</h2>
-        <p style={{ color: '#8b949e', fontSize: 13, marginBottom: 24 }}>
+        <h2 style={{ color: 'var(--color-fg-default)', marginBottom: 8 }}>Пользователь не найден</h2>
+        <p style={{ color: 'var(--color-fg-muted)', fontSize: 13, marginBottom: 24 }}>
           Профиль с таким идентификатором не существует или был удалён.
         </p>
         <Link href="/">
@@ -130,14 +117,14 @@ export const PublicProfilePage = ({ userId }: PublicProfilePageProps) => {
     : null;
 
   return (
-    <div style={{ minHeight: '100vh', background: '#0d1117', padding: '24px 0' }}>
+    <div style={{ minHeight: '100vh', background: 'var(--color-canvas-default)', padding: '24px 0' }}>
       <div className="gh-container">
 
         {/* Back button */}
         <div style={{ marginBottom: 24 }}>
           <button
             onClick={() => window.history.back()}
-            style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 13, color: '#8b949e', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+            style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 13, color: 'var(--color-fg-muted)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
             onMouseEnter={e => (e.currentTarget.style.color = '#2f81f7')}
             onMouseLeave={e => (e.currentTarget.style.color = '#8b949e')}
           >
@@ -157,7 +144,7 @@ export const PublicProfilePage = ({ userId }: PublicProfilePageProps) => {
               }}>
                 {avatarLetter}
               </div>
-              <h1 style={{ fontSize: 20, fontWeight: 600, color: '#e6edf3', margin: '0 0 4px' }}>
+              <h1 style={{ fontSize: 20, fontWeight: 600, color: 'var(--color-fg-default)', margin: '0 0 4px' }}>
                 {displayName}
               </h1>
               <div style={{ marginTop: 8 }}>
@@ -169,10 +156,8 @@ export const PublicProfilePage = ({ userId }: PublicProfilePageProps) => {
 
             {joinedDate && (
               <div style={{ borderTop: '1px solid #21262d', paddingTop: 12, marginTop: 4 }}>
-                <p style={{ fontSize: 12, color: '#8b949e', display: 'flex', alignItems: 'center', gap: 6 }}>
-                  <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
-                    <path d="M4.75 0a.75.75 0 0 1 .75.75V2h5V.75a.75.75 0 0 1 1.5 0V2h1.25c.966 0 1.75.784 1.75 1.75v10.5A1.75 1.75 0 0 1 13.25 16H2.75A1.75 1.75 0 0 1 1 14.25V3.75C1 2.784 1.784 2 2.75 2H4V.75A.75.75 0 0 1 4.75 0ZM2.5 7.5v6.75c0 .138.112.25.25.25h10.5a.25.25 0 0 0 .25-.25V7.5Zm10.75-4H2.75a.25.25 0 0 0-.25.25V6h11V3.75a.25.25 0 0 0-.25-.25Z" />
-                  </svg>
+                <p style={{ fontSize: 12, color: 'var(--color-fg-muted)', display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <Calendar size={14} />
                   Присоединился {joinedDate}
                 </p>
               </div>
@@ -185,8 +170,8 @@ export const PublicProfilePage = ({ userId }: PublicProfilePageProps) => {
             {/* Basic info */}
             <Card noPadding>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '12px 16px', borderBottom: '1px solid #21262d' }}>
-                <span style={{ color: '#8b949e', display: 'flex' }}><PersonIcon /></span>
-                <span style={{ fontSize: 14, fontWeight: 600, color: '#e6edf3' }}>Основная информация</span>
+                <span style={{ color: 'var(--color-fg-muted)', display: 'flex' }}><PersonIcon /></span>
+                <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--color-fg-default)' }}>Основная информация</span>
               </div>
               <div style={{ padding: 16 }}>
                 <dl style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, margin: 0 }}>
@@ -204,10 +189,10 @@ export const PublicProfilePage = ({ userId }: PublicProfilePageProps) => {
 
             {/* Empty state for non-public data */}
             <div style={{
-              background: '#161b22', border: '1px solid #30363d', borderRadius: 6,
+              background: 'var(--color-canvas-overlay)', border: '1px solid var(--color-border-default)', borderRadius: 6,
               padding: '24px 16px', textAlign: 'center',
             }}>
-              <p style={{ color: '#8b949e', fontSize: 13, margin: 0 }}>
+              <p style={{ color: 'var(--color-fg-muted)', fontSize: 13, margin: 0 }}>
                 Дополнительная информация о пользователе скрыта настройками приватности.
               </p>
             </div>
@@ -224,8 +209,8 @@ export const PublicProfilePage = ({ userId }: PublicProfilePageProps) => {
 function InfoItem({ label, value }: { label: string; value: React.ReactNode }) {
   return (
     <div>
-      <dt style={{ fontSize: 12, color: '#8b949e', marginBottom: 2 }}>{label}</dt>
-      <dd style={{ fontSize: 14, color: '#e6edf3', fontWeight: 500, margin: 0 }}>{value}</dd>
+      <dt style={{ fontSize: 12, color: 'var(--color-fg-muted)', marginBottom: 2 }}>{label}</dt>
+      <dd style={{ fontSize: 14, color: 'var(--color-fg-default)', fontWeight: 500, margin: 0 }}>{value}</dd>
     </div>
   );
 }

@@ -119,7 +119,7 @@ const DialogHeader = ({ children }: { children: React.ReactNode }) => (
 );
 
 const DialogTitle = ({ children }: { children: React.ReactNode }) => (
-  <h2 className="text-2xl font-bold text-white">{children}</h2>
+  <h2 className="text-2xl font-bold text-gh-fg">{children}</h2>
 );
 
 export default function AdminHackathons() {
@@ -226,7 +226,7 @@ export default function AdminHackathons() {
       {/* Заголовок и действия */}
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold text-white">Управление хакатонами</h1>
+          <h1 className="text-3xl font-bold text-gh-fg">Управление хакатонами</h1>
           <p className="text-gray-400">Создание и управление хакатонами</p>
         </div>
         <Button onClick={handleCreate} className="gap-2">
@@ -276,7 +276,7 @@ export default function AdminHackathons() {
                     <TableRow key={hackathon.id}>
                       <TableCell>
                         <div className="flex flex-col">
-                          <span className="font-medium text-white">{hackathon.name}</span>
+                          <span className="font-medium text-gh-fg">{hackathon.name}</span>
                           <span className="text-sm text-gray-400 line-clamp-1">
                             {hackathon.description}
                           </span>
@@ -351,7 +351,7 @@ export default function AdminHackathons() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-4xl font-bold text-white">{stats.totalHackathons || 0}</p>
+              <p className="text-4xl font-bold text-gh-fg">{stats.totalHackathons || 0}</p>
             </CardContent>
           </Card>
 
@@ -363,7 +363,7 @@ export default function AdminHackathons() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-4xl font-bold text-white">{stats.activeHackathons || 0}</p>
+              <p className="text-4xl font-bold text-gh-fg">{stats.activeHackathons || 0}</p>
             </CardContent>
           </Card>
 
@@ -375,7 +375,7 @@ export default function AdminHackathons() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-4xl font-bold text-white">{stats.totalParticipants || 0}</p>
+              <p className="text-4xl font-bold text-gh-fg">{stats.totalParticipants || 0}</p>
             </CardContent>
           </Card>
 
@@ -387,7 +387,7 @@ export default function AdminHackathons() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-4xl font-bold text-white">{stats.totalProjects || 0}</p>
+              <p className="text-4xl font-bold text-gh-fg">{stats.totalProjects || 0}</p>
             </CardContent>
           </Card>
         </div>

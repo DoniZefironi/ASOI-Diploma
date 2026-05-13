@@ -60,7 +60,7 @@ const DialogHeader = ({ children }: any) => (
   </div>
 );
 const DialogTitle = ({ children }: any) => (
-  <h3 className="text-lg font-semibold text-white">{children}</h3>
+  <h3 className="text-lg font-semibold text-gh-fg">{children}</h3>
 );
 
 const Table = ({ children }: any) => (
@@ -207,7 +207,7 @@ export default function GroupManagement() {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold text-white">Управление группами</h1>
+          <h1 className="text-3xl font-bold text-gh-fg">Управление группами</h1>
           <p className="text-gray-400">Создание и редактирование учебных групп</p>
           {mentorCourseType && (
             <p className="text-sm text-blue-400 mt-1">

@@ -47,7 +47,7 @@ export default function AdminLayout({
 
   if (authLoading || isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#0D1117]">
+      <div className="min-h-screen flex items-center justify-center bg-gh-canvas">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
           <p className="mt-4 text-white">Проверка прав доступа...</p>
@@ -58,7 +58,7 @@ export default function AdminLayout({
 
   if (!isAuthorized) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#0D1117]">
+      <div className="min-h-screen flex items-center justify-center bg-gh-canvas">
         <div className="text-center">
           <p className="text-white text-xl">Доступ запрещён</p>
           <p className="text-gray-400 mt-2">У вас нет разрешения на доступ к этой странице.</p>
@@ -68,7 +68,7 @@ export default function AdminLayout({
   }
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', background: '#0d1117' }}>
+    <div style={{ display: 'flex', minHeight: '100vh', background: 'var(--color-canvas-default)' }}>
       <AdminSidebar />
       <main style={{ flex: 1, padding: 32, overflowY: 'auto' }}>
         {children}

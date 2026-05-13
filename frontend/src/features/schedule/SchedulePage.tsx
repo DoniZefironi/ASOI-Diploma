@@ -345,9 +345,9 @@ export default function SchedulePage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-[#0D1117] py-12">
+      <div className="min-h-screen bg-gh-canvas py-12">
         <div className="container mx-auto px-4 text-center">
-          <p className="text-white">Загрузка расписания...</p>
+          <p className="text-gh-fg">Загрузка расписания...</p>
         </div>
       </div>
     );
@@ -355,10 +355,10 @@ export default function SchedulePage() {
 
   if (!user) {
     return (
-      <div className="min-h-screen bg-[#0D1117] flex items-center justify-center">
+      <div className="min-h-screen bg-gh-canvas flex items-center justify-center">
         <Card className="p-8 text-center">
-          <h1 className="text-2xl font-bold text-white mb-4">Доступ запрещён</h1>
-          <p className="text-white mb-6">Пожалуйста, войдите в систему, чтобы просмотреть расписание.</p>
+          <h1 className="text-2xl font-bold text-gh-fg mb-4">Доступ запрещён</h1>
+          <p className="text-gh-fg mb-6">Пожалуйста, войдите в систему, чтобы просмотреть расписание.</p>
           <Button variant="primary" onClick={() => window.location.href = '/auth'}>
             Войти
           </Button>
@@ -368,13 +368,13 @@ export default function SchedulePage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0D1117] py-12">
+    <div className="min-h-screen bg-gh-canvas py-12">
       <div className="container mx-auto px-4">
         {/* Заголовок */}
         <div className="mb-8">
           <div className="flex items-center justify-between mb-4">
             <div>
-              <h1 className="text-4xl font-bold text-white mb-2">📅 Расписание</h1>
+              <h1 className="text-4xl font-bold text-gh-fg mb-2">📅 Расписание</h1>
               <p className="text-gray-400">Занятия, задания и хакатоны для ваших групп</p>
             </div>
             <Link href="/dashboard">
@@ -536,7 +536,7 @@ export default function SchedulePage() {
                         <ChevronRight className="h-5 w-5 text-gray-400" />
                       )}
                       <div>
-                        <h3 className="text-lg font-semibold text-white">
+                        <h3 className="text-lg font-semibold text-gh-fg">
                           Неделя {formatWeekRange(week)}
                         </h3>
                         <p className="text-sm text-gray-400">
@@ -592,7 +592,7 @@ export default function SchedulePage() {
                                         )}
                                       </div>
 
-                                      <h4 className="text-lg font-semibold text-white mb-2">
+                                      <h4 className="text-lg font-semibold text-gh-fg mb-2">
                                         {item.title}
                                       </h4>
 
@@ -670,7 +670,7 @@ export default function SchedulePage() {
                                         )}
                                       </div>
 
-                                      <h4 className="text-lg font-semibold text-white mb-2">
+                                      <h4 className="text-lg font-semibold text-gh-fg mb-2">
                                         {assignment.title}
                                       </h4>
 
@@ -721,7 +721,7 @@ export default function SchedulePage() {
                                       </span>
                                     </div>
 
-                                    <h4 className="text-lg font-semibold text-white mb-2">
+                                    <h4 className="text-lg font-semibold text-gh-fg mb-2">
                                       {hackathon.title}
                                     </h4>
 
@@ -768,7 +768,7 @@ export default function SchedulePage() {
                                       </span>
                                     </div>
 
-                                    <h4 className="text-lg font-semibold text-white mb-2">
+                                    <h4 className="text-lg font-semibold text-gh-fg mb-2">
                                       {elective.title}
                                     </h4>
 
@@ -856,7 +856,7 @@ function PeerReviewTab({
           ) : pending.length === 0 && done.length === 0 ? (
             <Card className="p-8 text-center">
               <CheckCircle className="h-10 w-10 mx-auto mb-3 text-green-500" />
-              <p className="text-white">Нет работ для проверки</p>
+              <p className="text-gh-fg">Нет работ для проверки</p>
             </Card>
           ) : (
             <>
@@ -868,7 +868,7 @@ function PeerReviewTab({
                       <div className="p-4 bg-yellow-900/20 border border-yellow-700 rounded-lg hover:bg-yellow-900/30 transition-colors cursor-pointer">
                         <div className="flex items-center justify-between">
                           <div>
-                            <p className="text-white font-medium">{r.assignmentTitle}</p>
+                            <p className="text-gh-fg font-medium">{r.assignmentTitle}</p>
                             <p className="text-sm text-gray-400 mt-0.5">Студент: {r.studentName}</p>
                           </div>
                           <span className="text-yellow-400 text-sm flex items-center gap-1">
@@ -888,7 +888,7 @@ function PeerReviewTab({
                     <div key={r.reviewId ?? r.id} className="p-4 bg-gray-800 border border-gray-700 rounded-lg">
                       <div className="flex items-center justify-between">
                         <div>
-                          <p className="text-white font-medium">{r.assignmentTitle}</p>
+                          <p className="text-gh-fg font-medium">{r.assignmentTitle}</p>
                           <p className="text-sm text-gray-400 mt-0.5">Студент: {r.studentName}</p>
                         </div>
                         <span className="text-green-400 text-sm flex items-center gap-1">
@@ -912,7 +912,7 @@ function PeerReviewTab({
           ) : received.length === 0 ? (
             <Card className="p-8 text-center">
               <Star className="h-10 w-10 mx-auto mb-3 text-gray-600" />
-              <p className="text-white">Никто ещё не проверил ваши работы</p>
+              <p className="text-gh-fg">Никто ещё не проверил ваши работы</p>
               <p className="text-sm text-gray-400 mt-1">Оценки появятся здесь после проверки</p>
             </Card>
           ) : (
@@ -921,7 +921,7 @@ function PeerReviewTab({
                 <div className="p-4 border-b border-gray-700">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-white font-semibold">{group.assignmentTitle ?? `Задание #${group.assignmentId}`}</p>
+                      <p className="text-gh-fg font-semibold">{group.assignmentTitle ?? `Задание #${group.assignmentId}`}</p>
                       <p className="text-xs text-gray-400 mt-0.5">
                         Проверок: {group.completedReviews} из {group.totalReviews}
                       </p>
@@ -929,7 +929,7 @@ function PeerReviewTab({
                     {group.finalScore !== null && group.finalScore !== undefined ? (
                       <div className="text-right">
                         <p className="text-xs text-gray-400">Итоговая оценка</p>
-                        <p className="text-2xl font-bold text-white">{group.finalScore}</p>
+                        <p className="text-2xl font-bold text-gh-fg">{group.finalScore}</p>
                       </div>
                     ) : (
                       <span className="text-sm text-gray-500">Ожидается...</span>
@@ -943,7 +943,7 @@ function PeerReviewTab({
                         <div className="flex items-center justify-between mb-2">
                           <span className="text-sm text-gray-400">Рецензент #{idx + 1}</span>
                           {review.score !== null && (
-                            <span className="text-white font-bold text-sm">{review.score} баллов</span>
+                            <span className="text-gh-fg font-bold text-sm">{review.score} баллов</span>
                           )}
                         </div>
                         {review.criteriaScores && review.criteriaScores.length > 0 && (

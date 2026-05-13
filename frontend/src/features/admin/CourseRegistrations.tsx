@@ -132,7 +132,7 @@ export default function CourseRegistrationsPage() {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold text-white">Заявки на курсы</h1>
+          <h1 className="text-3xl font-bold text-gh-fg">Заявки на курсы</h1>
           <p className="text-gray-400">
             Управление заявками пользователей на участие в учебных группах
           </p>

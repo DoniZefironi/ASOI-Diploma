@@ -133,7 +133,7 @@ function ElectiveForm({ elective, courseGroups, onClose, onSuccess }: ElectiveFo
   return (
     <form onSubmit={handleSubmit} className="p-6 space-y-4">
       <div className="flex items-center justify-between mb-2">
-        <h2 className="text-xl font-bold text-white">
+        <h2 className="text-xl font-bold text-gh-fg">
           {elective ? 'Редактировать факультатив' : 'Создать факультатив'}
         </h2>
         <button type="button" onClick={onClose} className="text-gray-400 hover:text-white text-xl leading-none">&times;</button>
@@ -271,7 +271,7 @@ export default function AdminElectivesPage() {
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold text-white">Управление факультативами</h1>
+          <h1 className="text-3xl font-bold text-gh-fg">Управление факультативами</h1>
           <p className="text-gray-400 text-sm mt-1">Создание и управление факультативами для групп</p>
         </div>
         <Button onClick={() => setShowCreate(true)} className="gap-2">
@@ -284,7 +284,7 @@ export default function AdminElectivesPage() {
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <Card className="p-4">
           <p className="text-gray-400 text-sm">Всего факультативов</p>
-          <p className="text-3xl font-bold text-white mt-1">{electives.length}</p>
+          <p className="text-3xl font-bold text-gh-fg mt-1">{electives.length}</p>
         </Card>
         <Card className="p-4">
           <p className="text-gray-400 text-sm">Активных</p>

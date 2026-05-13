@@ -200,7 +200,7 @@ export default function CourseManagement() {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold text-white">Управление курсами</h1>
+          <h1 className="text-3xl font-bold text-gh-fg">Управление курсами</h1>
           <p className="text-gray-400">Создание и редактирование учебных курсов</p>
         </div>
         <div className="flex items-center space-x-2">
@@ -261,7 +261,7 @@ export default function CourseManagement() {
                 <TableRow key={course.id}>
                   <TableCell>
                     <div className="flex flex-col">
-                      <span className="font-medium text-white">{course.name}</span>
+                      <span className="font-medium text-gh-fg">{course.name}</span>
                       <span className="text-sm text-gray-400 line-clamp-1">{course.description}</span>
                     </div>
                   </TableCell>
@@ -342,7 +342,7 @@ export default function CourseManagement() {
             onClick={(e) => e.stopPropagation()}
           >
             <div className="mb-4 border-b border-gray-700 pb-4">
-              <h3 className="text-lg font-semibold text-white flex items-center gap-2">
+              <h3 className="text-lg font-semibold text-gh-fg flex items-center gap-2">
                 <AlertTriangle className="h-5 w-5 text-yellow-500" />
                 Подтверждение удаления
               </h3>

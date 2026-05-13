@@ -113,7 +113,7 @@ export default function TeamDetailPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-[#0D1117] py-12">
+      <div className="min-h-screen bg-gh-canvas py-12">
         <div className="container mx-auto px-4 text-center text-white">Загрузка...</div>
       </div>
     );
@@ -121,7 +121,7 @@ export default function TeamDetailPage() {
 
   if (!team) {
     return (
-      <div className="min-h-screen bg-[#0D1117] py-12">
+      <div className="min-h-screen bg-gh-canvas py-12">
         <div className="container mx-auto px-4 text-center text-white">
           Команда не найдена
           <br />
@@ -144,7 +144,7 @@ export default function TeamDetailPage() {
   }[window];
 
   return (
-    <div className="min-h-screen bg-[#0D1117] py-12">
+    <div className="min-h-screen bg-gh-canvas py-12">
       <div className="container mx-auto px-4 max-w-6xl">
         <div className="mb-8">
           <Link href={`/hackathons/${hackathonId}`} className="text-blue-400 hover:text-blue-300">
@@ -161,8 +161,8 @@ export default function TeamDetailPage() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Информация о команде */}
           <div className="space-y-6">
-            <div className="bg-[#161B22] rounded-xl p-6 border border-gray-700">
-              <h1 className="text-3xl font-bold text-white mb-4">{team.name}</h1>
+            <div className="bg-gh-canvas-overlay rounded-xl p-6 border border-gray-700">
+              <h1 className="text-3xl font-bold text-gh-fg mb-4">{team.name}</h1>
 
               {team.projectName && (
                 <div className="mb-4">
@@ -185,8 +185,8 @@ export default function TeamDetailPage() {
             </div>
 
             {/* Участники */}
-            <div className="bg-[#161B22] rounded-xl p-6 border border-gray-700">
-              <h2 className="text-xl font-bold text-white mb-4">Участники</h2>
+            <div className="bg-gh-canvas-overlay rounded-xl p-6 border border-gray-700">
+              <h2 className="text-xl font-bold text-gh-fg mb-4">Участники</h2>
               <div className="space-y-3">
                 {team.members?.map((member) => {
                   const isCurrentUser = member.userId?.toString() === user?.id;
@@ -218,8 +218,8 @@ export default function TeamDetailPage() {
 
           {/* Проект */}
           <div className="space-y-6">
-            <div className="bg-[#161B22] rounded-xl p-6 border border-gray-700">
-              <h2 className="text-xl font-bold text-white mb-4">Проект команды</h2>
+            <div className="bg-gh-canvas-overlay rounded-xl p-6 border border-gray-700">
+              <h2 className="text-xl font-bold text-gh-fg mb-4">Проект команды</h2>
 
               {submission ? (
                 <div className="space-y-3">
@@ -303,8 +303,8 @@ export default function TeamDetailPage() {
 
             {/* Форма */}
             {isEditing && canSubmit && (
-              <div className="bg-[#161B22] rounded-xl p-6 border border-gray-700">
-                <h3 className="text-lg font-bold text-white mb-5">
+              <div className="bg-gh-canvas-overlay rounded-xl p-6 border border-gray-700">
+                <h3 className="text-lg font-bold text-gh-fg mb-5">
                   {submission ? 'Редактировать проект' : 'Загрузить проект'}
                 </h3>
 
@@ -318,7 +318,7 @@ export default function TeamDetailPage() {
                       type="url"
                       value={formData.sourceCodeUrl}
                       onChange={(e) => setFormData({ ...formData, sourceCodeUrl: e.target.value })}
-                      className="w-full px-3 py-2 bg-[#0D1117] border border-gray-600 rounded-lg text-white text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                      className="w-full px-3 py-2 bg-gh-canvas border border-gray-600 rounded-lg text-white text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
                       placeholder="https://github.com/username/project"
                     />
                   </div>
@@ -363,7 +363,7 @@ export default function TeamDetailPage() {
                     <label className="block text-sm font-medium text-gray-300 mb-1">Документация</label>
                     <input type="url" value={formData.documentationUrl}
                       onChange={(e) => setFormData({ ...formData, documentationUrl: e.target.value })}
-                      className="w-full px-3 py-2 bg-[#0D1117] border border-gray-600 rounded-lg text-white text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                      className="w-full px-3 py-2 bg-gh-canvas border border-gray-600 rounded-lg text-white text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
                       placeholder="https://..." />
                   </div>
 
@@ -371,7 +371,7 @@ export default function TeamDetailPage() {
                     <label className="block text-sm font-medium text-gray-300 mb-1">Презентация</label>
                     <input type="url" value={formData.presentationUrl}
                       onChange={(e) => setFormData({ ...formData, presentationUrl: e.target.value })}
-                      className="w-full px-3 py-2 bg-[#0D1117] border border-gray-600 rounded-lg text-white text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                      className="w-full px-3 py-2 bg-gh-canvas border border-gray-600 rounded-lg text-white text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
                       placeholder="https://..." />
                   </div>
 
@@ -379,7 +379,7 @@ export default function TeamDetailPage() {
                     <label className="block text-sm font-medium text-gray-300 mb-1">Видео демо</label>
                     <input type="url" value={formData.videoDemoUrl}
                       onChange={(e) => setFormData({ ...formData, videoDemoUrl: e.target.value })}
-                      className="w-full px-3 py-2 bg-[#0D1117] border border-gray-600 rounded-lg text-white text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                      className="w-full px-3 py-2 bg-gh-canvas border border-gray-600 rounded-lg text-white text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
                       placeholder="https://youtube.com/..." />
                   </div>
 
@@ -387,7 +387,7 @@ export default function TeamDetailPage() {
                     <label className="block text-sm font-medium text-gray-300 mb-1">Комментарий</label>
                     <textarea value={formData.submissionNote}
                       onChange={(e) => setFormData({ ...formData, submissionNote: e.target.value })}
-                      className="w-full px-3 py-2 bg-[#0D1117] border border-gray-600 rounded-lg text-white text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                      className="w-full px-3 py-2 bg-gh-canvas border border-gray-600 rounded-lg text-white text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
                       rows={3} placeholder="Краткое описание..." />
                   </div>
 

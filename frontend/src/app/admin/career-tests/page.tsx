@@ -20,19 +20,19 @@ export default function AdminCareerTestsPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-[#0D1117] flex items-center justify-center">
+      <div className="min-h-screen bg-gh-canvas flex items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-blue-400" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#0D1117] py-12">
+    <div className="min-h-screen bg-gh-canvas py-12">
       <div className="container mx-auto px-4 max-w-5xl">
         <div className="flex items-center justify-between mb-8">
           <div>
             <Link href="/admin" className="text-gray-400 hover:text-white text-sm mb-2 block">← Панель администратора</Link>
-            <h1 className="text-3xl font-bold text-white">Тесты профориентации</h1>
+            <h1 className="text-3xl font-bold text-gh-fg">Тесты профориентации</h1>
             <p className="text-gray-400 mt-1">Управление тестами и вопросами</p>
           </div>
           <Button variant="primary" onClick={() => setCreating(true)}>
@@ -125,7 +125,7 @@ function TestCard({
               </span>
               <span className="text-xs text-gray-500">{test.answerFormat === 'yes_no' ? 'Да/Нет' : 'Выбор A/B'}</span>
             </div>
-            <h3 className="text-lg font-semibold text-white">{test.title}</h3>
+            <h3 className="text-lg font-semibold text-gh-fg">{test.title}</h3>
             {test.description && <p className="text-gray-400 text-sm mt-1">{test.description}</p>}
             <p className="text-gray-500 text-xs mt-2">{test.questions?.length ?? 0} вопросов · {test.duration}</p>
           </div>
@@ -222,7 +222,7 @@ function TestForm({
 
   return (
     <Card className="p-6 border-blue-600 mb-4">
-      <h3 className="text-lg font-semibold text-white mb-5">
+      <h3 className="text-lg font-semibold text-gh-fg mb-5">
         {initial ? `Редактировать: ${initial.title}` : 'Новый тест'}
       </h3>
 

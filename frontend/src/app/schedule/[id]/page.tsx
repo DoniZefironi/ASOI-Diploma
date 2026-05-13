@@ -91,7 +91,7 @@ export default function ScheduleItemPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-[#0D1117] py-12">
+      <div className="min-h-screen bg-gh-canvas py-12">
         <div className="container mx-auto px-4">
           <div className="text-center text-white">Загрузка...</div>
         </div>
@@ -101,7 +101,7 @@ export default function ScheduleItemPage() {
 
   if (!item) {
     return (
-      <div className="min-h-screen bg-[#0D1117] py-12">
+      <div className="min-h-screen bg-gh-canvas py-12">
         <div className="container mx-auto px-4">
           <div className="text-center text-white">Занятие не найдено</div>
         </div>
@@ -123,7 +123,7 @@ export default function ScheduleItemPage() {
   const embedUrl = getYouTubeEmbedUrl(item.videoUrl || '');
 
   return (
-    <div className="min-h-screen bg-[#0D1117] py-12">
+    <div className="min-h-screen bg-gh-canvas py-12">
       <div className="container mx-auto px-4">
         <div className="mb-8">
           <Link href="/dashboard" className="text-blue-400 hover:text-blue-300">
@@ -131,7 +131,7 @@ export default function ScheduleItemPage() {
           </Link>
         </div>
 
-        <div className="bg-[#161B22] rounded-xl p-8 border border-gray-700">
+        <div className="bg-gh-canvas-overlay rounded-xl p-8 border border-gray-700">
           <div className="flex justify-between items-start mb-6">
             <div>
               <div className="flex items-center gap-3 mb-2">
@@ -142,7 +142,7 @@ export default function ScheduleItemPage() {
                   {formatDateTime(item.startTime)}
                 </span>
               </div>
-              <h1 className="text-3xl font-bold text-white">{item.title}</h1>
+              <h1 className="text-3xl font-bold text-gh-fg">{item.title}</h1>
             </div>
           </div>
 
@@ -153,19 +153,19 @@ export default function ScheduleItemPage() {
           {/* Информация о курсе и преподавателе */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
             {item.courseGroup?.course && (
-              <div className="bg-[#0D1117] rounded-lg p-4">
+              <div className="bg-gh-canvas rounded-lg p-4">
                 <h4 className="text-sm font-medium text-gray-400 mb-1">📚 Курс</h4>
                 <p className="text-white">{item.courseGroup.course.name}</p>
               </div>
             )}
             {item.instructor && (
-              <div className="bg-[#0D1117] rounded-lg p-4">
+              <div className="bg-gh-canvas rounded-lg p-4">
                 <h4 className="text-sm font-medium text-gray-400 mb-1">👨‍🏫 Преподаватель</h4>
                 <p className="text-white">{item.instructor.firstName} {item.instructor.lastName}</p>
               </div>
             )}
             {item.location && (
-              <div className="bg-[#0D1117] rounded-lg p-4">
+              <div className="bg-gh-canvas rounded-lg p-4">
                 <h4 className="text-sm font-medium text-gray-400 mb-1">📍 Место проведения</h4>
                 <p className="text-white">{item.location}</p>
               </div>
@@ -175,7 +175,7 @@ export default function ScheduleItemPage() {
           {/* Видео-лекция */}
           {embedUrl && (
             <div className="mb-6">
-              <h3 className="text-xl font-semibold text-white mb-4">📺 Видео</h3>
+              <h3 className="text-xl font-semibold text-gh-fg mb-4">📺 Видео</h3>
               <div className="aspect-video bg-black rounded-lg overflow-hidden relative">
                 <iframe
                   src={embedUrl}
@@ -202,8 +202,8 @@ export default function ScheduleItemPage() {
           {/* Описание задания */}
           {item.assignmentDescription && (
             <div className="mb-6">
-              <h3 className="text-xl font-semibold text-white mb-4">📝 Задание</h3>
-              <div className="bg-[#0D1117] rounded-lg p-6">
+              <h3 className="text-xl font-semibold text-gh-fg mb-4">📝 Задание</h3>
+              <div className="bg-gh-canvas rounded-lg p-6">
                 <p className="text-gray-300 whitespace-pre-wrap">{item.assignmentDescription}</p>
               </div>
             </div>
@@ -212,8 +212,8 @@ export default function ScheduleItemPage() {
           {/* Материалы */}
           {item.materialsUrl && (
             <div className="mb-6">
-              <h3 className="text-xl font-semibold text-white mb-4">📚 Материалы</h3>
-              <div className="bg-[#0D1117] rounded-lg p-4">
+              <h3 className="text-xl font-semibold text-gh-fg mb-4">📚 Материалы</h3>
+              <div className="bg-gh-canvas rounded-lg p-4">
                 <a
                   href={item.materialsUrl}
                   target="_blank"
@@ -229,8 +229,8 @@ export default function ScheduleItemPage() {
           {/* Контент занятия */}
           {item.content && (
             <div>
-              <h3 className="text-xl font-semibold text-white mb-4">📄 Контент</h3>
-              <div className="bg-[#0D1117] rounded-lg p-6">
+              <h3 className="text-xl font-semibold text-gh-fg mb-4">📄 Контент</h3>
+              <div className="bg-gh-canvas rounded-lg p-6">
                 <div className="text-gray-300 whitespace-pre-wrap">{item.content}</div>
               </div>
             </div>

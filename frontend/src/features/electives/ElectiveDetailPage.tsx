@@ -84,7 +84,7 @@ export default function ElectiveDetailPage({ id }: Props) {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-[#0D1117] flex items-center justify-center">
+      <div className="min-h-screen bg-gh-canvas flex items-center justify-center">
         <p className="text-gray-400">Загрузка...</p>
       </div>
     );
@@ -92,7 +92,7 @@ export default function ElectiveDetailPage({ id }: Props) {
 
   if (isError || !elective) {
     return (
-      <div className="min-h-screen bg-[#0D1117] flex items-center justify-center">
+      <div className="min-h-screen bg-gh-canvas flex items-center justify-center">
         <Card className="p-8 text-center">
           <p className="text-red-400 text-lg mb-4">Факультатив не найден</p>
           <Link href="/electives">
@@ -106,7 +106,7 @@ export default function ElectiveDetailPage({ id }: Props) {
   const activeEnrollments = elective.enrollments?.filter((e: any) => e.status === 'active') ?? [];
 
   return (
-    <div className="min-h-screen bg-[#0D1117] py-10">
+    <div className="min-h-screen bg-gh-canvas py-10">
       <div className="container mx-auto px-4 max-w-4xl">
         {/* Back */}
         <div className="mb-6">
@@ -140,7 +140,7 @@ export default function ElectiveDetailPage({ id }: Props) {
                 )}
               </div>
 
-              <h1 className="text-2xl font-bold text-white mb-3">{elective.title}</h1>
+              <h1 className="text-2xl font-bold text-gh-fg mb-3">{elective.title}</h1>
 
               {elective.description && (
                 <p className="text-gray-400 text-sm mb-4">{elective.description}</p>
@@ -288,7 +288,7 @@ export default function ElectiveDetailPage({ id }: Props) {
                               <span className="px-2 py-1 bg-gray-600 text-gray-300 text-xs rounded-full">Завершено</span>
                             )}
                           </div>
-                          <h4 className="text-lg font-semibold text-white mb-2">{item.title}</h4>
+                          <h4 className="text-lg font-semibold text-gh-fg mb-2">{item.title}</h4>
                           <div className="flex flex-wrap gap-4 text-sm text-gray-400">
                             <div className="flex items-center gap-1">
                               <Calendar className="h-4 w-4" />
@@ -354,7 +354,7 @@ export default function ElectiveDetailPage({ id }: Props) {
                               <span className="px-2 py-1 bg-gray-600 text-gray-300 text-xs rounded-full">Просрочено</span>
                             )}
                           </div>
-                          <h4 className="text-lg font-semibold text-white mb-2">{assignment.title}</h4>
+                          <h4 className="text-lg font-semibold text-gh-fg mb-2">{assignment.title}</h4>
                           <div className="flex flex-wrap gap-4 text-sm text-gray-400">
                             <div className="flex items-center gap-1">
                               <Calendar className="h-4 w-4" />

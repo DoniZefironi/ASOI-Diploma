@@ -67,7 +67,7 @@ export const ContactsPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#0D1117] py-12">
+    <div className="min-h-screen bg-gh-canvas py-12">
       <div className="container mx-auto px-4">
         <div className="text-center mb-16 animate-fade-in-up">
           <h1 className="text-4xl md:text-5xl font-bold text-white mb-6">
@@ -82,13 +82,13 @@ export const ContactsPage = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
           <div className="animate-slide-in-left">
             <Card className="p-8 h-full">
-              <h2 className="text-2xl font-bold text-white mb-8">
+              <h2 className="text-2xl font-bold text-gh-fg mb-8">
                 Контактная информация
               </h2>
 
               <div className="space-y-6">
                 <div>
-                  <h3 className="text-lg font-semibold text-white mb-2">Электронная почта</h3>
+                  <h3 className="text-lg font-semibold text-gh-fg mb-2">Электронная почта</h3>
                   <a 
                     href="mailto:support@edutech.com" 
                     className="text-blue-600 hover:text-blue-700 transition-colors text-lg"
@@ -98,7 +98,7 @@ export const ContactsPage = () => {
                 </div>
 
                 <div>
-                  <h3 className="text-lg font-semibold text-white mb-2">Телефон</h3>
+                  <h3 className="text-lg font-semibold text-gh-fg mb-2">Телефон</h3>
                   <a 
                     href="tel:+74951234567" 
                     className="text-blue-600 hover:text-blue-700 transition-colors text-lg"
@@ -108,13 +108,13 @@ export const ContactsPage = () => {
                 </div>
 
                 <div>
-                  <h3 className="text-lg font-semibold text-white mb-2">Часы работы</h3>
+                  <h3 className="text-lg font-semibold text-gh-fg mb-2">Часы работы</h3>
                   <p className="text-white">Пн-Пт: 9:00 - 18:00</p>
                   <p className="text-white">Сб-Вс: 10:00 - 16:00</p>
                 </div>
 
                 <div>
-                  <h3 className="text-lg font-semibold text-white mb-2">Адрес</h3>
+                  <h3 className="text-lg font-semibold text-gh-fg mb-2">Адрес</h3>
                   <p className="text-white">г. Москва, ул. Образцова, д. 25</p>
                   <p className="text-white">Бизнес-центр "ТехноПарк", офис 304</p>
                 </div>
@@ -124,7 +124,7 @@ export const ContactsPage = () => {
 
           <div className="animate-slide-in-right">
             <Card className="p-8">
-              <h2 className="text-2xl font-bold text-white mb-8">
+              <h2 className="text-2xl font-bold text-gh-fg mb-8">
                 Форма обратной связи
               </h2>
 
@@ -188,7 +188,7 @@ export const ContactsPage = () => {
 
         <div className="mt-20 animate-fade-in-up">
           <div className="text-center mb-8">
-            <h2 className="text-3xl font-bold text-white mb-4">Наш офис</h2>
+            <h2 className="text-3xl font-bold text-gh-fg mb-4">Наш офис</h2>
             <p className="text-white">Приезжайте к нам в гости для личной консультации</p>
           </div>
 
@@ -208,17 +208,17 @@ export const ContactsPage = () => {
             
             <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
               <div>
-                <h4 className="font-semibold text-white mb-2">Метро</h4>
+                <h4 className="font-semibold text-gh-fg mb-2">Метро</h4>
                 <p className="text-white">м. Достоевская</p>
                 <p className="text-white">5 минут пешком</p>
               </div>
               <div>
-                <h4 className="font-semibold text-white mb-2">Парковка</h4>
+                <h4 className="font-semibold text-gh-fg mb-2">Парковка</h4>
                 <p className="text-white">Бесплатная парковка</p>
                 <p className="text-white">для гостей</p>
               </div>
               <div>
-                <h4 className="font-semibold text-white mb-2">Доступность</h4>
+                <h4 className="font-semibold text-gh-fg mb-2">Доступность</h4>
                 <p className="text-white">Пандус и лифт</p>
                 <p className="text-white">для маломобильных</p>
               </div>

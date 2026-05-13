@@ -18,66 +18,64 @@ module.exports = {
     },
     extend: {
       colors: {
-        // GitHub Dark — Canvas
-        'gh-canvas':        '#0d1117',
-        'gh-canvas-overlay':'#161b22',
-        'gh-canvas-subtle': '#161b22',
-        'gh-canvas-inset':  '#010409',
+        // GitHub — Canvas (теперь через CSS-переменные → автоматически адаптируются к теме)
+        'gh-canvas':         'var(--color-canvas-default)',
+        'gh-canvas-overlay': 'var(--color-canvas-overlay)',
+        'gh-canvas-subtle':  'var(--color-canvas-subtle)',
+        'gh-canvas-inset':   'var(--color-canvas-inset)',
 
-        // GitHub Dark — Foreground
-        'gh-fg':            '#e6edf3',
-        'gh-fg-muted':      '#8b949e',
-        'gh-fg-subtle':     '#6e7681',
-        'gh-fg-on-emphasis':'#ffffff',
+        // GitHub — Foreground
+        'gh-fg':             'var(--color-fg-default)',
+        'gh-fg-muted':       'var(--color-fg-muted)',
+        'gh-fg-subtle':      'var(--color-fg-subtle)',
+        'gh-fg-on-emphasis': 'var(--color-fg-on-emphasis)',
 
-        // GitHub Dark — Border
-        'gh-border':        '#30363d',
-        'gh-border-muted':  '#21262d',
+        // GitHub — Border
+        'gh-border':         'var(--color-border-default)',
+        'gh-border-muted':   'var(--color-border-muted)',
 
-        // GitHub Dark — Accent (blue)
-        'gh-accent':        '#2f81f7',
-        'gh-accent-emphasis':'#1f6feb',
-        'gh-accent-muted':  'rgba(31,111,235,0.4)',
-        'gh-accent-subtle': '#1c2d3f',
+        // GitHub — Accent (blue)
+        'gh-accent':          'var(--color-accent-fg)',
+        'gh-accent-emphasis': 'var(--color-accent-emphasis)',
+        'gh-accent-muted':    'var(--color-accent-muted)',
+        'gh-accent-subtle':   'var(--color-accent-subtle)',
 
-        // GitHub Dark — Success (green)
-        'gh-success':       '#3fb950',
-        'gh-success-emphasis':'#2da44e',
-        'gh-success-muted': 'rgba(46,160,67,0.4)',
-        'gh-success-subtle':'#1a2d1a',
+        // GitHub — Success (green)
+        'gh-success':          'var(--color-success-fg)',
+        'gh-success-emphasis': 'var(--color-success-emphasis)',
+        'gh-success-muted':    'var(--color-success-muted)',
+        'gh-success-subtle':   'var(--color-success-subtle)',
 
-        // GitHub Dark — Attention/Warning (orange)
-        'gh-attention':     '#f0883e',
-        'gh-attention-emphasis':'#db6d28',
-        'gh-attention-muted':'rgba(187,128,9,0.4)',
-        'gh-attention-subtle':'#2d1f0a',
+        // GitHub — Attention/Warning
+        'gh-attention':          'var(--color-attention-fg)',
+        'gh-attention-emphasis': 'var(--color-attention-emphasis)',
+        'gh-attention-muted':    'var(--color-attention-muted)',
+        'gh-attention-subtle':   'var(--color-attention-subtle)',
 
-        // GitHub Dark — Danger (red)
-        'gh-danger':        '#f85149',
-        'gh-danger-emphasis':'#cf222e',
-        'gh-danger-muted':  'rgba(248,81,73,0.4)',
-        'gh-danger-subtle': '#2d0f0f',
+        // GitHub — Danger (red)
+        'gh-danger':          'var(--color-danger-fg)',
+        'gh-danger-emphasis': 'var(--color-danger-emphasis)',
+        'gh-danger-muted':    'var(--color-danger-muted)',
+        'gh-danger-subtle':   'var(--color-danger-subtle)',
 
-        // GitHub Dark — Done/IoT (purple)
-        'gh-done':          '#a371f7',
-        'gh-done-emphasis': '#8250df',
-        'gh-done-muted':    'rgba(163,113,247,0.4)',
-        'gh-done-subtle':   '#1e1530',
+        // GitHub — Done/IoT (purple)
+        'gh-done':          'var(--color-done-fg)',
+        'gh-done-emphasis': 'var(--color-done-emphasis)',
+        'gh-done-muted':    'var(--color-done-muted)',
+        'gh-done-subtle':   'var(--color-done-subtle)',
 
-        // Career track (mint green)
-        'gh-career':        '#39d353',
-        'gh-career-subtle': '#0f2d12',
+        // Career
+        'gh-career':        'var(--color-career-fg)',
+        'gh-career-subtle': 'var(--color-career-subtle)',
 
-        // Neutral scale (dark to light)
-        'gh-neutral-1':     '#161b22',
-        'gh-neutral-2':     '#21262d',
-        'gh-neutral-3':     '#30363d',
-        'gh-neutral-4':     '#484f58',
-        'gh-neutral-5':     '#6e7681',
-        'gh-neutral-6':     '#8b949e',
-        'gh-neutral-7':     '#b1bac4',
-        'gh-neutral-8':     '#cdd9e5',
-        'gh-neutral-9':     '#e6edf3',
+        // Neutral scale (CSS vars)
+        'gh-neutral-1': 'var(--color-neutral-1)',
+        'gh-neutral-2': 'var(--color-neutral-2)',
+        'gh-neutral-3': 'var(--color-neutral-3)',
+        'gh-neutral-4': 'var(--color-neutral-4)',
+        'gh-neutral-5': 'var(--color-neutral-5)',
+        'gh-neutral-6': 'var(--color-neutral-6)',
+        'gh-neutral-7': 'var(--color-neutral-7)',
       },
       fontFamily: {
         sans: [
@@ -116,10 +114,10 @@ module.exports = {
         'gh-xl': '16px',
       },
       boxShadow: {
-        'gh':       '0 0 0 1px #30363d',
-        'gh-md':    '0 3px 6px rgba(0,0,0,0.4), 0 0 0 1px #30363d',
-        'gh-lg':    '0 8px 24px rgba(0,0,0,0.6)',
-        'gh-focus': '0 0 0 3px rgba(47,129,247,0.4)',
+        'gh':       '0 0 0 1px var(--color-border-default)',
+        'gh-md':    '0 3px 6px rgba(0,0,0,0.2), 0 0 0 1px var(--color-border-default)',
+        'gh-lg':    'var(--shadow-lg)',
+        'gh-focus': 'var(--shadow-focus)',
         'gh-inset': 'inset 0 1px 0 rgba(255,255,255,0.03)',
       },
       spacing: {

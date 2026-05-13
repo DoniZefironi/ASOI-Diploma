@@ -55,7 +55,7 @@ const DialogHeader = ({ children }: any) => (
   <div className="mb-4 border-b pb-3 border-gray-200 dark:border-gray-700">{children}</div>
 );
 const DialogTitle = ({ children }: any) => (
-  <h3 className="text-lg font-semibold text-white">{children}</h3>
+  <h3 className="text-lg font-semibold text-gh-fg">{children}</h3>
 );
 
 const getMaterialTypeIcon = (type: string) => {
@@ -204,7 +204,7 @@ export default function MaterialManagement() {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold text-white">Библиотека материалов</h1>
+          <h1 className="text-3xl font-bold text-gh-fg">Библиотека материалов</h1>
           <p className="text-gray-400 mt-2">
             Управление учебными материалами и ресурсами
           </p>
@@ -277,7 +277,7 @@ export default function MaterialManagement() {
                       <div className="flex flex-col">
                         <div className="flex items-center space-x-2">
                           {getMaterialTypeIcon(material.type)}
-                          <span className="font-medium text-white">{material.title}</span>
+                          <span className="font-medium text-gh-fg">{material.title}</span>
                         </div>
                         <span className="text-sm text-gray-400 line-clamp-1 mt-1">
                           {material.description}

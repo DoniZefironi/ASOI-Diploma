@@ -1,70 +1,35 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { hackathonsApi, Hackathon, HackathonTeam, HackathonStage, CreateTeamDto } from '@/shared/api/hackathons';
 import { useAuth } from '@/shared/lib/auth-context';
+import { apiClient } from '@/shared/api/client';
 
 // ── Styles ─────────────────────────────────────────────────────────
 const S = {
-  bg: '#0d1117', surface: '#161b22', border: '#30363d',
-  text: '#e6edf3', muted: '#8b949e', accent: '#2f81f7',
+  bg: 'var(--color-canvas-default)', surface: 'var(--color-canvas-overlay)', border: 'var(--color-border-default)',
+  text: 'var(--color-fg-default)', muted: 'var(--color-fg-muted)', accent: '#2f81f7',
   success: '#3fb950', danger: '#f85149', warning: '#e3b341',
   purple: '#a371f7', cyan: '#39c5cf',
 };
 
-// ── Icons ──────────────────────────────────────────────────────────
-const CalIcon = () => (
-  <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
-    <path d="M4.75 0a.75.75 0 0 1 .75.75V2h5V.75a.75.75 0 0 1 1.5 0V2h1.25c.966 0 1.75.784 1.75 1.75v10.5A1.75 1.75 0 0 1 13.25 16H2.75A1.75 1.75 0 0 1 1 14.25V3.75C1 2.784 1.784 2 2.75 2H4V.75A.75.75 0 0 1 4.75 0ZM2.5 7.5v6.75c0 .138.112.25.25.25h10.5a.25.25 0 0 0 .25-.25V7.5Z"/>
-  </svg>
-);
-const PeopleIcon = () => (
-  <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
-    <path d="M2 5.5a3.5 3.5 0 1 1 5.898 2.549 5.508 5.508 0 0 1 3.034 4.084.75.75 0 1 1-1.482.235 4 4 0 0 0-7.9 0 .75.75 0 0 1-1.482-.236A5.507 5.507 0 0 1 3.102 8.05 3.493 3.493 0 0 1 2 5.5ZM11 4a3.001 3.001 0 0 1 2.22 5.018 5.01 5.01 0 0 1 2.57 4.111.75.75 0 1 1-1.498.101 3.51 3.51 0 0 0-2.984-3.187L11 9.5a.75.75 0 0 1 0-1.5A1.5 1.5 0 0 0 11 5.5a.75.75 0 0 1 0-1.5ZM5.5 5a2 2 0 1 0 0 4 2 2 0 0 0 0-4Z"/>
-  </svg>
-);
-const TrophyIcon = () => (
-  <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
-    <path d="M10.737 2.5H13A1.5 1.5 0 0 1 14.5 4v.5c0 1.32-.76 2.463-1.875 3.006a4.995 4.995 0 0 1-2.813 3.072L9.5 11.5v1h1.25a.75.75 0 0 1 0 1.5h-5.5a.75.75 0 0 1 0-1.5H6.5v-1l-.312-.922A4.995 4.995 0 0 1 3.375 7.506 3.5 3.5 0 0 1 1.5 4.5V4A1.5 1.5 0 0 1 3 2.5h2.263A4.498 4.498 0 0 1 8 2c.98 0 1.887.31 2.737.5ZM3 4v.5c0 .832.397 1.572 1.01 2.04A3.5 3.5 0 0 1 3.5 4.5v-.5H3a.5.5 0 0 0 0 1V4ZM13 4a.5.5 0 0 0-.5-.5H12v.5c0 .744-.215 1.438-.586 2.025A2.5 2.5 0 0 0 13 4Zm-5 5a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"/>
-  </svg>
-);
-const CheckIcon = () => (
-  <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
-    <path d="M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z"/>
-  </svg>
-);
-const BookIcon = () => (
-  <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
-    <path d="M0 1.75A.75.75 0 0 1 .75 1h4.253c1.227 0 2.317.59 3 1.501A3.743 3.743 0 0 1 11.006 1h4.245a.75.75 0 0 1 .75.75v10.5a.75.75 0 0 1-.75.75h-4.507a2.25 2.25 0 0 0-1.591.659l-.622.621a.75.75 0 0 1-1.062 0l-.622-.621A2.25 2.25 0 0 0 5.258 13H.75a.75.75 0 0 1-.75-.75Zm7.251 10.324.004-5.073-.002-2.253A2.25 2.25 0 0 0 5.003 2.5H1.5v9h3.757a3.75 3.75 0 0 1 1.994.574ZM8.755 4.75l-.004 7.322a3.752 3.752 0 0 1 1.992-.572H14.5v-9h-3.495a2.25 2.25 0 0 0-2.25 2.25Z"/>
-  </svg>
-);
-const StarIcon = () => (
-  <svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor">
-    <path d="M8 .25a.75.75 0 0 1 .673.418l1.882 3.815 4.21.612a.75.75 0 0 1 .416 1.279l-3.046 2.97.719 4.192a.751.751 0 0 1-1.088.791L8 12.347l-3.766 1.98a.75.75 0 0 1-1.088-.79l.72-4.194L.818 6.374a.75.75 0 0 1 .416-1.28l4.21-.611L7.327.668A.75.75 0 0 1 8 .25Z"/>
-  </svg>
-);
-const TagIcon = () => (
-  <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
-    <path d="M1 7.775V2.75C1 1.784 1.784 1 2.75 1h5.025c.464 0 .91.184 1.238.513l6.25 6.25a1.75 1.75 0 0 1 0 2.474l-5.026 5.026a1.75 1.75 0 0 1-2.474 0l-6.25-6.25A1.752 1.752 0 0 1 1 7.775Zm1.5 0c0 .066.026.13.073.177l6.25 6.25a.25.25 0 0 0 .354 0l5.025-5.025a.25.25 0 0 0 0-.354l-6.25-6.25a.25.25 0 0 0-.177-.073H2.75a.25.25 0 0 0-.25.25ZM6 5a1 1 0 1 1 0 2 1 1 0 0 1 0-2Z"/>
-  </svg>
-);
-const ChevronDownIcon = () => (
-  <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
-    <path d="M12.78 5.22a.749.749 0 0 1 0 1.06l-4.25 4.25a.749.749 0 0 1-1.06 0L3.22 6.28a.749.749 0 1 1 1.06-1.06L8 8.939l3.72-3.719a.749.749 0 0 1 1.06 0Z"/>
-  </svg>
-);
-const ChevronRightIcon = () => (
-  <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
-    <path d="M6.22 3.22a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 0 1 0 1.06l-4.25 4.25a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042L9.94 8 6.22 4.28a.75.75 0 0 1 0-1.06Z"/>
-  </svg>
-);
-const UploadIcon = () => (
-  <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
-    <path d="M8.75 1.75a.75.75 0 0 0-1.5 0V7H3.25c-.41 0-.6.4-.34.65l4.75 4.75a.47.47 0 0 0 .68 0l4.75-4.75c.26-.25.07-.65-.34-.65H8.75V1.75Zm-6 9.5h10.5a.75.75 0 0 1 0 1.5H2.75a.75.75 0 0 1 0-1.5Z"/>
-  </svg>
-);
+// ── Icons (lucide-react) ───────────────────────────────────────────
+import {
+  Calendar, Users, Trophy, Check, BookOpen, Star,
+  Tag, ChevronDown, ChevronRight, Upload,
+} from 'lucide-react';
+const CalIcon          = () => <Calendar     size={14} />;
+const PeopleIcon       = () => <Users        size={14} />;
+const TrophyIcon       = () => <Trophy       size={14} />;
+const CheckIcon        = () => <Check        size={14} />;
+const BookIcon         = () => <BookOpen     size={14} />;
+const StarIcon         = () => <Star         size={13} />;
+const TagIcon          = () => <Tag          size={14} />;
+const ChevronDownIcon  = () => <ChevronDown  size={14} />;
+const ChevronRightIcon = () => <ChevronRight size={14} />;
+const UploadIcon       = () => <Upload       size={14} />;
 
 // ── Helpers ────────────────────────────────────────────────────────
 function formatDate(iso: string) {
@@ -84,8 +49,122 @@ function getStatus(h: Hackathon) {
   return { key: 'registration', label: '● Регистрация', color: S.accent, bg: 'rgba(47,129,247,0.1)', border: 'rgba(47,129,247,0.3)' };
 }
 
-// ── StageTimeline ──────────────────────────────────────────────────
-function StageTimeline({ stages }: { stages: HackathonStage[] }) {
+// ── StageTimeline + Grades ─────────────────────────────────────────
+function TaskReviewerBadges({ taskId }: { taskId: number }) {
+  const [reviewers, setReviewers] = React.useState<any[]>([]);
+  React.useEffect(() => {
+    apiClient.get(`/hackathons/tasks/${taskId}/reviewers`).then(d => setReviewers(d || [])).catch(() => {});
+  }, [taskId]);
+  if (!reviewers.length) return null;
+  return (
+    <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', marginLeft: 30, marginTop: 6 }}>
+      <span style={{ fontSize: 10, color: S.muted, alignSelf: 'center' }}>Проверяющие:</span>
+      {reviewers.map(r => (
+        <span key={r.id} style={{ fontSize: 11, padding: '2px 8px', borderRadius: 10, background: 'rgba(139,148,158,0.1)', border: `1px solid ${S.border}`, color: S.muted }}>
+          {r.user?.firstName} {r.user?.lastName}
+        </span>
+      ))}
+    </div>
+  );
+}
+
+function TaskGradeForm({ taskId, teamId, maxScore, userId }: { taskId: number; teamId: number; maxScore: number; userId: number }) {
+  const [score, setScore] = React.useState('');
+  const [feedback, setFeedback] = React.useState('');
+  const [saving, setSaving] = React.useState(false);
+  const [saved, setSaved] = React.useState(false);
+  const [isReviewer, setIsReviewer] = React.useState(false);
+
+  React.useEffect(() => {
+    apiClient.get(`/hackathons/tasks/${taskId}/reviewers`).then((reviewers: any[]) => {
+      setIsReviewer(reviewers.some(r => r.userId === userId));
+    }).catch(() => {});
+    apiClient.get(`/hackathons/tasks/${taskId}/grades`).then((grades: any[]) => {
+      const myGrade = grades.find(g => g.reviewerId === userId && g.teamId === teamId);
+      if (myGrade) { setScore(String(myGrade.score)); setFeedback(myGrade.feedback || ''); }
+    }).catch(() => {});
+  }, [taskId, teamId, userId]);
+
+  if (!isReviewer) return null;
+
+  const save = async () => {
+    if (!score) return;
+    setSaving(true);
+    try {
+      await apiClient.post(`/hackathons/tasks/${taskId}/grades`, { teamId, score: Number(score), feedback });
+      setSaved(true); setTimeout(() => setSaved(false), 2000);
+    } catch (e: any) { alert(e.message); } finally { setSaving(false); }
+  };
+
+  return (
+    <div style={{ marginLeft: 30, marginTop: 8, padding: '10px 12px', background: 'rgba(47,129,247,0.06)', border: `1px solid rgba(47,129,247,0.2)`, borderRadius: 6 }}>
+      <div style={{ fontSize: 10, fontWeight: 700, color: S.accent, marginBottom: 8, textTransform: 'uppercase' }}>Ваша оценка</div>
+      <div style={{ display: 'flex', gap: 8, alignItems: 'flex-end', flexWrap: 'wrap' }}>
+        <div>
+          <label style={{ fontSize: 11, color: S.muted, display: 'block', marginBottom: 3 }}>Балл (0–{maxScore})</label>
+          <input type="number" value={score} onChange={e => setScore(e.target.value)} min={0} max={maxScore}
+            style={{ width: 80, background: S.bg, border: `1px solid ${S.border}`, borderRadius: 6, padding: '5px 8px', color: S.text, fontSize: 13 }} />
+        </div>
+        <div style={{ flex: 1, minWidth: 160 }}>
+          <label style={{ fontSize: 11, color: S.muted, display: 'block', marginBottom: 3 }}>Комментарий</label>
+          <input value={feedback} onChange={e => setFeedback(e.target.value)} placeholder="Необязательно"
+            style={{ width: '100%', background: S.bg, border: `1px solid ${S.border}`, borderRadius: 6, padding: '5px 8px', color: S.text, fontSize: 13, boxSizing: 'border-box' }} />
+        </div>
+        <button onClick={save} disabled={saving || !score}
+          style={{ padding: '6px 14px', background: saved ? '#238636' : S.accent, color: '#fff', border: 'none', borderRadius: 6, cursor: 'pointer', fontSize: 12, fontWeight: 600, flexShrink: 0 }}>
+          {saved ? '✓ Сохранено' : saving ? '...' : 'Сохранить'}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function StageSubmissionForm({ stageId, teamId }: { stageId: number; teamId: number }) {
+  const [url, setUrl] = React.useState('');
+  const [note, setNote] = React.useState('');
+  const [saving, setSaving] = React.useState(false);
+  const [saved, setSaved] = React.useState(false);
+
+  React.useEffect(() => {
+    apiClient.get(`/hackathons/stages/${stageId}/submissions`).then((subs: any[]) => {
+      const mine = subs.find(s => s.teamId === teamId);
+      if (mine) { setUrl(mine.projectUrl); setNote(mine.note || ''); }
+    }).catch(() => {});
+  }, [stageId, teamId]);
+
+  const save = async () => {
+    if (!url.trim()) return;
+    setSaving(true);
+    try {
+      await apiClient.post(`/hackathons/stages/${stageId}/submit`, { teamId, projectUrl: url, note });
+      setSaved(true); setTimeout(() => setSaved(false), 2000);
+    } catch (e: any) { alert(e.message); } finally { setSaving(false); }
+  };
+
+  return (
+    <div style={{ marginTop: 12, padding: '12px 14px', background: 'rgba(35,134,54,0.06)', border: '1px solid rgba(35,134,54,0.25)', borderRadius: 6 }}>
+      <div style={{ fontSize: 10, fontWeight: 700, color: '#3fb950', marginBottom: 8, textTransform: 'uppercase' }}>Сдача этапа — ссылка на проект</div>
+      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'flex-end' }}>
+        <div style={{ flex: 1, minWidth: 200 }}>
+          <label style={{ fontSize: 11, color: S.muted, display: 'block', marginBottom: 3 }}>URL проекта *</label>
+          <input value={url} onChange={e => setUrl(e.target.value)} placeholder="https://github.com/...или другая ссылка"
+            style={{ width: '100%', background: S.bg, border: `1px solid ${S.border}`, borderRadius: 6, padding: '6px 10px', color: S.text, fontSize: 13, boxSizing: 'border-box' }} />
+        </div>
+        <div style={{ flex: 1, minWidth: 160 }}>
+          <label style={{ fontSize: 11, color: S.muted, display: 'block', marginBottom: 3 }}>Примечание</label>
+          <input value={note} onChange={e => setNote(e.target.value)} placeholder="Необязательно"
+            style={{ width: '100%', background: S.bg, border: `1px solid ${S.border}`, borderRadius: 6, padding: '6px 10px', color: S.text, fontSize: 13, boxSizing: 'border-box' }} />
+        </div>
+        <button onClick={save} disabled={saving || !url.trim()}
+          style={{ padding: '6px 14px', background: saved ? '#1a7f37' : '#238636', color: '#fff', border: 'none', borderRadius: 6, cursor: 'pointer', fontSize: 12, fontWeight: 600, flexShrink: 0 }}>
+          {saved ? '✓ Отправлено' : saving ? '...' : 'Отправить'}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function StageTimeline({ stages, userTeamId, userId }: { stages: HackathonStage[]; userTeamId?: number; userId?: number }) {
   const [openStages, setOpenStages] = useState<Record<number, boolean>>(
     Object.fromEntries(stages.map((_, i) => [i, true]))
   );
@@ -209,11 +288,21 @@ function StageTimeline({ stages }: { stages: HackathonStage[] }) {
                               </p>
                             </div>
                           )}
+                          {/* Reviewers */}
+                          <TaskReviewerBadges taskId={task.id} />
+                          {/* Grade form for reviewers */}
+                          {userId && userTeamId && (
+                            <TaskGradeForm taskId={task.id} teamId={userTeamId} maxScore={task.maxScore} userId={userId} />
+                          )}
                         </div>
                       ))}
                     </div>
                   ) : (
                     <p style={{ fontSize: 12, color: S.muted }}>Задания этапа не указаны</p>
+                  )}
+                  {/* Stage submission for team */}
+                  {userTeamId && (
+                    <StageSubmissionForm stageId={stage.id} teamId={userTeamId} />
                   )}
                 </div>
               )}
@@ -286,12 +375,14 @@ export default function HackathonDetailPage() {
   const isLeader = userTeam && user?.id && String(userTeam.leaderId) === String(user.id);
   const stages = hackathon.stages || [];
   const totalTaskScore = stages.reduce((s, st) => s + (st.tasks || []).reduce((ss, t) => ss + (t.maxScore || 0), 0), 0);
+  const isAdminOrMentor = user?.roles?.includes('admin') || user?.roles?.some(r => r.startsWith('mentor_'));
 
   const tabs = [
     { key: 'overview', label: 'Обзор' },
     ...(stages.length > 0 ? [{ key: 'stages', label: `Этапы (${stages.length})` }] : []),
     ...(hackathon.rules ? [{ key: 'rules', label: 'Правила' }] : []),
     { key: 'teams', label: `Команды (${teams.length})` },
+    ...(isAdminOrMentor ? [{ key: 'leaderboard', label: '🏆 Рейтинг' }] : []),
   ] as const;
 
   return (
@@ -480,7 +571,7 @@ export default function HackathonDetailPage() {
               <div style={{ marginBottom: 16, padding: '10px 14px', background: 'rgba(47,129,247,0.06)', border: `1px solid rgba(47,129,247,0.2)`, borderRadius: 8, fontSize: 13, color: S.muted }}>
                 Хакатон разбит на <strong style={{ color: S.text }}>{stages.length} этапа</strong>. Всего заданий: <strong style={{ color: S.text }}>{stages.reduce((s, st) => s + (st.tasks?.length || 0), 0)}</strong>. Максимальный суммарный балл: <strong style={{ color: S.warning }}>{totalTaskScore}</strong>.
               </div>
-              <StageTimeline stages={stages} />
+              <StageTimeline stages={stages} userTeamId={userTeam?.id} userId={user?.id} />
             </div>
           )}
 
@@ -526,6 +617,10 @@ export default function HackathonDetailPage() {
                 ))}
               </div>
             </div>
+          )}
+
+          {(activeTab as string) === 'leaderboard' && hackathonId && (
+            <LeaderboardTab hackathonId={hackathonId} teams={teams} />
           )}
         </div>
       </div>
@@ -777,3 +872,47 @@ const modalInput: React.CSSProperties = {
   background: S.bg, border: `1px solid ${S.border}`, borderRadius: 6,
   color: S.text, fontSize: 13, outline: 'none',
 };
+
+// ── Leaderboard Tab ────────────────────────────────────────────────
+function LeaderboardTab({ hackathonId, teams }: { hackathonId: number; teams: any[] }) {
+  const [scores, setScores] = React.useState<{ teamId: number; teamName: string; totalAverage: number | null }[]>([]);
+  const [loading, setLoading] = React.useState(true);
+
+  React.useEffect(() => {
+    apiClient.get(`/hackathons/${hackathonId}/leaderboard`)
+      .then(d => setScores(d || []))
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, [hackathonId]);
+
+  if (loading) return <div style={{ color: S.muted, fontSize: 13, padding: 20 }}>Загрузка рейтинга...</div>;
+  if (!scores.length) return <div style={{ color: S.muted, fontSize: 13, padding: 20 }}>Оценки ещё не выставлены</div>;
+
+  return (
+    <div style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: 8, overflow: 'hidden' }}>
+      <div style={{ padding: '12px 16px', borderBottom: `1px solid ${S.border}`, fontSize: 13, fontWeight: 700, color: S.text }}>
+        🏆 Рейтинг команд (средний балл по всем задачам)
+      </div>
+      <div style={{ padding: '8px 0' }}>
+        {scores.map((t, i) => (
+          <div key={t.teamId} style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '10px 16px', borderBottom: i < scores.length - 1 ? `1px solid ${S.border}` : 'none' }}>
+            <span style={{ fontSize: 18, width: 28, textAlign: 'center', flexShrink: 0 }}>
+              {i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : <span style={{ color: S.muted, fontSize: 13 }}>{i + 1}</span>}
+            </span>
+            <span style={{ flex: 1, fontSize: 14, fontWeight: 600, color: S.text }}>{t.teamName}</span>
+            <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
+              {t.totalAverage !== null ? (
+                <>
+                  <span style={{ fontSize: 16, fontWeight: 700, color: '#d29922' }}>{t.totalAverage}</span>
+                  <span style={{ fontSize: 11, color: S.muted }}>ср. балл</span>
+                </>
+              ) : (
+                <span style={{ fontSize: 12, color: S.muted }}>Нет оценок</span>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}

@@ -2,6 +2,7 @@
 
 import useSWR from 'swr';
 import { apiClient } from '@/shared/api/client';
+import { Trophy } from 'lucide-react';
 
 const fetcher = (url: string) => apiClient.get(url);
 
@@ -46,7 +47,7 @@ export function AchievementsSection({ userId }: Props) {
 
   return (
     <div style={{
-      background: '#161b22', border: '1px solid #30363d',
+      background: 'var(--color-canvas-overlay)', border: '1px solid var(--color-border-default)',
       borderRadius: 8, overflow: 'hidden',
     }}>
       {/* Header */}
@@ -55,13 +56,11 @@ export function AchievementsSection({ userId }: Props) {
         padding: '12px 16px', borderBottom: '1px solid #21262d',
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="#f1c40f">
-            <path d="M10.737 2.5H13A1.5 1.5 0 0 1 14.5 4v.5c0 1.32-.76 2.463-1.875 3.006a4.995 4.995 0 0 1-2.813 3.072L9.5 11.5v1h1.25a.75.75 0 0 1 0 1.5h-5.5a.75.75 0 0 1 0-1.5H6.5v-1l-.312-.922A4.995 4.995 0 0 1 3.375 7.506 3.5 3.5 0 0 1 1.5 4.5V4A1.5 1.5 0 0 1 3 2.5h2.263A4.498 4.498 0 0 1 8 2c.98 0 1.887.31 2.737.5Z" />
-          </svg>
-          <span style={{ color: '#e6edf3', fontSize: 14, fontWeight: 600 }}>Достижения</span>
+          <Trophy size={16} color="#f1c40f" />
+          <span style={{ color: 'var(--color-fg-default)', fontSize: 14, fontWeight: 600 }}>Достижения</span>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <span style={{ color: '#8b949e', fontSize: 12 }}>
+          <span style={{ color: 'var(--color-fg-muted)', fontSize: 12 }}>
             {earned.length} / {all.length}
           </span>
           <span style={{
@@ -77,7 +76,7 @@ export function AchievementsSection({ userId }: Props) {
       {/* Grid */}
       <div style={{ padding: 16 }}>
         {all.length === 0 ? (
-          <p style={{ color: '#8b949e', fontSize: 13, textAlign: 'center', margin: 0 }}>
+          <p style={{ color: 'var(--color-fg-muted)', fontSize: 13, textAlign: 'center', margin: 0 }}>
             Загрузка...
           </p>
         ) : (
@@ -114,7 +113,7 @@ export function AchievementsSection({ userId }: Props) {
                   }}>
                     {a.name}
                   </span>
-                  <span style={{ color: '#8b949e', fontSize: 11, textAlign: 'center', lineHeight: 1.3 }}>
+                  <span style={{ color: 'var(--color-fg-muted)', fontSize: 11, textAlign: 'center', lineHeight: 1.3 }}>
                     {a.description}
                   </span>
                   <span style={{

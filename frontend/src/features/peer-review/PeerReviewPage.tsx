@@ -256,17 +256,17 @@ export default function PeerReviewPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-[#0D1117] flex items-center justify-center">
+      <div className="min-h-screen bg-gh-canvas flex items-center justify-center">
         <div className="text-white text-xl">Загрузка...</div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#0D1117] py-12">
+    <div className="min-h-screen bg-gh-canvas py-12">
       <div className="container mx-auto px-4">
         <div className="mb-8">
-          <h1 className="text-4xl font-bold text-white mb-2">Peer Review</h1>
+          <h1 className="text-4xl font-bold text-gh-fg mb-2">Peer Review</h1>
           <p className="text-gray-400">Проверьте работы других студентов</p>
         </div>
 

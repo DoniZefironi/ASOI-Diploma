@@ -145,7 +145,7 @@ function ExpertAnalysisSection() {
       {/* Title */}
       <div className="flex items-center gap-3 mb-2">
         <Brain className="h-7 w-7 text-blue-400" />
-        <h2 className="text-3xl font-bold text-white">Экспертный анализ</h2>
+        <h2 className="text-3xl font-bold text-gh-fg">Экспертный анализ</h2>
       </div>
       <p className="text-gray-400 mb-8">
         Персонализированные рекомендации на основе обоих пройденных тестов
@@ -176,7 +176,7 @@ function ExpertAnalysisSection() {
       </div>
 
       {/* Top 3 career cards */}
-      <h3 className="text-xl font-semibold text-white mb-4">
+      <h3 className="text-xl font-semibold text-gh-fg mb-4">
         Топ профессии для вас
       </h3>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
@@ -294,7 +294,7 @@ export const CareerPage = () => {
   const handleMouseLeave = () => setIsPaused(false);
 
   return (
-    <div className="min-h-screen bg-[#0D1117] py-12">
+    <div className="min-h-screen bg-gh-canvas py-12">
       <div className="container mx-auto px-4">
         <div className="text-center mb-16 animate-fade-in-up">
           <h1 className="text-4xl md:text-5xl font-bold text-white mb-6">
@@ -361,7 +361,7 @@ export const CareerPage = () => {
               return (
                 <Card key={test.type} className="p-6 flex flex-col">
                   <div className="flex items-start justify-between mb-3">
-                    <h3 className="text-xl font-semibold text-white">{test.title}</h3>
+                    <h3 className="text-xl font-semibold text-gh-fg">{test.title}</h3>
                     {hasResult && (
                       <span className="flex items-center gap-1 text-green-400 text-xs bg-green-900/30 px-2 py-1 rounded-full">
                         <CheckCircle className="h-3 w-3" />
@@ -430,7 +430,7 @@ export const CareerPage = () => {
           </div>
 
           <div className="animate-fade-in-up">
-            <h3 className="text-2xl font-bold text-white mb-8 text-center">
+            <h3 className="text-2xl font-bold text-gh-fg mb-8 text-center">
               Рекомендуемые статьи
             </h3>
 
@@ -446,7 +446,7 @@ export const CareerPage = () => {
                   <div className="absolute inset-0 bg-black bg-opacity-20"></div>
                 </div>
                 <div className="p-6 flex flex-col flex-grow">
-                  <h4 className="text-xl font-semibold text-white mb-3">
+                  <h4 className="text-xl font-semibold text-gh-fg mb-3">
                     Топ-навыки для IT-специалистов в 2024 году
                   </h4>
                   <p className="text-gray-300 mb-4 flex-grow">
@@ -469,7 +469,7 @@ export const CareerPage = () => {
                   <div className="absolute inset-0 bg-black bg-opacity-20"></div>
                 </div>
                 <div className="p-6 flex flex-col flex-grow">
-                  <h4 className="text-xl font-semibold text-white mb-3">
+                  <h4 className="text-xl font-semibold text-gh-fg mb-3">
                     Выбор подходящего языка программирования для вашей карьеры
                   </h4>
                   <p className="text-gray-300 mb-4 flex-grow">
@@ -493,7 +493,7 @@ export const CareerPage = () => {
                   <div className="absolute inset-0 bg-black bg-opacity-20"></div>
                 </div>
                 <div className="p-6 flex flex-col flex-grow">
-                  <h4 className="text-xl font-semibold text-white mb-3">
+                  <h4 className="text-xl font-semibold text-gh-fg mb-3">
                     Будущее работы в IT-индустрии
                   </h4>
                   <p className="text-gray-300 mb-4 flex-grow">

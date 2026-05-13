@@ -63,7 +63,7 @@ const DialogHeader = ({ children }: any) => (
   <div className="mb-4 border-b pb-3 border-gray-200 dark:border-gray-700">{children}</div>
 );
 const DialogTitle = ({ children }: any) => (
-  <h3 className="text-lg font-semibold text-white">{children}</h3>
+  <h3 className="text-lg font-semibold text-gh-fg">{children}</h3>
 );
 
 const getAssignmentTypeLabel = (type: string) => {
@@ -182,7 +182,7 @@ function PeerReviewSessionModal({ assignment, onClose }: PeerReviewModalProps) {
       <div className="bg-gray-900 border border-gray-700 rounded-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between p-5 border-b border-gray-700">
           <div>
-            <h2 className="text-lg font-bold text-white">Peer Review — {assignment.title}</h2>
+            <h2 className="text-lg font-bold text-gh-fg">Peer Review — {assignment.title}</h2>
             <p className="text-sm text-gray-400 mt-0.5">Управление сессиями взаимопроверки</p>
           </div>
           <button onClick={onClose} className="text-gray-400 hover:text-white">
@@ -203,7 +203,7 @@ function PeerReviewSessionModal({ assignment, onClose }: PeerReviewModalProps) {
                   <div className="flex items-start justify-between gap-2">
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
-                        <span className="font-semibold text-white text-sm">{session.title}</span>
+                        <span className="font-semibold text-gh-fg text-sm">{session.title}</span>
                         {session.isDistributed && (
                           <span className="text-xs px-2 py-0.5 bg-green-800 text-green-300 rounded-full">Распределено</span>
                         )}
@@ -489,7 +489,7 @@ export default function AssignmentManagement() {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold text-white">Управление заданиями</h1>
+          <h1 className="text-3xl font-bold text-gh-fg">Управление заданиями</h1>
           <p className="text-gray-400 mt-2">
             Создание и редактирование учебных заданий
           </p>
@@ -575,7 +575,7 @@ export default function AssignmentManagement() {
                   <tr key={assignment.id} className="bg-gray-800 border-b-2 border-b-white">
                     <td className="px-4 py-3">
                       <div className="flex flex-col">
-                        <span className="font-medium text-white">{assignment.title}</span>
+                        <span className="font-medium text-gh-fg">{assignment.title}</span>
                         <span className="text-sm text-gray-400 line-clamp-1">
                           {assignment.description}
                         </span>

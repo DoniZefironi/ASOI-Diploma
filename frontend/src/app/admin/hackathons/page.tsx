@@ -124,7 +124,7 @@ const DialogHeader = ({ children }: { children: React.ReactNode }) => (
 );
 
 const DialogTitle = ({ children }: { children: React.ReactNode }) => (
-  <h2 className="text-2xl font-bold text-white">{children}</h2>
+  <h2 className="text-2xl font-bold text-gh-fg">{children}</h2>
 );
 
 export default function AdminHackathons() {
@@ -233,7 +233,7 @@ export default function AdminHackathons() {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold text-white">Управление хакатонами</h1>
+          <h1 className="text-3xl font-bold text-gh-fg">Управление хакатонами</h1>
           <p className="text-gray-400">Создание и управление хакатонами</p>
         </div>
         <Button onClick={() => setShowCreateModal(true)} className="gap-2">
@@ -283,7 +283,7 @@ export default function AdminHackathons() {
                     <TableRow key={hackathon.id}>
                       <TableCell>
                         <div className="flex flex-col">
-                          <span className="font-medium text-white">{hackathon.title}</span>
+                          <span className="font-medium text-gh-fg">{hackathon.title}</span>
                           {hackathon.theme && (
                             <span className="text-sm text-gray-400">🏷️ {hackathon.theme}</span>
                           )}
@@ -353,7 +353,7 @@ export default function AdminHackathons() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-4xl font-bold text-white">{stats.totalHackathons || 0}</p>
+              <p className="text-4xl font-bold text-gh-fg">{stats.totalHackathons || 0}</p>
             </CardContent>
           </Card>
 
@@ -365,7 +365,7 @@ export default function AdminHackathons() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-4xl font-bold text-white">{stats.activeHackathons || 0}</p>
+              <p className="text-4xl font-bold text-gh-fg">{stats.activeHackathons || 0}</p>
             </CardContent>
           </Card>
 
@@ -377,7 +377,7 @@ export default function AdminHackathons() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-4xl font-bold text-white">{stats.totalParticipants || 0}</p>
+              <p className="text-4xl font-bold text-gh-fg">{stats.totalParticipants || 0}</p>
             </CardContent>
           </Card>
 
@@ -389,7 +389,7 @@ export default function AdminHackathons() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-4xl font-bold text-white">{stats.totalSubmissions || 0}</p>
+              <p className="text-4xl font-bold text-gh-fg">{stats.totalSubmissions || 0}</p>
             </CardContent>
           </Card>
         </div>
@@ -496,7 +496,7 @@ function HackathonDetailsModal({ hackathon, onClose }: HackathonDetailsModalProp
             <div className="text-center py-8"><Loader2 className="h-8 w-8 animate-spin mx-auto text-gray-400" /></div>
           ) : rankings.length > 0 ? (
             <div className="mb-8">
-              <h3 className="text-lg font-semibold text-white mb-4">🏆 Рейтинг</h3>
+              <h3 className="text-lg font-semibold text-gh-fg mb-4">🏆 Рейтинг</h3>
               <div className="overflow-x-auto">
                 <Table>
                   <TableHeader>
@@ -529,11 +529,11 @@ function HackathonDetailsModal({ hackathon, onClose }: HackathonDetailsModalProp
           )}
 
           <div>
-            <h3 className="text-lg font-semibold text-white mb-4">📋 Команды ({teams.length})</h3>
+            <h3 className="text-lg font-semibold text-gh-fg mb-4">📋 Команды ({teams.length})</h3>
             <div className="grid gap-2">
               {teams.map((team) => (
                 <div key={team.id} className="p-4 bg-gray-800 rounded-lg">
-                  <div className="font-medium text-white">{team.name}</div>
+                  <div className="font-medium text-gh-fg">{team.name}</div>
                   <div className="text-sm text-gray-400">
                     👥 {team.members?.length || 0} участников |
                     📝 {team.projectName || 'Нет проекта'}

@@ -2,7 +2,7 @@
 
 export const PrivacyPage = () => {
   return (
-    <div className="min-h-screen bg-[#0D1117] py-12">
+    <div className="min-h-screen bg-gh-canvas py-12">
       <div className="container mx-auto px-4 max-w-4xl">
         <div className="text-center mb-12 animate-fade-in-up">
           <h1 className="text-4xl md:text-5xl font-bold text-white mb-6">
@@ -13,7 +13,7 @@ export const PrivacyPage = () => {
 
         <div className="bg-gray-800 rounded-xl shadow-lg p-8 animate-fade-in-up">
           <section className="mb-8">
-            <h2 className="text-2xl font-bold text-white mb-4">1. Введение</h2>
+            <h2 className="text-2xl font-bold text-gh-fg mb-4">1. Введение</h2>
             <p className="text-white leading-relaxed mb-4">
               В EduTech мы стремимся защищать вашу конфиденциальность. Эта Политика конфиденциальности объясняет, 
               как мы собираем, используем, раскрываем и защищаем вашу информацию при использовании нашей Платформы.
@@ -21,7 +21,7 @@ export const PrivacyPage = () => {
           </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-bold text-white mb-4">2. Информация, которую мы собираем</h2>
+            <h2 className="text-2xl font-bold text-gh-fg mb-4">2. Информация, которую мы собираем</h2>
             <p className="text-white leading-relaxed mb-4">
               Мы собираем информацию, которую вы предоставляете нам напрямую, например, когда создаёте аккаунт, 
               записываетесь на курсы или связываетесь с нами. Это может включать:
@@ -36,7 +36,7 @@ export const PrivacyPage = () => {
           </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-bold text-white mb-4">3. Как мы используем вашу информацию</h2>
+            <h2 className="text-2xl font-bold text-gh-fg mb-4">3. Как мы используем вашу информацию</h2>
             <p className="text-white leading-relaxed mb-4">
               Мы используем вашу информацию для:
             </p>
@@ -51,7 +51,7 @@ export const PrivacyPage = () => {
           </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-bold text-white mb-4">4. Обмен данными и раскрытие информации</h2>
+            <h2 className="text-2xl font-bold text-gh-fg mb-4">4. Обмен данными и раскрытие информации</h2>
             <p className="text-white leading-relaxed mb-4">
               Мы можем делиться вашей информацией с:
             </p>
@@ -67,7 +67,7 @@ export const PrivacyPage = () => {
           </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-bold text-white mb-4">5. Безопасность данных</h2>
+            <h2 className="text-2xl font-bold text-gh-fg mb-4">5. Безопасность данных</h2>
             <p className="text-white leading-relaxed mb-4">
               Мы внедряем соответствующие меры безопасности для защиты вашей информации, включая 
               шифрование, контроль доступа и регулярные проверки безопасности. Однако ни один метод 
@@ -76,7 +76,7 @@ export const PrivacyPage = () => {
           </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-bold text-white mb-4">6. Ваши права</h2>
+            <h2 className="text-2xl font-bold text-gh-fg mb-4">6. Ваши права</h2>
             <p className="text-white leading-relaxed mb-4">
               Вы имеете право:
             </p>
@@ -90,7 +90,7 @@ export const PrivacyPage = () => {
           </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-bold text-white mb-4">7. Файлы cookie и отслеживание</h2>
+            <h2 className="text-2xl font-bold text-gh-fg mb-4">7. Файлы cookie и отслеживание</h2>
             <p className="text-white leading-relaxed mb-4">
               Мы используем файлы cookie и аналогичные технологии для улучшения вашего опыта, анализа использования 
               и предоставления персонализированного контента. Вы можете управлять файлами cookie через настройки браузера.
@@ -98,7 +98,7 @@ export const PrivacyPage = () => {
           </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-bold text-white mb-4">8. Конфиденциальность детей</h2>
+            <h2 className="text-2xl font-bold text-gh-fg mb-4">8. Конфиденциальность детей</h2>
             <p className="text-white leading-relaxed mb-4">
               Наша Платформа не предназначена для детей младше 13 лет. Мы сознательно не собираем 
               персональную информацию от детей младше 13 лет.
@@ -106,7 +106,7 @@ export const PrivacyPage = () => {
           </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-bold text-white mb-4">9. Изменения в этой политике</h2>
+            <h2 className="text-2xl font-bold text-gh-fg mb-4">9. Изменения в этой политике</h2>
             <p className="text-white leading-relaxed mb-4">
               Мы можем время от времени обновлять эту Политику конфиденциальности. Мы уведомим вас о любых 
               значительных изменениях, разместив новую политику на нашей Платформе.
@@ -114,7 +114,7 @@ export const PrivacyPage = () => {
           </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-bold text-white mb-4">10. Свяжитесь с нами</h2>
+            <h2 className="text-2xl font-bold text-gh-fg mb-4">10. Свяжитесь с нами</h2>
             <p className="text-white leading-relaxed">
               Если у вас есть вопросы относительно этой Политики конфиденциальности, пожалуйста, свяжитесь с нами по адресу{' '}
               <a href="mailto:support@edutech.com" className="text-blue-600 hover:text-blue-700">

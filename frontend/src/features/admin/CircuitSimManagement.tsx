@@ -47,7 +47,7 @@ const DialogHeader = ({ children }: any) => (
   <div className="mb-4 border-b pb-3 border-gray-200 dark:border-gray-700">{children}</div>
 );
 const DialogTitle = ({ children }: any) => (
-  <h3 className="text-lg font-semibold text-white">{children}</h3>
+  <h3 className="text-lg font-semibold text-gh-fg">{children}</h3>
 );
 
 interface CircuitProject {
@@ -177,7 +177,7 @@ export default function CircuitSimManagement() {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold text-white">Симулятор логических схем</h1>
+          <h1 className="text-3xl font-bold text-gh-fg">Симулятор логических схем</h1>
           <p className="text-gray-400 mt-2">
             Создание и симуляция цифровых логических схем
           </p>
@@ -215,7 +215,7 @@ export default function CircuitSimManagement() {
                       <div className="flex-1">
                         <div className="flex items-center space-x-2 mb-2">
                           <Code className="h-4 w-4 text-blue-400" />
-                          <h3 className="font-medium text-white">{circuit.title}</h3>
+                          <h3 className="font-medium text-gh-fg">{circuit.title}</h3>
                           <Badge variant={circuit.isActive ? 'default' : 'secondary'}>
                             {circuit.isActive ? 'Активен' : 'Неактивен'}
                           </Badge>

@@ -76,7 +76,7 @@ export const CareerSection = () => {
               <Card className="h-full bg-gray-800 border border-gray-700 transition-all duration-300 overflow-hidden group">
                 <div className="p-8 h-full flex flex-col">
                   <div className="flex items-center mb-6">
-                    <h3 className="text-2xl font-bold text-white">
+                    <h3 className="text-2xl font-bold text-gh-fg">
                       {item.title}
                     </h3>
                   </div>
@@ -130,8 +130,8 @@ export const CareerSection = () => {
               }}
             >
               <Card className="bg-gray-800 border border-gray-700 text-center p-6 transition-colors duration-300">
-                <div className="text-3xl font-bold text-white mb-2">{item.stat}</div>
-                <h4 className="font-semibold text-white mb-3 text-lg">{item.title}</h4>
+                <div className="text-3xl font-bold text-gh-fg mb-2">{item.stat}</div>
+                <h4 className="font-semibold text-gh-fg mb-3 text-lg">{item.title}</h4>
                 <p className="text-gray-300">{item.description}</p>
               </Card>
             </div>

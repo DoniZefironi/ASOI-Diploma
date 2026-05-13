@@ -7,7 +7,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { UserRoleEnum } from '../users/entities/user-role.entity';
-import { MENTOR_ROLES } from '../common/helpers/role.helper';
+import { MENTOR_ROLES, STUDENT_ROLES } from '../common/helpers/role.helper';
 import { MaterialType } from './entities/course-material.entity';
 import { SearchDto } from '../common/dto/pagination.dto';
 
@@ -15,27 +15,39 @@ import { SearchDto } from '../common/dto/pagination.dto';
 export class MaterialsController {
   constructor(private readonly materialsService: MaterialsService) {}
 
+  // Все материалы — только для студентов, менторов и администраторов
   @Get()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(...STUDENT_ROLES, ...MENTOR_ROLES, UserRoleEnum.ADMIN)
   findAll(@Query() searchDto: SearchDto) {
     return this.materialsService.findAll(searchDto);
   }
 
+  // Публичные материалы — только для студентов, менторов и администраторов
   @Get('public')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(...STUDENT_ROLES, ...MENTOR_ROLES, UserRoleEnum.ADMIN)
   getPublicMaterials() {
     return this.materialsService.getPublicMaterials();
   }
 
   @Get('course/:courseId')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(...STUDENT_ROLES, ...MENTOR_ROLES, UserRoleEnum.ADMIN)
   findByCourse(@Param('courseId') courseId: string) {
     return this.materialsService.findByCourse(+courseId);
   }
 
   @Get('type/:type')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(...STUDENT_ROLES, ...MENTOR_ROLES, UserRoleEnum.ADMIN)
   findByType(@Param('type') type: MaterialType) {
     return this.materialsService.findByType(type);
   }
 
   @Get(':id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(...STUDENT_ROLES, ...MENTOR_ROLES, UserRoleEnum.ADMIN)
   findOne(@Param('id') id: string) {
     return this.materialsService.findOne(+id);
   }

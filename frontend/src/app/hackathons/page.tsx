@@ -1,370 +1,270 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
-import { hackathonsApi, Hackathon } from '@/shared/api/hackathons';
+import { apiClient } from '@/shared/api/client';
 import { useAuth } from '@/shared/lib/auth-context';
 
-export default function HackathonsPage() {
-  const { user, hasRole } = useAuth();
-  const [hackathons, setHackathons] = useState<Hackathon[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [showCreateModal, setShowCreateModal] = useState(false);
+// ── Types ──────────────────────────────────────────────────────────────────
+interface Hackathon {
+  id: number;
+  title: string;
+  description: string;
+  theme: string;
+  startDate: string;
+  endDate: string;
+  registrationDeadline: string | null;
+  maxTeamSize: number;
+  minTeamSize: number;
+  prizePool: number | null;
+  isActive: boolean;
+  teams: any[];
+  stages: { id: number; title: string; tasks: any[] }[];
+}
 
-  const isAdmin = hasRole('admin') || hasRole('mentor_english') || hasRole('mentor_electronics') || hasRole('mentor_computer_science') || hasRole('mentor_iot');
+// ── Design tokens ──────────────────────────────────────────────────────────
+const S = {
+  bg:      'var(--color-canvas-default)',
+  surface: 'var(--color-canvas-overlay)',
+  border:  'var(--color-border-default)',
+  text:    'var(--color-fg-default)',
+  muted:   'var(--color-fg-muted)',
+  accent:  '#2f81f7',
+  hover:   'var(--color-neutral-1)',
+  green:   '#238636',
+  orange:  '#9e6a03',
+  red:     '#b91c1c',
+  purple:  '#8957e5',
+} as const;
 
-  useEffect(() => {
-    loadHackathons();
-  }, []);
+// ── Helpers ────────────────────────────────────────────────────────────────
+function getStatus(h: Hackathon): 'registration' | 'active' | 'ended' | 'upcoming' | 'reg_closed' {
+  const now = new Date();
+  const start = new Date(h.startDate);
+  const end   = new Date(h.endDate);
+  const reg   = h.registrationDeadline ? new Date(h.registrationDeadline) : null;
+  if (now > end)                    return 'ended';
+  if (now >= start)                 return 'active';
+  if (reg && now > reg)             return 'reg_closed';
+  if (reg && now <= reg)            return 'registration';
+  return 'upcoming';
+}
 
-  const loadHackathons = async () => {
-    try {
-      const data = await hackathonsApi.getAll();
-      setHackathons(data || []);
-    } catch (error) {
-      console.error('Failed to load hackathons:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+const STATUS_META = {
+  registration: { label: 'Регистрация открыта', color: '#238636', bg: 'rgba(35,134,54,0.15)' },
+  active:       { label: 'Идёт сейчас',         color: '#3fb950', bg: 'rgba(63,185,80,0.12)' },
+  ended:        { label: 'Завершён',             color: 'var(--color-fg-muted)', bg: 'rgba(139,148,158,0.1)' },
+  upcoming:     { label: 'Скоро',                color: '#d29922', bg: 'rgba(210,153,34,0.12)' },
+  reg_closed:   { label: 'Регистрация закрыта',  color: '#f85149', bg: 'rgba(248,81,73,0.12)' },
+};
 
-  const handleDelete = async (id: number) => {
-    if (!confirm('Вы уверены, что хотите удалить этот хакатон?')) return;
-    try {
-      await hackathonsApi.delete(id);
-      setHackathons(hackathons.filter(h => h.id !== id));
-    } catch (error) {
-      console.error('Failed to delete hackathon:', error);
-      alert('Не удалось удалить хакатон');
-    }
-  };
+function fmt(d: string) {
+  return new Date(d).toLocaleDateString('ru-RU', { day: 'numeric', month: 'short', year: 'numeric' });
+}
 
-  const getStatusBadge = (hackathon: Hackathon) => {
-    const now = new Date();
-    const startDate = new Date(hackathon.startDate);
-    const endDate = new Date(hackathon.endDate);
-    const regDeadline = hackathon.registrationDeadline ? new Date(hackathon.registrationDeadline) : null;
+function daysLeft(d: string) {
+  const diff = new Date(d).getTime() - Date.now();
+  if (diff < 0) return null;
+  return Math.ceil(diff / 86400000);
+}
 
-    if (now > endDate) {
-      return <span className="px-3 py-1 bg-gray-600 text-white text-xs rounded-full">Завершён</span>;
-    }
-    if (now > startDate) {
-      return <span className="px-3 py-1 bg-green-600 text-white text-xs rounded-full">Идёт</span>;
-    }
-    if (regDeadline && now > regDeadline) {
-      return <span className="px-3 py-1 bg-yellow-600 text-white text-xs rounded-full">Регистрация закрыта</span>;
-    }
-    if (regDeadline) {
-      return <span className="px-3 py-1 bg-blue-600 text-white text-xs rounded-full">Регистрация</span>;
-    }
-    return <span className="px-3 py-1 bg-purple-600 text-white text-xs rounded-full">Скоро</span>;
-  };
-
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-[#0D1117] py-12">
-        <div className="container mx-auto px-4">
-          <div className="text-center text-white">Загрузка...</div>
-        </div>
-      </div>
-    );
-  }
+// ── HackathonCard ──────────────────────────────────────────────────────────
+function HackathonCard({ h, isAdmin }: { h: Hackathon; isAdmin: boolean }) {
+  const status = getStatus(h);
+  const meta   = STATUS_META[status];
+  const days   = status === 'registration' && h.registrationDeadline ? daysLeft(h.registrationDeadline) : status === 'active' ? daysLeft(h.endDate) : null;
+  const tasksCount = h.stages?.reduce((s, st) => s + (st.tasks?.length || 0), 0) || 0;
 
   return (
-    <div className="min-h-screen bg-[#0D1117] py-12">
-      <div className="container mx-auto px-4">
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-white mb-4">Хакатоны</h1>
-          <p className="text-gray-400 mb-8">Участвуй в хакатонах и выигрывай призы</p>
-          <div className="w-24 h-1 bg-blue-600 mx-auto"></div>
-        </div>
-
-        {isAdmin && (
-          <div className="mb-8 flex justify-between items-center">
-            <Link
-              href="/admin/hackathons"
-              className="px-6 py-3 bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition-colors"
-            >
-              Панель управления
+    <div style={{
+      background: S.surface, border: `1px solid ${S.border}`,
+      borderRadius: 10, padding: '20px 24px',
+      transition: 'border-color 0.15s',
+    }}
+      onMouseEnter={e => (e.currentTarget.style.borderColor = S.accent)}
+      onMouseLeave={e => (e.currentTarget.style.borderColor = S.border)}
+    >
+      {/* Header row */}
+      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12, marginBottom: 10 }}>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap', marginBottom: 4 }}>
+            <Link href={`/hackathons/${h.id}`} style={{ color: S.accent, fontWeight: 600, fontSize: 17, textDecoration: 'none' }}>
+              {h.title}
             </Link>
-            <button
-              onClick={() => setShowCreateModal(true)}
-              className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-            >
-              Создать хакатон
-            </button>
+            {h.theme && <span style={{ fontSize: 12, color: S.muted, background: 'rgba(139,148,158,0.1)', padding: '2px 8px', borderRadius: 12, border: `1px solid ${S.border}` }}>{h.theme}</span>}
           </div>
-        )}
-
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {hackathons.length === 0 ? (
-            <div className="col-span-full text-center text-gray-400 py-12">
-              Хакатонов пока нет
-            </div>
-          ) : (
-            hackathons.map((hackathon) => (
-              <div
-                key={hackathon.id}
-                className="bg-[#161B22] rounded-xl p-6 border border-gray-700 hover:border-gray-600 transition-colors"
-              >
-                <div className="flex justify-between items-start mb-4">
-                  {getStatusBadge(hackathon)}
-                  {hackathon.prizePool && (
-                    <span className="text-green-400 font-semibold">
-                      💰 {hackathon.prizePool.toLocaleString()} ₽
-                    </span>
-                  )}
-                </div>
-
-                <h3 className="text-xl font-bold text-white mb-2">{hackathon.title}</h3>
-                {hackathon.theme && (
-                  <p className="text-blue-400 text-sm mb-3">🏷️ {hackathon.theme}</p>
-                )}
-                <p className="text-gray-400 text-sm mb-4 line-clamp-3">{hackathon.description}</p>
-
-                <div className="space-y-2 text-sm text-gray-500 mb-4">
-                  <div className="flex justify-between">
-                    <span>📅 Начало:</span>
-                    <span>{new Date(hackathon.startDate).toLocaleDateString('ru-RU')}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>🏁 Конец:</span>
-                    <span>{new Date(hackathon.endDate).toLocaleDateString('ru-RU')}</span>
-                  </div>
-                  {hackathon.registrationDeadline && (
-                    <div className="flex justify-between">
-                      <span>⏰ Регистрация до:</span>
-                      <span>{new Date(hackathon.registrationDeadline).toLocaleDateString('ru-RU')}</span>
-                    </div>
-                  )}
-                  <div className="flex justify-between">
-                    <span>👥 Команда:</span>
-                    <span>{hackathon.minTeamSize}-{hackathon.maxTeamSize} чел.</span>
-                  </div>
-                </div>
-
-                <div className="flex gap-2">
-                  <Link
-                    href={`/hackathons/${hackathon.id}`}
-                    className="flex-1 px-4 py-2 bg-blue-600 text-white text-center rounded-lg hover:bg-blue-700 transition-colors text-sm"
-                  >
-                    Подробнее
-                  </Link>
-                  {isAdmin && (
-                    <>
-                      <Link
-                        href={`/admin/hackathons/${hackathon.id}`}
-                        className="px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition-colors text-sm"
-                      >
-                        ✏️
-                      </Link>
-                      <button
-                        onClick={() => handleDelete(hackathon.id)}
-                        className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm"
-                      >
-                        🗑️
-                      </button>
-                    </>
-                  )}
-                </div>
-              </div>
-            ))
+          {h.description && (
+            <p style={{ margin: 0, fontSize: 13, color: S.muted, lineHeight: 1.5,
+              overflow: 'hidden', textOverflow: 'ellipsis', display: '-webkit-box',
+              WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>
+              {h.description}
+            </p>
           )}
         </div>
+        {/* Status */}
+        <span style={{ fontSize: 12, padding: '4px 10px', borderRadius: 12, whiteSpace: 'nowrap', flexShrink: 0,
+          background: meta.bg, color: meta.color, border: `1px solid ${meta.color}40` }}>
+          ● {meta.label}
+        </span>
+      </div>
 
-        {showCreateModal && (
-          <CreateHackathonModal
-            onClose={() => setShowCreateModal(false)}
-            onSuccess={() => {
-              setShowCreateModal(false);
-              loadHackathons();
-            }}
-          />
+      {/* Meta row */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap', fontSize: 12, color: S.muted, marginBottom: 14 }}>
+        <span>📅 {fmt(h.startDate)} — {fmt(h.endDate)}</span>
+        <span>👥 {h.minTeamSize}–{h.maxTeamSize} чел.</span>
+        {tasksCount > 0 && <span>📋 {tasksCount} заданий</span>}
+        {h.stages?.length > 0 && <span>🏁 {h.stages.length} этапов</span>}
+        {(h.teams?.length || 0) > 0 && <span>🧑‍💻 {h.teams.length} команд</span>}
+        {h.prizePool && <span style={{ color: '#d29922', fontWeight: 600 }}>🏆 {h.prizePool.toLocaleString()} ₽</span>}
+        {days !== null && (
+          <span style={{ color: status === 'active' ? '#3fb950' : '#d29922', fontWeight: 500 }}>
+            ⏱ {days} {days === 1 ? 'день' : days < 5 ? 'дня' : 'дней'}
+          </span>
+        )}
+      </div>
+
+      {/* Footer */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div style={{ display: 'flex', gap: 8 }}>
+          {status === 'registration' && (
+            <Link href={`/hackathons/${h.id}`} style={{
+              padding: '6px 14px', background: S.green, color: '#fff', borderRadius: 6,
+              fontSize: 13, fontWeight: 600, textDecoration: 'none' }}>
+              Регистрация
+            </Link>
+          )}
+          {status === 'active' && (
+            <Link href={`/hackathons/${h.id}`} style={{
+              padding: '6px 14px', background: 'rgba(63,185,80,0.15)', color: '#3fb950',
+              border: '1px solid #3fb950', borderRadius: 6, fontSize: 13, fontWeight: 600, textDecoration: 'none' }}>
+              Участвую
+            </Link>
+          )}
+          <Link href={`/hackathons/${h.id}`} style={{
+            padding: '6px 14px', background: S.hover, color: S.text,
+            border: `1px solid ${S.border}`, borderRadius: 6, fontSize: 13, textDecoration: 'none' }}>
+            Подробнее
+          </Link>
+        </div>
+        {isAdmin && (
+          <div style={{ display: 'flex', gap: 6 }}>
+            <Link href={`/admin/hackathons/${h.id}`} style={{
+              padding: '5px 10px', background: S.hover, color: S.muted,
+              border: `1px solid ${S.border}`, borderRadius: 6, fontSize: 12, textDecoration: 'none' }}>
+              ⚙ Управление
+            </Link>
+          </div>
         )}
       </div>
     </div>
   );
 }
 
-interface CreateHackathonModalProps {
-  onClose: () => void;
-  onSuccess: () => void;
-}
+// ── Main ───────────────────────────────────────────────────────────────────
+export default function HackathonsPage() {
+  const { user, hasRole } = useAuth();
+  const [hackathons, setHackathons] = useState<Hackathon[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [search, setSearch]   = useState('');
+  const [filter, setFilter]   = useState<'all' | 'registration' | 'active' | 'ended'>('all');
 
-function CreateHackathonModal({ onClose, onSuccess }: CreateHackathonModalProps) {
-  const [formData, setFormData] = useState({
-    title: '',
-    description: '',
-    theme: '',
-    startDate: '',
-    endDate: '',
-    registrationDeadline: '',
-    maxTeamSize: '5',
-    minTeamSize: '3',
-    prizePool: '',
-    isActive: 'true',
-  });
-  const [isLoading, setIsLoading] = useState(false);
+  const isAdmin = hasRole('admin');
+  const isMentor = user?.roles?.some(r => r.startsWith('mentor_'));
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
+  useEffect(() => {
+    apiClient.get('/hackathons')
+      .then(d => setHackathons(d || []))
+      .finally(() => setLoading(false));
+  }, []);
 
-    try {
-      await hackathonsApi.create({
-        title: formData.title,
-        description: formData.description,
-        theme: formData.theme || undefined,
-        startDate: new Date(formData.startDate).toISOString(),
-        endDate: new Date(formData.endDate).toISOString(),
-        registrationDeadline: formData.registrationDeadline
-          ? new Date(formData.registrationDeadline).toISOString()
-          : undefined,
-        maxTeamSize: parseInt(formData.maxTeamSize),
-        minTeamSize: parseInt(formData.minTeamSize),
-        prizePool: formData.prizePool ? parseFloat(formData.prizePool) : undefined,
-        isActive: formData.isActive === 'true',
-      });
-      onSuccess();
-    } catch (error) {
-      console.error('Failed to create hackathon:', error);
-      alert('Не удалось создать хакатон');
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const filtered = useMemo(() => {
+    const q = search.toLowerCase();
+    return hackathons.filter(h => {
+      const s = getStatus(h);
+      const matchSearch = !q || h.title.toLowerCase().includes(q) || h.theme?.toLowerCase().includes(q) || h.description?.toLowerCase().includes(q);
+      const matchFilter = filter === 'all' || (filter === 'registration' && s === 'registration') || (filter === 'active' && s === 'active') || (filter === 'ended' && s === 'ended');
+      return matchSearch && matchFilter;
+    });
+  }, [hackathons, search, filter]);
+
+  const counts = useMemo(() => ({
+    all:          hackathons.length,
+    registration: hackathons.filter(h => getStatus(h) === 'registration').length,
+    active:       hackathons.filter(h => getStatus(h) === 'active').length,
+    ended:        hackathons.filter(h => getStatus(h) === 'ended').length,
+  }), [hackathons]);
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div className="bg-[#161B22] rounded-xl p-8 max-w-2xl w-full mx-4 border border-gray-700 max-h-[90vh] overflow-y-auto">
-        <h2 className="text-2xl font-bold text-white mb-6">Создать хакатон</h2>
-        <form onSubmit={handleSubmit} className="space-y-4">
+    <div style={{ minHeight: '100vh', background: S.bg, color: S.text, fontFamily: '-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif' }}>
+      <div style={{ maxWidth: 1000, margin: '0 auto', padding: '40px 16px 64px' }}>
+
+        {/* Header */}
+        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', flexWrap: 'wrap', gap: 16, marginBottom: 32 }}>
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
-              Название
-            </label>
+            <h1 style={{ margin: '0 0 6px', fontSize: 28, fontWeight: 700, color: S.text }}>🏆 Хакатоны</h1>
+            <p style={{ margin: 0, color: S.muted, fontSize: 14 }}>Командные соревнования по разработке проектов</p>
+          </div>
+          {(isAdmin || isMentor) && (
+            <Link href="/admin/hackathons" style={{
+              padding: '8px 16px', background: S.green, color: '#fff',
+              borderRadius: 8, fontSize: 14, fontWeight: 600, textDecoration: 'none' }}>
+              ＋ Управление
+            </Link>
+          )}
+        </div>
+
+        {/* Controls */}
+        <div style={{ display: 'flex', gap: 10, marginBottom: 20, flexWrap: 'wrap' }}>
+          <div style={{ position: 'relative', flex: '1 1 240px', minWidth: 200 }}>
+            <span style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', color: S.muted, fontSize: 14 }}>🔍</span>
             <input
-              type="text"
-              value={formData.title}
-              onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-              className="w-full px-4 py-2 bg-[#0D1117] border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-blue-500"
-              required
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              placeholder="Поиск по хакатонам..."
+              style={{ width: '100%', paddingLeft: 32, paddingRight: 12, paddingTop: 8, paddingBottom: 8, boxSizing: 'border-box',
+                background: S.surface, border: `1px solid ${S.border}`, borderRadius: 6, color: S.text, fontSize: 14, outline: 'none' }}
             />
           </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
-              Описание
-            </label>
-            <textarea
-              value={formData.description}
-              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-              className="w-full px-4 py-2 bg-[#0D1117] border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-blue-500"
-              rows={3}
-              required
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
-              Тема
-            </label>
-            <input
-              type="text"
-              value={formData.theme}
-              onChange={(e) => setFormData({ ...formData, theme: e.target.value })}
-              className="w-full px-4 py-2 bg-[#0D1117] border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-blue-500"
-              placeholder="Например: AI и машинное обучение"
-            />
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
-                Начало
-              </label>
-              <input
-                type="datetime-local"
-                value={formData.startDate}
-                onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
-                className="w-full px-4 py-2 bg-[#0D1117] border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-blue-500"
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
-                Конец
-              </label>
-              <input
-                type="datetime-local"
-                value={formData.endDate}
-                onChange={(e) => setFormData({ ...formData, endDate: e.target.value })}
-                className="w-full px-4 py-2 bg-[#0D1117] border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-blue-500"
-                required
-              />
-            </div>
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
-              Регистрация до
-            </label>
-            <input
-              type="datetime-local"
-              value={formData.registrationDeadline}
-              onChange={(e) => setFormData({ ...formData, registrationDeadline: e.target.value })}
-              className="w-full px-4 py-2 bg-[#0D1117] border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-          <div className="grid grid-cols-3 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
-                Мин. команда
-              </label>
-              <input
-                type="number"
-                value={formData.minTeamSize}
-                onChange={(e) => setFormData({ ...formData, minTeamSize: e.target.value })}
-                className="w-full px-4 py-2 bg-[#0D1117] border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
-                Макс. команда
-              </label>
-              <input
-                type="number"
-                value={formData.maxTeamSize}
-                onChange={(e) => setFormData({ ...formData, maxTeamSize: e.target.value })}
-                className="w-full px-4 py-2 bg-[#0D1117] border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
-                Призовой фонд
-              </label>
-              <input
-                type="number"
-                value={formData.prizePool}
-                onChange={(e) => setFormData({ ...formData, prizePool: e.target.value })}
-                className="w-full px-4 py-2 bg-[#0D1117] border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-blue-500"
-                placeholder="₽"
-              />
-            </div>
-          </div>
-          <div className="flex gap-4 pt-4">
-            <button
-              type="button"
-              onClick={onClose}
-              className="flex-1 px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600"
-            >
-              Отмена
+        </div>
+
+        {/* Filter tabs */}
+        <div style={{ display: 'flex', gap: 4, marginBottom: 24, borderBottom: `1px solid ${S.border}`, paddingBottom: 0 }}>
+          {([['all', 'Все'], ['registration', 'Регистрация'], ['active', 'Активные'], ['ended', 'Завершённые']] as const).map(([key, label]) => (
+            <button key={key} onClick={() => setFilter(key)}
+              style={{
+                padding: '8px 14px', fontSize: 13, cursor: 'pointer',
+                background: 'none', border: 'none', borderBottom: filter === key ? `2px solid ${S.accent}` : '2px solid transparent',
+                color: filter === key ? S.text : S.muted, fontWeight: filter === key ? 600 : 400,
+                marginBottom: -1, transition: 'color 0.15s',
+              }}>
+              {label}
+              <span style={{ marginLeft: 6, fontSize: 11, background: 'rgba(139,148,158,0.15)', padding: '1px 6px', borderRadius: 10 }}>
+                {counts[key]}
+              </span>
             </button>
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
-            >
-              {isLoading ? 'Создание...' : 'Создать'}
-            </button>
+          ))}
+        </div>
+
+        {/* List */}
+        {loading ? (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            {[1,2,3].map(i => (
+              <div key={i} style={{ height: 130, background: S.surface, border: `1px solid ${S.border}`, borderRadius: 10,
+                animation: 'pulse 1.5s infinite', opacity: 0.7 }} />
+            ))}
+            <style>{`@keyframes pulse{0%,100%{opacity:.7}50%{opacity:.4}}`}</style>
           </div>
-        </form>
+        ) : filtered.length === 0 ? (
+          <div style={{ textAlign: 'center', padding: '60px 0', color: S.muted }}>
+            <div style={{ fontSize: 48, marginBottom: 16 }}>🏆</div>
+            <div style={{ fontSize: 16, fontWeight: 600, color: S.text, marginBottom: 8 }}>Ничего не найдено</div>
+            <div style={{ fontSize: 14 }}>{search ? `По запросу «${search}» хакатонов нет` : 'Хакатоны пока не объявлены'}</div>
+          </div>
+        ) : (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            {filtered.map(h => <HackathonCard key={h.id} h={h} isAdmin={isAdmin || !!isMentor} />)}
+          </div>
+        )}
       </div>
     </div>
   );

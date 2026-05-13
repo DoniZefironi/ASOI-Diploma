@@ -26,8 +26,8 @@ export const Card = ({
   ...props
 }: CardProps) => {
   const baseStyle: React.CSSProperties = {
-    background: '#161b22',
-    border: '1px solid #30363d',
+    background: 'var(--color-canvas-overlay)',
+    border: '1px solid var(--color-border-default)',
     borderRadius: '6px',
     padding: noPadding ? '0' : '16px',
     ...style,
@@ -93,7 +93,7 @@ export const CardTitle = ({ children, className = '', style, ...props }: CardTit
       fontSize: '14px',
       fontWeight: 600,
       lineHeight: 1.25,
-      color: '#e6edf3',
+      color: 'var(--color-fg-default)',
       margin: 0,
       ...style,
     }}
@@ -192,7 +192,7 @@ export const StatCard = ({ label, value, icon, color = 'accent', className = '' 
         </div>
       )}
       <div>
-        <p style={{ fontSize: '12px', color: '#8b949e', margin: 0 }}>{label}</p>
+        <p style={{ fontSize: '12px', color: 'var(--color-fg-muted)', margin: 0 }}>{label}</p>
         <p style={{ fontSize: '24px', fontWeight: 700, color: c.fg, margin: 0, lineHeight: 1.2 }}>
           {value}
         </p>

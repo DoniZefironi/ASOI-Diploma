@@ -97,7 +97,7 @@ function TeamCard({ team }: { team: HackathonTeam }) {
     <div className="border border-gray-700 rounded-lg p-4">
       <div className="flex items-center justify-between cursor-pointer" onClick={() => setOpen(v => !v)}>
         <div>
-          <h3 className="font-semibold text-white">{team.name}</h3>
+          <h3 className="font-semibold text-gh-fg">{team.name}</h3>
           {team.projectName && <p className="text-sm text-gray-400">{team.projectName}</p>}
         </div>
         <div className="flex items-center gap-3">
@@ -199,7 +199,7 @@ export default function HackathonDetailPage() {
         </Button>
         <div className="flex-1 flex justify-between items-center">
           <div>
-            <h1 className="text-3xl font-bold text-white">{hackathon.title}</h1>
+            <h1 className="text-3xl font-bold text-gh-fg">{hackathon.title}</h1>
             {hackathon.theme && <p className="text-blue-400">{hackathon.theme}</p>}
             <p className="text-gray-400 mt-1">{hackathon.description}</p>
           </div>
@@ -218,7 +218,7 @@ export default function HackathonDetailPage() {
         <Card><CardContent className="p-4 flex items-center justify-between">
           <div>
             <p className="text-xs text-gray-400">Команд</p>
-            <p className="text-2xl font-bold text-white">{hackathon.teams?.length ?? 0}</p>
+            <p className="text-2xl font-bold text-gh-fg">{hackathon.teams?.length ?? 0}</p>
           </div>
           <Users className="h-7 w-7 text-blue-400" />
         </CardContent></Card>
@@ -234,7 +234,7 @@ export default function HackathonDetailPage() {
         <Card><CardContent className="p-4 flex items-center justify-between">
           <div>
             <p className="text-xs text-gray-400">Начало</p>
-            <p className="text-sm font-semibold text-white">
+            <p className="text-sm font-semibold text-gh-fg">
               {new Date(hackathon.startDate).toLocaleDateString('ru-RU')}
             </p>
           </div>
@@ -244,7 +244,7 @@ export default function HackathonDetailPage() {
         <Card><CardContent className="p-4 flex items-center justify-between">
           <div>
             <p className="text-xs text-gray-400">Конец</p>
-            <p className="text-sm font-semibold text-white">
+            <p className="text-sm font-semibold text-gh-fg">
               {new Date(hackathon.endDate).toLocaleDateString('ru-RU')}
             </p>
           </div>

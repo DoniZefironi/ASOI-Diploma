@@ -1,5 +1,7 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany } from 'typeorm';
 import { HackathonStage } from './hackathon-stage.entity';
+import { TaskReviewer } from './task-reviewer.entity';
+import { TaskGrade } from './task-grade.entity';
 
 @Entity('hackathon_tasks')
 export class HackathonTask {
@@ -26,4 +28,10 @@ export class HackathonTask {
 
   @Column({ default: 0 })
   order: number;
+
+  @OneToMany(() => TaskReviewer, r => r.task, { cascade: true, eager: true })
+  reviewers: TaskReviewer[];
+
+  @OneToMany(() => TaskGrade, g => g.task, { cascade: true })
+  grades: TaskGrade[];
 }

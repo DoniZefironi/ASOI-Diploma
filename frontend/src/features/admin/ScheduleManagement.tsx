@@ -55,7 +55,7 @@ const DialogHeader = ({ children }: any) => (
   <div className="mb-4 border-b pb-3 border-gray-200 dark:border-gray-700">{children}</div>
 );
 const DialogTitle = ({ children }: any) => (
-  <h3 className="text-lg font-semibold text-white">{children}</h3>
+  <h3 className="text-lg font-semibold text-gh-fg">{children}</h3>
 );
 
 const getScheduleTypeLabel = (type: string) => {
@@ -254,7 +254,7 @@ export default function ScheduleManagement() {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold text-white">Управление расписанием</h1>
+          <h1 className="text-3xl font-bold text-gh-fg">Управление расписанием</h1>
           <p className="text-gray-400 mt-2">
             Создание и редактирование учебного расписания
           </p>
@@ -342,7 +342,7 @@ export default function ScheduleManagement() {
                     <tr key={item.id} className="bg-gray-800 border-b-2 border-b-white">
                       <td className="px-4 py-3">
                         <div className="flex flex-col">
-                          <span className="font-medium text-white">{item.title}</span>
+                          <span className="font-medium text-gh-fg">{item.title}</span>
                           <span className="text-sm text-gray-400 line-clamp-1 mt-1">
                             {item.description}
                           </span>

@@ -186,4 +186,80 @@ export class HackathonsController {
   ) {
     return this.hackathonsService.gradeSubmission(submissionId, req.user.userId, dto);
   }
+
+  // ── Task Reviewers ─────────────────────────────────────────────
+
+  @Post('tasks/:taskId/reviewers')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(...MENTOR_ROLES, UserRoleEnum.ADMIN)
+  assignReviewers(
+    @Param('taskId', ParseIntPipe) taskId: number,
+    @Body() body: { userIds: number[] },
+  ) {
+    return this.hackathonsService.assignReviewers(taskId, body.userIds);
+  }
+
+  @Get('tasks/:taskId/reviewers')
+  @UseGuards(JwtAuthGuard)
+  getTaskReviewers(@Param('taskId', ParseIntPipe) taskId: number) {
+    return this.hackathonsService.getTaskReviewers(taskId);
+  }
+
+  // ── Task Grades ────────────────────────────────────────────────
+
+  @Post('tasks/:taskId/grades')
+  @UseGuards(JwtAuthGuard)
+  gradeTask(
+    @Param('taskId', ParseIntPipe) taskId: number,
+    @Body() body: { teamId: number; score: number; feedback?: string },
+    @Request() req,
+  ) {
+    return this.hackathonsService.gradeTask(taskId, body.teamId, req.user.userId, body.score, body.feedback);
+  }
+
+  @Get('tasks/:taskId/grades')
+  @UseGuards(JwtAuthGuard)
+  getTaskGrades(@Param('taskId', ParseIntPipe) taskId: number) {
+    return this.hackathonsService.getTaskGrades(taskId);
+  }
+
+  // ── Stage Submissions ──────────────────────────────────────────
+
+  @Post('stages/:stageId/submit')
+  @UseGuards(JwtAuthGuard)
+  submitStage(
+    @Param('stageId', ParseIntPipe) stageId: number,
+    @Body() body: { teamId: number; projectUrl: string; note?: string },
+  ) {
+    return this.hackathonsService.submitStage(stageId, body.teamId, body.projectUrl, body.note);
+  }
+
+  @Get('stages/:stageId/submissions')
+  @UseGuards(JwtAuthGuard)
+  getStageSubmissions(@Param('stageId', ParseIntPipe) stageId: number) {
+    return this.hackathonsService.getStageSubmissions(stageId);
+  }
+
+  @Get('teams/:teamId/stage-submissions')
+  @UseGuards(JwtAuthGuard)
+  getTeamStageSubmissions(@Param('teamId', ParseIntPipe) teamId: number) {
+    return this.hackathonsService.getTeamStageSubmissions(teamId);
+  }
+
+  // ── Scoring ────────────────────────────────────────────────────
+
+  @Get(':hackathonId/teams/:teamId/scores')
+  @UseGuards(JwtAuthGuard)
+  getTeamScores(
+    @Param('hackathonId', ParseIntPipe) hackathonId: number,
+    @Param('teamId', ParseIntPipe) teamId: number,
+  ) {
+    return this.hackathonsService.getTeamScores(hackathonId, teamId);
+  }
+
+  @Get(':hackathonId/leaderboard')
+  @UseGuards(JwtAuthGuard)
+  getLeaderboard(@Param('hackathonId', ParseIntPipe) hackathonId: number) {
+    return this.hackathonsService.getHackathonLeaderboard(hackathonId);
+  }
 }

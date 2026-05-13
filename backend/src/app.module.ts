@@ -31,6 +31,9 @@ import { NotificationsModule } from './notifications/notifications.module';
 import { Notification } from './notifications/entities/notification.entity';
 import { VocabularyModule } from './vocabulary/vocabulary.module';
 import { VocabTerm } from './vocabulary/entities/vocab-term.entity';
+import { RoomsModule } from './rooms/rooms.module';
+import { Room } from './rooms/entities/room.entity';
+import { RoomMember } from './rooms/entities/room-member.entity';
 import { InternshipsModule } from './internships/internships.module';
 import { Internship } from './internships/entities/internship.entity';
 import { ElectiveEnrollment } from './electives/entities/elective-enrollment.entity';
@@ -59,6 +62,9 @@ import { HackathonSubmission } from './hackathons/entities/hackathon-submission.
 import { HackathonGrade } from './hackathons/entities/hackathon-grade.entity';
 import { HackathonStage } from './hackathons/entities/hackathon-stage.entity';
 import { HackathonTask } from './hackathons/entities/hackathon-task.entity';
+import { TaskReviewer } from './hackathons/entities/task-reviewer.entity';
+import { TaskGrade } from './hackathons/entities/task-grade.entity';
+import { StageSubmission } from './hackathons/entities/stage-submission.entity';
 import { CircuitElementType } from './circuit/entities/circuit-element-type.entity';
 import { CircuitSolution } from './assignments/entities/circuit-solution.entity';
 import { PeerReviewSession } from './assignments/entities/peer-review-session.entity';
@@ -106,6 +112,9 @@ import { PeerReviewSession } from './assignments/entities/peer-review-session.en
             HackathonGrade,
             HackathonStage,
             HackathonTask,
+            TaskReviewer,
+            TaskGrade,
+            StageSubmission,
             PeerReviewSession,
             Elective,
             ElectiveEnrollment,
@@ -115,6 +124,8 @@ import { PeerReviewSession } from './assignments/entities/peer-review-session.en
             SiteVisit,
             Notification,
             VocabTerm,
+            Room,
+            RoomMember,
           ],
           synchronize: configService.get('NODE_ENV') !== 'production',
           logging: configService.get('NODE_ENV') !== 'production',
@@ -147,6 +158,7 @@ import { PeerReviewSession } from './assignments/entities/peer-review-session.en
     AnalyticsModule,
     NotificationsModule,
     VocabularyModule,
+    RoomsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

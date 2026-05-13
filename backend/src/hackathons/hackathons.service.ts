@@ -8,6 +8,9 @@ import { HackathonSubmission } from './entities/hackathon-submission.entity';
 import { HackathonGrade } from './entities/hackathon-grade.entity';
 import { HackathonStage } from './entities/hackathon-stage.entity';
 import { HackathonTask } from './entities/hackathon-task.entity';
+import { TaskReviewer } from './entities/task-reviewer.entity';
+import { TaskGrade } from './entities/task-grade.entity';
+import { StageSubmission } from './entities/stage-submission.entity';
 import { CreateHackathonDto } from './dto/create-hackathon.dto';
 import { CreateTeamDto } from './dto/create-team.dto';
 import { SubmitProjectDto } from './dto/submit-project.dto';
@@ -46,6 +49,12 @@ export class HackathonsService {
     private readonly stageRepo: Repository<HackathonStage>,
     @InjectRepository(HackathonTask)
     private readonly taskRepo: Repository<HackathonTask>,
+    @InjectRepository(TaskReviewer)
+    private readonly reviewerRepo: Repository<TaskReviewer>,
+    @InjectRepository(TaskGrade)
+    private readonly taskGradeRepo: Repository<TaskGrade>,
+    @InjectRepository(StageSubmission)
+    private readonly stageSubRepo: Repository<StageSubmission>,
   ) {}
 
   async createHackathon(dto: CreateHackathonDto): Promise<Hackathon> {
@@ -556,5 +565,140 @@ export class HackathonsService {
       where: { teamId },
       relations: ['team', 'grades']
     });
+  }
+
+  // ── Task Reviewers ─────────────────────────────────────────────
+  async assignReviewers(taskId: number, userIds: number[]): Promise<TaskReviewer[]> {
+    if (userIds.length > 5) throw new BadRequestException('Максимум 5 проверяющих на задачу');
+    const task = await this.taskRepo.findOne({ where: { id: taskId } });
+    if (!task) throw new NotFoundException('Задача не найдена');
+
+    await this.reviewerRepo.delete({ taskId });
+    const reviewers = userIds.map(userId => this.reviewerRepo.create({ taskId, userId }));
+    return this.reviewerRepo.save(reviewers);
+  }
+
+  async getTaskReviewers(taskId: number): Promise<TaskReviewer[]> {
+    return this.reviewerRepo.find({
+      where: { taskId },
+      relations: ['user'],
+    });
+  }
+
+  // ── Task Grades ────────────────────────────────────────────────
+  async gradeTask(taskId: number, teamId: number, reviewerId: number, score: number, feedback?: string): Promise<TaskGrade> {
+    const task = await this.taskRepo.findOne({ where: { id: taskId } });
+    if (!task) throw new NotFoundException('Задача не найдена');
+    if (score < 0 || score > task.maxScore) {
+      throw new BadRequestException(`Оценка должна быть от 0 до ${task.maxScore}`);
+    }
+    const isReviewer = await this.reviewerRepo.findOne({ where: { taskId, userId: reviewerId } });
+    if (!isReviewer) throw new ForbiddenException('Вы не назначены проверяющим этой задачи');
+
+    const existing = await this.taskGradeRepo.findOne({ where: { taskId, teamId, reviewerId } });
+    if (existing) {
+      existing.score = score;
+      existing.feedback = feedback ?? existing.feedback;
+      return this.taskGradeRepo.save(existing);
+    }
+    return this.taskGradeRepo.save(this.taskGradeRepo.create({ taskId, teamId, reviewerId, score, feedback }));
+  }
+
+  async getTaskGrades(taskId: number): Promise<TaskGrade[]> {
+    return this.taskGradeRepo.find({
+      where: { taskId },
+      relations: ['reviewer', 'team'],
+    });
+  }
+
+  // ── Stage Submissions ──────────────────────────────────────────
+  async submitStage(stageId: number, teamId: number, projectUrl: string, note?: string): Promise<StageSubmission> {
+    const existing = await this.stageSubRepo.findOne({ where: { stageId, teamId } });
+    if (existing) {
+      existing.projectUrl = projectUrl;
+      existing.note = note ?? existing.note;
+      return this.stageSubRepo.save(existing);
+    }
+    return this.stageSubRepo.save(this.stageSubRepo.create({ stageId, teamId, projectUrl, note }));
+  }
+
+  async getStageSubmissions(stageId: number): Promise<StageSubmission[]> {
+    return this.stageSubRepo.find({
+      where: { stageId },
+      relations: ['team'],
+    });
+  }
+
+  async getTeamStageSubmissions(teamId: number): Promise<StageSubmission[]> {
+    return this.stageSubRepo.find({
+      where: { teamId },
+      relations: ['stage'],
+    });
+  }
+
+  // ── Scoring ────────────────────────────────────────────────────
+  async getTeamScores(hackathonId: number, teamId: number) {
+    const hackathon = await this.hackathonRepo.findOne({
+      where: { id: hackathonId },
+      relations: ['stages', 'stages.tasks', 'stages.tasks.reviewers'],
+    });
+    if (!hackathon) throw new NotFoundException('Хакатон не найден');
+
+    const result: {
+      stages: {
+        stageId: number; stageTitle: string; tasks: {
+          taskId: number; title: string; maxScore: number;
+          averageScore: number | null; grades: { reviewerId: number; score: number; feedback: string }[];
+        }[];
+        stageAverage: number | null;
+      }[];
+      totalAverage: number | null;
+    } = { stages: [], totalAverage: null };
+
+    let allTaskAverages: number[] = [];
+
+    for (const stage of hackathon.stages) {
+      const stageTasks: any[] = [];
+      for (const task of stage.tasks) {
+        const grades = await this.taskGradeRepo.find({ where: { taskId: task.id, teamId } });
+        const avg = grades.length > 0
+          ? grades.reduce((s, g) => s + Number(g.score), 0) / grades.length
+          : null;
+        if (avg !== null) allTaskAverages.push(avg);
+        stageTasks.push({
+          taskId: task.id, title: task.title, maxScore: task.maxScore,
+          averageScore: avg !== null ? Math.round(avg * 100) / 100 : null,
+          grades: grades.map(g => ({ reviewerId: g.reviewerId, score: Number(g.score), feedback: g.feedback })),
+        });
+      }
+      const stageScores = stageTasks.map(t => t.averageScore).filter(s => s !== null) as number[];
+      result.stages.push({
+        stageId: stage.id, stageTitle: stage.title,
+        tasks: stageTasks,
+        stageAverage: stageScores.length > 0 ? Math.round(stageScores.reduce((a, b) => a + b, 0) / stageScores.length * 100) / 100 : null,
+      });
+    }
+
+    result.totalAverage = allTaskAverages.length > 0
+      ? Math.round(allTaskAverages.reduce((a, b) => a + b, 0) / allTaskAverages.length * 100) / 100
+      : null;
+
+    return result;
+  }
+
+  async getHackathonLeaderboard(hackathonId: number) {
+    const hackathon = await this.hackathonRepo.findOne({
+      where: { id: hackathonId },
+      relations: ['teams', 'teams.members', 'teams.members.user', 'stages', 'stages.tasks'],
+    });
+    if (!hackathon) throw new NotFoundException('Хакатон не найден');
+
+    const boards = await Promise.all(
+      hackathon.teams.map(async (team) => {
+        const scores = await this.getTeamScores(hackathonId, team.id);
+        return { teamId: team.id, teamName: team.name, projectName: team.projectName, membersCount: team.members?.length || 0, totalAverage: scores.totalAverage };
+      })
+    );
+    return boards.sort((a, b) => (b.totalAverage || 0) - (a.totalAverage || 0));
   }
 }

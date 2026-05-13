@@ -62,7 +62,7 @@ export default function InternshipDetailPage({ id }: Props) {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-[#0D1117] flex items-center justify-center">
+      <div className="min-h-screen bg-gh-canvas flex items-center justify-center">
         <p className="text-gray-400">Загрузка...</p>
       </div>
     );
@@ -70,7 +70,7 @@ export default function InternshipDetailPage({ id }: Props) {
 
   if (isError || !internship) {
     return (
-      <div className="min-h-screen bg-[#0D1117] flex items-center justify-center">
+      <div className="min-h-screen bg-gh-canvas flex items-center justify-center">
         <Card className="p-8 text-center">
           <p className="text-red-400 text-lg mb-4">Стажировка не найдена</p>
           <Link href="/internships">
@@ -112,7 +112,7 @@ export default function InternshipDetailPage({ id }: Props) {
   const canApply = !isExpired && (internship.applicationEmail || internship.applicationUrl);
 
   return (
-    <div className="min-h-screen bg-[#0D1117] py-10">
+    <div className="min-h-screen bg-gh-canvas py-10">
       <div className="container mx-auto px-4 max-w-4xl">
         {/* Back */}
         <div className="mb-6">
@@ -142,7 +142,7 @@ export default function InternshipDetailPage({ id }: Props) {
                 ))}
               </div>
 
-              <h1 className="text-2xl font-bold text-white mb-2">{internship.title}</h1>
+              <h1 className="text-2xl font-bold text-gh-fg mb-2">{internship.title}</h1>
 
               <div className="flex items-center gap-2 text-gray-300 mb-4">
                 <Building2 className="h-5 w-5 text-gray-400 shrink-0" />

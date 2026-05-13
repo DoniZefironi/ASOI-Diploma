@@ -2,50 +2,16 @@
 
 import { useState } from 'react';
 import { apiClient } from '@/shared/api/client';
+import { Download, Search, Check, AlertTriangle, Loader2, ExternalLink, Trash2 } from 'lucide-react';
 
 // ── Icons ──────────────────────────────────────────────────────────
-const DownloadIcon = () => (
-  <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
-    <path d="M2.75 14A1.75 1.75 0 0 1 1 12.25v-2.5a.75.75 0 0 1 1.5 0v2.5c0 .138.112.25.25.25h10.5a.25.25 0 0 0 .25-.25v-2.5a.75.75 0 0 1 1.5 0v2.5A1.75 1.75 0 0 1 13.25 14ZM7.25 7.689V2a.75.75 0 0 1 1.5 0v5.689l1.97-1.97a.749.749 0 1 1 1.06 1.06l-3.25 3.25a.749.749 0 0 1-1.06 0L4.22 6.779a.749.749 0 1 1 1.06-1.06Z"/>
-  </svg>
-);
-
-const SearchIcon = () => (
-  <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
-    <path d="M10.68 11.74a6 6 0 0 1-7.922-8.982 6 6 0 0 1 8.982 7.922l3.04 3.04a.749.749 0 0 1-.326 1.275.749.749 0 0 1-.734-.215ZM11.5 7a4.499 4.499 0 1 0-8.997 0A4.499 4.499 0 0 0 11.5 7Z"/>
-  </svg>
-);
-
-const CheckIcon = () => (
-  <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
-    <path d="M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z"/>
-  </svg>
-);
-
-const AlertIcon = () => (
-  <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
-    <path d="M6.457 1.047c.659-1.234 2.427-1.234 3.086 0l6.082 11.378A1.75 1.75 0 0 1 14.082 15H1.918a1.75 1.75 0 0 1-1.543-2.575Zm1.763.707a.25.25 0 0 0-.44 0L1.698 13.132a.25.25 0 0 0 .22.368h12.164a.25.25 0 0 0 .22-.368Zm.53 3.996v2.5a.75.75 0 0 1-1.5 0v-2.5a.75.75 0 0 1 1.5 0ZM9 11a1 1 0 1 1-2 0 1 1 0 0 1 2 0Z"/>
-  </svg>
-);
-
-const SpinnerIcon = () => (
-  <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5">
-    <circle cx="8" cy="8" r="6" strokeOpacity="0.3"/>
-    <path d="M8 2a6 6 0 0 1 6 6" strokeLinecap="round"/>
-  </svg>
-);
-
-const ExternalLinkIcon = () => (
-  <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor">
-    <path d="M3.75 2h3.5a.75.75 0 0 1 0 1.5h-3.5a.25.25 0 0 0-.25.25v8.5c0 .138.112.25.25.25h8.5a.25.25 0 0 0 .25-.25v-3.5a.75.75 0 0 1 1.5 0v3.5A1.75 1.75 0 0 1 12.25 14h-8.5A1.75 1.75 0 0 1 2 12.25v-8.5C2 2.784 2.784 2 3.75 2Zm6.854-1h4.146a.25.25 0 0 1 .25.25v4.146a.25.25 0 0 1-.427.177L13.03 4.03 9.28 7.78a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042l3.75-3.75-1.543-1.543A.25.25 0 0 1 10.604 1Z"/>
-  </svg>
-);
-
-const TrashIcon = () => (
-  <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
-    <path d="M11 1.75V3h2.25a.75.75 0 0 1 0 1.5H2.75a.75.75 0 0 1 0-1.5H5V1.75C5 .784 5.784 0 6.75 0h2.5C10.216 0 11 .784 11 1.75ZM4.496 6.675l.66 6.6a.25.25 0 0 0 .249.225h5.19a.25.25 0 0 0 .249-.225l.66-6.6a.75.75 0 0 1 1.492.149l-.66 6.6A1.748 1.748 0 0 1 10.595 15h-5.19a1.75 1.75 0 0 1-1.741-1.575l-.66-6.6a.75.75 0 1 1 1.492-.15ZM6.5 1.75V3h3V1.75a.25.25 0 0 0-.25-.25h-2.5a.25.25 0 0 0-.25.25Z"/>
-  </svg>
-);
+const DownloadIcon = () => <Download size={14} />;
+const SearchIcon = () => <Search size={14} />;
+const CheckIcon = () => <Check size={14} />;
+const AlertIcon = () => <AlertTriangle size={14} />;
+const SpinnerIcon = () => <Loader2 size={14} />;
+const ExternalLinkIcon = () => <ExternalLink size={12} />;
+const TrashIcon = () => <Trash2 size={14} />;
 
 // ── Types ──────────────────────────────────────────────────────────
 interface ImportResult {
@@ -113,21 +79,21 @@ export default function ImportFromHhPage() {
   };
 
   const card: React.CSSProperties = {
-    background: '#161b22', border: '1px solid #30363d', borderRadius: 6,
+    background: 'var(--color-canvas-overlay)', border: '1px solid var(--color-border-default)', borderRadius: 6,
   };
   const cardHeader: React.CSSProperties = {
     padding: '12px 16px', borderBottom: '1px solid #21262d',
   };
   const cardBody: React.CSSProperties = { padding: '16px' };
   const labelStyle: React.CSSProperties = {
-    display: 'block', fontSize: 13, fontWeight: 600, color: '#e6edf3', marginBottom: 6,
+    display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--color-fg-default)', marginBottom: 6,
   };
   const inputStyle: React.CSSProperties = {
-    width: '100%', padding: '5px 12px', fontSize: 13, color: '#e6edf3',
-    background: '#0d1117', border: '1px solid #30363d', borderRadius: 6,
+    width: '100%', padding: '5px 12px', fontSize: 13, color: 'var(--color-fg-default)',
+    background: 'var(--color-canvas-default)', border: '1px solid var(--color-border-default)', borderRadius: 6,
     outline: 'none', boxSizing: 'border-box',
   };
-  const hintStyle: React.CSSProperties = { fontSize: 12, color: '#8b949e', marginTop: 4 };
+  const hintStyle: React.CSSProperties = { fontSize: 12, color: 'var(--color-fg-muted)', marginTop: 4 };
   const btnPrimary: React.CSSProperties = {
     display: 'inline-flex', alignItems: 'center', gap: 6,
     padding: '5px 16px', fontSize: 13, fontWeight: 600,
@@ -137,8 +103,8 @@ export default function ImportFromHhPage() {
   const btnSecondary: React.CSSProperties = {
     display: 'inline-flex', alignItems: 'center', gap: 6,
     padding: '5px 16px', fontSize: 13, fontWeight: 500,
-    color: '#e6edf3', background: '#21262d',
-    border: '1px solid #30363d', borderRadius: 6, cursor: 'pointer',
+    color: 'var(--color-fg-default)', background: 'var(--color-border-muted)',
+    border: '1px solid var(--color-border-default)', borderRadius: 6, cursor: 'pointer',
   };
 
   const AUTO_QUERIES = [
@@ -150,10 +116,10 @@ export default function ImportFromHhPage() {
     <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
       {/* Page header */}
       <div>
-        <h1 style={{ fontSize: 24, fontWeight: 600, color: '#e6edf3', margin: '0 0 4px' }}>
+        <h1 style={{ fontSize: 24, fontWeight: 600, color: 'var(--color-fg-default)', margin: '0 0 4px' }}>
           Импорт стажировок с HH.ru
         </h1>
-        <p style={{ fontSize: 13, color: '#8b949e', margin: 0 }}>
+        <p style={{ fontSize: 13, color: 'var(--color-fg-muted)', margin: 0 }}>
           Автоматическое получение вакансий с HeadHunter и добавление в базу
         </p>
       </div>
@@ -161,8 +127,8 @@ export default function ImportFromHhPage() {
       {/* Manual import */}
       <div style={card}>
         <div style={cardHeader}>
-          <p style={{ fontSize: 14, fontWeight: 600, color: '#e6edf3', margin: 0 }}>Ручной импорт</p>
-          <p style={{ fontSize: 12, color: '#8b949e', margin: '2px 0 0' }}>
+          <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--color-fg-default)', margin: 0 }}>Ручной импорт</p>
+          <p style={{ fontSize: 12, color: 'var(--color-fg-muted)', margin: '2px 0 0' }}>
             Получите вакансии по произвольному поисковому запросу
           </p>
         </div>
@@ -209,8 +175,8 @@ export default function ImportFromHhPage() {
       {/* Auto import */}
       <div style={card}>
         <div style={cardHeader}>
-          <p style={{ fontSize: 14, fontWeight: 600, color: '#e6edf3', margin: 0 }}>Автоматический импорт</p>
-          <p style={{ fontSize: 12, color: '#8b949e', margin: '2px 0 0' }}>
+          <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--color-fg-default)', margin: 0 }}>Автоматический импорт</p>
+          <p style={{ fontSize: 12, color: 'var(--color-fg-muted)', margin: '2px 0 0' }}>
             Обход по нескольким популярным запросам — по 10 вакансий на каждый
           </p>
         </div>
@@ -218,8 +184,8 @@ export default function ImportFromHhPage() {
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 16 }}>
             {AUTO_QUERIES.map(q => (
               <span key={q} style={{
-                fontSize: 12, color: '#8b949e', background: '#21262d',
-                border: '1px solid #30363d', borderRadius: 20, padding: '2px 10px',
+                fontSize: 12, color: 'var(--color-fg-muted)', background: 'var(--color-border-muted)',
+                border: '1px solid var(--color-border-default)', borderRadius: 20, padding: '2px 10px',
               }}>
                 {q}
               </span>
@@ -242,8 +208,8 @@ export default function ImportFromHhPage() {
       {/* Cleanup stale */}
       <div style={card}>
         <div style={cardHeader}>
-          <p style={{ fontSize: 14, fontWeight: 600, color: '#e6edf3', margin: 0 }}>Очистка устаревших вакансий</p>
-          <p style={{ fontSize: 12, color: '#8b949e', margin: '2px 0 0' }}>
+          <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--color-fg-default)', margin: 0 }}>Очистка устаревших вакансий</p>
+          <p style={{ fontSize: 12, color: 'var(--color-fg-muted)', margin: '2px 0 0' }}>
             Проверить каждую вакансию из HH.ru и удалить те, которых больше нет на сайте
           </p>
         </div>
@@ -270,9 +236,9 @@ export default function ImportFromHhPage() {
           <div style={{ padding: '14px 16px', display: 'flex', alignItems: 'center', gap: 10 }}>
             <span style={{ color: '#3fb950', display: 'flex' }}><CheckIcon /></span>
             <div>
-              <p style={{ fontSize: 13, fontWeight: 600, color: '#e6edf3', margin: 0 }}>Очистка завершена</p>
-              <p style={{ fontSize: 12, color: '#8b949e', margin: '2px 0 0' }}>
-                Проверено: <strong style={{ color: '#e6edf3' }}>{cleanupResult.checked}</strong>
+              <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--color-fg-default)', margin: 0 }}>Очистка завершена</p>
+              <p style={{ fontSize: 12, color: 'var(--color-fg-muted)', margin: '2px 0 0' }}>
+                Проверено: <strong style={{ color: 'var(--color-fg-default)' }}>{cleanupResult.checked}</strong>
                 {' '}· Удалено: <strong style={{ color: '#f85149' }}>{cleanupResult.removed}</strong>
               </p>
             </div>
@@ -287,7 +253,7 @@ export default function ImportFromHhPage() {
             <span style={{ color: '#f85149', display: 'flex' }}><AlertIcon /></span>
             <div>
               <p style={{ fontSize: 13, fontWeight: 600, color: '#f85149', margin: 0 }}>Ошибка</p>
-              <p style={{ fontSize: 12, color: '#8b949e', margin: '2px 0 0' }}>{error}</p>
+              <p style={{ fontSize: 12, color: 'var(--color-fg-muted)', margin: '2px 0 0' }}>{error}</p>
             </div>
           </div>
         </div>
@@ -301,7 +267,7 @@ export default function ImportFromHhPage() {
               <span style={{ color: '#3fb950', display: 'flex' }}><CheckIcon /></span>
               <div>
                 <p style={{ fontSize: 13, fontWeight: 600, color: '#3fb950', margin: 0 }}>Импорт завершён</p>
-                <p style={{ fontSize: 12, color: '#8b949e', margin: '2px 0 0' }}>
+                <p style={{ fontSize: 12, color: 'var(--color-fg-muted)', margin: '2px 0 0' }}>
                   Импортировано: <strong style={{ color: '#3fb950' }}>{result.imported}</strong>
                   {' '}· Пропущено (дубликаты): {result.skipped}
                 </p>
@@ -312,7 +278,7 @@ export default function ImportFromHhPage() {
           {result.items.length > 0 && (
             <div style={card}>
               <div style={cardHeader}>
-                <p style={{ fontSize: 14, fontWeight: 600, color: '#e6edf3', margin: 0 }}>
+                <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--color-fg-default)', margin: 0 }}>
                   Импортированные вакансии ({result.items.length})
                 </p>
               </div>
@@ -320,16 +286,16 @@ export default function ImportFromHhPage() {
                 <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                   <thead>
                     <tr style={{ borderBottom: '1px solid #21262d' }}>
-                      <th style={{ padding: '8px 16px', textAlign: 'left', fontSize: 12, fontWeight: 600, color: '#8b949e', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Вакансия</th>
-                      <th style={{ padding: '8px 16px', textAlign: 'left', fontSize: 12, fontWeight: 600, color: '#8b949e', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Компания</th>
-                      <th style={{ padding: '8px 16px', textAlign: 'center', fontSize: 12, fontWeight: 600, color: '#8b949e', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Ссылка</th>
+                      <th style={{ padding: '8px 16px', textAlign: 'left', fontSize: 12, fontWeight: 600, color: 'var(--color-fg-muted)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Вакансия</th>
+                      <th style={{ padding: '8px 16px', textAlign: 'left', fontSize: 12, fontWeight: 600, color: 'var(--color-fg-muted)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Компания</th>
+                      <th style={{ padding: '8px 16px', textAlign: 'center', fontSize: 12, fontWeight: 600, color: 'var(--color-fg-muted)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Ссылка</th>
                     </tr>
                   </thead>
                   <tbody>
                     {result.items.map(item => (
                       <tr key={item.id} style={{ borderBottom: '1px solid #21262d' }}>
-                        <td style={{ padding: '10px 16px', fontSize: 13, color: '#e6edf3' }}>{item.title}</td>
-                        <td style={{ padding: '10px 16px', fontSize: 13, color: '#8b949e' }}>{item.company}</td>
+                        <td style={{ padding: '10px 16px', fontSize: 13, color: 'var(--color-fg-default)' }}>{item.title}</td>
+                        <td style={{ padding: '10px 16px', fontSize: 13, color: 'var(--color-fg-muted)' }}>{item.company}</td>
                         <td style={{ padding: '10px 16px', textAlign: 'center' }}>
                           <a
                             href={item.url}

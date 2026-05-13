@@ -231,7 +231,7 @@ export function TechVocabulary() {
       {/* Header */}
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
-          <h2 className="text-2xl font-bold text-white flex items-center gap-2">
+          <h2 className="text-2xl font-bold text-gh-fg flex items-center gap-2">
             📖 Technical English Vocabulary
           </h2>
           <p className="text-gray-400 text-sm mt-1">
@@ -300,7 +300,7 @@ export function TechVocabulary() {
             <div className="text-xs text-gray-500 mb-4 uppercase tracking-wide">
               Карточка {(quizIndex % quizList.length) + 1} / {quizList.length}
             </div>
-            <div className="text-3xl font-bold text-white mb-2">{quizTerm.term}</div>
+            <div className="text-3xl font-bold text-gh-fg mb-2">{quizTerm.term}</div>
             {quizTerm.transcription && <div className="text-gray-400 font-mono mb-4">{quizTerm.transcription}</div>}
             <div className={`text-sm inline-block px-2 py-0.5 rounded-full border mb-4 ${LEVEL_COLOR[quizTerm.level] || LEVEL_COLOR.basic}`}>
               {quizTerm.category} · {LEVEL_LABEL[quizTerm.level] || quizTerm.level}

@@ -2,7 +2,7 @@
 
 export const Footer = () => {
   return (
-    <footer className="bg-[#0D1117] text-white py-4">
+    <footer className="bg-gh-canvas text-white py-4">
       <div className="container mx-auto px-4">
         <div className="flex justify-center gap-12">
             <ul className="flex justify-center items-center gap-10">

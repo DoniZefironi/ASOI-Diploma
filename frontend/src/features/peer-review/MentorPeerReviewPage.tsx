@@ -34,10 +34,10 @@ export default function MentorPeerReviewPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0D1117] py-12">
+    <div className="min-h-screen bg-gh-canvas py-12">
       <div className="container mx-auto px-4">
         <div className="mb-8">
-          <h1 className="text-4xl font-bold text-white mb-2">Peer Review - Панель ментора</h1>
+          <h1 className="text-4xl font-bold text-gh-fg mb-2">Peer Review - Панель ментора</h1>
           <p className="text-gray-400">
             Управление взаимным рецензированием работ
           </p>

@@ -51,7 +51,7 @@ export const AboutPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#0D1117] py-12">
+    <div className="min-h-screen bg-gh-canvas py-12">
       <div className="container mx-auto px-4">
         <div className="text-center mb-16 animate-fade-in-up">
           <h1 className="text-4xl md:text-5xl font-bold text-white mb-6">
@@ -64,7 +64,7 @@ export const AboutPage = () => {
 
         <section className="mb-20 animate-fade-in-up">
           <div className="max-w-4xl mx-auto">
-            <h2 className="text-3xl font-bold text-white mb-8 text-center">
+            <h2 className="text-3xl font-bold text-gh-fg mb-8 text-center">
               Наша история
             </h2>
             <Card className="p-8">
@@ -83,13 +83,13 @@ export const AboutPage = () => {
         </section>
 
         <section className="mb-20 animate-fade-in-up">
-          <h2 className="text-3xl font-bold text-white mb-12 text-center">
+          <h2 className="text-3xl font-bold text-gh-fg mb-12 text-center">
             Наши ценности
           </h2>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-6xl mx-auto">
             <Card className="p-6 hover:shadow-xl transition-shadow">
-              <h3 className="text-xl font-semibold text-white mb-3">Инновации</h3>
+              <h3 className="text-xl font-semibold text-gh-fg mb-3">Инновации</h3>
               <p className="text-white">
                 Мы постоянно ищем новые и лучшие способы доставки образовательного контента, 
                 используя современные технологии и методики обучения.
@@ -97,7 +97,7 @@ export const AboutPage = () => {
             </Card>
 
             <Card className="p-6 hover:shadow-xl transition-shadow">
-              <h3 className="text-xl font-semibold text-white mb-3">Инклюзивность</h3>
+              <h3 className="text-xl font-semibold text-gh-fg mb-3">Инклюзивность</h3>
               <p className="text-white">
                 Мы обеспечиваем доступность нашей платформы для всех учащихся, создавая 
                 инклюзивную и welcoming среду для людей из разных背景.
@@ -105,7 +105,7 @@ export const AboutPage = () => {
             </Card>
 
             <Card className="p-6 hover:shadow-xl transition-shadow">
-              <h3 className="text-xl font-semibold text-white mb-3">Сотрудничество</h3>
+              <h3 className="text-xl font-semibold text-gh-fg mb-3">Сотрудничество</h3>
               <p className="text-white">
                 Мы верим, что лучшее обучение происходит, когда мы работаем вместе. 
                 Мы поощряем совместное обучение и обмен знаниями.
@@ -113,7 +113,7 @@ export const AboutPage = () => {
             </Card>
 
             <Card className="p-6 hover:shadow-xl transition-shadow">
-              <h3 className="text-xl font-semibold text-white mb-3">Стремление к excellence</h3>
+              <h3 className="text-xl font-semibold text-gh-fg mb-3">Стремление к excellence</h3>
               <p className="text-white">
                 Мы стремимся к высочайшим стандартам в наших курсах и услугах, 
                 постоянно улучшая качество образовательного опыта.
@@ -123,7 +123,7 @@ export const AboutPage = () => {
         </section>
 
         <section className="mb-20 animate-fade-in-up">
-          <h2 className="text-3xl font-bold text-white mb-12 text-center">
+          <h2 className="text-3xl font-bold text-gh-fg mb-12 text-center">
             Наши направления
           </h2>
           
@@ -152,7 +152,7 @@ export const AboutPage = () => {
                   
                 </div>
 
-                <h3 className="text-xl font-semibold text-white mb-2 pt-3 px-5">
+                <h3 className="text-xl font-semibold text-gh-fg mb-2 pt-3 px-5">
                   {member.name}
                 </h3>
                 <p className="text-blue-400 font-medium mb-4 px-5">
@@ -191,7 +191,7 @@ export const AboutPage = () => {
         </section>
 
         <section className="text-center animate-fade-in-up">
-          <h2 className="text-3xl font-bold text-white mb-6">
+          <h2 className="text-3xl font-bold text-gh-fg mb-6">
             Присоединяйтесь к нашему сообществу
           </h2>
           <p className="text-xl text-white mb-8 max-w-2xl mx-auto">

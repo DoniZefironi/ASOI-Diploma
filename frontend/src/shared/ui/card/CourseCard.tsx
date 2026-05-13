@@ -26,7 +26,7 @@ export const CourseCard = ({ course, index }: CourseCardProps) => {
           {course.level}
         </div>
 
-        <h3 className="text-xl font-bold text-white mb-4 line-clamp-2">
+        <h3 className="text-xl font-bold text-gh-fg mb-4 line-clamp-2">
           {course.title}
         </h3>
 

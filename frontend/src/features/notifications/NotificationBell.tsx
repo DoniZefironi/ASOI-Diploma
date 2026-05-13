@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from 'react';
 import useSWR, { mutate } from 'swr';
 import { apiClient } from '@/shared/api/client';
+import { Bell } from 'lucide-react';
 
 const fetcher = (url: string) => apiClient.get(url);
 
@@ -76,16 +77,14 @@ export function NotificationBell() {
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           width: 32, height: 32, borderRadius: 6,
           background: 'transparent', border: 'none', cursor: 'pointer',
-          color: '#e6edf3',
+          color: 'var(--color-fg-default)',
           transition: 'background 0.15s',
         }}
-        onMouseEnter={e => (e.currentTarget.style.background = '#21262d')}
+        onMouseEnter={e => (e.currentTarget.style.background = 'var(--color-neutral-2)')}
         onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
       >
         {/* Bell icon */}
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
-          <path d="M8 16a2 2 0 0 0 1.985-1.75c.017-.137-.097-.25-.235-.25h-3.5c-.138 0-.252.113-.235.25A2 2 0 0 0 8 16ZM3 5a5 5 0 0 1 10 0v2.947c0 .05.015.098.042.139l1.703 2.555A1.519 1.519 0 0 1 13.482 13H2.518a1.516 1.516 0 0 1-1.263-2.36l1.703-2.554A.255.255 0 0 0 3 7.947Zm5-3.5A3.5 3.5 0 0 0 4.5 5v2.947c0 .346-.102.683-.294.97l-1.703 2.556a.017.017 0 0 0-.003.01l.001.006c0 .02.005.09.072.09h10.854l.001-.006a.017.017 0 0 0-.003-.01l-1.703-2.554a1.745 1.745 0 0 1-.294-.97V5A3.5 3.5 0 0 0 8 1.5Z" />
-        </svg>
+        <Bell size={16} />
         {unread > 0 && (
           <span style={{
             position: 'absolute', top: 2, right: 2,
@@ -105,7 +104,7 @@ export function NotificationBell() {
         <div style={{
           position: 'absolute', right: 0, top: '100%', marginTop: 4,
           width: 340, maxHeight: 480,
-          background: '#161b22', border: '1px solid #30363d',
+          background: 'var(--color-canvas-overlay)', border: '1px solid var(--color-border-default)',
           borderRadius: 8, boxShadow: '0 8px 24px rgba(0,0,0,0.6)',
           zIndex: 100, display: 'flex', flexDirection: 'column',
         }}>
@@ -114,7 +113,7 @@ export function NotificationBell() {
             display: 'flex', alignItems: 'center', justifyContent: 'space-between',
             padding: '12px 16px', borderBottom: '1px solid #21262d',
           }}>
-            <span style={{ color: '#e6edf3', fontSize: 14, fontWeight: 600 }}>Уведомления</span>
+            <span style={{ color: 'var(--color-fg-default)', fontSize: 14, fontWeight: 600 }}>Уведомления</span>
             {unread > 0 && (
               <button
                 onClick={markAllRead}
@@ -131,7 +130,7 @@ export function NotificationBell() {
           {/* List */}
           <div style={{ overflowY: 'auto', flex: 1 }}>
             {notifications.length === 0 ? (
-              <div style={{ padding: '32px 16px', textAlign: 'center', color: '#8b949e', fontSize: 13 }}>
+              <div style={{ padding: '32px 16px', textAlign: 'center', color: 'var(--color-fg-muted)', fontSize: 13 }}>
                 Нет уведомлений
               </div>
             ) : (
@@ -146,7 +145,7 @@ export function NotificationBell() {
                     background: n.isRead ? 'transparent' : 'rgba(47,129,247,0.05)',
                     transition: 'background 0.15s',
                   }}
-                  onMouseEnter={e => (e.currentTarget.style.background = '#21262d')}
+                  onMouseEnter={e => (e.currentTarget.style.background = 'var(--color-neutral-2)')}
                   onMouseLeave={e => (e.currentTarget.style.background = n.isRead ? 'transparent' : 'rgba(47,129,247,0.05)')}
                 >
                   {/* Color dot */}
@@ -163,7 +162,7 @@ export function NotificationBell() {
                     }}>
                       {n.title}
                     </p>
-                    <p style={{ color: '#8b949e', fontSize: 12, margin: 0, marginBottom: 4, lineHeight: 1.4 }}>
+                    <p style={{ color: 'var(--color-fg-muted)', fontSize: 12, margin: 0, marginBottom: 4, lineHeight: 1.4 }}>
                       {n.message}
                     </p>
                     <span style={{ color: '#484f58', fontSize: 11 }}>{timeAgo(n.createdAt)}</span>

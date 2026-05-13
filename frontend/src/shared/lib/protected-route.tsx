@@ -150,7 +150,7 @@ export function ProtectedRoute({
   // Показываем loading во время проверки
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-[#0D1117] flex items-center justify-center">
+      <div className="min-h-screen bg-gh-canvas flex items-center justify-center">
         <div className="text-white text-xl">Загрузка...</div>
       </div>
     );

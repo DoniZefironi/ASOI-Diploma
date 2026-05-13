@@ -1,6 +1,7 @@
 'use client';
 
 import { ButtonHTMLAttributes, forwardRef } from 'react';
+import { Loader2 } from 'lucide-react';
 
 type ButtonVariant =
   | 'primary'    // blue — main action
@@ -27,9 +28,9 @@ const variantStyles: Record<ButtonVariant, React.CSSProperties> = {
     border: '1px solid rgba(240,246,252,0.1)',
   },
   secondary: {
-    background: '#21262d',
-    color: '#e6edf3',
-    border: '1px solid #30363d',
+    background: 'var(--color-border-muted)',
+    color: 'var(--color-fg-default)',
+    border: '1px solid var(--color-border-default)',
   },
   danger: {
     background: '#cf222e',
@@ -43,7 +44,7 @@ const variantStyles: Record<ButtonVariant, React.CSSProperties> = {
   },
   ghost: {
     background: 'transparent',
-    color: '#e6edf3',
+    color: 'var(--color-fg-default)',
     border: '1px solid transparent',
   },
   outline: {
@@ -55,10 +56,10 @@ const variantStyles: Record<ButtonVariant, React.CSSProperties> = {
 
 const variantHover: Record<ButtonVariant, Partial<React.CSSProperties>> = {
   primary:   { background: '#388bfd' },
-  secondary: { background: '#30363d', borderColor: '#8b949e' },
+  secondary: { background: 'var(--color-border-default)', borderColor: '#8b949e' },
   danger:    { background: '#b40d1c' },
   success:   { background: '#2c974b' },
-  ghost:     { background: '#21262d' },
+  ghost:     { background: 'var(--color-border-muted)' },
   outline:   { background: 'rgba(47,129,247,0.12)' },
 };
 
@@ -130,16 +131,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(({
       {...props}
     >
       {loading ? (
-        <svg
-          width="14"
-          height="14"
-          viewBox="0 0 14 14"
-          fill="none"
-          style={{ animation: 'spin 1s linear infinite' }}
-        >
-          <circle cx="7" cy="7" r="6" stroke="currentColor" strokeOpacity="0.3" strokeWidth="2" />
-          <path d="M13 7a6 6 0 0 0-6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-        </svg>
+        <Loader2 size={14} style={{ animation: 'spin 1s linear infinite' }} />
       ) : leadingIcon ? (
         <span style={{ display: 'inline-flex', alignItems: 'center' }}>{leadingIcon}</span>
       ) : null}

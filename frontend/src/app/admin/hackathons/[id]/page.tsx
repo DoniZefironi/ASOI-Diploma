@@ -62,7 +62,7 @@ function GradeModal({ submission, onClose, onSuccess }: {
   return (
     <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
       <div className="bg-[#1C2128] border border-gray-700 rounded-xl p-6 max-w-md w-full mx-4">
-        <h2 className="text-xl font-bold text-white mb-1">Оценить работу</h2>
+        <h2 className="text-xl font-bold text-gh-fg mb-1">Оценить работу</h2>
         <p className="text-sm text-gray-500 mb-5">
           Итог:{' '}
           <span className="text-green-400 font-semibold">{total}</span>/400
@@ -218,7 +218,7 @@ function TeamCard({ team, isCompleted, onGrade }: {
         onClick={() => setOpen(v => !v)}
       >
         <div>
-          <h3 className="font-semibold text-white">{team.name}</h3>
+          <h3 className="font-semibold text-gh-fg">{team.name}</h3>
           {team.projectName && <p className="text-sm text-gray-400">{team.projectName}</p>}
         </div>
         <div className="flex items-center gap-3">
@@ -347,7 +347,7 @@ export default function AdminHackathonDetailPage() {
         </Button>
         <div className="flex-1 flex justify-between items-center">
           <div>
-            <h1 className="text-3xl font-bold text-white">{hackathon.title}</h1>
+            <h1 className="text-3xl font-bold text-gh-fg">{hackathon.title}</h1>
             {hackathon.theme && <p className="text-blue-400">{hackathon.theme}</p>}
             <p className="text-gray-400 mt-1">{hackathon.description}</p>
           </div>
@@ -368,7 +368,7 @@ export default function AdminHackathonDetailPage() {
           <CardContent className="p-4 flex items-center justify-between">
             <div>
               <p className="text-xs text-gray-400">Команд</p>
-              <p className="text-2xl font-bold text-white">{hackathon.teams?.length ?? 0}</p>
+              <p className="text-2xl font-bold text-gh-fg">{hackathon.teams?.length ?? 0}</p>
             </div>
             <Users className="h-7 w-7 text-blue-400" />
           </CardContent>
@@ -386,7 +386,7 @@ export default function AdminHackathonDetailPage() {
           <CardContent className="p-4 flex items-center justify-between">
             <div>
               <p className="text-xs text-gray-400">Начало</p>
-              <p className="text-sm font-semibold text-white">
+              <p className="text-sm font-semibold text-gh-fg">
                 {new Date(hackathon.startDate).toLocaleDateString('ru-RU')}
               </p>
             </div>
@@ -397,7 +397,7 @@ export default function AdminHackathonDetailPage() {
           <CardContent className="p-4 flex items-center justify-between">
             <div>
               <p className="text-xs text-gray-400">Конец</p>
-              <p className="text-sm font-semibold text-white">
+              <p className="text-sm font-semibold text-gh-fg">
                 {new Date(hackathon.endDate).toLocaleDateString('ru-RU')}
               </p>
             </div>

@@ -13,7 +13,7 @@ export const TermsPage = () => {
 
         <div className="bg-gray-800 rounded-xl shadow-lg p-8 animate-fade-in-up">
           <section className="mb-8">
-            <h2 className="text-2xl font-bold text-white mb-4">1. Введение</h2>
+            <h2 className="text-2xl font-bold text-gh-fg mb-4">1. Введение</h2>
             <p className="text-white leading-relaxed mb-4">
               Добро пожаловать в EduTech! Эти Условия обслуживания («Условия») регулируют использование вами нашей платформы, 
               включая наш веб-сайт, приложения и услуги (совместно именуемые «Платформа»). 
@@ -23,7 +23,7 @@ export const TermsPage = () => {
           </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-bold text-white mb-4">2. Услуги</h2>
+            <h2 className="text-2xl font-bold text-gh-fg mb-4">2. Услуги</h2>
             <p className="text-white leading-relaxed mb-4">
               EduTech предоставляет онлайн-курсы по информатике, электронике, английскому языку 
               и Интернету вещей (IoT). Мы также предлагаем ресурсы по карьерному ориентированию и инструмент 
@@ -32,7 +32,7 @@ export const TermsPage = () => {
           </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-bold text-white mb-4">3. Пользовательские аккаунты</h2>
+            <h2 className="text-2xl font-bold text-gh-fg mb-4">3. Пользовательские аккаунты</h2>
             <p className="text-white leading-relaxed mb-4">
               Для доступа к определённым функциям вам может потребоваться создать аккаунт. Вы несёте ответственность за 
               сохранение конфиденциальности информации вашего аккаунта и за все действия, которые происходят под вашим аккаунтом. 
@@ -41,7 +41,7 @@ export const TermsPage = () => {
           </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-bold text-white mb-4">4. Политика конфиденциальности</h2>
+            <h2 className="text-2xl font-bold text-gh-fg mb-4">4. Политика конфиденциальности</h2>
             <p className="text-white leading-relaxed mb-4">
               Ваша конфиденциальность важна для нас. Наша Политика конфиденциальности объясняет, как мы собираем, используем и 
               защищаем вашу персональную информацию. Используя Платформу, вы соглашаетесь с нашей практикой обработки данных, 
@@ -50,7 +50,7 @@ export const TermsPage = () => {
           </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-bold text-white mb-4">5. Интеллектуальная собственность</h2>
+            <h2 className="text-2xl font-bold text-gh-fg mb-4">5. Интеллектуальная собственность</h2>
             <p className="text-white leading-relaxed mb-4">
               Весь контент на Платформе, включая учебные материалы, защищён законами об авторском праве и 
               других законах об интеллектуальной собственности. Вы не можете воспроизводить, распространять или создавать 
@@ -59,7 +59,7 @@ export const TermsPage = () => {
           </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-bold text-white mb-4">6. Поведение пользователей</h2>
+            <h2 className="text-2xl font-bold text-gh-fg mb-4">6. Поведение пользователей</h2>
             <p className="text-white leading-relaxed mb-4">
               Вы соглашаетесь использовать Платформу законным и уважительным образом. Вы не должны заниматься 
               какой-либо деятельностью, которая является вредной, оскорбительной или нарушает права других лиц. Мы оставляем 
@@ -68,7 +68,7 @@ export const TermsPage = () => {
           </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-bold text-white mb-4">7. Отказ от гарантий</h2>
+            <h2 className="text-2xl font-bold text-gh-fg mb-4">7. Отказ от гарантий</h2>
             <p className="text-white leading-relaxed mb-4">
               Платформа предоставляется «как есть» без каких-либо гарантий, явных или подразумеваемых. Мы не 
               гарантируем точность, полноту или надёжность любого контента на Платформе. 
@@ -77,7 +77,7 @@ export const TermsPage = () => {
           </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-bold text-white mb-4">8. Ограничение ответственности</h2>
+            <h2 className="text-2xl font-bold text-gh-fg mb-4">8. Ограничение ответственности</h2>
             <p className="text-white leading-relaxed mb-4">
               В максимальной степени, разрешённой законом, EduTech не несёт ответственности за любые косвенные, 
               случайные, специальные или последующие убытки, возникающие в связи с использованием вами Платформы.
@@ -85,7 +85,7 @@ export const TermsPage = () => {
           </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-bold text-white mb-4">9. Изменения в Условиях</h2>
+            <h2 className="text-2xl font-bold text-gh-fg mb-4">9. Изменения в Условиях</h2>
             <p className="text-white leading-relaxed mb-4">
               Мы можем время от времени обновлять эти Условия. Мы уведомим вас о любых значительных изменениях. 
               Ваше дальнейшее использование Платформы после любых изменений означает ваше принятие новых Условий.
@@ -93,7 +93,7 @@ export const TermsPage = () => {
           </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-bold text-white mb-4">10. Применимое право</h2>
+            <h2 className="text-2xl font-bold text-gh-fg mb-4">10. Применимое право</h2>
             <p className="text-white leading-relaxed mb-4">
               Настоящие Условия регулируются и толкуются в соответствии с законодательством 
               юрисдикции, в которой зарегистрирован EduTech, без учёта принципов коллизионного права.
@@ -101,7 +101,7 @@ export const TermsPage = () => {
           </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-bold text-white mb-4">11. Свяжитесь с нами</h2>
+            <h2 className="text-2xl font-bold text-gh-fg mb-4">11. Свяжитесь с нами</h2>
             <p className="text-white leading-relaxed">
               Если у вас есть вопросы относительно этих Условий, пожалуйста, свяжитесь с нами по адресу{' '}
               <a href="mailto:support@edutech.com" className="text-blue-600 hover:text-blue-700">

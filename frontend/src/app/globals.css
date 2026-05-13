@@ -82,6 +82,79 @@
 }
 
 /* ============================================================
+   Light Theme Override (GitHub Light)
+   ============================================================ */
+
+[data-theme="light"] {
+  color-scheme: light;
+
+  /* Canvas */
+  --color-canvas-default:   #ffffff;
+  --color-canvas-overlay:   #f6f8fa;
+  --color-canvas-inset:     #f0f2f5;
+  --color-canvas-subtle:    #f6f8fa;
+
+  /* Foreground */
+  --color-fg-default:       #1f2328;
+  --color-fg-muted:         #636c76;
+  --color-fg-subtle:        #6e7781;
+  --color-fg-on-emphasis:   #ffffff;
+
+  /* Border */
+  --color-border-default:   #d0d7de;
+  --color-border-muted:     #d8dee4;
+  --color-border-subtle:    rgba(31,35,40,0.15);
+
+  /* Accent — Blue */
+  --color-accent-fg:        #0969da;
+  --color-accent-emphasis:  #0550ae;
+  --color-accent-muted:     rgba(84,174,255,0.4);
+  --color-accent-subtle:    #ddf4ff;
+
+  /* Success — Green */
+  --color-success-fg:       #1a7f37;
+  --color-success-emphasis: #2da44e;
+  --color-success-muted:    rgba(74,194,107,0.4);
+  --color-success-subtle:   #dafbe1;
+
+  /* Attention — Orange */
+  --color-attention-fg:     #9a6700;
+  --color-attention-emphasis: #bf8700;
+  --color-attention-muted:  rgba(212,167,44,0.4);
+  --color-attention-subtle: #fff8c5;
+
+  /* Danger — Red */
+  --color-danger-fg:        #d1242f;
+  --color-danger-emphasis:  #cf222e;
+  --color-danger-muted:     rgba(255,129,130,0.4);
+  --color-danger-subtle:    #ffebe9;
+
+  /* Done/IoT — Purple */
+  --color-done-fg:          #8250df;
+  --color-done-emphasis:    #7922d8;
+  --color-done-muted:       rgba(194,151,255,0.4);
+  --color-done-subtle:      #fbefff;
+
+  /* Career — Green */
+  --color-career-fg:        #2da44e;
+  --color-career-subtle:    #dafbe1;
+
+  /* Neutral scale */
+  --color-neutral-1: #f6f8fa;
+  --color-neutral-2: #eaeef2;
+  --color-neutral-3: #d0d7de;
+  --color-neutral-4: #afb8c1;
+  --color-neutral-5: #8c959f;
+  --color-neutral-6: #636c76;
+  --color-neutral-7: #424a53;
+
+  /* Shadows */
+  --shadow-sm: 0 0 0 1px #d0d7de;
+  --shadow-md: 0 3px 6px rgba(140,149,159,0.15), 0 0 0 1px #d0d7de;
+  --shadow-lg: 0 8px 24px rgba(140,149,159,0.2);
+}
+
+/* ============================================================
    Base Reset & Body
    ============================================================ */
 
@@ -93,6 +166,10 @@ html {
   color-scheme: dark;
 }
 
+html[data-theme="light"] {
+  color-scheme: light;
+}
+
 body {
   background-color: var(--color-canvas-default);
   color: var(--color-fg-default);
@@ -102,6 +179,172 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   margin: 0;
+  /* Плавное переключение темы */
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+/* ============================================================
+   Light Theme — Tailwind class overrides
+   Переопределяем все распространённые классы Tailwind для светлой темы
+   ============================================================ */
+
+/* Backgrounds */
+[data-theme="light"] .bg-gray-950,
+[data-theme="light"] .bg-\[\#0D1117\],
+[data-theme="light"] .bg-\[\#0d1117\] { background-color: var(--color-canvas-default) !important; }
+
+[data-theme="light"] .bg-gray-900,
+[data-theme="light"] .bg-\[\#111827\],
+[data-theme="light"] .bg-\[\#0D1117\] { background-color: var(--color-canvas-default) !important; }
+
+[data-theme="light"] .bg-gray-800,
+[data-theme="light"] .bg-\[\#161B22\],
+[data-theme="light"] .bg-\[\#161b22\],
+[data-theme="light"] .bg-\[\#1f2937\] { background-color: var(--color-canvas-overlay) !important; }
+
+[data-theme="light"] .bg-gray-750 { background-color: var(--color-canvas-subtle) !important; }
+
+[data-theme="light"] .bg-gray-700,
+[data-theme="light"] .bg-\[\#374151\] { background-color: var(--color-neutral-2) !important; }
+
+[data-theme="light"] .bg-gray-600,
+[data-theme="light"] .bg-\[\#4b5563\] { background-color: var(--color-neutral-3) !important; }
+
+/* Text colors
+   Стратегия:
+   1. Глобально text-white → тёмный текст (для заголовков/параграфов на белом/светлом фоне)
+   2. НО на цветных фонах (кнопки, бейджи, алерты) — возвращаем белый
+*/
+
+/* Шаг 1: глобальный оверрайд */
+[data-theme="light"] .text-white { color: var(--color-fg-default) !important; }
+[data-theme="light"] .text-gray-100 { color: var(--color-fg-default) !important; }
+[data-theme="light"] .text-gray-200 { color: var(--color-fg-default) !important; }
+[data-theme="light"] .text-gray-300 { color: var(--color-fg-muted) !important; }
+[data-theme="light"] .text-gray-400 { color: var(--color-fg-muted) !important; }
+[data-theme="light"] .text-gray-500 { color: var(--color-fg-subtle) !important; }
+
+/* Шаг 2: исключения — текст на цветных фонах остаётся белым */
+/* Элемент сам является кнопкой/бейджем с цветным bg */
+[data-theme="light"] .bg-blue-400.text-white,
+[data-theme="light"] .bg-blue-500.text-white,
+[data-theme="light"] .bg-blue-600.text-white,
+[data-theme="light"] .bg-blue-700.text-white,
+[data-theme="light"] .bg-green-500.text-white,
+[data-theme="light"] .bg-green-600.text-white,
+[data-theme="light"] .bg-green-700.text-white,
+[data-theme="light"] .bg-emerald-600.text-white,
+[data-theme="light"] .bg-red-500.text-white,
+[data-theme="light"] .bg-red-600.text-white,
+[data-theme="light"] .bg-red-700.text-white,
+[data-theme="light"] .bg-purple-500.text-white,
+[data-theme="light"] .bg-purple-600.text-white,
+[data-theme="light"] .bg-purple-700.text-white,
+[data-theme="light"] .bg-indigo-500.text-white,
+[data-theme="light"] .bg-indigo-600.text-white,
+[data-theme="light"] .bg-indigo-700.text-white,
+[data-theme="light"] .bg-yellow-500.text-white,
+[data-theme="light"] .bg-orange-500.text-white,
+[data-theme="light"] .bg-orange-600.text-white,
+[data-theme="light"] .bg-teal-500.text-white,
+[data-theme="light"] .bg-teal-600.text-white,
+[data-theme="light"] .bg-cyan-500.text-white,
+[data-theme="light"] .bg-cyan-600.text-white,
+[data-theme="light"] .bg-pink-500.text-white,
+[data-theme="light"] .bg-pink-600.text-white,
+[data-theme="light"] .bg-rose-500.text-white,
+[data-theme="light"] .bg-rose-600.text-white { color: #ffffff !important; }
+
+/* text-white внутри НАСЫЩЕННОГО цветного родителя (только конкретные классы, без /20 /30 и т.д.) */
+[data-theme="light"] .bg-blue-400 .text-white,   [data-theme="light"] .bg-blue-500 .text-white,
+[data-theme="light"] .bg-blue-600 .text-white,   [data-theme="light"] .bg-blue-700 .text-white,
+[data-theme="light"] .bg-green-500 .text-white,  [data-theme="light"] .bg-green-600 .text-white,
+[data-theme="light"] .bg-green-700 .text-white,  [data-theme="light"] .bg-emerald-600 .text-white,
+[data-theme="light"] .bg-red-500 .text-white,    [data-theme="light"] .bg-red-600 .text-white,
+[data-theme="light"] .bg-red-700 .text-white,    [data-theme="light"] .bg-purple-600 .text-white,
+[data-theme="light"] .bg-indigo-500 .text-white, [data-theme="light"] .bg-indigo-600 .text-white,
+[data-theme="light"] .bg-orange-500 .text-white, [data-theme="light"] .bg-orange-600 .text-white,
+[data-theme="light"] .bg-teal-500 .text-white,   [data-theme="light"] .bg-teal-600 .text-white,
+[data-theme="light"] .bg-cyan-500 .text-white,   [data-theme="light"] .bg-cyan-600 .text-white,
+[data-theme="light"] .bg-pink-600 .text-white,   [data-theme="light"] .bg-rose-600 .text-white,
+[data-theme="light"] .bg-yellow-500 .text-white { color: #ffffff !important; }
+
+/* Borders */
+[data-theme="light"] .border-gray-700,
+[data-theme="light"] .border-gray-800 { border-color: var(--color-border-default) !important; }
+[data-theme="light"] .border-gray-600 { border-color: var(--color-border-muted) !important; }
+[data-theme="light"] .border-\[\#30363d\] { border-color: var(--color-border-default) !important; }
+[data-theme="light"] .border-\[\#21262d\] { border-color: var(--color-border-muted) !important; }
+
+/* Divide */
+[data-theme="light"] .divide-gray-700 > * + * { border-color: var(--color-border-default) !important; }
+[data-theme="light"] .divide-gray-800 > * + * { border-color: var(--color-border-muted) !important; }
+
+/* Полупрозрачные цветные фоны — в светлой теме фон светлый, текст должен быть тёмным */
+[data-theme="light"] .bg-blue-900\/20,
+[data-theme="light"] .bg-blue-900\/30,
+[data-theme="light"] .bg-blue-900\/40,
+[data-theme="light"] .bg-green-900\/20,
+[data-theme="light"] .bg-green-900\/30,
+[data-theme="light"] .bg-red-900\/20,
+[data-theme="light"] .bg-red-900\/30,
+[data-theme="light"] .bg-purple-900\/20,
+[data-theme="light"] .bg-purple-900\/30,
+[data-theme="light"] .bg-yellow-900\/20,
+[data-theme="light"] .bg-orange-900\/20 {
+  background-color: rgba(0, 0, 0, 0.04) !important;
+}
+
+/* Текст внутри этих полупрозрачных блоков должен быть тёмным */
+[data-theme="light"] .bg-blue-900\/20 .text-white,
+[data-theme="light"] .bg-blue-900\/30 .text-white,
+[data-theme="light"] .bg-green-900\/20 .text-white,
+[data-theme="light"] .bg-red-900\/20 .text-white,
+[data-theme="light"] .bg-purple-900\/20 .text-white { color: var(--color-fg-default) !important; }
+
+/* Hover backgrounds */
+[data-theme="light"] .hover\:bg-gray-700:hover { background-color: var(--color-neutral-2) !important; }
+[data-theme="light"] .hover\:bg-gray-600:hover { background-color: var(--color-neutral-3) !important; }
+[data-theme="light"] .hover\:bg-gray-800:hover { background-color: var(--color-canvas-subtle) !important; }
+
+/* Rings */
+[data-theme="light"] .ring-gray-700 { --tw-ring-color: var(--color-border-default) !important; }
+
+/* ============================================================
+   Light Theme — Inline style color overrides via body selector
+   Покрываем страницы которые используют style={{ background: '#0d1117' }}
+   ============================================================ */
+
+/* Общий плавный переход для всех элементов при смене темы */
+[data-theme="light"] *,
+[data-theme="light"] *::before,
+[data-theme="light"] *::after {
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+/* min-h-screen с дефолтным фоном */
+[data-theme="light"] .min-h-screen {
+  background-color: var(--color-canvas-default);
+}
+
+/* Карточки и панели */
+[data-theme="light"] .rounded-xl,
+[data-theme="light"] .rounded-lg {
+  /* не меняем фон — только если явно задан серый */
+}
+
+/* Форма и инпуты */
+[data-theme="light"] input,
+[data-theme="light"] textarea,
+[data-theme="light"] select {
+  background-color: var(--color-canvas-default);
+  color: var(--color-fg-default);
+  border-color: var(--color-border-default);
+}
+
+[data-theme="light"] input::placeholder,
+[data-theme="light"] textarea::placeholder {
+  color: var(--color-fg-subtle);
 }
 
 /* ============================================================
@@ -382,4 +625,48 @@ code, kbd, samp, pre {
   line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
+}
+
+/* ============================================================
+   Light Theme — Additional component overrides
+   ============================================================ */
+
+/* Shared UI Card */
+[data-theme="light"] .bg-gray-800\/60 { background-color: rgba(246,248,250,0.8) !important; }
+[data-theme="light"] .bg-gray-800\/40 { background-color: rgba(246,248,250,0.6) !important; }
+[data-theme="light"] .bg-gray-900\/40 { background-color: rgba(246,248,250,0.6) !important; }
+
+/* Admin table rows */
+[data-theme="light"] .bg-gray-800 {
+  background-color: var(--color-canvas-overlay) !important;
+}
+
+/* Borders with opacity */
+[data-theme="light"] .border-gray-700\/50 { border-color: rgba(208,215,222,0.5) !important; }
+[data-theme="light"] .divide-gray-700\/50 > * + * { border-color: rgba(208,215,222,0.5) !important; }
+
+/* Focus styles */
+[data-theme="light"] .focus\:border-blue-500:focus { border-color: var(--color-accent-fg) !important; }
+[data-theme="light"] .focus\:border-blue-600:focus { border-color: var(--color-accent-fg) !important; }
+
+/* Inline style fallback — pages that use style={{ background: 'var(--color-canvas-default)' }} work automatically */
+/* Pages still using old className="min-h-screen bg-[#0D1117]" - covered by bg-gh-canvas above */
+
+/* Dark overlay backgrounds (modals) */
+[data-theme="light"] .bg-black\/50,
+[data-theme="light"] .bg-black\/60 { background-color: rgba(0,0,0,0.3) !important; }
+
+/* Scrollbar light theme */
+[data-theme="light"] ::-webkit-scrollbar-thumb { background: var(--color-border-default); }
+[data-theme="light"] ::-webkit-scrollbar-thumb:hover { background: var(--color-neutral-4); }
+
+/* Smooth transition for all themed elements */
+*, *::before, *::after {
+  transition-property: background-color, border-color, color;
+  transition-duration: 0.15s;
+  transition-timing-function: ease;
+}
+/* Except transitions that should be fast/instant */
+.transition-none, [class*="animate-"], [class*="motion-"] {
+  transition: none !important;
 }

@@ -19,7 +19,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
           style={{
             display: 'flex',
             alignItems: 'center',
-            background: '#0d1117',
+            background: 'var(--color-canvas-default)',
             border: `1px solid ${error ? '#f85149' : focused ? '#2f81f7' : '#30363d'}`,
             borderRadius: '6px',
             boxShadow: focused ? `0 0 0 3px ${error ? 'rgba(248,81,73,0.4)' : 'rgba(47,129,247,0.4)'}` : 'none',
@@ -28,7 +28,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
           }}
         >
           {leadingAddon && (
-            <span style={{ padding: '0 8px', color: '#8b949e', flexShrink: 0 }}>
+            <span style={{ padding: '0 8px', color: 'var(--color-fg-muted)', flexShrink: 0 }}>
               {leadingAddon}
             </span>
           )}
@@ -41,7 +41,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
               outline: 'none',
               padding: '5px 12px',
               fontSize: '14px',
-              color: '#e6edf3',
+              color: 'var(--color-fg-default)',
               lineHeight: 1.5,
               minWidth: 0,
               ...style,
@@ -52,7 +52,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
             {...props}
           />
           {trailingAddon && (
-            <span style={{ padding: '0 8px', color: '#8b949e', flexShrink: 0 }}>
+            <span style={{ padding: '0 8px', color: 'var(--color-fg-muted)', flexShrink: 0 }}>
               {trailingAddon}
             </span>
           )}
@@ -66,12 +66,12 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
         style={{
           display: 'block',
           width: '100%',
-          background: '#0d1117',
+          background: 'var(--color-canvas-default)',
           border: `1px solid ${error ? '#f85149' : focused ? '#2f81f7' : '#30363d'}`,
           borderRadius: '6px',
           padding: '5px 12px',
           fontSize: '14px',
-          color: '#e6edf3',
+          color: 'var(--color-fg-default)',
           lineHeight: 1.5,
           outline: 'none',
           boxShadow: focused ? `0 0 0 3px ${error ? 'rgba(248,81,73,0.4)' : 'rgba(47,129,247,0.4)'}` : 'none',

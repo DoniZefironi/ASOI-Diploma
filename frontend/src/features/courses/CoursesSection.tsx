@@ -115,7 +115,7 @@ export const CoursesSection = () => {
                 </div>
                 
                 <div className="p-6 h-full flex flex-col">
-                  <h3 className="font-bold text-white mb-3 text-lg leading-tight">
+                  <h3 className="font-bold text-gh-fg mb-3 text-lg leading-tight">
                     {course.name}
                   </h3>
                   <p className="text-gray-300 leading-relaxed mb-5">

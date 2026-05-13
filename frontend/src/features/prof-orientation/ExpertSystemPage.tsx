@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { Loader2, CheckCircle, ChevronDown } from 'lucide-react';
 import { QUESTIONS } from './expertSystem/knowledgeBase';
 import { runExpertSystem } from './expertSystem/inferenceEngine';
 import { TRAIT_LABELS, TRAIT_COLORS, TRAIT_ICONS } from './expertSystem/types';
@@ -69,7 +70,7 @@ function RoadmapView({ match, onClose }: { match: CareerMatch; onClose: () => vo
 
   return (
     <div className="fixed inset-0 bg-black/70 z-50 flex items-start justify-center p-4 overflow-y-auto">
-      <div className="bg-[#161b22] border border-[#30363d] rounded-2xl w-full max-w-2xl my-8">
+      <div className="bg-gh-canvas-overlay border border-[#30363d] rounded-2xl w-full max-w-2xl my-8">
         {/* Header */}
         <div className="flex items-center justify-between p-5 border-b border-[#30363d]">
           <div className="flex items-center gap-3">
@@ -108,10 +109,7 @@ function RoadmapView({ match, onClose }: { match: CareerMatch; onClose: () => vo
           {loading && (
             <div className="text-center py-12">
               <div className="inline-flex items-center gap-3 text-gray-400">
-                <svg className="animate-spin w-5 h-5" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
-                </svg>
+                <Loader2 className="animate-spin w-5 h-5" />
                 <span className="text-sm">Составляю персональный маршрут…</span>
               </div>
             </div>
@@ -289,13 +287,13 @@ export default function CareerOrientationPage() {
   // ── Welcome ────────────────────────────────────────────────────────────────
   if (step === 'welcome') {
     return (
-      <div className="min-h-screen bg-[#0d1117] flex items-center justify-center p-4">
+      <div className="min-h-screen bg-gh-canvas flex items-center justify-center p-4">
         <div className="max-w-lg w-full">
           <div className="text-center mb-10">
             <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-blue-500/20 to-purple-500/20 border border-blue-500/30 rounded-2xl mb-6">
               <span className="text-4xl">🧭</span>
             </div>
-            <h1 className="text-3xl font-bold text-white mb-3 leading-snug">
+            <h1 className="text-3xl font-bold text-gh-fg mb-3 leading-snug">
               Какая IT-профессия<br />тебе подойдёт?
             </h1>
             <p className="text-gray-400 leading-relaxed">
@@ -307,14 +305,14 @@ export default function CareerOrientationPage() {
 
           <div className="grid grid-cols-2 gap-3 mb-8">
             {Object.values(STAGE_INFO).map(({ label, icon }) => (
-              <div key={label} className="bg-[#161b22] border border-[#30363d] rounded-xl p-4 flex items-center gap-3">
+              <div key={label} className="bg-gh-canvas-overlay border border-[#30363d] rounded-xl p-4 flex items-center gap-3">
                 <span className="text-2xl">{icon}</span>
                 <span className="text-sm text-gray-300 font-medium">{label}</span>
               </div>
             ))}
           </div>
 
-          <div className="bg-[#161b22] border border-[#30363d] rounded-xl p-4 mb-6 flex items-start gap-3">
+          <div className="bg-gh-canvas-overlay border border-[#30363d] rounded-xl p-4 mb-6 flex items-start gap-3">
             <span className="text-blue-400 mt-0.5">ℹ️</span>
             <p className="text-sm text-gray-400 leading-relaxed">
               Нет правильных или неправильных ответов. Чем честнее ты отвечаешь,
@@ -342,7 +340,7 @@ export default function CareerOrientationPage() {
     const stageInfo = STAGE_INFO[stageNum];
 
     return (
-      <div className="min-h-screen bg-[#0d1117] flex flex-col items-center justify-center p-4">
+      <div className="min-h-screen bg-gh-canvas flex flex-col items-center justify-center p-4">
         <div className="max-w-xl w-full">
           {/* Progress */}
           <div className="mb-6">
@@ -371,7 +369,7 @@ export default function CareerOrientationPage() {
           </div>
 
           {/* Question */}
-          <div className="bg-[#161b22] border border-[#30363d] rounded-2xl p-6 mb-3">
+          <div className="bg-gh-canvas-overlay border border-[#30363d] rounded-2xl p-6 mb-3">
             <p className="text-white text-lg font-medium leading-relaxed mb-6">
               {currentQ.text}
             </p>
@@ -421,7 +419,7 @@ export default function CareerOrientationPage() {
   const confBg    = (c: number) => c >= 75 ? 'bg-green-500'   : c >= 55 ? 'bg-yellow-500'   : 'bg-orange-500';
 
   return (
-    <div className="min-h-screen bg-[#0d1117] text-white py-8 px-4">
+    <div className="min-h-screen bg-gh-canvas text-white py-8 px-4">
       {roadmapMatch && (
         <RoadmapView match={roadmapMatch} onClose={() => setRoadmapMatch(null)} />
       )}
@@ -431,17 +429,12 @@ export default function CareerOrientationPage() {
         <div className="mb-4 flex items-center justify-center gap-2">
           {isSaving ? (
             <div className="flex items-center gap-2 text-blue-400 text-sm">
-              <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
-              </svg>
+              <Loader2 className="animate-spin h-4 w-4" />
               <span>Сохранение результатов...</span>
             </div>
           ) : isSaved ? (
             <div className="flex items-center gap-2 text-green-400 text-sm">
-              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-              </svg>
+              <CheckCircle className="w-4 h-4" />
               <span>Результаты сохранены</span>
             </div>
           ) : !token ? (
@@ -456,7 +449,7 @@ export default function CareerOrientationPage() {
             <div className="w-14 h-14 bg-blue-500/15 border border-blue-500/30 rounded-xl flex items-center justify-center text-3xl flex-shrink-0">🪞</div>
             <div className="flex-1">
               <p className="text-xs text-blue-400 font-medium uppercase tracking-wider mb-1">Твой профиль</p>
-              <h2 className="text-xl font-bold text-white mb-2">{result.profileTitle}</h2>
+              <h2 className="text-xl font-bold text-gh-fg mb-2">{result.profileTitle}</h2>
               <p className="text-gray-400 text-sm leading-relaxed">{result.profileDescription}</p>
             </div>
           </div>
@@ -471,7 +464,7 @@ export default function CareerOrientationPage() {
         </div>
 
         {/* Trait bars */}
-        <div className="bg-[#161b22] border border-[#30363d] rounded-2xl p-5 mb-5">
+        <div className="bg-gh-canvas-overlay border border-[#30363d] rounded-2xl p-5 mb-5">
           <h3 className="text-xs font-semibold text-gray-500 mb-4 uppercase tracking-wide">Характеристики</h3>
           <div className="space-y-3">
             {(Object.entries(result.traitScores) as [TraitKey, number][])
@@ -493,10 +486,10 @@ export default function CareerOrientationPage() {
         </div>
 
         {/* Career matches */}
-        <h3 className="font-semibold text-white mb-3">Подходящие направления</h3>
+        <h3 className="font-semibold text-gh-fg mb-3">Подходящие направления</h3>
         <div className="space-y-2 mb-8">
           {result.topMatches.map((match, i) => (
-            <div key={match.career.id} className="bg-[#161b22] border border-[#30363d] rounded-2xl overflow-hidden">
+            <div key={match.career.id} className="bg-gh-canvas-overlay border border-[#30363d] rounded-2xl overflow-hidden">
               {/* Header row */}
               <button
                 className="w-full px-5 py-4 flex items-center gap-4 text-left hover:bg-[#1c2128] transition-colors"
@@ -518,10 +511,7 @@ export default function CareerOrientationPage() {
                   <div className={`text-xl font-bold ${confColor(match.confidence)}`}>{match.confidence}%</div>
                   <div className="text-xs text-gray-600">CF={match.cf.toFixed(2)}</div>
                 </div>
-                <svg className={`w-4 h-4 text-gray-600 flex-shrink-0 transition-transform ${expandedCareer === match.career.id ? 'rotate-180' : ''}`}
-                  fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
+                <ChevronDown className={`w-4 h-4 text-gray-600 flex-shrink-0 transition-transform ${expandedCareer === match.career.id ? 'rotate-180' : ''}`} />
               </button>
 
               {/* CF bar */}
@@ -533,7 +523,7 @@ export default function CareerOrientationPage() {
               {expandedCareer === match.career.id && (
                 <div className="px-5 py-4 border-t border-[#21262d] space-y-4">
                   {/* Fired rules (the "why") */}
-                  <div className="bg-[#0d1117] border border-[#30363d] rounded-xl p-4">
+                  <div className="bg-gh-canvas border border-[#30363d] rounded-xl p-4">
                     <p className="text-xs text-gray-500 font-medium mb-2 uppercase tracking-wide">
                       Почему эта профессия ({match.firedRules.length} {match.firedRules.length === 1 ? 'правило' : match.firedRules.length < 5 ? 'правила' : 'правил'})
                     </p>

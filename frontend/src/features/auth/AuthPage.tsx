@@ -39,7 +39,7 @@ function Field({
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <label style={{ fontSize: 13, fontWeight: 600, color: '#e6edf3' }}>{label}</label>
+        <label style={{ fontSize: 13, fontWeight: 600, color: 'var(--color-fg-default)' }}>{label}</label>
         {hint}
       </div>
       {children}
@@ -61,12 +61,12 @@ function GhInput({
       style={{
         display: 'block',
         width: '100%',
-        background: '#0d1117',
+        background: 'var(--color-canvas-default)',
         border: `1px solid ${error ? '#f85149' : focused ? '#2f81f7' : '#30363d'}`,
         borderRadius: 6,
         padding: '5px 12px',
         fontSize: 14,
-        color: '#e6edf3',
+        color: 'var(--color-fg-default)',
         lineHeight: 1.5,
         outline: 'none',
         boxShadow: focused
@@ -208,7 +208,7 @@ export const AuthPage = () => {
     <div
       style={{
         minHeight: '100vh',
-        background: '#0d1117',
+        background: 'var(--color-canvas-default)',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
@@ -228,7 +228,7 @@ export const AuthPage = () => {
         style={{
           fontSize: 24,
           fontWeight: 300,
-          color: '#e6edf3',
+          color: 'var(--color-fg-default)',
           margin: '0 0 16px',
           textAlign: 'center',
         }}
@@ -241,8 +241,8 @@ export const AuthPage = () => {
         style={{
           width: '100%',
           maxWidth: 340,
-          background: '#161b22',
-          border: '1px solid #30363d',
+          background: 'var(--color-canvas-overlay)',
+          border: '1px solid var(--color-border-default)',
           borderRadius: 6,
           padding: 16,
         }}
@@ -315,7 +315,7 @@ export const AuthPage = () => {
                 type="checkbox"
                 style={{ width: 14, height: 14, accentColor: '#2f81f7' }}
               />
-              <span style={{ fontSize: 13, color: '#8b949e' }}>Запомнить меня</span>
+              <span style={{ fontSize: 13, color: 'var(--color-fg-muted)' }}>Запомнить меня</span>
             </label>
           )}
 
@@ -330,7 +330,7 @@ export const AuthPage = () => {
                     onChange={handleChange}
                     style={{ marginTop: 2, width: 14, height: 14, accentColor: '#2f81f7', flexShrink: 0 }}
                   />
-                  <span style={{ fontSize: 12, color: '#8b949e', lineHeight: 1.5 }}>
+                  <span style={{ fontSize: 12, color: 'var(--color-fg-muted)', lineHeight: 1.5 }}>
                     Я согласен(на) с{' '}
                     <Link href="/terms" target="_blank" style={{ color: '#2f81f7', textDecoration: 'none' }}>
                       Условиями обслуживания
@@ -346,8 +346,8 @@ export const AuthPage = () => {
               {/* Captcha */}
               <div
                 style={{
-                  background: '#0d1117',
-                  border: '1px solid #30363d',
+                  background: 'var(--color-canvas-default)',
+                  border: '1px solid var(--color-border-default)',
                   borderRadius: 6,
                   padding: '12px',
                   display: 'flex',
@@ -355,19 +355,19 @@ export const AuthPage = () => {
                   gap: 8,
                 }}
               >
-                <span style={{ fontSize: 12, fontWeight: 600, color: '#8b949e' }}>
+                <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--color-fg-muted)' }}>
                   Подтверждение: не робот
                 </span>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                   <div
                     style={{
-                      background: '#161b22',
-                      border: '1px solid #30363d',
+                      background: 'var(--color-canvas-overlay)',
+                      border: '1px solid var(--color-border-default)',
                       borderRadius: 6,
                       padding: '4px 10px',
                       fontSize: 14,
                       fontFamily: 'ui-monospace, monospace',
-                      color: '#e6edf3',
+                      color: 'var(--color-fg-default)',
                       fontWeight: 600,
                       letterSpacing: 2,
                     }}
@@ -381,7 +381,7 @@ export const AuthPage = () => {
                     style={{
                       background: 'transparent',
                       border: 'none',
-                      color: '#8b949e',
+                      color: 'var(--color-fg-muted)',
                       cursor: 'pointer',
                       padding: '4px',
                       fontSize: 14,
@@ -422,14 +422,14 @@ export const AuthPage = () => {
         style={{
           width: '100%',
           maxWidth: 340,
-          background: '#161b22',
-          border: '1px solid #30363d',
+          background: 'var(--color-canvas-overlay)',
+          border: '1px solid var(--color-border-default)',
           borderRadius: 6,
           padding: '16px',
           marginTop: 12,
           textAlign: 'center',
           fontSize: 13,
-          color: '#8b949e',
+          color: 'var(--color-fg-muted)',
         }}
       >
         {isLogin ? (
@@ -467,7 +467,7 @@ export const AuthPage = () => {
           <Link
             key={l.href}
             href={l.href}
-            style={{ fontSize: 11, color: '#8b949e', textDecoration: 'none' }}
+            style={{ fontSize: 11, color: 'var(--color-fg-muted)', textDecoration: 'none' }}
             onMouseEnter={e => (e.currentTarget.style.color = '#2f81f7')}
             onMouseLeave={e => (e.currentTarget.style.color = '#8b949e')}
           >

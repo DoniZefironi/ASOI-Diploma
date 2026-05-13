@@ -31,7 +31,7 @@ function ElectiveCard({ elective, onEnroll, onUnenroll, enrollingId }: ElectiveC
     <div className="bg-gray-800 rounded-xl border border-gray-700 p-5 flex flex-col gap-3 hover:border-gray-500 transition-colors">
       {/* Header */}
       <div className="flex items-start justify-between gap-2">
-        <h3 className="text-lg font-bold text-white leading-tight">{elective.title}</h3>
+        <h3 className="text-lg font-bold text-gh-fg leading-tight">{elective.title}</h3>
         {elective.isEnrolled && (
           <span className="flex items-center gap-1 shrink-0 px-2 py-0.5 bg-green-600/20 border border-green-600 text-green-400 rounded-full text-xs font-medium">
             <Check className="h-3 w-3" />
@@ -175,12 +175,12 @@ export default function ElectivesPage() {
   const availableCount = electives.filter(e => !e.isEnrolled).length;
 
   return (
-    <div className="min-h-screen bg-[#0D1117] py-10">
+    <div className="min-h-screen bg-gh-canvas py-10">
       <div className="container mx-auto px-4 max-w-5xl">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-white mb-1">Факультативы</h1>
+            <h1 className="text-3xl font-bold text-gh-fg mb-1">Факультативы</h1>
             <p className="text-gray-400 text-sm">Дополнительные курсы для вашей группы</p>
           </div>
           <Link href="/dashboard">

@@ -105,7 +105,7 @@ export default function CareerTestPage({ testType }: Props) {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-[#0D1117] flex items-center justify-center">
+      <div className="min-h-screen bg-gh-canvas flex items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-blue-400" />
       </div>
     );
@@ -113,7 +113,7 @@ export default function CareerTestPage({ testType }: Props) {
 
   if (!data) {
     return (
-      <div className="min-h-screen bg-[#0D1117] flex items-center justify-center">
+      <div className="min-h-screen bg-gh-canvas flex items-center justify-center">
         <Card className="p-8 text-center">
           <p className="text-white">Тест не найден.</p>
           <Link href="/career">
@@ -141,7 +141,7 @@ export default function CareerTestPage({ testType }: Props) {
   const showDots = totalQuestions <= MAX_DOTS;
 
   return (
-    <div className="min-h-screen bg-[#0D1117] py-10">
+    <div className="min-h-screen bg-gh-canvas py-10">
       <div className="container mx-auto px-4 max-w-2xl">
 
         {/* Back link */}
@@ -536,7 +536,7 @@ function ResultView({
     : 0;
 
   return (
-    <div className="min-h-screen bg-[#0D1117] py-12">
+    <div className="min-h-screen bg-gh-canvas py-12">
       <div className="container mx-auto px-4 max-w-3xl">
 
         {/* Hero section */}
@@ -547,26 +547,26 @@ function ResultView({
               {heroEmoji}
             </span>
           </div>
-          <h1 className="text-3xl font-bold text-white mb-1">{result.topTypeLabel}</h1>
+          <h1 className="text-3xl font-bold text-gh-fg mb-1">{result.topTypeLabel}</h1>
           <p className="text-gray-400 text-sm">{testLabel}</p>
         </div>
 
         {/* Top type card */}
         <Card className="p-6 mb-6 border-blue-500/50 bg-blue-900/10">
           <p className="text-xs text-blue-400 uppercase font-semibold mb-1">Ваш основной тип</p>
-          <h2 className="text-xl font-bold text-white mb-2">{result.topTypeLabel}</h2>
+          <h2 className="text-xl font-bold text-gh-fg mb-2">{result.topTypeLabel}</h2>
           <p className="text-gray-300 text-sm leading-relaxed">{result.topTypeDescription}</p>
         </Card>
 
         {/* Radar chart */}
         <Card className="p-6 mb-6">
-          <h3 className="text-lg font-semibold text-white mb-4 text-center">Профиль по типам</h3>
+          <h3 className="text-lg font-semibold text-gh-fg mb-4 text-center">Профиль по типам</h3>
           {radarData.length >= 3 && <RadarChart data={radarData} size={280} />}
         </Card>
 
         {/* Career cards grid */}
         <div className="mb-6">
-          <h3 className="text-lg font-semibold text-white mb-4">Подходящие профессии</h3>
+          <h3 className="text-lg font-semibold text-gh-fg mb-4">Подходящие профессии</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {result.topCareers.map((career, idx) => (
               <Card key={idx} className="p-5">
@@ -594,7 +594,7 @@ function ResultView({
 
         {/* Score breakdown */}
         <Card className="p-6 mb-8">
-          <h3 className="text-lg font-semibold text-white mb-4">Детализация по типам</h3>
+          <h3 className="text-lg font-semibold text-gh-fg mb-4">Детализация по типам</h3>
           <div className="space-y-3">
             {result.allTypes.map(t => (
               <div key={t.type}>

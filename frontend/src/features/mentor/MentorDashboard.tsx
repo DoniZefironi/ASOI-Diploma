@@ -25,7 +25,7 @@ export default function MentorDashboard() {
 
   if (isLoading || isLoadingData) {
     return (
-      <div className="min-h-screen bg-[#0D1117] flex items-center justify-center">
+      <div className="min-h-screen bg-gh-canvas flex items-center justify-center">
         <div className="text-white text-xl">Загрузка...</div>
       </div>
     );
@@ -60,7 +60,7 @@ export default function MentorDashboard() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-white">Панель ментора</h1>
+        <h1 className="text-3xl font-bold text-gh-fg">Панель ментора</h1>
         {mentorCourseType && (
           <p className="text-gray-400 mt-1">
             Направление: <span className="text-blue-400 font-semibold">{courseTypeLabels[mentorCourseType]}</span>
@@ -197,7 +197,7 @@ function StatCard({ title, value, description, icon }: any) {
         <span className="text-2xl">{icon}</span>
       </CardHeader>
       <CardContent>
-        <div className="text-2xl font-bold text-white">{value}</div>
+        <div className="text-2xl font-bold text-gh-fg">{value}</div>
         <p className="text-xs text-gray-400">{description}</p>
       </CardContent>
     </Card>

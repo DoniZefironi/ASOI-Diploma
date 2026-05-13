@@ -368,7 +368,7 @@ export default function AssignmentForm({ assignment, onSave, onCancel, isSubmitt
         {/* Поля для типа practice_review */}
         {formData.type === 'practice_review' && (
           <div className="border-t border-gray-700 pt-6 mt-6">
-            <h3 className="text-lg font-semibold text-white mb-4">🔄 Peer Review</h3>
+            <h3 className="text-lg font-semibold text-gh-fg mb-4">🔄 Peer Review</h3>
             <div className="space-y-2">
               <Label htmlFor="practiceAssignmentId">Задание практики для проверки *</Label>
               <Select
@@ -395,7 +395,7 @@ export default function AssignmentForm({ assignment, onSave, onCancel, isSubmitt
         {/* Поля для типа practice */}
         {formData.type === 'practice' && (
           <div className="border-t border-gray-700 pt-6 mt-6">
-            <h3 className="text-lg font-semibold text-white mb-4">📝 Требования к работе</h3>
+            <h3 className="text-lg font-semibold text-gh-fg mb-4">📝 Требования к работе</h3>
             <div className="space-y-2">
               <Label htmlFor="requirements">Дополнительные требования (JSON)</Label>
               <Textarea

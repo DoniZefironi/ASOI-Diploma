@@ -5,6 +5,7 @@ import { Metadata } from 'next'
 import { AuthProvider } from '@/shared/lib/auth-context';
 import { ProtectedRoute } from '@/shared/lib/protected-route';
 import { AnalyticsTracker } from '@/shared/lib/AnalyticsTracker';
+import { themeInitScript } from '@/shared/lib/theme';
 
 export const metadata: Metadata = {
   title: 'EduTech',
@@ -17,8 +18,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="ru" className="dark">
-      <body style={{ background: '#0d1117' }}>
+    <html lang="ru">
+      {/* Anti-flash: применяем тему до рендера */}
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
+      </head>
+      <body style={{ background: 'var(--color-canvas-default)', color: 'var(--color-fg-default)' }}>
         <AuthProvider>
           <ProtectedRoute>
             <AnalyticsTracker />

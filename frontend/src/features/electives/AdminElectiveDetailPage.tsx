@@ -80,7 +80,7 @@ export default function AdminElectiveDetailPage({ electiveId }: { electiveId: nu
           <Button variant="secondary" size="sm"><ArrowLeft className="h-4 w-4 mr-1" /> Назад</Button>
         </Link>
         <div>
-          <h1 className="text-2xl font-bold text-white">{elective.title}</h1>
+          <h1 className="text-2xl font-bold text-gh-fg">{elective.title}</h1>
           <p className="text-gray-400 text-sm">
             Группа: {elective.courseGroup?.name}
             {elective.courseGroup?.course ? ` · ${elective.courseGroup.course.name}` : ''}
@@ -200,7 +200,7 @@ function ScheduleTab({ electiveId, items, assignments, onRefresh }: { electiveId
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
-        <h2 className="text-lg font-semibold text-white">Занятия ({items.length})</h2>
+        <h2 className="text-lg font-semibold text-gh-fg">Занятия ({items.length})</h2>
         <Button variant="primary" size="sm" onClick={() => setShowForm(v => !v)}>
           <Plus className="h-4 w-4 mr-1" /> Добавить занятие
         </Button>
@@ -413,7 +413,7 @@ function AssignmentsTab({ electiveId, items, onRefresh }: { electiveId: number; 
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
-        <h2 className="text-lg font-semibold text-white">Задания ({items.length})</h2>
+        <h2 className="text-lg font-semibold text-gh-fg">Задания ({items.length})</h2>
         <Button variant="primary" size="sm" onClick={() => setShowForm(v => !v)}>
           <Plus className="h-4 w-4 mr-1" /> Добавить задание
         </Button>
@@ -536,7 +536,7 @@ function AssignmentsTab({ electiveId, items, onRefresh }: { electiveId: number; 
 function ParticipantsTab({ participants }: { participants: any[] }) {
   return (
     <div className="space-y-4">
-      <h2 className="text-lg font-semibold text-white">Участники ({participants.length})</h2>
+      <h2 className="text-lg font-semibold text-gh-fg">Участники ({participants.length})</h2>
       {participants.length === 0 ? (
         <Card className="p-8 text-center text-gray-400">Никто ещё не записался</Card>
       ) : (

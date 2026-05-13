@@ -119,7 +119,7 @@ export const NotFound = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#0D1117] flex items-center justify-center px-4 relative overflow-hidden">
+    <div className="min-h-screen bg-gh-canvas flex items-center justify-center px-4 relative overflow-hidden">
       <div 
         ref={containerRef}
         className="absolute inset-0 pointer-events-none"
@@ -155,7 +155,7 @@ export const NotFound = () => {
         </div>
 
         <div className="mt-12 p-6 bg-gray-800 rounded-lg shadow-md animate-fade-in-up animate-delay-300">
-          <h3 className="text-lg font-semibold text-white-800 mb-2">
+          <h3 className="text-lg font-semibold text-gh-fg-800 mb-2">
             Попробуйте следующее:
           </h3>
           <ul className="text-white-600 text-left space-y-1">

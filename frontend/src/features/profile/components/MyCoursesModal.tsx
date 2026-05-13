@@ -168,7 +168,7 @@ export const MyCoursesModal = ({ isOpen, onClose }: Props) => {
                 >
                   <div className="flex justify-between items-center">
                     <div>
-                      <div className="font-semibold text-white">{reg.courseGroup.course.name}</div>
+                      <div className="font-semibold text-gh-fg">{reg.courseGroup.course.name}</div>
                       <div className="text-sm text-gray-400">Группа: {reg.courseGroup.name}</div>
                       <div className="text-xs text-gray-500 mt-1">
                         {new Date(reg.courseGroup.startDate).toLocaleDateString('ru-RU')} - {new Date(reg.courseGroup.endDate).toLocaleDateString('ru-RU')}

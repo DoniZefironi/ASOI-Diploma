@@ -200,7 +200,7 @@ export default function AssignmentDetailPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-[#0D1117] py-12">
+      <div className="min-h-screen bg-gh-canvas py-12">
         <div className="container mx-auto px-4 text-center">
           <p className="text-white">Загрузка...</p>
         </div>
@@ -210,10 +210,10 @@ export default function AssignmentDetailPage() {
 
   if (!assignment) {
     return (
-      <div className="min-h-screen bg-[#0D1117] py-12">
+      <div className="min-h-screen bg-gh-canvas py-12">
         <div className="container mx-auto px-4">
           <Card className="p-8 text-center">
-            <h1 className="text-2xl font-bold text-white mb-4">Задание не найдено</h1>
+            <h1 className="text-2xl font-bold text-gh-fg mb-4">Задание не найдено</h1>
             <Link href="/schedule">
               <Button variant="secondary">← Назад к расписанию</Button>
             </Link>
@@ -232,7 +232,7 @@ export default function AssignmentDetailPage() {
   const totalReviews = peerReviewsToComplete.length;
 
   return (
-    <div className="min-h-screen bg-[#0D1117] py-12">
+    <div className="min-h-screen bg-gh-canvas py-12">
       <div className="container mx-auto px-4">
         {/* Навигация */}
         <div className="mb-6">
@@ -292,13 +292,13 @@ export default function AssignmentDetailPage() {
                 )}
 
                 <div className="border-t border-gray-700 pt-4">
-                  <h3 className="text-lg font-semibold text-white mb-2">Описание</h3>
+                  <h3 className="text-lg font-semibold text-gh-fg mb-2">Описание</h3>
                   <p className="text-gray-300 whitespace-pre-wrap">{assignment.description}</p>
                 </div>
 
                 {assignment.peerReviewEnabled && (
                   <div className="border-t border-gray-700 pt-4">
-                    <h3 className="text-lg font-semibold text-white mb-2">🔄 Peer Review</h3>
+                    <h3 className="text-lg font-semibold text-gh-fg mb-2">🔄 Peer Review</h3>
                     <div className="space-y-2">
                       <p className="text-gray-300">
                         Это задание включает взаимопроверку. Каждый студент проверит работы других студентов.
@@ -330,7 +330,7 @@ export default function AssignmentDetailPage() {
                   <div className="flex items-center gap-3 text-yellow-400">
                     <span className="text-2xl">👁️</span>
                     <div>
-                      <p className="font-medium text-white">Это задание — проверка работ</p>
+                      <p className="font-medium text-gh-fg">Это задание — проверка работ</p>
                       <p className="text-sm text-gray-400 mt-0.5">Сдавать свою работу здесь не нужно. Перейдите во вкладку Peer Review, чтобы проверить работы других студентов.</p>
                     </div>
                   </div>
@@ -443,7 +443,7 @@ export default function AssignmentDetailPage() {
                   {submission.finalScore !== undefined && (
                     <div className="p-4 bg-green-900/20 border border-green-700 rounded-lg">
                       <p className="text-green-400 font-semibold">Ваша оценка</p>
-                      <p className="text-3xl font-bold text-white">{submission.finalScore} / {assignment.maxScore}</p>
+                      <p className="text-3xl font-bold text-gh-fg">{submission.finalScore} / {assignment.maxScore}</p>
                     </div>
                   )}
 

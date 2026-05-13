@@ -58,7 +58,7 @@ export const CoursesPage = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-[#0D1117] py-12">
+      <div className="min-h-screen bg-gh-canvas py-12">
         <div className="container mx-auto px-4 text-center">
           <p className="text-white">Загрузка курсов...</p>
         </div>
@@ -68,7 +68,7 @@ export const CoursesPage = () => {
 
   if (isError) {
     return (
-      <div className="min-h-screen bg-[#0D1117] py-12">
+      <div className="min-h-screen bg-gh-canvas py-12">
         <div className="container mx-auto px-4 text-center">
           <p className="text-red-500">Ошибка загрузки курсов</p>
         </div>
@@ -82,7 +82,7 @@ export const CoursesPage = () => {
     : mappedCourses.filter(c => c.category === filterType);
 
   return (
-    <div className="min-h-screen bg-[#0D1117] py-12">
+    <div className="min-h-screen bg-gh-canvas py-12">
       <div className="container px-4">
         <div className="text-center mb-16 animate-fade-in-up">
           <h1 className="text-4xl md:text-5xl font-bold text-white mb-6">

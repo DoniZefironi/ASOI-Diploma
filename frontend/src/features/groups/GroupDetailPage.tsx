@@ -103,7 +103,7 @@ export default function GroupDetailPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-[#0D1117] py-12">
+      <div className="min-h-screen bg-gh-canvas py-12">
         <div className="container mx-auto px-4 text-center">
           <p className="text-white">Загрузка...</p>
         </div>
@@ -113,10 +113,10 @@ export default function GroupDetailPage() {
 
   if (!group) {
     return (
-      <div className="min-h-screen bg-[#0D1117] py-12">
+      <div className="min-h-screen bg-gh-canvas py-12">
         <div className="container mx-auto px-4">
           <Card className="p-8 text-center">
-            <h1 className="text-2xl font-bold text-white mb-4">Группа не найдена</h1>
+            <h1 className="text-2xl font-bold text-gh-fg mb-4">Группа не найдена</h1>
             <Link href="/mentor/groups">
               <Button variant="secondary">← Назад к группам</Button>
             </Link>
@@ -135,7 +135,7 @@ export default function GroupDetailPage() {
     : 0;
 
   return (
-    <div className="min-h-screen bg-[#0D1117] py-12">
+    <div className="min-h-screen bg-gh-canvas py-12">
       <div className="container mx-auto px-4">
         {/* Навигация */}
         <div className="mb-6">
@@ -284,7 +284,7 @@ export default function GroupDetailPage() {
                         <div key={item.id} className="p-4 bg-gray-800 rounded-lg border-l-4 border-l-blue-500">
                           <div className="flex items-start justify-between">
                             <div className="flex-1">
-                              <h4 className="text-lg font-semibold text-white mb-2">{item.title}</h4>
+                              <h4 className="text-lg font-semibold text-gh-fg mb-2">{item.title}</h4>
                               <div className="flex flex-wrap gap-4 text-sm text-gray-400">
                                 <div className="flex items-center gap-1">
                                   <Calendar className="h-4 w-4" />
@@ -324,7 +324,7 @@ export default function GroupDetailPage() {
                     <TrendingUp className="h-8 w-8 text-blue-500" />
                     <div>
                       <p className="text-sm text-gray-400">Средний балл группы</p>
-                      <p className="text-2xl font-bold text-white">{Math.round(avgGroupScore)}</p>
+                      <p className="text-2xl font-bold text-gh-fg">{Math.round(avgGroupScore)}</p>
                     </div>
                   </div>
                 </CardContent>
@@ -336,7 +336,7 @@ export default function GroupDetailPage() {
                     <FileText className="h-8 w-8 text-green-500" />
                     <div>
                       <p className="text-sm text-gray-400">Среднее выполнение</p>
-                      <p className="text-2xl font-bold text-white">{Math.round(avgCompletedAssignments)}</p>
+                      <p className="text-2xl font-bold text-gh-fg">{Math.round(avgCompletedAssignments)}</p>
                     </div>
                   </div>
                 </CardContent>
@@ -348,7 +348,7 @@ export default function GroupDetailPage() {
                     <Award className="h-8 w-8 text-purple-500" />
                     <div>
                       <p className="text-sm text-gray-400">Заданий всего</p>
-                      <p className="text-2xl font-bold text-white">{assignments.length}</p>
+                      <p className="text-2xl font-bold text-gh-fg">{assignments.length}</p>
                     </div>
                   </div>
                 </CardContent>
@@ -376,7 +376,7 @@ export default function GroupDetailPage() {
                         <div key={assignment.id} className="p-4 bg-gray-800 rounded-lg">
                           <div className="flex items-start justify-between">
                             <div className="flex-1">
-                              <h4 className="text-lg font-semibold text-white mb-2">{assignment.title}</h4>
+                              <h4 className="text-lg font-semibold text-gh-fg mb-2">{assignment.title}</h4>
                               <div className="flex flex-wrap gap-4 text-sm text-gray-400">
                                 <div className="flex items-center gap-1">
                                   <Clock className="h-4 w-4" />

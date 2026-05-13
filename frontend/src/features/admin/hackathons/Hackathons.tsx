@@ -224,7 +224,7 @@ export default function HackathonManagement() {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold text-white">Управление хакатонами</h1>
+          <h1 className="text-3xl font-bold text-gh-fg">Управление хакатонами</h1>
           <p className="text-gray-400">Создание и управление хакатонами</p>
         </div>
         <div className="flex items-center space-x-2">
@@ -262,7 +262,7 @@ export default function HackathonManagement() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-400">Всего хакатонов</p>
-                <p className="text-2xl font-bold text-white">{stats?.totalHackathons || 0}</p>
+                <p className="text-2xl font-bold text-gh-fg">{stats?.totalHackathons || 0}</p>
               </div>
               <Award className="h-8 w-8 text-blue-500" />
             </div>
@@ -274,7 +274,7 @@ export default function HackathonManagement() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-400">Активные</p>
-                <p className="text-2xl font-bold text-white">{stats?.activeHackathons || 0}</p>
+                <p className="text-2xl font-bold text-gh-fg">{stats?.activeHackathons || 0}</p>
               </div>
               <Users className="h-8 w-8 text-green-500" />
             </div>
@@ -286,7 +286,7 @@ export default function HackathonManagement() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-400">Участников</p>
-                <p className="text-2xl font-bold text-white">{stats?.totalParticipants || 0}</p>
+                <p className="text-2xl font-bold text-gh-fg">{stats?.totalParticipants || 0}</p>
               </div>
               <Users className="h-8 w-8 text-purple-500" />
             </div>
@@ -298,7 +298,7 @@ export default function HackathonManagement() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-400">Проектов</p>
-                <p className="text-2xl font-bold text-white">{stats?.totalProjects || 0}</p>
+                <p className="text-2xl font-bold text-gh-fg">{stats?.totalProjects || 0}</p>
               </div>
               <Calendar className="h-8 w-8 text-orange-500" />
             </div>
@@ -331,7 +331,7 @@ export default function HackathonManagement() {
                 <TableRow key={hackathon.id}>
                   <TableCell>
                     <div className="flex flex-col">
-                      <span className="font-medium text-white">{hackathon.name}</span>
+                      <span className="font-medium text-gh-fg">{hackathon.name}</span>
                       <span className="text-sm text-gray-400 line-clamp-1">
                         {hackathon.description}
                       </span>
