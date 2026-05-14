@@ -93,7 +93,19 @@
       "Bash(xargs sed -i 's/className=\"text-lg font-semibold text-white/className=\"text-lg font-semibold text-gh-fg/g; s/className=\"text-xl font-semibold text-white/className=\"text-xl font-semibold text-gh-fg/g; s/className=\"text-sm font-semibold text-white/className=\"text-sm font-semibold text-gh-fg/g; s/className=\"font-semibold text-white/className=\"font-semibold text-gh-fg/g; s/className=\"font-medium text-white/className=\"font-medium text-gh-fg/g')",
       "Bash(xargs sed -i \"s|e.currentTarget.style.background = '#161b22'|e.currentTarget.style.background = 'var\\(--color-canvas-overlay\\)'|g; s|e.currentTarget.style.background = '#21262d'|e.currentTarget.style.background = 'var\\(--color-neutral-2\\)'|g\")",
       "Bash(cd \"c:\\\\Users\\\\hohol\\\\Documents\\\\GitHub\\\\ASOI-Diploma\\\\frontend\\\\src\\\\app\\\\rooms\" && sed -i \"s|bg-\\\\[#21262d\\\\] hover:bg-\\\\[#30363d\\\\] border border-\\\\[#30363d\\\\] text-sm text-white|bg-gh-neutral-2 hover:bg-gh-neutral-3 border border-gh-border text-sm text-gh-fg|g; s|bg-\\\\[#21262d\\\\] hover:bg-\\\\[#30363d\\\\] text-gray-300|bg-gh-neutral-2 hover:bg-gh-neutral-3 text-gh-fg-muted|g; s|bg-\\\\[#21262d\\\\] hover:bg-\\\\[#30363d\\\\] disabled:opacity-50 text-white.*border border-\\\\[#30363d\\\\]|bg-gh-neutral-2 hover:bg-gh-neutral-3 disabled:opacity-50 text-gh-fg border border-gh-border|g\" page.tsx && echo done)",
-      "Bash(docker compose *)"
+      "Bash(docker compose *)",
+      "Bash(dir \"c:\\\\Users\\\\hohol\\\\Documents\\\\GitHub\\\\ASOI-Diploma\\\\пояснительная записка\" /s /b)",
+      "Bash(cd /tmp)",
+      "Bash(cp \"c:/Users/hohol/Documents/GitHub/ASOI-Diploma/пояснительная записка/diploma/PZ_KR_TPASOIiU_Shabolda.docx\" ./shabolda.docx)",
+      "Bash(unzip -o shabolda.docx -d shabolda_extracted)",
+      "Bash(sed 's/<[^>]*>//g')",
+      "Read(//tmp/shabolda_extracted/word/**)",
+      "Bash(python3 -c ' *)",
+      "Bash(dd bs=1 skip=52000 count=30000)",
+      "Bash(cat /tmp/shabolda_extracted/word/document.xml | sed 's/<[^>]*>//g' | tr -s ' \\\\t' ' ' > /tmp/doc_clean.txt && wc -c /tmp/doc_clean.txt)",
+      "Read(//tmp/**)",
+      "Bash(node -e ' *)",
+      "Bash(cp /tmp/shabolda_extracted/word/document.xml /tmp/docxml.xml)"
     ],
     "additionalDirectories": [
       "c:\\Users\\hohol\\Documents\\GitHub\\ASOI-Diploma\\frontend\\src\\app\\rooms\\join"
