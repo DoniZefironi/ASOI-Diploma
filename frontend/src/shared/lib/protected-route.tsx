@@ -21,6 +21,7 @@ const AUTH_REQUIRED = [
   '/circuit',
   '/shematic',
   '/simulator',
+  '/mqtt-expert',
 ];
 
 // Только менторы и админы

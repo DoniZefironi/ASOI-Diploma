@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import {
-  Sun, Moon, Bell, ChevronDown,
+  Sun, Moon, ChevronDown,
   BookOpen, Briefcase, Trophy, Terminal, Cpu,
   Library, Compass, MessageSquare, Radio,
 } from 'lucide-react';
@@ -13,7 +13,7 @@ import { useTheme } from '@/shared/lib/theme';
 
 const SunIcon    = () => <Sun    size={16} />;
 const MoonIcon   = () => <Moon   size={16} />;
-const BellIcon   = () => <Bell   size={16} />;
+
 const ChevronDownIcon  = () => <ChevronDown  size={16} />;
 const BookIcon         = () => <BookOpen     size={16} />;
 const BriefcaseIcon    = () => <Briefcase    size={16} />;
@@ -86,7 +86,10 @@ export const Header = () => {
       ? [{ href: '/circuit', label: 'Эмулятор', icon: <CircuitIcon /> }] : []),
     // IoT-симулятор — только iot или admin
     ...(isAdmin || (!userCourseType || userCourseType === 'iot') && (isStudent || isMentor)
-      ? [{ href: '/shematic', label: 'IoT', icon: <IoTIcon /> }] : []),
+      ? [
+          { href: '/shematic',     label: 'IoT',          icon: <IoTIcon /> },
+          { href: '/mqtt-expert',  label: 'MQTT Expert',  icon: <IoTIcon /> },
+        ] : []),
   ] : [];
 
   return (

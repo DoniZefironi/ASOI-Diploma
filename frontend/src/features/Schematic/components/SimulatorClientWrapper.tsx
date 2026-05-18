@@ -11,6 +11,7 @@ import { AiAssistantIot } from './AiAssistantIot';
 import { useSchematicStore } from '../store/useSchematicStore';
 import { ComponentType } from '../types';
 import { getComponentDef } from '../engine/componentDefs';
+import Link from 'next/link';
 
 export function SimulatorClientWrapper() {
   const { addComponent, selectedBoard, setSelectedBoard, components } = useSchematicStore();
@@ -77,6 +78,13 @@ export function SimulatorClientWrapper() {
             <span className="text-xs text-gray-600 hidden lg:block">
               Drag компоненты · Клик на пин — начать провод · ПКМ — удалить
             </span>
+            <Link
+              href="/mqtt-expert"
+              className="flex items-center gap-1.5 rounded-lg px-3 py-1 text-xs bg-gray-800 hover:bg-gray-700 text-purple-300 border border-purple-800 transition-colors"
+              title="MQTT Expert System — анализатор IoT-архитектуры"
+            >
+              📡 MQTT Expert
+            </Link>
             <button
               onClick={() => setShowAi(s => !s)}
               className={`flex items-center gap-1.5 rounded-lg px-3 py-1 text-xs transition-colors ${
