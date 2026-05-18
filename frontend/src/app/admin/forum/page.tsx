@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { forumApi, ForumSection, ForumTopic, ForumPost } from '@/shared/api/forum';
 import { useCourses, Course } from '@/shared/api/admin/courses';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
+import { Modal, ModalField, ModalCancelBtn, ModalSubmitBtn, modalInputStyle } from '@/shared/ui/modal';
 
 interface ForumStats {
   totalSections: number;
@@ -365,84 +366,27 @@ function CreateSectionModal({ onClose, onSuccess }: CreateSectionModalProps) {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div className="bg-card rounded-xl p-8 max-w-md w-full mx-4 border">
-        <h2 className="text-2xl font-bold mb-6">Создать раздел</h2>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium mb-2">
-              Название
-            </label>
-            <input
-              type="text"
-              value={formData.title}
-              onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-              className="w-full px-4 py-2 border rounded-lg bg-background"
-              required
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium mb-2">
-              Описание
-            </label>
-            <textarea
-              value={formData.description}
-              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-              className="w-full px-4 py-2 border rounded-lg bg-background"
-              rows={3}
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium mb-2">
-              Курс
-            </label>
-            <select
-              value={formData.courseId}
-              onChange={(e) => setFormData({ ...formData, courseId: e.target.value })}
-              className="w-full px-4 py-2 border rounded-lg bg-background"
-            >
-              <option value="">— Общий раздел (без привязки к курсу) —</option>
-              {coursesLoading ? (
-                <option value="">Загрузка...</option>
-              ) : (
-                courses?.map((course) => (
-                  <option key={course.id} value={course.id}>
-                    {course.name}
-                  </option>
-                ))
-              )}
-            </select>
-          </div>
-          <div>
-            <label className="block text-sm font-medium mb-2">
-              Порядок отображения
-            </label>
-            <input
-              type="number"
-              value={formData.orderIndex}
-              onChange={(e) => setFormData({ ...formData, orderIndex: e.target.value })}
-              className="w-full px-4 py-2 border rounded-lg bg-background"
-            />
-          </div>
-          <div className="flex gap-4 pt-4">
-            <button
-              type="button"
-              onClick={onClose}
-              className="flex-1 px-4 py-2 bg-secondary rounded-lg hover:bg-secondary/80"
-            >
-              Отмена
-            </button>
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="flex-1 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 disabled:opacity-50"
-            >
-              {isLoading ? 'Создание...' : 'Создать'}
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
+    <Modal title="Создать раздел" onClose={onClose}
+      footer={<><ModalCancelBtn onClose={onClose} /><ModalSubmitBtn loading={isLoading} label="Создать" /></>}
+    >
+      <form onSubmit={handleSubmit}>
+        <ModalField label="Название" required>
+          <input type="text" value={formData.title} onChange={e => setFormData({ ...formData, title: e.target.value })} style={modalInputStyle} required autoFocus />
+        </ModalField>
+        <ModalField label="Описание">
+          <textarea value={formData.description} onChange={e => setFormData({ ...formData, description: e.target.value })} style={{ ...modalInputStyle, resize: 'vertical' }} rows={3} />
+        </ModalField>
+        <ModalField label="Курс">
+          <select value={formData.courseId} onChange={e => setFormData({ ...formData, courseId: e.target.value })} style={modalInputStyle}>
+            <option value="">— Общий раздел (без привязки к курсу) —</option>
+            {coursesLoading ? <option>Загрузка...</option> : courses?.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+          </select>
+        </ModalField>
+        <ModalField label="Порядок отображения">
+          <input type="number" value={formData.orderIndex} onChange={e => setFormData({ ...formData, orderIndex: e.target.value })} style={modalInputStyle} />
+        </ModalField>
+      </form>
+    </Modal>
   );
 }
 
@@ -485,95 +429,30 @@ function EditSectionModal({ section, onClose, onSuccess }: EditSectionModalProps
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div className="bg-card rounded-xl p-8 max-w-md w-full mx-4 border">
-        <h2 className="text-2xl font-bold mb-6">Редактировать раздел</h2>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium mb-2">
-              Название
-            </label>
-            <input
-              type="text"
-              value={formData.title}
-              onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-              className="w-full px-4 py-2 border rounded-lg bg-background"
-              required
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium mb-2">
-              Описание
-            </label>
-            <textarea
-              value={formData.description}
-              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-              className="w-full px-4 py-2 border rounded-lg bg-background"
-              rows={3}
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium mb-2">
-              Курс
-            </label>
-            <select
-              value={formData.courseId}
-              onChange={(e) => setFormData({ ...formData, courseId: e.target.value })}
-              className="w-full px-4 py-2 border rounded-lg bg-background"
-            >
-              <option value="">— Общий раздел (без привязки к курсу) —</option>
-              {coursesLoading ? (
-                <option value="">Загрузка...</option>
-              ) : (
-                courses?.map((course) => (
-                  <option key={course.id} value={course.id}>
-                    {course.name}
-                  </option>
-                ))
-              )}
-            </select>
-          </div>
-          <div>
-            <label className="block text-sm font-medium mb-2">
-              Порядок отображения
-            </label>
-            <input
-              type="number"
-              value={formData.orderIndex}
-              onChange={(e) => setFormData({ ...formData, orderIndex: e.target.value })}
-              className="w-full px-4 py-2 border rounded-lg bg-background"
-            />
-          </div>
-          <div className="flex items-center gap-2">
-            <input
-              type="checkbox"
-              id="isActive"
-              checked={formData.isActive}
-              onChange={(e) => setFormData({ ...formData, isActive: e.target.checked })}
-              className="w-4 h-4"
-            />
-            <label htmlFor="isActive" className="text-sm font-medium">
-              Активен
-            </label>
-          </div>
-          <div className="flex gap-4 pt-4">
-            <button
-              type="button"
-              onClick={onClose}
-              className="flex-1 px-4 py-2 bg-secondary rounded-lg hover:bg-secondary/80"
-            >
-              Отмена
-            </button>
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="flex-1 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 disabled:opacity-50"
-            >
-              {isLoading ? 'Сохранение...' : 'Сохранить'}
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
+    <Modal title="Редактировать раздел" onClose={onClose}
+      footer={<><ModalCancelBtn onClose={onClose} /><ModalSubmitBtn loading={isLoading} label="Сохранить" loadingLabel="Сохранение..." /></>}
+    >
+      <form onSubmit={handleSubmit}>
+        <ModalField label="Название" required>
+          <input type="text" value={formData.title} onChange={e => setFormData({ ...formData, title: e.target.value })} style={modalInputStyle} required autoFocus />
+        </ModalField>
+        <ModalField label="Описание">
+          <textarea value={formData.description} onChange={e => setFormData({ ...formData, description: e.target.value })} style={{ ...modalInputStyle, resize: 'vertical' }} rows={3} />
+        </ModalField>
+        <ModalField label="Курс">
+          <select value={formData.courseId} onChange={e => setFormData({ ...formData, courseId: e.target.value })} style={modalInputStyle}>
+            <option value="">— Общий раздел (без привязки к курсу) —</option>
+            {coursesLoading ? <option>Загрузка...</option> : courses?.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+          </select>
+        </ModalField>
+        <ModalField label="Порядок">
+          <input type="number" value={formData.orderIndex} onChange={e => setFormData({ ...formData, orderIndex: e.target.value })} style={modalInputStyle} />
+        </ModalField>
+        <label style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: 'var(--color-fg-default)', cursor: 'pointer', marginBottom: 4 }}>
+          <input type="checkbox" checked={formData.isActive} onChange={e => setFormData({ ...formData, isActive: e.target.checked })} style={{ accentColor: 'var(--color-accent-fg)' }} />
+          Активен
+        </label>
+      </form>
+    </Modal>
   );
 }

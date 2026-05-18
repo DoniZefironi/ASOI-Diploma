@@ -61,8 +61,8 @@ function formatDate(dateStr?: string) {
 const Dialog = ({ open, onClose, children }: { open: boolean; onClose: () => void; children: React.ReactNode }) => {
   if (!open) return null;
   return (
-    <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4">
-      <div className="bg-[#1C2128] rounded-xl max-w-lg w-full max-h-[90vh] overflow-y-auto border border-gray-700">
+    <div style={{ position: 'fixed', inset: 0, zIndex: 100, background: 'rgba(0,0,0,0.72)', backdropFilter: 'blur(2px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16 }} onClick={onClose}>
+      <div style={{ background: 'var(--color-canvas-overlay)', borderRadius: 12, border: '1px solid var(--color-border-default)', boxShadow: '0 16px 48px rgba(0,0,0,0.5)', maxWidth: 520, width: '100%', maxHeight: '90vh', overflowY: 'auto' }} onClick={e => e.stopPropagation()}>
         {children}
       </div>
     </div>
@@ -132,11 +132,14 @@ function ElectiveForm({ elective, courseGroups, onClose, onSuccess }: ElectiveFo
 
   return (
     <form onSubmit={handleSubmit} className="p-6 space-y-4">
-      <div className="flex items-center justify-between mb-2">
-        <h2 className="text-xl font-bold text-gh-fg">
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20, paddingBottom: 14, borderBottom: '1px solid var(--color-border-muted)' }}>
+        <h2 style={{ margin: 0, fontSize: 16, fontWeight: 700, color: 'var(--color-fg-default)' }}>
           {elective ? 'Редактировать факультатив' : 'Создать факультатив'}
         </h2>
-        <button type="button" onClick={onClose} className="text-gray-400 hover:text-white text-xl leading-none">&times;</button>
+        <button type="button" onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-fg-muted)', fontSize: 20, lineHeight: 1, padding: 4 }}
+          onMouseEnter={e => (e.currentTarget.style.color = 'var(--color-fg-default)')}
+          onMouseLeave={e => (e.currentTarget.style.color = 'var(--color-fg-muted)')}
+        >&times;</button>
       </div>
 
       <div>

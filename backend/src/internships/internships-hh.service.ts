@@ -27,7 +27,6 @@ export class InternshipsHhService {
       const params = new URLSearchParams({
         text: searchQuery,
         per_page: limit.toString(),
-        area: '1', // Москва
         order_by: 'publication_time',
       });
 
@@ -35,8 +34,11 @@ export class InternshipsHhService {
         this.httpService
           .get<HhVacanciesResponse>(`${this.hhApiUrl}?${params.toString()}`, {
             headers: {
-              'User-Agent': 'ASOI-Diploma/1.0',
+              'User-Agent': 'ASOI-Diploma/1.0 (vladneckt@gmail.com)',
+              'Accept': 'application/json',
+              'HH-User-Agent': 'ASOI-Diploma/1.0 (vladneckt@gmail.com)',
             },
+            timeout: 15000,
           })
           .pipe(map((res: any) => res.data)),
       );

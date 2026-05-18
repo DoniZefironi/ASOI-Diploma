@@ -2,260 +2,297 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useElectives, enrollElective, unenrollElective, Elective } from '@/shared/api/electives';
-import { Card } from '@/shared/ui/card';
-import { Button } from '@/shared/ui/button';
-import { Calendar, Users, BookOpen, ChevronRight, Check } from 'lucide-react';
+import { Calendar, Users, BookOpen, ChevronRight, Check, GraduationCap, Info } from 'lucide-react';
 
 type FilterTab = 'all' | 'enrolled' | 'available';
 
-function formatDate(dateStr?: string) {
-  if (!dateStr) return null;
-  return new Date(dateStr).toLocaleDateString('ru-RU', { day: 'numeric', month: 'short', year: 'numeric' });
+function formatDate(d?: string) {
+  if (!d) return null;
+  return new Date(d).toLocaleDateString('ru-RU', { day: 'numeric', month: 'short', year: 'numeric' });
 }
 
-interface ElectiveCardProps {
+// ── Card ───────────────────────────────────────────────────────────
+function ElectiveCard({ elective, onEnroll, onUnenroll, enrollingId }: {
   elective: Elective;
   onEnroll: (id: number) => Promise<void>;
   onUnenroll: (id: number) => Promise<void>;
   enrollingId: number | null;
-}
-
-function ElectiveCard({ elective, onEnroll, onUnenroll, enrollingId }: ElectiveCardProps) {
+}) {
   const isFull = elective.maxParticipants != null && elective.currentParticipants >= elective.maxParticipants;
   const isLoading = enrollingId === elective.id;
-  const fillPercent = elective.maxParticipants
+  const fillPct = elective.maxParticipants
     ? Math.min(100, Math.round((elective.currentParticipants / elective.maxParticipants) * 100))
     : null;
+  const fillColor = fillPct == null ? '' : fillPct >= 100 ? '#f85149' : fillPct >= 75 ? '#d29922' : '#3fb950';
 
   return (
-    <div className="bg-gray-800 rounded-xl border border-gray-700 p-5 flex flex-col gap-3 hover:border-gray-500 transition-colors">
+    <div style={{
+      background: 'var(--color-canvas-overlay)',
+      border: `1px solid ${elective.isEnrolled ? 'rgba(63,185,80,0.4)' : 'var(--color-border-default)'}`,
+      borderRadius: 12, padding: '18px 20px', display: 'flex', flexDirection: 'column', gap: 12,
+      transition: 'border-color 150ms, transform 150ms',
+    }}
+      onMouseEnter={e => { (e.currentTarget as HTMLElement).style.transform = 'translateY(-1px)'; }}
+      onMouseLeave={e => { (e.currentTarget as HTMLElement).style.transform = ''; }}
+    >
       {/* Header */}
-      <div className="flex items-start justify-between gap-2">
-        <h3 className="text-lg font-bold text-gh-fg leading-tight">{elective.title}</h3>
+      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 10 }}>
+        <h3 style={{ margin: 0, fontSize: 15, fontWeight: 700, color: 'var(--color-fg-default)', lineHeight: 1.3, flex: 1 }}>
+          {elective.title}
+        </h3>
         {elective.isEnrolled && (
-          <span className="flex items-center gap-1 shrink-0 px-2 py-0.5 bg-green-600/20 border border-green-600 text-green-400 rounded-full text-xs font-medium">
-            <Check className="h-3 w-3" />
-            Записан
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 11, fontWeight: 600, color: 'var(--color-success-fg)', background: 'rgba(63,185,80,0.1)', padding: '2px 8px', borderRadius: 20, flexShrink: 0 }}>
+            <Check size={10} /> Записан
           </span>
         )}
       </div>
 
-      {/* Badges */}
-      <div className="flex flex-wrap gap-1.5">
-        {elective.courseGroupName && (
-          <span className="px-2 py-0.5 bg-blue-900/40 border border-blue-700 text-blue-300 rounded-full text-xs">
-            {elective.courseGroupName}
-          </span>
-        )}
-        {elective.courseName && (
-          <span className="px-2 py-0.5 bg-purple-900/40 border border-purple-700 text-purple-300 rounded-full text-xs">
-            {elective.courseName}
-          </span>
-        )}
-      </div>
+      {/* Course badges */}
+      {(elective.courseGroupName || elective.courseName) && (
+        <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+          {elective.courseGroupName && (
+            <span style={{ fontSize: 11, color: 'var(--color-accent-fg)', background: 'var(--color-accent-subtle)', padding: '1px 8px', borderRadius: 20, border: '1px solid var(--color-accent-muted)' }}>
+              {elective.courseGroupName}
+            </span>
+          )}
+          {elective.courseName && (
+            <span style={{ fontSize: 11, color: 'var(--color-done-fg)', background: 'var(--color-done-subtle)', padding: '1px 8px', borderRadius: 20, border: '1px solid var(--color-done-muted)' }}>
+              {elective.courseName}
+            </span>
+          )}
+        </div>
+      )}
 
       {/* Description */}
       {elective.description && (
-        <p className="text-sm text-gray-400 line-clamp-2">{elective.description}</p>
+        <p style={{ margin: 0, fontSize: 13, color: 'var(--color-fg-muted)', lineHeight: 1.5, overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>
+          {elective.description}
+        </p>
       )}
 
-      {/* Details */}
-      <div className="space-y-1 text-sm text-gray-400">
+      {/* Meta */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
         {elective.instructorName && (
-          <div className="flex items-center gap-1.5">
-            <BookOpen className="h-3.5 w-3.5" />
-            <span>{elective.instructorName}</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: 'var(--color-fg-muted)' }}>
+            <BookOpen size={12} /> {elective.instructorName}
           </div>
         )}
         {(elective.startDate || elective.endDate) && (
-          <div className="flex items-center gap-1.5">
-            <Calendar className="h-3.5 w-3.5" />
-            <span>
-              {elective.startDate ? formatDate(elective.startDate) : '?'}
-              {elective.endDate ? ` — ${formatDate(elective.endDate)}` : ''}
-            </span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: 'var(--color-fg-muted)' }}>
+            <Calendar size={12} />
+            {elective.startDate ? formatDate(elective.startDate) : '?'}
+            {elective.endDate ? ` — ${formatDate(elective.endDate)}` : ''}
           </div>
         )}
         {elective.maxParticipants != null && (
-          <div className="flex items-center gap-1.5">
-            <Users className="h-3.5 w-3.5" />
-            <span>{elective.currentParticipants} / {elective.maxParticipants} участников</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: 'var(--color-fg-muted)' }}>
+            <Users size={12} /> {elective.currentParticipants} / {elective.maxParticipants} мест
           </div>
         )}
       </div>
 
-      {/* Progress bar */}
-      {fillPercent != null && (
-        <div className="w-full bg-gray-700 rounded-full h-1.5">
-          <div
-            className={`h-1.5 rounded-full transition-all ${
-              fillPercent >= 100 ? 'bg-red-500' : fillPercent >= 75 ? 'bg-yellow-500' : 'bg-green-500'
-            }`}
-            style={{ width: `${fillPercent}%` }}
-          />
+      {/* Seats bar */}
+      {fillPct != null && (
+        <div>
+          <div style={{ height: 4, background: 'var(--color-canvas-inset)', borderRadius: 2, overflow: 'hidden' }}>
+            <div style={{ height: '100%', width: `${fillPct}%`, background: fillColor, borderRadius: 2, transition: 'width 0.3s' }} />
+          </div>
+          {isFull && <p style={{ margin: '3px 0 0', fontSize: 11, color: '#f85149' }}>Мест нет</p>}
         </div>
       )}
 
       {/* Actions */}
-      <div className="flex items-center gap-2 pt-1">
+      <div style={{ display: 'flex', gap: 8, marginTop: 2 }}>
         {elective.isEnrolled ? (
           <>
-            <Link href={`/electives/${elective.id}`}>
-              <Button variant="primary" size="sm" className="gap-1">
-                Открыть
-                <ChevronRight className="h-3.5 w-3.5" />
-              </Button>
+            <Link href={`/electives/${elective.id}`} style={{ textDecoration: 'none' }}>
+              <button style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '6px 14px', fontSize: 13, fontWeight: 600, background: 'var(--color-accent-emphasis)', color: '#fff', border: 'none', borderRadius: 8, cursor: 'pointer' }}
+                onMouseEnter={e => (e.currentTarget.style.background = 'var(--color-accent-fg)')}
+                onMouseLeave={e => (e.currentTarget.style.background = 'var(--color-accent-emphasis)')}
+              >
+                Открыть <ChevronRight size={13} />
+              </button>
             </Link>
-            <Button
-              variant="secondary"
-              size="sm"
+            <button
               disabled={isLoading}
               onClick={() => onUnenroll(elective.id)}
+              style={{ padding: '6px 14px', fontSize: 13, color: 'var(--color-danger-fg)', background: 'transparent', border: '1px solid var(--color-danger-muted)', borderRadius: 8, cursor: 'pointer' }}
             >
               {isLoading ? 'Отмена...' : 'Отписаться'}
-            </Button>
+            </button>
           </>
         ) : isFull ? (
-          <Button variant="secondary" size="sm" disabled className="bg-red-900/30 text-red-400 border-red-700 cursor-not-allowed">
-            Нет мест
-          </Button>
+          <span style={{ fontSize: 12, color: 'var(--color-danger-fg)', padding: '6px 0' }}>Нет свободных мест</span>
         ) : (
-          <Button
-            variant="primary"
-            size="sm"
+          <button
             disabled={isLoading}
             onClick={() => onEnroll(elective.id)}
-            className="bg-green-600 hover:bg-green-700"
+            style={{ padding: '6px 16px', fontSize: 13, fontWeight: 600, background: 'var(--color-success-emphasis)', color: '#fff', border: 'none', borderRadius: 8, cursor: 'pointer' }}
+            onMouseEnter={e => (e.currentTarget.style.background = 'var(--color-success-fg)')}
+            onMouseLeave={e => (e.currentTarget.style.background = 'var(--color-success-emphasis)')}
           >
             {isLoading ? 'Запись...' : 'Записаться'}
-          </Button>
+          </button>
         )}
       </div>
     </div>
   );
 }
 
+// ── Page ───────────────────────────────────────────────────────────
 export default function ElectivesPage() {
   const { electives, isLoading, isError, mutate } = useElectives();
   const [filter, setFilter] = useState<FilterTab>('all');
   const [enrollingId, setEnrollingId] = useState<number | null>(null);
 
-  const filtered = electives.filter(e => {
-    if (filter === 'enrolled') return e.isEnrolled;
-    if (filter === 'available') return !e.isEnrolled;
-    return true;
-  });
+  const filtered = electives.filter(e => filter === 'enrolled' ? e.isEnrolled : filter === 'available' ? !e.isEnrolled : true);
+  const enrolledList  = electives.filter(e => e.isEnrolled);
+  const availableList = electives.filter(e => !e.isEnrolled);
+  const fullList      = electives.filter(e => e.maxParticipants != null && e.currentParticipants >= e.maxParticipants);
 
   const handleEnroll = async (id: number) => {
     setEnrollingId(id);
-    try {
-      await enrollElective(id);
-      await mutate();
-    } catch (err: any) {
-      alert(err?.message || 'Не удалось записаться');
-    } finally {
-      setEnrollingId(null);
-    }
+    try { await enrollElective(id); await mutate(); }
+    catch (err: any) { alert(err?.message || 'Не удалось записаться'); }
+    finally { setEnrollingId(null); }
   };
 
   const handleUnenroll = async (id: number) => {
     if (!confirm('Отписаться от факультатива?')) return;
     setEnrollingId(id);
-    try {
-      await unenrollElective(id);
-      await mutate();
-    } catch (err: any) {
-      alert(err?.message || 'Не удалось отписаться');
-    } finally {
-      setEnrollingId(null);
-    }
+    try { await unenrollElective(id); await mutate(); }
+    catch (err: any) { alert(err?.message || 'Не удалось отписаться'); }
+    finally { setEnrollingId(null); }
   };
 
-  const enrolledCount = electives.filter(e => e.isEnrolled).length;
-  const availableCount = electives.filter(e => !e.isEnrolled).length;
-
   return (
-    <div className="min-h-screen bg-gh-canvas py-10">
-      <div className="container mx-auto px-4 max-w-5xl">
+    <div style={{ minHeight: '100vh', background: 'var(--color-canvas-default)', padding: '28px 0 64px' }}>
+      <div className="gh-container" style={{ maxWidth: 1200 }}>
+
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
+        <div style={{ marginBottom: 28 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6 }}>
+            <GraduationCap size={22} color="var(--color-done-fg)" />
+            <h1 style={{ margin: 0, fontSize: 24, fontWeight: 700, color: 'var(--color-fg-default)' }}>Факультативы</h1>
+          </div>
+          <p style={{ margin: 0, fontSize: 14, color: 'var(--color-fg-muted)' }}>
+            Дополнительные курсы и занятия для вашей группы
+          </p>
+          <div style={{ height: 3, width: 48, borderRadius: 2, background: 'var(--color-done-fg)', marginTop: 14 }} />
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 260px', gap: 24, alignItems: 'start' }}>
+
+          {/* ── Main ────────────────────────────────────────────── */}
           <div>
-            <h1 className="text-3xl font-bold text-gh-fg mb-1">Факультативы</h1>
-            <p className="text-gray-400 text-sm">Дополнительные курсы для вашей группы</p>
+            {/* Filter tabs */}
+            <div style={{ display: 'flex', gap: 4, marginBottom: 20 }}>
+              {([
+                { key: 'all',       label: `Все`,        count: electives.length },
+                { key: 'enrolled',  label: `Записан`,    count: enrolledList.length },
+                { key: 'available', label: `Доступные`,  count: availableList.length },
+              ] as { key: FilterTab; label: string; count: number }[]).map(t => (
+                <button key={t.key} onClick={() => setFilter(t.key)}
+                  style={{ padding: '6px 14px', fontSize: 13, fontWeight: filter === t.key ? 600 : 400, borderRadius: 8, border: 'none', cursor: 'pointer', background: filter === t.key ? 'var(--color-accent-emphasis)' : 'var(--color-canvas-overlay)', color: filter === t.key ? '#fff' : 'var(--color-fg-muted)', border: `1px solid ${filter === t.key ? 'transparent' : 'var(--color-border-default)'}` }}>
+                  {t.label} <span style={{ fontSize: 11, opacity: 0.8 }}>({t.count})</span>
+                </button>
+              ))}
+            </div>
+
+            {isLoading && (
+              <div style={{ padding: '60px 0', textAlign: 'center', color: 'var(--color-fg-muted)' }}>
+                <div style={{ width: 24, height: 24, border: '2px solid var(--color-border-default)', borderTopColor: 'var(--color-accent-fg)', borderRadius: '50%', animation: 'spin 0.8s linear infinite', margin: '0 auto 12px' }} />
+                Загрузка...
+              </div>
+            )}
+
+            {isError && <p style={{ color: 'var(--color-danger-fg)', padding: 16 }}>Ошибка загрузки</p>}
+
+            {!isLoading && !isError && filtered.length === 0 && (
+              <div style={{ background: 'var(--color-canvas-overlay)', border: '1px dashed var(--color-border-default)', borderRadius: 12, padding: '56px 24px', textAlign: 'center' }}>
+                <GraduationCap size={28} color="var(--color-fg-subtle)" style={{ margin: '0 auto 12px' }} />
+                <p style={{ color: 'var(--color-fg-default)', fontWeight: 600, margin: '0 0 6px' }}>
+                  {filter === 'enrolled' ? 'Вы не записаны ни на один факультатив' : filter === 'available' ? 'Нет доступных факультативов' : 'Факультативов пока нет'}
+                </p>
+                <p style={{ color: 'var(--color-fg-muted)', fontSize: 13, margin: 0 }}>
+                  {electives.length === 0 ? 'Факультативы добавляются администраторами' : 'Попробуйте другой фильтр'}
+                </p>
+              </div>
+            )}
+
+            {!isLoading && !isError && filtered.length > 0 && (
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 14 }}>
+                {filtered.map(e => (
+                  <ElectiveCard key={e.id} elective={e} onEnroll={handleEnroll} onUnenroll={handleUnenroll} enrollingId={enrollingId} />
+                ))}
+              </div>
+            )}
           </div>
-          <Link href="/dashboard">
-            <Button variant="secondary">
-              ← Дашборд
-            </Button>
-          </Link>
+
+          {/* ── Sidebar ─────────────────────────────────────────── */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 14, position: 'sticky', top: 80 }}>
+
+            {/* Stats */}
+            <SideCard title="Статистика">
+              {[
+                { label: 'Всего факультативов', value: electives.length },
+                { label: 'Я записан',           value: enrolledList.length,  color: 'var(--color-success-fg)' },
+                { label: 'Доступно',            value: availableList.length, color: 'var(--color-accent-fg)' },
+                { label: 'Заполнено',           value: fullList.length,      color: 'var(--color-danger-fg)' },
+              ].map(({ label, value, color }) => (
+                <div key={label} style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 8px' }}>
+                  <span style={{ fontSize: 13, color: 'var(--color-fg-muted)' }}>{label}</span>
+                  <span style={{ fontSize: 13, fontWeight: 700, color: color || 'var(--color-fg-default)' }}>{value}</span>
+                </div>
+              ))}
+            </SideCard>
+
+            {/* My enrollments */}
+            {enrolledList.length > 0 && (
+              <SideCard title="Мои факультативы">
+                {enrolledList.map(e => (
+                  <Link key={e.id} href={`/electives/${e.id}`}
+                    style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 10px', borderRadius: 8, textDecoration: 'none', transition: 'background 80ms' }}
+                    onMouseEnter={ev => (ev.currentTarget.style.background = 'var(--color-canvas-subtle)')}
+                    onMouseLeave={ev => (ev.currentTarget.style.background = 'transparent')}
+                  >
+                    <div style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--color-success-fg)', flexShrink: 0 }} />
+                    <span style={{ fontSize: 13, color: 'var(--color-fg-default)', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{e.title}</span>
+                    <ChevronRight size={12} color="var(--color-fg-subtle)" />
+                  </Link>
+                ))}
+              </SideCard>
+            )}
+
+            {/* Info */}
+            <SideCard title="Как это работает">
+              {[
+                { text: 'Выберите факультатив из списка доступных' },
+                { text: 'Нажмите «Записаться» — место будет зарезервировано' },
+                { text: 'Факультатив появится в вашем расписании' },
+                { text: 'Отписаться можно до начала занятий' },
+              ].map(({ text }, i) => (
+                <div key={i} style={{ display: 'flex', gap: 10, padding: '5px 8px' }}>
+                  <div style={{ width: 18, height: 18, borderRadius: '50%', background: 'var(--color-done-subtle)', border: '1px solid var(--color-done-muted)', color: 'var(--color-done-fg)', fontSize: 10, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 1 }}>{i + 1}</div>
+                  <span style={{ fontSize: 12, color: 'var(--color-fg-muted)', lineHeight: 1.4 }}>{text}</span>
+                </div>
+              ))}
+            </SideCard>
+          </div>
         </div>
-
-        {/* Filter tabs */}
-        <div className="flex gap-2 mb-6 border-b border-gray-700 pb-4">
-          {([
-            { key: 'all', label: `Все (${electives.length})` },
-            { key: 'enrolled', label: `Записан (${enrolledCount})` },
-            { key: 'available', label: `Доступные (${availableCount})` },
-          ] as { key: FilterTab; label: string }[]).map(tab => (
-            <button
-              key={tab.key}
-              onClick={() => setFilter(tab.key)}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                filter === tab.key
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-gray-800 text-gray-400 hover:text-white hover:bg-gray-700'
-              }`}
-            >
-              {tab.label}
-            </button>
-          ))}
-        </div>
-
-        {/* States */}
-        {isLoading && (
-          <div className="text-center py-16 text-gray-400">
-            <p>Загрузка факультативов...</p>
-          </div>
-        )}
-
-        {isError && (
-          <Card className="p-8 text-center">
-            <p className="text-red-400">Не удалось загрузить факультативы</p>
-          </Card>
-        )}
-
-        {!isLoading && !isError && filtered.length === 0 && (
-          <Card className="p-12 text-center">
-            <BookOpen className="h-12 w-12 mx-auto mb-4 text-gray-600" />
-            <p className="text-white text-lg font-semibold mb-2">
-              {filter === 'enrolled'
-                ? 'Вы не записаны ни на один факультатив'
-                : filter === 'available'
-                ? 'Нет доступных факультативов'
-                : 'Факультативов пока нет'}
-            </p>
-            <p className="text-gray-400 text-sm">
-              {electives.length === 0
-                ? 'Факультативы будут доступны после зачисления в группу и их создания администратором'
-                : 'Попробуйте другой фильтр'}
-            </p>
-          </Card>
-        )}
-
-        {!isLoading && !isError && filtered.length > 0 && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {filtered.map(elective => (
-              <ElectiveCard
-                key={elective.id}
-                elective={elective}
-                onEnroll={handleEnroll}
-                onUnenroll={handleUnenroll}
-                enrollingId={enrollingId}
-              />
-            ))}
-          </div>
-        )}
       </div>
+      <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
+    </div>
+  );
+}
+
+function SideCard({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <div style={{ background: 'var(--color-canvas-overlay)', border: '1px solid var(--color-border-default)', borderRadius: 10, overflow: 'hidden' }}>
+      <div style={{ padding: '10px 16px', borderBottom: '1px solid var(--color-border-muted)' }}>
+        <h3 style={{ margin: 0, fontSize: 11, fontWeight: 700, color: 'var(--color-fg-default)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{title}</h3>
+      </div>
+      <div style={{ padding: '8px' }}>{children}</div>
     </div>
   );
 }

@@ -11,108 +11,62 @@ import {
   useExpertAnalysis,
   type ExpertCareer,
 } from '@/shared/api/admin/professional-orientation';
-import { Clock, CheckCircle, ArrowRight, Loader2, Brain, TrendingUp, RefreshCw } from 'lucide-react';
+import {
+  Clock, CheckCircle, ArrowRight, Loader2, Brain, TrendingUp, RefreshCw, Target,
+} from 'lucide-react';
 
-// ── SVG Confidence ring ───────────────────────────────────────────────────────
-function ConfidenceRing({
-  value,
-  size = 72,
-  strokeWidth = 6,
-}: {
-  value: number;
-  size?: number;
-  strokeWidth?: number;
-}) {
+// ── Confidence ring ───────────────────────────────────────────────
+function ConfidenceRing({ value, size = 72, strokeWidth = 6 }: { value: number; size?: number; strokeWidth?: number }) {
   const r = (size - strokeWidth) / 2;
-  const circumference = 2 * Math.PI * r;
-  const dash = (value / 100) * circumference;
-
+  const circ = 2 * Math.PI * r;
+  const dash = (value / 100) * circ;
   return (
-    <svg width={size} height={size} className="-rotate-90">
-      <circle
-        cx={size / 2}
-        cy={size / 2}
-        r={r}
-        fill="none"
-        stroke="#1F2937"
-        strokeWidth={strokeWidth}
-      />
-      <circle
-        cx={size / 2}
-        cy={size / 2}
-        r={r}
-        fill="none"
-        stroke="#3B82F6"
-        strokeWidth={strokeWidth}
-        strokeLinecap="round"
-        strokeDasharray={`${dash} ${circumference}`}
-        style={{ transition: 'stroke-dasharray 0.8s ease' }}
-      />
+    <svg width={size} height={size} style={{ transform: 'rotate(-90deg)' }}>
+      <circle cx={size/2} cy={size/2} r={r} fill="none" stroke="#1F2937" strokeWidth={strokeWidth} />
+      <circle cx={size/2} cy={size/2} r={r} fill="none" stroke="#3B82F6" strokeWidth={strokeWidth}
+        strokeLinecap="round" strokeDasharray={`${dash} ${circ}`}
+        style={{ transition: 'stroke-dasharray 0.8s ease' }} />
     </svg>
   );
 }
 
-// ── Expert career card ────────────────────────────────────────────────────────
+// ── Expert career card ────────────────────────────────────────────
 function ExpertCareerCard({ career }: { career: ExpertCareer }) {
   return (
     <Card className="p-5 flex flex-col gap-4 h-full">
-      {/* Header */}
       <div className="flex items-start gap-3">
         <div className="relative flex-shrink-0">
           <ConfidenceRing value={career.confidence} size={64} strokeWidth={5} />
-          <span className="absolute inset-0 flex items-center justify-center text-xl">
-            {career.emoji}
-          </span>
+          <span className="absolute inset-0 flex items-center justify-center text-xl">{career.emoji}</span>
         </div>
         <div className="flex-1 min-w-0">
           <h4 className="text-white font-semibold text-base leading-snug">{career.title}</h4>
           <p className="text-blue-400 text-xs mt-0.5">{career.confidence}% совпадение</p>
         </div>
       </div>
-
-      {/* Description */}
       <p className="text-gray-400 text-sm leading-relaxed flex-1">{career.description}</p>
-
-      {/* Skills */}
       <div>
         <p className="text-gray-500 text-xs uppercase tracking-wide mb-2">Навыки</p>
         <div className="flex flex-wrap gap-1.5">
-          {career.skills.slice(0, 5).map(skill => (
-            <span
-              key={skill}
-              className="px-2 py-0.5 bg-blue-900/30 border border-blue-800/50 text-blue-300 rounded-full text-xs"
-            >
-              {skill}
-            </span>
+          {career.skills.slice(0, 5).map(s => (
+            <span key={s} className="px-2 py-0.5 bg-blue-900/30 border border-blue-800/50 text-blue-300 rounded-full text-xs">{s}</span>
           ))}
         </div>
       </div>
-
-      {/* Salary & demand */}
       <div className="flex items-center justify-between text-xs">
         <span className="text-green-400 font-medium">{career.salaryRange}</span>
-        <span className={`px-2 py-0.5 rounded-full ${
-          career.demandLevel === 'Очень высокий'
-            ? 'bg-green-900/40 text-green-400'
-            : career.demandLevel === 'Высокий'
-            ? 'bg-blue-900/40 text-blue-400'
-            : 'bg-gray-700 text-gray-400'
-        }`}>
+        <span className={`px-2 py-0.5 rounded-full ${career.demandLevel === 'Очень высокий' ? 'bg-green-900/40 text-green-400' : career.demandLevel === 'Высокий' ? 'bg-blue-900/40 text-blue-400' : 'bg-gray-700 text-gray-400'}`}>
           {career.demandLevel}
         </span>
       </div>
-
-      {/* Growth path */}
       {career.growthPath.length > 0 && (
         <div>
           <p className="text-gray-500 text-xs uppercase tracking-wide mb-2">Карьерный путь</p>
           <div className="flex items-center gap-1 flex-wrap">
-            {career.growthPath.map((step, idx) => (
-              <span key={idx} className="flex items-center gap-1">
+            {career.growthPath.map((step, i) => (
+              <span key={i} className="flex items-center gap-1">
                 <span className="text-gray-400 text-xs">{step}</span>
-                {idx < career.growthPath.length - 1 && (
-                  <ArrowRight className="h-3 w-3 text-gray-600 flex-shrink-0" />
-                )}
+                {i < career.growthPath.length - 1 && <ArrowRight className="h-3 w-3 text-gray-600 flex-shrink-0" />}
               </span>
             ))}
           </div>
@@ -122,86 +76,69 @@ function ExpertCareerCard({ career }: { career: ExpertCareer }) {
   );
 }
 
-// ── Expert Analysis Section ───────────────────────────────────────────────────
+// ── Expert Analysis ───────────────────────────────────────────────
 function ExpertAnalysisSection() {
-  const { analysis, isLoading: isLoadingAnalysis } = useExpertAnalysis();
-
-  if (isLoadingAnalysis) {
-    return (
-      <section id="expert" className="mb-16">
-        <div className="flex justify-center py-10">
-          <Loader2 className="h-8 w-8 animate-spin text-blue-400" />
-        </div>
-      </section>
-    );
-  }
-
+  const { analysis, isLoading } = useExpertAnalysis();
+  if (isLoading) return <section style={{ marginBottom: 48 }}><div style={{ display: 'flex', justifyContent: 'center', padding: '40px 0' }}><Loader2 size={28} color="var(--color-accent-fg)" style={{ animation: 'spin 1s linear infinite' }} /></div></section>;
   if (!analysis) return null;
-
   const top3 = analysis.topCareers.slice(0, 3);
-
   return (
-    <section id="expert" className="mb-16">
-      {/* Title */}
-      <div className="flex items-center gap-3 mb-2">
-        <Brain className="h-7 w-7 text-blue-400" />
-        <h2 className="text-3xl font-bold text-gh-fg">Экспертный анализ</h2>
+    <section style={{ marginBottom: 48 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6 }}>
+        <Brain size={22} color="var(--color-accent-fg)" />
+        <h2 style={{ margin: 0, fontSize: 20, fontWeight: 700, color: 'var(--color-fg-default)' }}>Экспертный анализ</h2>
       </div>
-      <p className="text-gray-400 mb-8">
-        Персонализированные рекомендации на основе обоих пройденных тестов
-      </p>
+      <p style={{ margin: '0 0 20px', fontSize: 13, color: 'var(--color-fg-muted)' }}>Персонализированные рекомендации на основе обоих тестов</p>
 
-      {/* Type header */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-        <div className="bg-gray-800 rounded-xl p-4 border border-gray-700">
-          <p className="text-gray-500 text-xs uppercase tracking-wide mb-1">Тип Холланда</p>
-          <p className="text-white font-semibold text-lg">{analysis.hollandLabel}</p>
-          <p className="text-blue-400 text-xs mt-1">Код: {analysis.hollandType}</p>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 16 }}>
+        <div style={{ background: 'var(--color-canvas-overlay)', borderRadius: 10, padding: '14px 16px', border: '1px solid var(--color-border-default)' }}>
+          <p style={{ margin: '0 0 4px', fontSize: 11, color: 'var(--color-fg-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Тип Холланда</p>
+          <p style={{ margin: 0, fontSize: 16, fontWeight: 700, color: 'var(--color-fg-default)' }}>{analysis.hollandLabel}</p>
+          <p style={{ margin: '2px 0 0', fontSize: 11, color: 'var(--color-accent-fg)' }}>Код: {analysis.hollandType}</p>
         </div>
-        <div className="bg-gray-800 rounded-xl p-4 border border-gray-700">
-          <p className="text-gray-500 text-xs uppercase tracking-wide mb-1">Тип Климова</p>
-          <p className="text-white font-semibold text-lg">{analysis.klimovLabel}</p>
+        <div style={{ background: 'var(--color-canvas-overlay)', borderRadius: 10, padding: '14px 16px', border: '1px solid var(--color-border-default)' }}>
+          <p style={{ margin: '0 0 4px', fontSize: 11, color: 'var(--color-fg-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Тип Климова</p>
+          <p style={{ margin: 0, fontSize: 16, fontWeight: 700, color: 'var(--color-fg-default)' }}>{analysis.klimovLabel}</p>
         </div>
       </div>
 
-      {/* Personality insight */}
-      <div className="bg-blue-900/20 border border-blue-700/50 rounded-xl p-5 mb-8">
-        <div className="flex items-center gap-2 mb-3">
-          <TrendingUp className="h-4 w-4 text-blue-400" />
-          <p className="text-blue-400 text-sm font-semibold uppercase tracking-wide">
-            Ваш профессиональный профиль
-          </p>
-        </div>
-        <p className="text-gray-200 text-sm leading-relaxed">{analysis.personalityInsight}</p>
+      <div style={{ background: 'rgba(47,129,247,0.06)', border: '1px solid rgba(47,129,247,0.25)', borderRadius: 10, padding: '14px 16px', marginBottom: 20, display: 'flex', gap: 10 }}>
+        <TrendingUp size={16} color="var(--color-accent-fg)" style={{ flexShrink: 0, marginTop: 1 }} />
+        <p style={{ margin: 0, fontSize: 13, color: 'var(--color-fg-default)', lineHeight: 1.6 }}>{analysis.personalityInsight}</p>
       </div>
 
-      {/* Top 3 career cards */}
-      <h3 className="text-xl font-semibold text-gh-fg mb-4">
-        Топ профессии для вас
-      </h3>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-        {top3.map(career => (
-          <ExpertCareerCard key={career.title} career={career} />
-        ))}
+      <h3 style={{ margin: '0 0 14px', fontSize: 16, fontWeight: 700, color: 'var(--color-fg-default)' }}>Топ профессии для вас</h3>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+        {top3.map(c => <ExpertCareerCard key={c.title} career={c} />)}
       </div>
-
-      {/* Update link */}
-      <div className="text-center">
-        <Link href="/career/test/holland">
-          <button className="inline-flex items-center gap-2 text-gray-400 hover:text-white text-sm transition-colors">
-            <RefreshCw className="h-4 w-4" />
-            Обновить анализ (пересдать тест)
-          </button>
+      <div style={{ textAlign: 'center' }}>
+        <Link href="/career/test/holland" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 13, color: 'var(--color-fg-muted)', textDecoration: 'none' }}
+          onMouseEnter={e => (e.currentTarget.style.color = 'var(--color-fg-default)')}
+          onMouseLeave={e => (e.currentTarget.style.color = 'var(--color-fg-muted)')}
+        >
+          <RefreshCw size={13} /> Обновить анализ
         </Link>
       </div>
     </section>
   );
 }
 
-// ── Main CareerPage ───────────────────────────────────────────────────────────
+// ── IT careers data ───────────────────────────────────────────────
+const IT_CAREERS = [
+  { title: 'Frontend',          salary: '80–200 т.р.',  icon: '🖥', bg: 'rgba(47,129,247,0.1)',  accent: '#2f81f7', tags: ['React', 'TypeScript'] },
+  { title: 'Backend',           salary: '90–220 т.р.',  icon: '⚙',  bg: 'rgba(63,185,80,0.1)',   accent: '#3fb950', tags: ['Node.js', 'Python'] },
+  { title: 'Data Scientist',    salary: '100–250 т.р.', icon: '📊', bg: 'rgba(163,113,247,0.1)', accent: '#a371f7', tags: ['Python', 'ML'] },
+  { title: 'DevOps',            salary: '100–230 т.р.', icon: '🔧', bg: 'rgba(240,136,62,0.1)',  accent: '#f0883e', tags: ['Docker', 'K8s'] },
+  { title: 'Кибербезопасность', salary: '90–240 т.р.',  icon: '🔐', bg: 'rgba(248,81,73,0.1)',   accent: '#f85149', tags: ['Pentest', 'Linux'] },
+  { title: 'Инженер IoT',       salary: '70–170 т.р.',  icon: '📡', bg: 'rgba(57,211,83,0.1)',  accent: '#39d353', tags: ['Arduino', 'MQTT'] },
+  { title: 'UX/UI-дизайнер',    salary: '60–160 т.р.',  icon: '🎨', bg: 'rgba(210,153,34,0.1)', accent: '#d29922', tags: ['Figma', 'Research'] },
+  { title: 'QA-инженер',        salary: '60–150 т.р.',  icon: '✅', bg: 'rgba(31,111,235,0.1)', accent: '#1f6feb', tags: ['Selenium', 'Jest'] },
+];
+
+// ── Main ──────────────────────────────────────────────────────────
 export const CareerPage = () => {
   const [isPaused, setIsPaused] = useState(false);
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
   const { tests, isLoading: isLoadingTests } = useTestList();
   const { result: savedResult } = useProfessionalOrientation();
   const { analysis } = useExpertAnalysis();
@@ -211,303 +148,197 @@ export const CareerPage = () => {
     savedResult?.testResult?.klimov !== undefined;
 
   const careers = [
-    {
-      name: 'Разработчик ПО',
-      image: '/icons/software-developer.png',
-      color: 'from-blue-500 to-blue-600',
-    },
-    {
-      name: 'Data Scientist',
-      image: '/icons/data-scientist.png',
-      color: 'from-green-500 to-green-600',
-    },
-    {
-      name: 'Аналитик кибербезопасности',
-      image: '/icons/cybersecurity.png',
-      color: 'from-red-500 to-red-600',
-    },
-    {
-      name: 'Инженер IoT',
-      image: '/icons/iot-engineer.png',
-      color: 'from-purple-500 to-purple-600',
-    },
-    {
-      name: 'Инженер-электронщик',
-      image: '/icons/electronics-engineer.png',
-      color: 'from-yellow-500 to-yellow-600',
-    },
-    {
-      name: 'Технический писатель',
-      image: '/icons/technical-writer.png',
-      color: 'from-indigo-500 to-indigo-600',
-    },
-    {
-      name: 'Инженер ИИ',
-      image: '/icons/ai-engineer.png',
-      color: 'from-pink-500 to-pink-600',
-    },
-    {
-      name: 'DevOps инженер',
-      image: '/icons/devops-engineer.png',
-      color: 'from-teal-500 to-teal-600',
-    },
-    {
-      name: 'UX/UI дизайнер',
-      image: '/icons/ux-designer.png',
-      color: 'from-orange-500 to-orange-600',
-    },
-    {
-      name: 'Продуктовый менеджер',
-      image: '/icons/product-manager.png',
-      color: 'from-cyan-500 to-cyan-600',
-    },
+    { name: 'Разработчик ПО',             image: '/icons/software-developer.png' },
+    { name: 'Data Scientist',              image: '/icons/data-scientist.png' },
+    { name: 'Аналитик кибербезопасности', image: '/icons/cybersecurity.png' },
+    { name: 'Инженер IoT',                image: '/icons/iot-engineer.png' },
+    { name: 'Инженер-электронщик',        image: '/icons/electronics-engineer.png' },
+    { name: 'Технический писатель',       image: '/icons/technical-writer.png' },
+    { name: 'Инженер ИИ',                 image: '/icons/ai-engineer.png' },
+    { name: 'DevOps инженер',             image: '/icons/devops-engineer.png' },
+    { name: 'UX/UI дизайнер',             image: '/icons/ux-designer.png' },
+    { name: 'Продуктовый менеджер',       image: '/icons/product-manager.png' },
   ];
-
-  const duplicatedCareers = [...careers, ...careers];
+  const duplicated = [...careers, ...careers];
 
   useEffect(() => {
-    const scrollContainer = scrollContainerRef.current;
-    if (!scrollContainer) return;
-
-    let animationId: number;
-    let scrollPosition = 0;
-    const scrollSpeed = 0.5;
-
-    const animateScroll = () => {
-      if (!isPaused && scrollContainer) {
-        scrollPosition += scrollSpeed;
-        if (scrollPosition >= scrollContainer.scrollWidth / 2) {
-          scrollPosition = 0;
-        }
-        scrollContainer.scrollLeft = scrollPosition;
-      }
-      animationId = requestAnimationFrame(animateScroll);
+    const el = scrollRef.current;
+    if (!el) return;
+    let id: number, pos = 0;
+    const tick = () => {
+      if (!isPaused && el) { pos += 0.5; if (pos >= el.scrollWidth / 2) pos = 0; el.scrollLeft = pos; }
+      id = requestAnimationFrame(tick);
     };
-
-    animationId = requestAnimationFrame(animateScroll);
-    return () => {
-      cancelAnimationFrame(animationId);
-    };
+    id = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(id);
   }, [isPaused]);
 
-  const handleMouseEnter = () => setIsPaused(true);
-  const handleMouseLeave = () => setIsPaused(false);
-
   return (
-    <div className="min-h-screen bg-gh-canvas py-12">
-      <div className="container mx-auto px-4">
-        <div className="text-center mb-16 animate-fade-in-up">
-          <h1 className="text-4xl md:text-5xl font-bold text-white mb-6">
-            Карьерное ориентирование
-          </h1>
-          <p className="text-xl text-white max-w-2xl mx-auto">
-            Исследуйте свой потенциал и найдите идеальный карьерный путь в мире технологий.
+    <div style={{ minHeight: '100vh', background: 'var(--color-canvas-default)', padding: '32px 0 64px' }}>
+      <div className="gh-container" style={{ maxWidth: 1100 }}>
+
+        {/* Header */}
+        <div style={{ marginBottom: 32 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6 }}>
+            <Target size={22} color="var(--color-accent-fg)" />
+            <h1 style={{ margin: 0, fontSize: 26, fontWeight: 700, color: 'var(--color-fg-default)' }}>Карьерное ориентирование</h1>
+          </div>
+          <p style={{ margin: 0, fontSize: 14, color: 'var(--color-fg-muted)' }}>
+            Пройдите тесты, узнайте подходящие IT-профессии и получите экспертный анализ
           </p>
+          <div style={{ height: 3, width: 48, borderRadius: 2, background: 'var(--color-accent-emphasis)', marginTop: 14 }} />
         </div>
 
-        <section className="mb-20">
-          <h2 className="text-3xl font-bold text-center text-white mb-4 animate-fade-in-up">
-            Профориентационные тесты
-          </h2>
-          <p className="text-center text-gray-400 mb-10">
+        {/* ── Tests ─────────────────────────────────────────────── */}
+        <section style={{ marginBottom: 40 }}>
+          <h2 style={{ margin: '0 0 6px', fontSize: 18, fontWeight: 700, color: 'var(--color-fg-default)' }}>Профориентационные тесты</h2>
+          <p style={{ margin: '0 0 20px', fontSize: 13, color: 'var(--color-fg-muted)' }}>
             Пройдите один или несколько тестов, чтобы узнать какие IT-профессии вам подходят
           </p>
 
           {/* Saved results */}
           {savedResult?.testResult && Object.keys(savedResult.testResult).length > 0 && (
-            <div className="mb-8 p-4 bg-green-900/20 border border-green-700 rounded-xl">
-              <div className="flex items-center gap-2 mb-3">
-                <CheckCircle className="h-5 w-5 text-green-400" />
-                <span className="text-green-400 font-medium">Ваши последние результаты</span>
+            <div style={{ marginBottom: 20, padding: '14px 18px', background: 'rgba(63,185,80,0.06)', border: '1px solid rgba(63,185,80,0.3)', borderRadius: 10 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
+                <CheckCircle size={15} color="var(--color-success-fg)" />
+                <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--color-success-fg)' }}>Последние результаты</span>
               </div>
-              <div className="flex flex-wrap gap-3">
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
                 {Object.entries(savedResult.testResult).map(([type, res]: [string, any]) => (
-                  <div
-                    key={type}
-                    className="bg-gray-800 rounded-lg px-4 py-2 flex items-center gap-2"
-                  >
-                    <span className="text-gray-400 text-sm">
-                      {type === 'holland' ? 'Холланд:' : 'ДДО Климова:'}
-                    </span>
-                    <span className="text-white font-medium text-sm">{res.topTypeLabel}</span>
-                    <span className="text-blue-400 text-xs">→ {res.topCareers?.[0]}</span>
+                  <div key={type} style={{ background: 'var(--color-canvas-overlay)', borderRadius: 8, padding: '5px 12px', border: '1px solid var(--color-border-default)', fontSize: 12 }}>
+                    <span style={{ color: 'var(--color-fg-muted)' }}>{type === 'holland' ? 'Холланд' : 'ДДО Климова'}: </span>
+                    <strong style={{ color: 'var(--color-fg-default)' }}>{res.topTypeLabel}</strong>
+                    <span style={{ color: 'var(--color-accent-fg)', marginLeft: 6 }}>→ {res.topCareers?.[0]}</span>
                   </div>
                 ))}
               </div>
               {bothTestsDone && (
-                <div className="mt-3">
-                  <a
-                    href="#expert"
-                    className="inline-flex items-center gap-2 text-blue-400 hover:text-blue-300 text-sm transition-colors"
-                  >
-                    <Brain className="h-4 w-4" />
-                    Перейти к экспертному анализу
-                    <ArrowRight className="h-3 w-3" />
-                  </a>
-                </div>
+                <a href="#expert" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, marginTop: 10, fontSize: 12, color: 'var(--color-accent-fg)', textDecoration: 'none' }}>
+                  <Brain size={13} /> Перейти к экспертному анализу <ArrowRight size={11} />
+                </a>
               )}
             </div>
           )}
 
-          {/* Test cards */}
-          {isLoadingTests && (
-            <div className="flex justify-center py-8">
-              <Loader2 className="h-8 w-8 animate-spin text-blue-400" />
+          {isLoadingTests ? (
+            <div style={{ display: 'flex', justifyContent: 'center', padding: '40px 0' }}>
+              <Loader2 size={28} color="var(--color-accent-fg)" style={{ animation: 'spin 1s linear infinite' }} />
+            </div>
+          ) : (
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 16, maxWidth: 760, margin: '0 auto' }}>
+              {tests.map(test => {
+                const hasResult = savedResult?.testResult?.[test.type];
+                return (
+                  <div key={test.type} style={{ background: 'var(--color-canvas-overlay)', border: '1px solid var(--color-border-default)', borderRadius: 12, padding: '20px', display: 'flex', flexDirection: 'column', gap: 14, transition: 'border-color 150ms, transform 150ms' }}
+                    onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = 'var(--color-accent-fg)'; (e.currentTarget as HTMLElement).style.transform = 'translateY(-2px)'; }}
+                    onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = 'var(--color-border-default)'; (e.currentTarget as HTMLElement).style.transform = ''; }}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 8 }}>
+                      <h3 style={{ margin: 0, fontSize: 16, fontWeight: 700, color: 'var(--color-fg-default)', lineHeight: 1.3 }}>{test.title}</h3>
+                      {hasResult && (
+                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 11, fontWeight: 600, color: 'var(--color-success-fg)', background: 'rgba(63,185,80,0.1)', padding: '2px 8px', borderRadius: 20, flexShrink: 0 }}>
+                          <CheckCircle size={10} /> Пройден
+                        </span>
+                      )}
+                    </div>
+                    <p style={{ margin: 0, fontSize: 13, color: 'var(--color-fg-muted)', lineHeight: 1.55, flex: 1 }}>{test.description}</p>
+                    <div style={{ display: 'flex', gap: 14, fontSize: 12, color: 'var(--color-fg-subtle)' }}>
+                      <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><Clock size={12} /> {test.duration}</span>
+                      <span>{test.questionCount} вопросов</span>
+                    </div>
+                    <Link href={`/career/test/${test.type}`}>
+                      <Button variant={hasResult ? 'secondary' : 'primary'} className="w-full flex items-center justify-center gap-2">
+                        {hasResult ? 'Пройти снова' : 'Начать тест'} <ArrowRight size={14} />
+                      </Button>
+                    </Link>
+                  </div>
+                );
+              })}
             </div>
           )}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {tests.map(test => {
-              const hasResult = savedResult?.testResult?.[test.type];
-              return (
-                <Card key={test.type} className="p-6 flex flex-col">
-                  <div className="flex items-start justify-between mb-3">
-                    <h3 className="text-xl font-semibold text-gh-fg">{test.title}</h3>
-                    {hasResult && (
-                      <span className="flex items-center gap-1 text-green-400 text-xs bg-green-900/30 px-2 py-1 rounded-full">
-                        <CheckCircle className="h-3 w-3" />
-                        Пройден
-                      </span>
-                    )}
-                  </div>
-                  <p className="text-gray-400 text-sm flex-1 mb-4">{test.description}</p>
-                  <div className="flex items-center gap-3 text-xs text-gray-500 mb-5">
-                    <span className="flex items-center gap-1">
-                      <Clock className="h-3.5 w-3.5" />
-                      {test.duration}
-                    </span>
-                    <span>{test.questionCount} вопросов</span>
-                  </div>
-                  <Link href={`/career/test/${test.type}`}>
-                    <Button
-                      variant={hasResult ? 'secondary' : 'primary'}
-                      className="w-full flex items-center justify-center gap-2"
-                    >
-                      {hasResult ? 'Пройти снова' : 'Начать тест'}
-                      <ArrowRight className="h-4 w-4" />
-                    </Button>
-                  </Link>
-                </Card>
-              );
-            })}
+        </section>
+
+        {/* ── IT Careers grid ───────────────────────────────────── */}
+        <section style={{ marginBottom: 48 }}>
+          <h2 style={{ margin: '0 0 6px', fontSize: 18, fontWeight: 700, color: 'var(--color-fg-default)' }}>Популярные IT-направления</h2>
+          <p style={{ margin: '0 0 20px', fontSize: 13, color: 'var(--color-fg-muted)' }}>Тесты помогут определить, какие из этих профессий подходят вам больше всего</p>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: 12 }}>
+            {IT_CAREERS.map(c => (
+              <div key={c.title} style={{ background: 'var(--color-canvas-overlay)', border: '1px solid var(--color-border-default)', borderLeft: `3px solid ${c.accent}`, borderRadius: 10, padding: '14px 16px', transition: 'transform 150ms, box-shadow 150ms', cursor: 'default' }}
+                onMouseEnter={e => { (e.currentTarget as HTMLElement).style.transform = 'translateY(-2px)'; (e.currentTarget as HTMLElement).style.boxShadow = '0 4px 12px rgba(0,0,0,0.2)'; }}
+                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.transform = ''; (e.currentTarget as HTMLElement).style.boxShadow = ''; }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
+                  <div style={{ width: 32, height: 32, borderRadius: 8, background: c.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16, flexShrink: 0 }}>{c.icon}</div>
+                  <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--color-fg-default)' }}>{c.title}</span>
+                </div>
+                <div style={{ fontSize: 12, color: 'var(--color-success-fg)', fontWeight: 600, marginBottom: 8 }}>{c.salary}</div>
+                <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
+                  {c.tags.map(t => (
+                    <span key={t} style={{ fontSize: 10, color: 'var(--color-fg-muted)', background: 'var(--color-canvas-inset)', border: '1px solid var(--color-border-muted)', padding: '1px 7px', borderRadius: 20 }}>{t}</span>
+                  ))}
+                </div>
+              </div>
+            ))}
           </div>
         </section>
 
-        {/* Expert Analysis Section — shown only when analysis is available */}
-        {analysis && <ExpertAnalysisSection />}
+        {/* ── Expert analysis ───────────────────────────────────── */}
+        <div id="expert"><ExpertAnalysisSection /></div>
 
-        <section className="mb-20">
-          <h2 className="text-3xl font-bold text-center text-white mb-12 animate-fade-in-up">
-            Исследуйте карьерные пути
-          </h2>
-
-          <div
-            ref={scrollContainerRef}
-            className="relative mb-12 overflow-hidden"
-            onMouseEnter={handleMouseEnter}
-            onMouseLeave={handleMouseLeave}
-          >
-            <div className="flex space-x-4 py-4">
-              {duplicatedCareers.map((career, index) => (
-                <div
-                  key={`${career.name}-${index}`}
-                  className="flex-shrink-0 w-32 bg-gray-800 rounded-xl p-4 text-center border border-gray-700 hover:scale-110 hover:border-blue-500 transition-all duration-300 cursor-pointer group"
+        {/* ── Career scroll ─────────────────────────────────────── */}
+        <section style={{ marginBottom: 48 }}>
+          <h2 style={{ margin: '0 0 20px', fontSize: 18, fontWeight: 700, color: 'var(--color-fg-default)', textAlign: 'center' }}>Исследуйте карьерные пути</h2>
+          <div ref={scrollRef} style={{ overflow: 'hidden' }} onMouseEnter={() => setIsPaused(true)} onMouseLeave={() => setIsPaused(false)}>
+            <div style={{ display: 'flex', gap: 12, padding: '4px 0' }}>
+              {duplicated.map((c, i) => (
+                <div key={`${c.name}-${i}`} style={{ flexShrink: 0, width: 112, background: 'var(--color-canvas-overlay)', borderRadius: 12, padding: 12, textAlign: 'center', border: '1px solid var(--color-border-default)', cursor: 'pointer', transition: 'all 200ms' }}
+                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = 'var(--color-accent-fg)'; (e.currentTarget as HTMLElement).style.transform = 'scale(1.06)'; }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = 'var(--color-border-default)'; (e.currentTarget as HTMLElement).style.transform = ''; }}
                 >
-                  <div className="relative w-16 h-16 rounded-full overflow-hidden mx-auto mb-3 group-hover:scale-110 transition-transform duration-300">
-                    <Image
-                      src={career.image}
-                      alt={career.name}
-                      fill
-                      className="object-cover"
-                    />
-                    <div className="absolute inset-0 bg-black bg-opacity-30 group-hover:bg-opacity-10 transition-all duration-300"></div>
+                  <div style={{ width: 56, height: 56, borderRadius: '50%', overflow: 'hidden', margin: '0 auto 8px', position: 'relative', background: 'var(--color-canvas-inset)' }}>
+                    <Image src={c.image} alt={c.name} fill style={{ objectFit: 'cover' }} />
                   </div>
-                  <h4 className="text-xs font-semibold text-white leading-tight group-hover:text-blue-300 transition-colors duration-300">
-                    {career.name}
-                  </h4>
+                  <p style={{ margin: 0, fontSize: 10, fontWeight: 600, color: 'var(--color-fg-default)', lineHeight: 1.3 }}>{c.name}</p>
                 </div>
               ))}
             </div>
           </div>
+        </section>
 
-          <div className="animate-fade-in-up">
-            <h3 className="text-2xl font-bold text-gh-fg mb-8 text-center">
-              Рекомендуемые статьи
-            </h3>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              <Card className="hover:shadow-xl flex flex-col transition-all duration-300 overflow-hidden h-full">
-                <div className="relative h-48 bg-gray-700 overflow-hidden flex-shrink-0">
-                  <Image
-                    src="/images/TechIndustry.jpg"
-                    alt="Топ-навыки для IT-специалистов в 2024 году"
-                    fill
-                    className="object-cover"
-                  />
-                  <div className="absolute inset-0 bg-black bg-opacity-20"></div>
+        {/* ── Articles ──────────────────────────────────────────── */}
+        <section>
+          <h2 style={{ margin: '0 0 20px', fontSize: 18, fontWeight: 700, color: 'var(--color-fg-default)', textAlign: 'center' }}>Рекомендуемые статьи</h2>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 18 }}>
+            {[
+              { img: '/images/TechIndustry.jpg',       title: 'Топ-навыки для IT-специалистов в 2024 году',    desc: 'Будьте впереди всех с самыми востребованными навыками.' },
+              { img: '/images/ProgrammingLanguage.png', title: 'Выбор языка программирования для карьеры',     desc: 'Руководство по выбору лучшего языка под ваши цели.' },
+              { img: '/images/TechProfessionals.png',   title: 'Будущее работы в IT-индустрии',                desc: 'Анализ новых трендов и перспективных возможностей.' },
+            ].map(({ img, title, desc }) => (
+              <div key={title} style={{ background: 'var(--color-canvas-overlay)', border: '1px solid var(--color-border-default)', borderRadius: 12, overflow: 'hidden', display: 'flex', flexDirection: 'column', transition: 'border-color 150ms, transform 150ms' }}
+                onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = 'var(--color-accent-fg)'; (e.currentTarget as HTMLElement).style.transform = 'translateY(-2px)'; }}
+                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = 'var(--color-border-default)'; (e.currentTarget as HTMLElement).style.transform = ''; }}
+              >
+                <div style={{ height: 150, position: 'relative', background: 'var(--color-canvas-inset)' }}>
+                  <Image src={img} alt={title} fill style={{ objectFit: 'cover' }} />
+                  <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.15)' }} />
                 </div>
-                <div className="p-6 flex flex-col flex-grow">
-                  <h4 className="text-xl font-semibold text-gh-fg mb-3">
-                    Топ-навыки для IT-специалистов в 2024 году
-                  </h4>
-                  <p className="text-gray-300 mb-4 flex-grow">
-                    Будьте впереди всех с самыми востребованными навыками в IT-индустрии.
-                  </p>
-                  <Button variant="primary" className="w-full">
-                    Читать далее
-                  </Button>
+                <div style={{ padding: '16px 18px 18px', flex: 1, display: 'flex', flexDirection: 'column', gap: 10 }}>
+                  <h4 style={{ margin: 0, fontSize: 14, fontWeight: 700, color: 'var(--color-fg-default)', lineHeight: 1.4 }}>{title}</h4>
+                  <p style={{ margin: 0, fontSize: 13, color: 'var(--color-fg-muted)', lineHeight: 1.5, flex: 1 }}>{desc}</p>
+                  <button style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '6px 14px', background: 'var(--color-accent-emphasis)', color: '#fff', border: 'none', borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: 'pointer', alignSelf: 'flex-start' }}
+                    onMouseEnter={e => (e.currentTarget.style.background = 'var(--color-accent-fg)')}
+                    onMouseLeave={e => (e.currentTarget.style.background = 'var(--color-accent-emphasis)')}
+                  >
+                    Читать <ArrowRight size={12} />
+                  </button>
                 </div>
-              </Card>
-
-              <Card className="hover:shadow-xl flex flex-col transition-all duration-300 overflow-hidden h-full">
-                <div className="relative h-48 bg-gray-700 overflow-hidden flex-shrink-0">
-                  <Image
-                    src="/images/ProgrammingLanguage.png"
-                    alt="Выбор подходящего языка программирования"
-                    fill
-                    className="object-cover"
-                  />
-                  <div className="absolute inset-0 bg-black bg-opacity-20"></div>
-                </div>
-                <div className="p-6 flex flex-col flex-grow">
-                  <h4 className="text-xl font-semibold text-gh-fg mb-3">
-                    Выбор подходящего языка программирования для вашей карьеры
-                  </h4>
-                  <p className="text-gray-300 mb-4 flex-grow">
-                    Руководство по выбору лучшего языка программирования в зависимости от ваших
-                    карьерных целей.
-                  </p>
-                  <Button variant="primary" className="w-full">
-                    Читать далее
-                  </Button>
-                </div>
-              </Card>
-
-              <Card className="hover:shadow-xl flex flex-col transition-all duration-300 overflow-hidden h-full">
-                <div className="relative h-48 bg-gray-700 overflow-hidden flex-shrink-0">
-                  <Image
-                    src="/images/TechProfessionals.png"
-                    alt="Будущее работы в IT-сфере"
-                    fill
-                    className="object-cover"
-                  />
-                  <div className="absolute inset-0 bg-black bg-opacity-20"></div>
-                </div>
-                <div className="p-6 flex flex-col flex-grow">
-                  <h4 className="text-xl font-semibold text-gh-fg mb-3">
-                    Будущее работы в IT-индустрии
-                  </h4>
-                  <p className="text-gray-300 mb-4 flex-grow">
-                    Анализ новых трендов и перспективных карьерных возможностей в IT-секторе.
-                  </p>
-                  <Button variant="primary" className="w-full">
-                    Читать далее
-                  </Button>
-                </div>
-              </Card>
-            </div>
+              </div>
+            ))}
           </div>
         </section>
       </div>
+      <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
     </div>
   );
 };

@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useInternships, type Internship } from '@/shared/api/internships';
+import type { ReactNode } from 'react';
 import { Search, Briefcase, Building, MapPin, Clock, DollarSign, Calendar, ChevronRight } from 'lucide-react';
 
 // ── Icons ──────────────────────────────────────────────────────────
@@ -184,89 +185,142 @@ export default function InternshipsPage() {
     );
   };
 
+  const allInternships = internships ?? [];
+  const formatCounts = {
+    remote: allInternships.filter(i => i.format === 'remote').length,
+    office: allInternships.filter(i => i.format === 'office').length,
+    hybrid: allInternships.filter(i => i.format === 'hybrid').length,
+  };
+
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--color-canvas-default)', padding: '24px 0' }}>
-      <div className="gh-container">
+    <div style={{ minHeight: '100vh', background: 'var(--color-canvas-default)', padding: '28px 0 64px' }}>
+      <div className="gh-container" style={{ maxWidth: 1200 }}>
 
         {/* Header */}
-        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 24 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <span style={{ color: '#2f81f7', display: 'flex' }}><BriefcaseIcon /></span>
-            <div>
-              <h1 style={{ fontSize: 20, fontWeight: 600, color: 'var(--color-fg-default)', margin: 0 }}>Стажировки</h1>
-              <p style={{ fontSize: 12, color: 'var(--color-fg-muted)', margin: 0 }}>Актуальные предложения от компаний-партнёров</p>
-            </div>
+        <div style={{ marginBottom: 28 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6 }}>
+            <Briefcase size={22} color="var(--color-accent-fg)" />
+            <h1 style={{ margin: 0, fontSize: 24, fontWeight: 700, color: 'var(--color-fg-default)' }}>Стажировки</h1>
           </div>
-          {!isLoading && internships?.length > 0 && (
-            <div style={{ display: 'flex', gap: 16, fontSize: 13, color: 'var(--color-fg-muted)' }}>
-              <span style={{ color: '#3fb950', fontWeight: 600 }}>{activeCount} активных</span>
-              {expiredCount > 0 && <span>{expiredCount} завершено</span>}
-            </div>
-          )}
+          <p style={{ margin: 0, fontSize: 14, color: 'var(--color-fg-muted)' }}>
+            Актуальные предложения от компаний-партнёров
+          </p>
+          <div style={{ height: 3, width: 48, borderRadius: 2, background: 'var(--color-accent-emphasis)', marginTop: 14 }} />
         </div>
 
-        {/* Search + filters */}
-        <div style={{ display: 'flex', gap: 10, marginBottom: 16, flexWrap: 'wrap' }}>
-          <div style={{ position: 'relative', flex: 1, minWidth: 220 }}>
-            <span style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', color: 'var(--color-fg-muted)', display: 'flex', pointerEvents: 'none' }}>
-              <SearchIcon />
-            </span>
-            <input
-              type="text"
-              placeholder="Поиск по названию или компании..."
-              value={search}
-              onChange={e => setSearch(e.target.value)}
-              style={{
-                width: '100%', padding: '5px 12px 5px 32px', fontSize: 13,
-                color: 'var(--color-fg-default)', background: 'var(--color-canvas-default)',
-                border: '1px solid var(--color-border-default)', borderRadius: 6,
-                outline: 'none', boxSizing: 'border-box',
-              }}
-            />
-          </div>
-          <div style={{ display: 'flex', gap: 6 }}>
-            {filterBtn('all', 'Все')}
-            {filterBtn('remote', 'Удалённо')}
-            {filterBtn('office', 'Офис')}
-            {filterBtn('hybrid', 'Гибрид')}
-          </div>
-        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 260px', gap: 24, alignItems: 'start' }}>
 
-        {/* Content */}
-        {isLoading ? (
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '80px 0' }}>
-            <div style={{ textAlign: 'center' }}>
-              <div style={{ width: 24, height: 24, border: '2px solid #30363d', borderTopColor: '#2f81f7', borderRadius: '50%', animation: 'spin 1s linear infinite', margin: '0 auto 12px' }} />
-              <p style={{ color: 'var(--color-fg-muted)', fontSize: 14 }}>Загрузка...</p>
+          {/* ── Main ────────────────────────────────────────────── */}
+          <div>
+            {/* Search + filters */}
+            <div style={{ display: 'flex', gap: 10, marginBottom: 16, flexWrap: 'wrap' }}>
+              <div style={{ position: 'relative', flex: 1, minWidth: 200 }}>
+                <span style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', color: 'var(--color-fg-muted)', display: 'flex', pointerEvents: 'none' }}>
+                  <SearchIcon />
+                </span>
+                <input type="text" placeholder="Поиск по названию или компании..." value={search} onChange={e => setSearch(e.target.value)}
+                  style={{ width: '100%', padding: '7px 12px 7px 32px', fontSize: 13, color: 'var(--color-fg-default)', background: 'var(--color-canvas-overlay)', border: '1px solid var(--color-border-default)', borderRadius: 8, outline: 'none', boxSizing: 'border-box' }} />
+              </div>
+              <div style={{ display: 'flex', gap: 5 }}>
+                {filterBtn('all', 'Все')}
+                {filterBtn('remote', 'Удалённо')}
+                {filterBtn('office', 'Офис')}
+                {filterBtn('hybrid', 'Гибрид')}
+              </div>
             </div>
+
+            {isLoading ? (
+              <div style={{ padding: '60px 0', textAlign: 'center', color: 'var(--color-fg-muted)' }}>
+                <div style={{ width: 24, height: 24, border: '2px solid var(--color-border-default)', borderTopColor: 'var(--color-accent-fg)', borderRadius: '50%', animation: 'spin 0.8s linear infinite', margin: '0 auto 12px' }} />
+                Загрузка...
+              </div>
+            ) : filtered.length === 0 ? (
+              <div style={{ background: 'var(--color-canvas-overlay)', border: '1px dashed var(--color-border-default)', borderRadius: 12, padding: '56px 24px', textAlign: 'center' }}>
+                <Briefcase size={28} color="var(--color-fg-subtle)" style={{ margin: '0 auto 12px' }} />
+                <p style={{ color: 'var(--color-fg-default)', fontWeight: 600, margin: '0 0 6px' }}>
+                  {search || formatFilter !== 'all' ? 'Ничего не найдено' : 'Стажировок пока нет'}
+                </p>
+                <p style={{ color: 'var(--color-fg-muted)', fontSize: 13, margin: 0 }}>
+                  {search || formatFilter !== 'all' ? 'Попробуйте изменить фильтры' : 'Скоро появятся новые предложения'}
+                </p>
+              </div>
+            ) : (
+              <>
+                <p style={{ fontSize: 12, color: 'var(--color-fg-muted)', marginBottom: 10 }}>
+                  {pluralInternships(filtered.length)}{(search || formatFilter !== 'all') && ' по запросу'}
+                  {' · '}<span style={{ color: 'var(--color-success-fg)' }}>{activeCount} активных</span>
+                  {expiredCount > 0 && <span style={{ color: 'var(--color-fg-subtle)' }}> · {expiredCount} завершено</span>}
+                </p>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                  {filtered.map(i => <InternshipCard key={i.id} internship={i} />)}
+                </div>
+              </>
+            )}
           </div>
-        ) : filtered.length === 0 ? (
-          <div style={{ background: 'var(--color-canvas-overlay)', border: '1px solid var(--color-border-default)', borderRadius: 6, padding: '48px 24px', textAlign: 'center' }}>
-            <div style={{ color: 'var(--color-fg-muted)', display: 'flex', justifyContent: 'center', marginBottom: 12 }}><BriefcaseIcon /></div>
-            <p style={{ fontSize: 15, fontWeight: 600, color: 'var(--color-fg-default)', margin: '0 0 4px' }}>
-              {search || formatFilter !== 'all' ? 'Ничего не найдено' : 'Стажировок пока нет'}
-            </p>
-            <p style={{ fontSize: 13, color: 'var(--color-fg-muted)', margin: 0 }}>
-              {search || formatFilter !== 'all'
-                ? 'Попробуйте изменить фильтры или поисковый запрос'
-                : 'Следите за обновлениями — скоро появятся новые предложения'}
-            </p>
-          </div>
-        ) : (
-          <>
-            <p style={{ fontSize: 12, color: 'var(--color-fg-muted)', marginBottom: 12 }}>
-              {pluralInternships(filtered.length)}
-              {(search || formatFilter !== 'all') && ' по запросу'}
-            </p>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-              {filtered.map(internship => (
-                <InternshipCard key={internship.id} internship={internship} />
+
+          {/* ── Sidebar ─────────────────────────────────────────── */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 14, position: 'sticky', top: 80 }}>
+
+            {/* Stats */}
+            {!isLoading && allInternships.length > 0 && (
+              <SideCard title="Статистика">
+                {[
+                  { label: 'Всего',     value: allInternships.length },
+                  { label: 'Активных',  value: allInternships.filter(i => !i.deadline || new Date(i.deadline) >= new Date()).length, color: 'var(--color-success-fg)' },
+                  { label: 'Завершено', value: allInternships.filter(i => i.deadline && new Date(i.deadline) < new Date()).length,  color: 'var(--color-fg-subtle)' },
+                ].map(({ label, value, color }) => (
+                  <div key={label} style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 8px' }}>
+                    <span style={{ fontSize: 13, color: 'var(--color-fg-muted)' }}>{label}</span>
+                    <span style={{ fontSize: 13, fontWeight: 700, color: color || 'var(--color-fg-default)' }}>{value}</span>
+                  </div>
+                ))}
+              </SideCard>
+            )}
+
+            {/* Format breakdown */}
+            {!isLoading && allInternships.length > 0 && (
+              <SideCard title="По формату">
+                {Object.entries(FORMAT).map(([key, cfg]) => (
+                  <button key={key} onClick={() => setFormatFilter(formatFilter === key ? 'all' : key)}
+                    style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', padding: '7px 10px', borderRadius: 8, border: 'none', cursor: 'pointer', background: formatFilter === key ? cfg.bg : 'transparent', transition: 'background 80ms', marginBottom: 2 }}
+                    onMouseEnter={e => formatFilter !== key && (e.currentTarget.style.background = 'var(--color-canvas-subtle)')}
+                    onMouseLeave={e => formatFilter !== key && (e.currentTarget.style.background = 'transparent')}
+                  >
+                    <span style={{ fontSize: 13, color: formatFilter === key ? cfg.color : 'var(--color-fg-muted)', fontWeight: formatFilter === key ? 600 : 400 }}>{cfg.label}</span>
+                    <span style={{ fontSize: 12, fontWeight: 700, color: cfg.color, background: cfg.bg, padding: '1px 8px', borderRadius: 20 }}>{formatCounts[key as keyof typeof formatCounts]}</span>
+                  </button>
+                ))}
+              </SideCard>
+            )}
+
+            {/* Tips */}
+            <SideCard title="Советы">
+              {[
+                'Отправляйте заявку заранее — некоторые компании закрывают набор досрочно',
+                'Изучите компанию перед откликом — это ценится на собеседовании',
+                'Подготовьте актуальное резюме с последними проектами',
+              ].map((tip, i) => (
+                <div key={i} style={{ display: 'flex', gap: 8, padding: '6px 8px' }}>
+                  <span style={{ fontSize: 12, color: 'var(--color-accent-fg)', fontWeight: 700, flexShrink: 0 }}>{i + 1}.</span>
+                  <span style={{ fontSize: 12, color: 'var(--color-fg-muted)', lineHeight: 1.45 }}>{tip}</span>
+                </div>
               ))}
-            </div>
-          </>
-        )}
+            </SideCard>
+          </div>
+        </div>
       </div>
-      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+      <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
+    </div>
+  );
+}
+
+function SideCard({ title, children }: { title: string; children: ReactNode }) {
+  return (
+    <div style={{ background: 'var(--color-canvas-overlay)', border: '1px solid var(--color-border-default)', borderRadius: 10, overflow: 'hidden' }}>
+      <div style={{ padding: '10px 16px', borderBottom: '1px solid var(--color-border-muted)' }}>
+        <h3 style={{ margin: 0, fontSize: 11, fontWeight: 700, color: 'var(--color-fg-default)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{title}</h3>
+      </div>
+      <div style={{ padding: '8px' }}>{children}</div>
     </div>
   );
 }

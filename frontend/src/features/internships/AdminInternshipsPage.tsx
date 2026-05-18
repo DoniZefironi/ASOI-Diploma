@@ -5,6 +5,7 @@ import { apiClient } from '@/shared/api/client';
 import { Card } from '@/shared/ui/card';
 import { Button } from '@/shared/ui/button';
 import { Plus, Pencil, Trash2, Building2, MapPin, Clock, Banknote } from 'lucide-react';
+import { Modal, ModalCancelBtn, ModalSubmitBtn } from '@/shared/ui/modal';
 
 const FORMAT_OPTIONS = [
   { value: 'office', label: 'Офис' },
@@ -246,17 +247,16 @@ export default function AdminInternshipsPage() {
         )}
       </div>
 
-      {/* Create form */}
+      {/* Create modal */}
       {showCreate && (
-        <Card className="p-6 mb-6">
-          <h2 className="text-lg font-semibold text-card-foreground mb-4">Новая стажировка</h2>
+        <Modal title="Добавить стажировку" onClose={() => setShowCreate(false)} maxWidth={700}>
           <InternshipForm
             initial={EMPTY_FORM}
             onSave={handleCreate}
             onCancel={() => setShowCreate(false)}
             saving={saving}
           />
-        </Card>
+        </Modal>
       )}
 
       {/* List */}
@@ -271,17 +271,17 @@ export default function AdminInternshipsPage() {
         <div className="space-y-4">
           {internships.map(internship => (
             <Card key={internship.id} className="p-5">
-              {editId === internship.id ? (
-                <div>
-                  <h3 className="text-card-foreground font-semibold mb-4">Редактирование: {internship.title}</h3>
+              {editId === internship.id && (
+                <Modal title={`Редактирование: ${internship.title}`} onClose={() => setEditId(null)} maxWidth={700}>
                   <InternshipForm
                     initial={internshipToForm(internship)}
                     onSave={form => handleUpdate(internship.id, form)}
                     onCancel={() => setEditId(null)}
                     saving={saving}
                   />
-                </div>
-              ) : (
+                </Modal>
+              )}
+              {editId !== internship.id && (
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex-1 min-w-0">
                     <div className="flex flex-wrap items-center gap-2 mb-1">

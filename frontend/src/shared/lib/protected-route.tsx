@@ -91,7 +91,8 @@ export function ProtectedRoute({
     }
 
     // 5. Проверка доступа по типу курса (компилятор — CS, эмулятор — electronics)
-    if (userCourseType) {
+    // Админы и менторы имеют доступ ко всему
+    if (userCourseType && !isAdmin && !isMentor) {
       const COURSE_TYPE_PATHS: Record<string, string[]> = {
         computer_science: ['/complilier', '/compiler'],
         electronics: ['/circuit', '/shematic', '/simulator'],

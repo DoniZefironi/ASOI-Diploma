@@ -105,8 +105,8 @@ const Dialog = ({
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4">
-      <div className="bg-[#1C2128] rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto border border-gray-700">
+    <div style={{ position: 'fixed', inset: 0, zIndex: 100, background: 'rgba(0,0,0,0.72)', backdropFilter: 'blur(2px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16 }} onClick={onClose}>
+      <div style={{ background: 'var(--color-canvas-overlay)', borderRadius: 12, border: '1px solid var(--color-border-default)', boxShadow: '0 16px 48px rgba(0,0,0,0.5)', maxWidth: 680, width: '100%', maxHeight: '90vh', overflowY: 'auto' }} onClick={e => e.stopPropagation()}>
         {children}
       </div>
     </div>
@@ -117,14 +117,20 @@ const DialogContent = ({ children, className = '' }: { children: React.ReactNode
   <div className={`p-6 ${className}`}>{children}</div>
 );
 
-const DialogHeader = ({ children }: { children: React.ReactNode }) => (
-  <div className="mb-6 border-b border-gray-700 pb-4">
+const DialogHeader = ({ children, onClose }: { children: React.ReactNode; onClose?: () => void }) => (
+  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20, paddingBottom: 14, borderBottom: '1px solid var(--color-border-muted)' }}>
     {children}
+    {onClose && (
+      <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-fg-muted)', fontSize: 20, lineHeight: 1, padding: 4 }}
+        onMouseEnter={e => (e.currentTarget.style.color = 'var(--color-fg-default)')}
+        onMouseLeave={e => (e.currentTarget.style.color = 'var(--color-fg-muted)')}
+      >×</button>
+    )}
   </div>
 );
 
 const DialogTitle = ({ children }: { children: React.ReactNode }) => (
-  <h2 className="text-2xl font-bold text-gh-fg">{children}</h2>
+  <h2 style={{ margin: 0, fontSize: 17, fontWeight: 700, color: 'var(--color-fg-default)' }}>{children}</h2>
 );
 
 export default function AdminHackathons() {
@@ -414,7 +420,7 @@ export default function AdminHackathons() {
         setEditingHackathon(null);
       }}>
         <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
+          <DialogHeader onClose={() => { setShowCreateModal(false); setEditingHackathon(null); }}>
             <DialogTitle>
               {editingHackathon ? 'Редактировать хакатон' : 'Создать хакатон'}
             </DialogTitle>
@@ -488,7 +494,7 @@ function HackathonDetailsModal({ hackathon, onClose }: HackathonDetailsModalProp
   return (
     <Dialog open={true} onClose={onClose}>
       <DialogContent className="max-w-4xl">
-        <DialogHeader>
+        <DialogHeader onClose={onClose}>
           <DialogTitle>{hackathon.title}: Команды и результаты</DialogTitle>
         </DialogHeader>
         <div className="max-h-[60vh] overflow-y-auto">

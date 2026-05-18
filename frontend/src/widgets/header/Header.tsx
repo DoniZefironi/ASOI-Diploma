@@ -3,9 +3,9 @@
 import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import {
-  Sun, Moon, Search, Bell, ChevronDown,
+  Sun, Moon, Bell, ChevronDown,
   BookOpen, Briefcase, Trophy, Terminal, Cpu,
-  Library, Compass, MessageSquare,
+  Library, Compass, MessageSquare, Radio,
 } from 'lucide-react';
 import { useAuth, hasStudentRole, hasMentorRole, hasAdminRole, getCourseTypeFromRole } from '@/shared/lib/auth-context';
 import { NotificationBell } from '@/features/notifications/NotificationBell';
@@ -13,7 +13,6 @@ import { useTheme } from '@/shared/lib/theme';
 
 const SunIcon    = () => <Sun    size={16} />;
 const MoonIcon   = () => <Moon   size={16} />;
-const SearchIcon = () => <Search size={16} />;
 const BellIcon   = () => <Bell   size={16} />;
 const ChevronDownIcon  = () => <ChevronDown  size={16} />;
 const BookIcon         = () => <BookOpen     size={16} />;
@@ -24,13 +23,13 @@ const CircuitIcon      = () => <Cpu          size={16} />;
 const LibraryNavIcon   = () => <Library      size={16} />;
 const CompassIcon      = () => <Compass      size={16} />;
 const ForumIcon        = () => <MessageSquare size={16} />;
+const IoTIcon          = () => <Radio        size={16} />;
 
 export const Header = () => {
   const { user, logout } = useAuth();
   const { theme, toggle: toggleTheme } = useTheme();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -85,6 +84,9 @@ export const Header = () => {
     // Эмулятор схем — только electronics или admin
     ...(isAdmin || (!userCourseType || userCourseType === 'electronics') && (isStudent || isMentor)
       ? [{ href: '/circuit', label: 'Эмулятор', icon: <CircuitIcon /> }] : []),
+    // IoT-симулятор — только iot или admin
+    ...(isAdmin || (!userCourseType || userCourseType === 'iot') && (isStudent || isMentor)
+      ? [{ href: '/shematic', label: 'IoT', icon: <IoTIcon /> }] : []),
   ] : [];
 
   return (
@@ -112,29 +114,6 @@ export const Header = () => {
               style={{ borderRadius: 8, objectFit: 'contain' }}
             />
           </Link>
-
-          {/* Search */}
-          <div className="hidden md:flex flex-1 max-w-xs relative">
-            <div
-              className="flex items-center w-full px-3 gap-2 h-8 rounded-md text-sm"
-              style={{
-                background: 'var(--color-canvas-inset)',
-                border: '1px solid var(--color-border-default)',
-                color: 'var(--color-fg-muted)',
-                cursor: 'text',
-              }}
-            >
-              <SearchIcon />
-              <input
-                type="text"
-                placeholder="Поиск курсов, заданий..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="bg-transparent border-none outline-none w-full text-sm"
-                style={{ color: 'var(--color-fg-default)', caretColor: 'var(--color-accent-fg)' }}
-              />
-            </div>
-          </div>
 
           {/* Desktop nav */}
           <nav className="hidden lg:flex items-center gap-1">

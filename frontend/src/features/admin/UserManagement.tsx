@@ -93,7 +93,8 @@ function RoleDialog({ user, isOpen, onClose, onSave, isUpdating }: any) {
                 display: 'flex', alignItems: 'center', gap: 10,
                 padding: '8px 10px', borderRadius: 6,
                 border: '1px solid var(--color-border-default)', cursor: 'pointer',
-                background: selectedRoles.includes(role.value) ? '#21262d' : 'transparent',
+                background: selectedRoles.includes(role.value) ? 'var(--color-accent-subtle)' : 'transparent',
+                borderColor: selectedRoles.includes(role.value) ? 'var(--color-accent-muted)' : 'var(--color-border-default)',
                 transition: 'background 80ms',
               }}
             >

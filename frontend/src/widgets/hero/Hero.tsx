@@ -4,7 +4,7 @@ import { Button } from '@/shared/ui/button';
 
 export const Hero = () => {
   return (
-    <section className="min-h-screen flex items-center justify-center relative">
+    <section className="w-full flex items-center justify-center">
       <div className="relative z-10 text-center text-white px-4 max-w-4xl mx-auto">
         <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight animate-fade-in-up">
           Раскройте свой потенциал с <span className="text-blue-400">EduTech</span>

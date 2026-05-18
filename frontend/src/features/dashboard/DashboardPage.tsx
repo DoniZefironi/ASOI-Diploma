@@ -326,7 +326,8 @@ export const DashboardPage = () => {
             </div>
           </Card>
 
-          {/* Rating card */}
+          {/* Right column: rating + quick links */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
           <Card noPadding>
             <div style={{
               display: 'flex', alignItems: 'center', justifyContent: 'space-between',
@@ -414,16 +415,17 @@ export const DashboardPage = () => {
             </div>
           </Card>
 
-          {/* ── Quick links внутри правой колонки ── */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-            <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--color-fg-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 4 }}>
-              Быстрый доступ
+            {/* Quick links */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8, padding: '12px 16px' }}>
+              <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--color-fg-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 2 }}>
+                Быстрый доступ
+              </div>
+              <QuickLink href="/electives"    title="Факультативы"  subtitle="Дополнительные занятия"   icon={<GraduationCapIcon />} color="career" />
+              <QuickLink href="/internships"  title="Стажировки"    subtitle="Вакансии и позиции"        icon={<BriefcaseIconLg />}  color="accent" />
+              <QuickLink href="/hackathons"   title="Хакатоны"      subtitle="Соревнования и события"    icon={<TrophyIcon />}       color="attention" />
+              <QuickLink href="/peer-review"  title="Peer Review"   subtitle="Задания на проверку"       icon={<CheckCircleIcon />}  color="success" />
             </div>
-            <QuickLink href="/electives"    title="Факультативы"  subtitle="Дополнительные занятия"   icon={<GraduationCapIcon />} color="career" />
-            <QuickLink href="/internships"  title="Стажировки"    subtitle="Вакансии и позиции"        icon={<BriefcaseIconLg />}  color="accent" />
-            <QuickLink href="/hackathons"   title="Хакатоны"      subtitle="Соревнования и события"    icon={<TrophyIcon />}       color="attention" />
-            <QuickLink href="/peer-review"  title="Peer Review"   subtitle="Задания на проверку"       icon={<CheckCircleIcon />}  color="success" />
-          </div>
+          </div>{/* end right column */}
 
         </div>
       </div>

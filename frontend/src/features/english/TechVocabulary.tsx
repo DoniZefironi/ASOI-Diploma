@@ -154,17 +154,17 @@ export function TechVocabulary() {
   const userRoles: string[] = user?.roles || [];
   const isManager = canManageVocab(userRoles);
 
-  const [terms, setTerms]           = useState<VocabTerm[]>([]);
-  const [loading, setLoading]       = useState(true);
-  const [search, setSearch]         = useState('');
-  const [category, setCategory]     = useState('');
-  const [level, setLevel]           = useState('');
-  const [quizMode, setQuizMode]     = useState(false);
-  const [quizIndex, setQuizIndex]   = useState(0);
-  const [showAnswer, setShowAnswer] = useState(false);
-  const [showForm, setShowForm]     = useState(false);
-  const [editTerm, setEditTerm]     = useState<VocabTerm | null>(null);
-  const [saving, setSaving]         = useState(false);
+  const [terms, setTerms]               = useState<VocabTerm[]>([]);
+  const [loading, setLoading]           = useState(true);
+  const [search, setSearch]             = useState('');
+  const [category, setCategory]         = useState('');
+  const [level, setLevel]               = useState('');
+  const [quizMode, setQuizMode]         = useState(false);
+  const [quizIndex, setQuizIndex]       = useState(0);
+  const [showAnswer, setShowAnswer]     = useState(false);
+  const [showForm, setShowForm]         = useState(false);
+  const [editTerm, setEditTerm]         = useState<VocabTerm | null>(null);
+  const [saving, setSaving]             = useState(false);
 
   const fetchTerms = useCallback(async () => {
     setLoading(true);
@@ -226,6 +226,11 @@ export function TechVocabulary() {
     setQuizMode(false);
   };
 
+  const closeAddModal = () => {
+    setShowForm(false);
+    setEditTerm(null);
+  };
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -239,13 +244,13 @@ export function TechVocabulary() {
             {' · '}нажми на карточку для определения
           </p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 flex-wrap">
           {isManager && (
             <button
-              onClick={() => { setEditTerm(null); setShowForm(s => !s); setQuizMode(false); }}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${showForm && !editTerm ? 'bg-green-600 text-white' : 'bg-gray-700 hover:bg-gray-600 text-gray-200'}`}
+              onClick={() => { setEditTerm(null); setShowForm(true); setQuizMode(false); }}
+              className="px-4 py-2 rounded-lg text-sm font-medium bg-green-600 hover:bg-green-700 text-white transition-colors"
             >
-              ＋ Добавить
+              ＋ Добавить термин
             </button>
           )}
           <button
@@ -257,14 +262,44 @@ export function TechVocabulary() {
         </div>
       </div>
 
-      {/* Add/Edit form */}
-      {showForm && (
-        <TermForm
-          initial={editTerm || undefined}
-          onSave={handleSave}
-          onCancel={() => { setShowForm(false); setEditTerm(null); }}
-          saving={saving}
-        />
+      {/* Add term modal */}
+      {showForm && !editTerm && (
+        <div style={{ position: 'fixed', inset: 0, zIndex: 100, background: 'rgba(0,0,0,0.72)', backdropFilter: 'blur(2px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16 }}>
+          <div style={{ background: 'var(--color-canvas-overlay)', border: '1px solid var(--color-border-default)', borderRadius: 12, boxShadow: '0 16px 48px rgba(0,0,0,0.5)', maxWidth: 640, width: '100%', maxHeight: '90vh', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+            <div style={{ padding: '14px 20px', borderBottom: '1px solid var(--color-border-muted)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0 }}>
+              <h2 style={{ margin: 0, fontSize: 16, fontWeight: 700, color: 'var(--color-fg-default)' }}>Добавить термин</h2>
+              <button onClick={closeAddModal} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-fg-muted)', fontSize: 18, lineHeight: 1 }}>×</button>
+            </div>
+            <div style={{ flex: 1, overflowY: 'auto', padding: '14px 20px' }}>
+              <TermForm
+                initial={{}}
+                onSave={async (data) => { await handleSave(data); closeAddModal(); }}
+                onCancel={closeAddModal}
+                saving={saving}
+              />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Edit term modal */}
+      {showForm && editTerm && (
+        <div style={{ position: 'fixed', inset: 0, zIndex: 100, background: 'rgba(0,0,0,0.72)', backdropFilter: 'blur(2px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16 }}>
+          <div style={{ background: 'var(--color-canvas-overlay)', border: '1px solid var(--color-border-default)', borderRadius: 12, boxShadow: '0 16px 48px rgba(0,0,0,0.5)', maxWidth: 640, width: '100%', maxHeight: '90vh', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+            <div style={{ padding: '14px 20px', borderBottom: '1px solid var(--color-border-muted)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0 }}>
+              <h2 style={{ margin: 0, fontSize: 16, fontWeight: 700, color: 'var(--color-fg-default)' }}>Редактировать: {editTerm.term}</h2>
+              <button onClick={closeAddModal} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-fg-muted)', fontSize: 18, lineHeight: 1 }}>×</button>
+            </div>
+            <div style={{ flex: 1, overflowY: 'auto', padding: '14px 20px' }}>
+              <TermForm
+                initial={editTerm}
+                onSave={async (data) => { await handleSave(data); closeAddModal(); }}
+                onCancel={closeAddModal}
+                saving={saving}
+              />
+            </div>
+          </div>
+        </div>
       )}
 
       {/* Filters */}
