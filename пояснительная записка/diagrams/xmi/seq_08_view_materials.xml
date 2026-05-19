@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xmi:XMI xmi:version="2.1" xmlns:xmi="http://schema.omg.org/spec/XMI/2.1"
+         xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML">
+  <uml:Model xmi:id="model_08" name="Просмотр библиотеки материалов">
+    <packagedElement xmi:type="uml:Interaction" xmi:id="int_08" name="Просмотр библиотеки материалов">
+
+      <lifeline xmi:id="ll_08_1" name="Студент"/>
+      <lifeline xmi:id="ll_08_2" name="LibraryPage (React)"/>
+      <lifeline xmi:id="ll_08_3" name="API Client (axios)"/>
+      <lifeline xmi:id="ll_08_4" name="MaterialsController (NestJS)"/>
+      <lifeline xmi:id="ll_08_5" name="CourseMaterial (БД)"/>
+
+      <message xmi:id="m_08_01" name="открыть /library" messageSort="synchCall"
+               sendEvent="occ_08_01s" receiveEvent="occ_08_01r"/>
+      <message xmi:id="m_08_02" name="GET /materials/public?page=1&amp;limit=18" messageSort="synchCall"
+               sendEvent="occ_08_02s" receiveEvent="occ_08_02r"/>
+      <message xmi:id="m_08_03" name="getPublicMaterials(query)" messageSort="synchCall"
+               sendEvent="occ_08_03s" receiveEvent="occ_08_03r"/>
+      <message xmi:id="m_08_04" name="findAll({ isPublic: true, pagination })" messageSort="synchCall"
+               sendEvent="occ_08_04s" receiveEvent="occ_08_04r"/>
+      <message xmi:id="m_08_05" name="CourseMaterial[]" messageSort="reply"
+               sendEvent="occ_08_05s" receiveEvent="occ_08_05r"/>
+      <message xmi:id="m_08_06" name="200 { materials[], meta }" messageSort="reply"
+               sendEvent="occ_08_06s" receiveEvent="occ_08_06r"/>
+      <message xmi:id="m_08_07" name="{ materials[], meta }" messageSort="reply"
+               sendEvent="occ_08_07s" receiveEvent="occ_08_07r"/>
+      <message xmi:id="m_08_08" name="отрисовать книжную полку" messageSort="reply"
+               sendEvent="occ_08_08s" receiveEvent="occ_08_08r"/>
+      <message xmi:id="m_08_09" name="ввести поисковый запрос" messageSort="synchCall"
+               sendEvent="occ_08_09s" receiveEvent="occ_08_09r"/>
+      <message xmi:id="m_08_10" name="GET /materials/public?search=text&amp;page=1" messageSort="synchCall"
+               sendEvent="occ_08_10s" receiveEvent="occ_08_10r"/>
+      <message xmi:id="m_08_11" name="getPublicMaterials({ search })" messageSort="synchCall"
+               sendEvent="occ_08_11s" receiveEvent="occ_08_11r"/>
+      <message xmi:id="m_08_12" name="findAll({ where: LIKE search })" messageSort="synchCall"
+               sendEvent="occ_08_12s" receiveEvent="occ_08_12r"/>
+      <message xmi:id="m_08_13" name="CourseMaterial[]" messageSort="reply"
+               sendEvent="occ_08_13s" receiveEvent="occ_08_13r"/>
+      <message xmi:id="m_08_14" name="200 materials[]" messageSort="reply"
+               sendEvent="occ_08_14s" receiveEvent="occ_08_14r"/>
+      <message xmi:id="m_08_15" name="materials[]" messageSort="reply"
+               sendEvent="occ_08_15s" receiveEvent="occ_08_15r"/>
+      <message xmi:id="m_08_16" name="обновить список материалов" messageSort="reply"
+               sendEvent="occ_08_16s" receiveEvent="occ_08_16r"/>
+      <message xmi:id="m_08_17" name="выбрать фильтр по типу материала" messageSort="synchCall"
+               sendEvent="occ_08_17s" receiveEvent="occ_08_17r"/>
+      <message xmi:id="m_08_18" name="выбрать фильтр по курсу" messageSort="synchCall"
+               sendEvent="occ_08_18s" receiveEvent="occ_08_18r"/>
+      <message xmi:id="m_08_19" name="GET /materials/public?type=type&amp;courseId=id" messageSort="synchCall"
+               sendEvent="occ_08_19s" receiveEvent="occ_08_19r"/>
+      <message xmi:id="m_08_20" name="getPublicMaterials({ type, courseId })" messageSort="synchCall"
+               sendEvent="occ_08_20s" receiveEvent="occ_08_20r"/>
+      <message xmi:id="m_08_21" name="findAll({ type, courseId })" messageSort="synchCall"
+               sendEvent="occ_08_21s" receiveEvent="occ_08_21r"/>
+      <message xmi:id="m_08_22" name="CourseMaterial[]" messageSort="reply"
+               sendEvent="occ_08_22s" receiveEvent="occ_08_22r"/>
+      <message xmi:id="m_08_23" name="200 materials[]" messageSort="reply"
+               sendEvent="occ_08_23s" receiveEvent="occ_08_23r"/>
+      <message xmi:id="m_08_24" name="materials[]" messageSort="reply"
+               sendEvent="occ_08_24s" receiveEvent="occ_08_24r"/>
+      <message xmi:id="m_08_25" name="отрисовать отфильтрованный список" messageSort="reply"
+               sendEvent="occ_08_25s" receiveEvent="occ_08_25r"/>
+      <message xmi:id="m_08_26" name="нажать на карточку материала" messageSort="synchCall"
+               sendEvent="occ_08_26s" receiveEvent="occ_08_26r"/>
+      <message xmi:id="m_08_27" name="открыть детали материала (title, description, type, fileUrl)" messageSort="reply"
+               sendEvent="occ_08_27s" receiveEvent="occ_08_27r"/>
+      <message xmi:id="m_08_28" name="нажать «Скачать / Открыть»" messageSort="synchCall"
+               sendEvent="occ_08_28s" receiveEvent="occ_08_28r"/>
+      <message xmi:id="m_08_29" name="GET /materials/:id/download" messageSort="synchCall"
+               sendEvent="occ_08_29s" receiveEvent="occ_08_29r"/>
+      <message xmi:id="m_08_30" name="downloadFile(materialId)" messageSort="synchCall"
+               sendEvent="occ_08_30s" receiveEvent="occ_08_30r"/>
+      <message xmi:id="m_08_31" name="fileStream" messageSort="reply"
+               sendEvent="occ_08_31s" receiveEvent="occ_08_31r"/>
+      <message xmi:id="m_08_32" name="файл" messageSort="reply"
+               sendEvent="occ_08_32s" receiveEvent="occ_08_32r"/>
+      <message xmi:id="m_08_33" name="инициировать загрузку файла" messageSort="reply"
+               sendEvent="occ_08_33s" receiveEvent="occ_08_33r"/>
+
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_08_01s" covered="ll_08_1" message="m_08_01"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_08_01r" covered="ll_08_2" message="m_08_01"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_08_02s" covered="ll_08_2" message="m_08_02"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_08_02r" covered="ll_08_3" message="m_08_02"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_08_03s" covered="ll_08_3" message="m_08_03"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_08_03r" covered="ll_08_4" message="m_08_03"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_08_04s" covered="ll_08_4" message="m_08_04"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_08_04r" covered="ll_08_5" message="m_08_04"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_08_05s" covered="ll_08_5" message="m_08_05"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_08_05r" covered="ll_08_4" message="m_08_05"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_08_06s" covered="ll_08_4" message="m_08_06"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_08_06r" covered="ll_08_3" message="m_08_06"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_08_07s" covered="ll_08_3" message="m_08_07"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_08_07r" covered="ll_08_2" message="m_08_07"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_08_08s" covered="ll_08_2" message="m_08_08"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_08_08r" covered="ll_08_1" message="m_08_08"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_08_09s" covered="ll_08_1" message="m_08_09"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_08_09r" covered="ll_08_2" message="m_08_09"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_08_10s" covered="ll_08_2" message="m_08_10"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_08_10r" covered="ll_08_3" message="m_08_10"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_08_11s" covered="ll_08_3" message="m_08_11"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_08_11r" covered="ll_08_4" message="m_08_11"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_08_12s" covered="ll_08_4" message="m_08_12"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_08_12r" covered="ll_08_5" message="m_08_12"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_08_13s" covered="ll_08_5" message="m_08_13"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_08_13r" covered="ll_08_4" message="m_08_13"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_08_14s" covered="ll_08_4" message="m_08_14"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_08_14r" covered="ll_08_3" message="m_08_14"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_08_15s" covered="ll_08_3" message="m_08_15"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_08_15r" covered="ll_08_2" message="m_08_15"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_08_16s" covered="ll_08_2" message="m_08_16"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_08_16r" covered="ll_08_1" message="m_08_16"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_08_17s" covered="ll_08_1" message="m_08_17"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_08_17r" covered="ll_08_2" message="m_08_17"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_08_18s" covered="ll_08_1" message="m_08_18"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_08_18r" covered="ll_08_2" message="m_08_18"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_08_19s" covered="ll_08_2" message="m_08_19"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_08_19r" covered="ll_08_3" message="m_08_19"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_08_20s" covered="ll_08_3" message="m_08_20"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_08_20r" covered="ll_08_4" message="m_08_20"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_08_21s" covered="ll_08_4" message="m_08_21"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_08_21r" covered="ll_08_5" message="m_08_21"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_08_22s" covered="ll_08_5" message="m_08_22"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_08_22r" covered="ll_08_4" message="m_08_22"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_08_23s" covered="ll_08_4" message="m_08_23"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_08_23r" covered="ll_08_3" message="m_08_23"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_08_24s" covered="ll_08_3" message="m_08_24"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_08_24r" covered="ll_08_2" message="m_08_24"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_08_25s" covered="ll_08_2" message="m_08_25"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_08_25r" covered="ll_08_1" message="m_08_25"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_08_26s" covered="ll_08_1" message="m_08_26"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_08_26r" covered="ll_08_2" message="m_08_26"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_08_27s" covered="ll_08_2" message="m_08_27"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_08_27r" covered="ll_08_1" message="m_08_27"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_08_28s" covered="ll_08_1" message="m_08_28"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_08_28r" covered="ll_08_2" message="m_08_28"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_08_29s" covered="ll_08_2" message="m_08_29"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_08_29r" covered="ll_08_3" message="m_08_29"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_08_30s" covered="ll_08_3" message="m_08_30"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_08_30r" covered="ll_08_4" message="m_08_30"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_08_31s" covered="ll_08_4" message="m_08_31"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_08_31r" covered="ll_08_3" message="m_08_31"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_08_32s" covered="ll_08_3" message="m_08_32"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_08_32r" covered="ll_08_2" message="m_08_32"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_08_33s" covered="ll_08_2" message="m_08_33"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_08_33r" covered="ll_08_1" message="m_08_33"/>
+
+    </packagedElement>
+  </uml:Model>
+</xmi:XMI>

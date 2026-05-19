@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xmi:XMI xmi:version="2.1" xmlns:xmi="http://schema.omg.org/spec/XMI/2.1"
+         xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML">
+  <uml:Model xmi:id="model_seq03" name="Регистрация нового пользователя">
+    <packagedElement xmi:type="uml:Interaction" xmi:id="ia_reg" name="Регистрация нового пользователя">
+
+      <lifeline xmi:id="ll_user"   name="Пользователь"           represents="ll_user"/>
+      <lifeline xmi:id="ll_client" name="Браузер (Next.js)"       represents="ll_client"/>
+      <lifeline xmi:id="ll_ac"     name="AuthController (NestJS)" represents="ll_ac"/>
+      <lifeline xmi:id="ll_as"     name="AuthService"             represents="ll_as"/>
+      <lifeline xmi:id="ll_db"     name="PostgreSQL"              represents="ll_db"/>
+
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="m1s" covered="ll_user"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="m1r" covered="ll_client"/>
+      <message xmi:id="msg1" name="Заполнить форму, пройти капчу" sendEvent="m1s" receiveEvent="m1r" messageSort="synchCall"/>
+
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="m2s" covered="ll_client"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="m2r" covered="ll_ac"/>
+      <message xmi:id="msg2" name="POST /auth/register {firstName, lastName, email, password}" sendEvent="m2s" receiveEvent="m2r" messageSort="synchCall"/>
+
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="m3s" covered="ll_ac"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="m3r" covered="ll_as"/>
+      <message xmi:id="msg3" name="register(dto)" sendEvent="m3s" receiveEvent="m3r" messageSort="synchCall"/>
+
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="m4s" covered="ll_as"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="m4r" covered="ll_db"/>
+      <message xmi:id="msg4" name="SELECT user WHERE email = ?" sendEvent="m4s" receiveEvent="m4r" messageSort="synchCall"/>
+
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="m5s" covered="ll_db"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="m5r" covered="ll_as"/>
+      <message xmi:id="msg5" name="User | null" sendEvent="m5s" receiveEvent="m5r" messageSort="reply"/>
+
+      <fragment xmi:type="uml:CombinedFragment" xmi:id="cf_reg" interactionOperator="alt">
+        <operand xmi:id="op_conflict">
+          <guard xmi:id="g_conflict"><specification value="Email уже занят"/></guard>
+          <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="m6s" covered="ll_ac"/>
+          <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="m6r" covered="ll_client"/>
+          <message xmi:id="msg6" name="409 Conflict" sendEvent="m6s" receiveEvent="m6r" messageSort="reply"/>
+        </operand>
+        <operand xmi:id="op_ok">
+          <guard xmi:id="g_ok"><specification value="Email свободен"/></guard>
+          <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="m7s" covered="ll_as"/>
+          <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="m7r" covered="ll_db"/>
+          <message xmi:id="msg7" name="INSERT INTO users; INSERT INTO user_roles (role=student)" sendEvent="m7s" receiveEvent="m7r" messageSort="synchCall"/>
+
+          <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="m8s" covered="ll_ac"/>
+          <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="m8r" covered="ll_client"/>
+          <message xmi:id="msg8" name="201 Created {access_token}" sendEvent="m8s" receiveEvent="m8r" messageSort="reply"/>
+
+          <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="m9s" covered="ll_client"/>
+          <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="m9r" covered="ll_user"/>
+          <message xmi:id="msg9" name="Редирект на /tests" sendEvent="m9s" receiveEvent="m9r" messageSort="reply"/>
+        </operand>
+      </fragment>
+    </packagedElement>
+  </uml:Model>
+</xmi:XMI>

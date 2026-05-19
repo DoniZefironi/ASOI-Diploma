@@ -1,0 +1,52 @@
+@startuml seq_04_holland_test
+title Диаграмма последовательности: Прохождение теста Голланда (RIASEC)
+
+actor Студент as S
+participant "CareerPage\n(React)" as CP
+participant "CareerTestPage\n(React)" as TP
+participant "API Client\n(axios)" as API
+participant "ProfOrientationController\n(NestJS)" as PC
+participant "ProfOrientationService\n(NestJS)" as PS
+database "career_tests (БД)" as TestDB
+database "professional_orientations (БД)" as OrDB
+
+S -> CP: открыть /career
+CP -> API: GET /professional-orientation/tests
+API -> PC: getTests()
+PC -> TestDB: findAll({ where: { isActive: true } })
+TestDB --> PC: CareerTest[]
+PC --> API: 200 CareerTest[]
+API --> CP: tests[]
+CP -> S: отобразить карточки тестов (Голланд, Климов)
+
+S -> CP: нажать «Пройти тест» → Голланд
+CP -> TP: router.push('/career/test/holland')
+
+TP -> API: GET /professional-orientation/tests/holland/questions
+API -> PC: getQuestions('holland')
+PC -> TestDB: findOne({ where: { type: 'holland' } })
+TestDB --> PC: CareerTest { questions[30], answerFormat: 'yes_no' }
+PC --> API: 200 TestConfig
+API --> TP: TestConfig
+TP -> S: отобразить вопрос 1 из 30
+
+loop 30 вопросов (Да / Нет)
+  S -> TP: выбрать ответ
+  TP -> TP: setAnswers(prev => ({ ...prev, [id]: value }))
+  TP -> S: следующий вопрос
+end
+
+S -> TP: нажать «Завершить тест»
+TP -> API: POST /professional-orientation/tests/submit\n{ testType: 'holland', answers: [...] }\nAuthorization: Bearer <token>
+API -> PC: submitTest(userId, dto)
+PC -> PS: submitTest(userId, dto)
+PS -> PS: подсчёт баллов по 6 категориям RIASEC\n(R, I, A, S, E, C)
+PS -> PS: маппинг RIASEC → вектор трейтов\n(R→technical, I→analytical, A→creative,\nS→social, E→managerial, C→detail)
+PS -> OrDB: save({ userId, testResult: { riasec, traits } })
+OrDB --> PS: savedOrientation
+PS --> PC: OrientationResult
+PC --> API: 200 OK { result }
+API --> TP: result
+TP -> S: редирект на /career/test/klimov
+
+@enduml

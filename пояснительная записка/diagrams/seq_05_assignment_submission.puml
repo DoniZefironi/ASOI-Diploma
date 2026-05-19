@@ -1,0 +1,36 @@
+@startuml
+title Диаграмма последовательности: Сдача задания студентом
+
+actor Студент as S
+participant "AssignmentPage\n(React)" as AP
+participant "API Client\n(axios)" as API
+participant "AssignmentsController\n(NestJS)" as AC
+database "Assignment (БД)" as ADB
+database "AssignmentSubmission (БД)" as SubDB
+
+S -> AP: открыть /courses/:courseId/assignments/:assignId
+AP -> API: GET /assignments/:id\nAuthorization: Bearer <token>
+API -> AC: getAssignment(id)
+AC -> ADB: findOne(id)
+ADB --> AC: Assignment { title, description, type, deadline }
+AC --> API: 200 Assignment
+API --> AP: assignment
+AP -> S: отрисовать условие задания
+
+S -> AP: написать ответ в текстовое поле
+S -> AP: нажать «Отправить»
+AP -> AP: validateContent()
+
+alt Ответ пустой
+  AP -> S: «Поле не может быть пустым»
+else Ответ заполнен
+  AP -> API: POST /assignments/:id/submit\n{ content }\nAuthorization: Bearer <token>
+  API -> AC: submit(assignmentId, userId, content)
+  AC -> SubDB: save({ assignmentId, userId, content,\n  status: 'pending', submittedAt })
+  SubDB --> AC: AssignmentSubmission { id }
+  AC --> API: 201 { submissionId }
+  API --> AP: успех
+  AP -> S: «Задание отправлено на проверку»
+end
+
+@enduml

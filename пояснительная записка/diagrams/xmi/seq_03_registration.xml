@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xmi:XMI xmi:version="2.1" xmlns:xmi="http://schema.omg.org/spec/XMI/2.1"
+         xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML">
+  <uml:Model xmi:id="model_03" name="Регистрация">
+    <packagedElement xmi:type="uml:Interaction" xmi:id="int_03" name="Регистрация">
+
+      <lifeline xmi:id="ll_03_1" name="Пользователь"/>
+      <lifeline xmi:id="ll_03_2" name="AuthPage (React)"/>
+      <lifeline xmi:id="ll_03_3" name="API Client (axios)"/>
+      <lifeline xmi:id="ll_03_4" name="AuthController (NestJS)"/>
+      <lifeline xmi:id="ll_03_5" name="User (БД)"/>
+
+      <message xmi:id="m_03_01" name="открыть /auth → переключить на «Создать аккаунт»" messageSort="synchCall"
+               sendEvent="occ_03_01s" receiveEvent="occ_03_01r"/>
+      <message xmi:id="m_03_02" name="render режим регистрации" messageSort="synchCall"
+               sendEvent="occ_03_02s" receiveEvent="occ_03_02r"/>
+      <message xmi:id="m_03_03" name="ввести имя и фамилию" messageSort="synchCall"
+               sendEvent="occ_03_03s" receiveEvent="occ_03_03r"/>
+      <message xmi:id="m_03_04" name="ввести email" messageSort="synchCall"
+               sendEvent="occ_03_04s" receiveEvent="occ_03_04r"/>
+      <message xmi:id="m_03_05" name="ввести пароль" messageSort="synchCall"
+               sendEvent="occ_03_05s" receiveEvent="occ_03_05r"/>
+      <message xmi:id="m_03_06" name="установить чекбокс согласия с условиями" messageSort="synchCall"
+               sendEvent="occ_03_06s" receiveEvent="occ_03_06r"/>
+      <message xmi:id="m_03_07" name="решить математическую капчу" messageSort="synchCall"
+               sendEvent="occ_03_07s" receiveEvent="occ_03_07r"/>
+      <message xmi:id="m_03_08" name="нажать «Создать аккаунт»" messageSort="synchCall"
+               sendEvent="occ_03_08s" receiveEvent="occ_03_08r"/>
+      <message xmi:id="m_03_09" name="validateForm()" messageSort="synchCall"
+               sendEvent="occ_03_09s" receiveEvent="occ_03_09r"/>
+      <message xmi:id="m_03_10" name="отобразить ошибки валидации" messageSort="reply"
+               sendEvent="occ_03_10s" receiveEvent="occ_03_10r"/>
+      <message xmi:id="m_03_11" name="проверить ответ капчи локально" messageSort="synchCall"
+               sendEvent="occ_03_11s" receiveEvent="occ_03_11r"/>
+      <message xmi:id="m_03_12" name="«Неверный ответ. Попробуйте ещё раз»" messageSort="reply"
+               sendEvent="occ_03_12s" receiveEvent="occ_03_12r"/>
+      <message xmi:id="m_03_13" name="POST /auth/register { email, password, firstName, lastName }" messageSort="synchCall"
+               sendEvent="occ_03_13s" receiveEvent="occ_03_13r"/>
+      <message xmi:id="m_03_14" name="register(registerDto)" messageSort="synchCall"
+               sendEvent="occ_03_14s" receiveEvent="occ_03_14r"/>
+      <message xmi:id="m_03_15" name="findOne({ where: { email } })" messageSort="synchCall"
+               sendEvent="occ_03_15s" receiveEvent="occ_03_15r"/>
+      <message xmi:id="m_03_16" name="User (существующий)" messageSort="reply"
+               sendEvent="occ_03_16s" receiveEvent="occ_03_16r"/>
+      <message xmi:id="m_03_17" name="409 Conflict" messageSort="reply"
+               sendEvent="occ_03_17s" receiveEvent="occ_03_17r"/>
+      <message xmi:id="m_03_18" name="ошибка 409" messageSort="reply"
+               sendEvent="occ_03_18s" receiveEvent="occ_03_18r"/>
+      <message xmi:id="m_03_19" name="alert «Аккаунт с таким email уже существует»" messageSort="reply"
+               sendEvent="occ_03_19s" receiveEvent="occ_03_19r"/>
+      <message xmi:id="m_03_20" name="null" messageSort="reply"
+               sendEvent="occ_03_20s" receiveEvent="occ_03_20r"/>
+      <message xmi:id="m_03_21" name="bcrypt.hash(password, 12)" messageSort="synchCall"
+               sendEvent="occ_03_21s" receiveEvent="occ_03_21r"/>
+      <message xmi:id="m_03_22" name="save({ firstName, lastName, email, passwordHash, role: REGISTERED_USER })" messageSort="synchCall"
+               sendEvent="occ_03_22s" receiveEvent="occ_03_22r"/>
+      <message xmi:id="m_03_23" name="User { id }" messageSort="reply"
+               sendEvent="occ_03_23s" receiveEvent="occ_03_23r"/>
+      <message xmi:id="m_03_24" name="201 { id, email }" messageSort="reply"
+               sendEvent="occ_03_24s" receiveEvent="occ_03_24r"/>
+      <message xmi:id="m_03_25" name="успех" messageSort="reply"
+               sendEvent="occ_03_25s" receiveEvent="occ_03_25r"/>
+      <message xmi:id="m_03_26" name="alert «Аккаунт успешно создан! Войдите.»" messageSort="reply"
+               sendEvent="occ_03_26s" receiveEvent="occ_03_26r"/>
+      <message xmi:id="m_03_27" name="переключить на режим входа" messageSort="synchCall"
+               sendEvent="occ_03_27s" receiveEvent="occ_03_27r"/>
+
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_03_01s" covered="ll_03_1" message="m_03_01"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_03_01r" covered="ll_03_2" message="m_03_01"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_03_02s" covered="ll_03_2" message="m_03_02"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_03_02r" covered="ll_03_2" message="m_03_02"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_03_03s" covered="ll_03_1" message="m_03_03"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_03_03r" covered="ll_03_2" message="m_03_03"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_03_04s" covered="ll_03_1" message="m_03_04"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_03_04r" covered="ll_03_2" message="m_03_04"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_03_05s" covered="ll_03_1" message="m_03_05"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_03_05r" covered="ll_03_2" message="m_03_05"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_03_06s" covered="ll_03_1" message="m_03_06"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_03_06r" covered="ll_03_2" message="m_03_06"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_03_07s" covered="ll_03_1" message="m_03_07"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_03_07r" covered="ll_03_2" message="m_03_07"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_03_08s" covered="ll_03_1" message="m_03_08"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_03_08r" covered="ll_03_2" message="m_03_08"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_03_09s" covered="ll_03_2" message="m_03_09"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_03_09r" covered="ll_03_2" message="m_03_09"/>
+
+      <fragment xmi:type="uml:CombinedFragment" xmi:id="cf_03_1" interactionOperator="alt">
+        <covered>ll_03_1</covered><covered>ll_03_2</covered><covered>ll_03_3</covered>
+        <covered>ll_03_4</covered><covered>ll_03_5</covered>
+        <operand xmi:type="uml:InteractionOperand" xmi:id="op_03_1a">
+          <guard xmi:id="g_03_1a"><specification xmi:type="uml:LiteralString" xmi:id="gs_03_1a" value="Поля не заполнены / email некорректен / чекбокс не установлен"/></guard>
+          <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_03_10s" covered="ll_03_2" message="m_03_10"/>
+          <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_03_10r" covered="ll_03_1" message="m_03_10"/>
+        </operand>
+        <operand xmi:type="uml:InteractionOperand" xmi:id="op_03_1b">
+          <guard xmi:id="g_03_1b"><specification xmi:type="uml:LiteralString" xmi:id="gs_03_1b" value="Форма корректна"/></guard>
+          <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_03_11s" covered="ll_03_2" message="m_03_11"/>
+          <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_03_11r" covered="ll_03_2" message="m_03_11"/>
+          <fragment xmi:type="uml:CombinedFragment" xmi:id="cf_03_2" interactionOperator="alt">
+            <covered>ll_03_1</covered><covered>ll_03_2</covered><covered>ll_03_3</covered>
+            <covered>ll_03_4</covered><covered>ll_03_5</covered>
+            <operand xmi:type="uml:InteractionOperand" xmi:id="op_03_2a">
+              <guard xmi:id="g_03_2a"><specification xmi:type="uml:LiteralString" xmi:id="gs_03_2a" value="Ответ капчи неверный"/></guard>
+              <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_03_12s" covered="ll_03_2" message="m_03_12"/>
+              <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_03_12r" covered="ll_03_1" message="m_03_12"/>
+            </operand>
+            <operand xmi:type="uml:InteractionOperand" xmi:id="op_03_2b">
+              <guard xmi:id="g_03_2b"><specification xmi:type="uml:LiteralString" xmi:id="gs_03_2b" value="Капча решена верно"/></guard>
+              <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_03_13s" covered="ll_03_2" message="m_03_13"/>
+              <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_03_13r" covered="ll_03_3" message="m_03_13"/>
+              <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_03_14s" covered="ll_03_3" message="m_03_14"/>
+              <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_03_14r" covered="ll_03_4" message="m_03_14"/>
+              <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_03_15s" covered="ll_03_4" message="m_03_15"/>
+              <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_03_15r" covered="ll_03_5" message="m_03_15"/>
+              <fragment xmi:type="uml:CombinedFragment" xmi:id="cf_03_3" interactionOperator="alt">
+                <covered>ll_03_1</covered><covered>ll_03_2</covered><covered>ll_03_3</covered>
+                <covered>ll_03_4</covered><covered>ll_03_5</covered>
+                <operand xmi:type="uml:InteractionOperand" xmi:id="op_03_3a">
+                  <guard xmi:id="g_03_3a"><specification xmi:type="uml:LiteralString" xmi:id="gs_03_3a" value="Email уже зарегистрирован"/></guard>
+                  <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_03_16s" covered="ll_03_5" message="m_03_16"/>
+                  <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_03_16r" covered="ll_03_4" message="m_03_16"/>
+                  <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_03_17s" covered="ll_03_4" message="m_03_17"/>
+                  <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_03_17r" covered="ll_03_3" message="m_03_17"/>
+                  <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_03_18s" covered="ll_03_3" message="m_03_18"/>
+                  <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_03_18r" covered="ll_03_2" message="m_03_18"/>
+                  <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_03_19s" covered="ll_03_2" message="m_03_19"/>
+                  <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_03_19r" covered="ll_03_1" message="m_03_19"/>
+                </operand>
+                <operand xmi:type="uml:InteractionOperand" xmi:id="op_03_3b">
+                  <guard xmi:id="g_03_3b"><specification xmi:type="uml:LiteralString" xmi:id="gs_03_3b" value="Email свободен"/></guard>
+                  <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_03_20s" covered="ll_03_5" message="m_03_20"/>
+                  <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_03_20r" covered="ll_03_4" message="m_03_20"/>
+                  <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_03_21s" covered="ll_03_4" message="m_03_21"/>
+                  <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_03_21r" covered="ll_03_4" message="m_03_21"/>
+                  <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_03_22s" covered="ll_03_4" message="m_03_22"/>
+                  <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_03_22r" covered="ll_03_5" message="m_03_22"/>
+                  <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_03_23s" covered="ll_03_5" message="m_03_23"/>
+                  <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_03_23r" covered="ll_03_4" message="m_03_23"/>
+                  <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_03_24s" covered="ll_03_4" message="m_03_24"/>
+                  <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_03_24r" covered="ll_03_3" message="m_03_24"/>
+                  <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_03_25s" covered="ll_03_3" message="m_03_25"/>
+                  <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_03_25r" covered="ll_03_2" message="m_03_25"/>
+                  <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_03_26s" covered="ll_03_2" message="m_03_26"/>
+                  <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_03_26r" covered="ll_03_1" message="m_03_26"/>
+                  <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_03_27s" covered="ll_03_2" message="m_03_27"/>
+                  <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_03_27r" covered="ll_03_2" message="m_03_27"/>
+                </operand>
+              </fragment>
+            </operand>
+          </fragment>
+        </operand>
+      </fragment>
+
+    </packagedElement>
+  </uml:Model>
+</xmi:XMI>

@@ -1,0 +1,37 @@
+@startuml seq_09_view_history
+title Диаграмма последовательности: Просмотр истории тестирований
+
+actor Студент as S
+participant "CareerPage\n(React)" as CP
+participant "API Client\n(axios)" as API
+participant "ProfOrientationController\n(NestJS)" as PC
+participant "ProfOrientationService\n(NestJS)" as PS
+database "professional_orientations (БД)" as OrDB
+database "learning_roadmaps (БД)" as RmDB
+
+S -> CP: открыть /career (вкладка «История»)
+CP -> API: GET /professional-orientation\nAuthorization: Bearer <token>
+API -> PC: getUserResult(userId)
+PC -> PS: findByUserId(userId)
+PS -> OrDB: findOne({ where: { userId }, order: { createdAt: 'DESC' } })
+OrDB --> PS: ProfessionalOrientation | null
+
+alt История пуста
+  PS --> PC: null
+  PC --> API: 200 OK { null }
+  API --> CP: null
+  CP -> S: «Вы ещё не проходили тесты. Начать?»
+else История найдена
+  OrDB --> PS: ProfessionalOrientation { testResult, recommendedProfession, createdAt }
+  PS -> RmDB: findOne({ where: { userId }, order: { createdAt: 'DESC' } })
+  RmDB --> PS: LearningRoadmap | null
+  PS --> PC: { orientation, roadmap }
+  PC --> API: 200 OK { orientation, roadmap }
+  API --> CP: данные
+  CP -> S: отобразить последний результат:\n— Рекомендованная специальность\n— Дата прохождения\n— Дорожная карта (если есть)
+end
+
+S -> CP: нажать «Пройти тест снова»
+CP -> CP: router.push('/career/test/holland')
+
+@enduml

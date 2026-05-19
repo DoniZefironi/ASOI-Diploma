@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xmi:XMI xmi:version="2.1" xmlns:xmi="http://schema.omg.org/spec/XMI/2.1"
+         xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML">
+  <uml:Model xmi:id="model_db" name="Database Diagram — Профориентация">
+
+    <!-- ===== TABLES ===== -->
+
+    <packagedElement xmi:type="uml:Class" xmi:id="tbl_users" name="users" stereotype="entity">
+      <ownedAttribute xmi:id="col_u_id"       name="id"        visibility="public" isID="true"/>
+      <ownedAttribute xmi:id="col_u_email"    name="email"     visibility="public"/>
+      <ownedAttribute xmi:id="col_u_password" name="password"  visibility="public"/>
+      <ownedAttribute xmi:id="col_u_first"    name="firstName" visibility="public"/>
+      <ownedAttribute xmi:id="col_u_last"     name="lastName"  visibility="public"/>
+      <ownedAttribute xmi:id="col_u_avatar"   name="avatar"    visibility="public"/>
+      <ownedAttribute xmi:id="col_u_active"   name="isActive"  visibility="public"/>
+      <ownedAttribute xmi:id="col_u_created"  name="createdAt" visibility="public"/>
+      <ownedAttribute xmi:id="col_u_updated"  name="updatedAt" visibility="public"/>
+    </packagedElement>
+
+    <packagedElement xmi:type="uml:Class" xmi:id="tbl_user_roles" name="user_roles" stereotype="entity">
+      <ownedAttribute xmi:id="col_ur_id"     name="id"     visibility="public" isID="true"/>
+      <ownedAttribute xmi:id="col_ur_userId" name="userId" visibility="public"/>
+      <ownedAttribute xmi:id="col_ur_role"   name="role"   visibility="public"/>
+    </packagedElement>
+
+    <packagedElement xmi:type="uml:Class" xmi:id="tbl_career_tests" name="career_tests" stereotype="entity">
+      <ownedAttribute xmi:id="col_ct_id"           name="id"           visibility="public" isID="true"/>
+      <ownedAttribute xmi:id="col_ct_type"          name="type"         visibility="public"/>
+      <ownedAttribute xmi:id="col_ct_title"         name="title"        visibility="public"/>
+      <ownedAttribute xmi:id="col_ct_description"   name="description"  visibility="public"/>
+      <ownedAttribute xmi:id="col_ct_duration"      name="duration"     visibility="public"/>
+      <ownedAttribute xmi:id="col_ct_answerFormat"  name="answerFormat" visibility="public"/>
+      <ownedAttribute xmi:id="col_ct_questions"     name="questions"    visibility="public"/>
+      <ownedAttribute xmi:id="col_ct_categoryMeta"  name="categoryMeta" visibility="public"/>
+      <ownedAttribute xmi:id="col_ct_isActive"      name="isActive"     visibility="public"/>
+    </packagedElement>
+
+    <packagedElement xmi:type="uml:Class" xmi:id="tbl_test_questions" name="test_questions" stereotype="entity">
+      <ownedAttribute xmi:id="col_tq_id"           name="id"           visibility="public" isID="true"/>
+      <ownedAttribute xmi:id="col_tq_testId"        name="testId"       visibility="public"/>
+      <ownedAttribute xmi:id="col_tq_questionText"  name="questionText" visibility="public"/>
+      <ownedAttribute xmi:id="col_tq_questionType"  name="questionType" visibility="public"/>
+      <ownedAttribute xmi:id="col_tq_orderNum"      name="orderNum"     visibility="public"/>
+    </packagedElement>
+
+    <packagedElement xmi:type="uml:Class" xmi:id="tbl_orientations" name="professional_orientations" stereotype="entity">
+      <ownedAttribute xmi:id="col_po_id"         name="id"                    visibility="public" isID="true"/>
+      <ownedAttribute xmi:id="col_po_userId"     name="userId"                visibility="public"/>
+      <ownedAttribute xmi:id="col_po_result"     name="testResult"            visibility="public"/>
+      <ownedAttribute xmi:id="col_po_profession" name="recommendedProfession" visibility="public"/>
+      <ownedAttribute xmi:id="col_po_created"    name="createdAt"             visibility="public"/>
+      <ownedAttribute xmi:id="col_po_updated"    name="updatedAt"             visibility="public"/>
+    </packagedElement>
+
+    <packagedElement xmi:type="uml:Class" xmi:id="tbl_roadmaps" name="learning_roadmaps" stereotype="entity">
+      <ownedAttribute xmi:id="col_rm_id"            name="id"            visibility="public" isID="true"/>
+      <ownedAttribute xmi:id="col_rm_userId"         name="userId"        visibility="public"/>
+      <ownedAttribute xmi:id="col_rm_orientationId"  name="orientationId" visibility="public"/>
+      <ownedAttribute xmi:id="col_rm_profession"     name="profession"    visibility="public"/>
+      <ownedAttribute xmi:id="col_rm_phases"         name="phases"        visibility="public"/>
+      <ownedAttribute xmi:id="col_rm_duration"       name="totalDuration" visibility="public"/>
+      <ownedAttribute xmi:id="col_rm_created"        name="createdAt"     visibility="public"/>
+    </packagedElement>
+
+    <!-- ===== ASSOCIATIONS ===== -->
+
+    <!-- users ||--o{ user_roles -->
+    <packagedElement xmi:type="uml:Association" xmi:id="assoc_u_ur">
+      <memberEnd xmi:idref="ae_u_ur_src"/>
+      <memberEnd xmi:idref="ae_u_ur_tgt"/>
+      <ownedEnd xmi:id="ae_u_ur_src" type="tbl_users"      aggregation="composite" lower="1" upper="1"/>
+      <ownedEnd xmi:id="ae_u_ur_tgt" type="tbl_user_roles" lower="0" upper="*"/>
+    </packagedElement>
+
+    <!-- users ||--o{ professional_orientations -->
+    <packagedElement xmi:type="uml:Association" xmi:id="assoc_u_po">
+      <memberEnd xmi:idref="ae_u_po_src"/>
+      <memberEnd xmi:idref="ae_u_po_tgt"/>
+      <ownedEnd xmi:id="ae_u_po_src" type="tbl_users"        lower="1" upper="1"/>
+      <ownedEnd xmi:id="ae_u_po_tgt" type="tbl_orientations" lower="0" upper="*"/>
+    </packagedElement>
+
+    <!-- users ||--o{ learning_roadmaps -->
+    <packagedElement xmi:type="uml:Association" xmi:id="assoc_u_rm">
+      <memberEnd xmi:idref="ae_u_rm_src"/>
+      <memberEnd xmi:idref="ae_u_rm_tgt"/>
+      <ownedEnd xmi:id="ae_u_rm_src" type="tbl_users"    lower="1" upper="1"/>
+      <ownedEnd xmi:id="ae_u_rm_tgt" type="tbl_roadmaps" lower="0" upper="*"/>
+    </packagedElement>
+
+    <!-- career_tests ||--o{ test_questions -->
+    <packagedElement xmi:type="uml:Association" xmi:id="assoc_ct_tq">
+      <memberEnd xmi:idref="ae_ct_tq_src"/>
+      <memberEnd xmi:idref="ae_ct_tq_tgt"/>
+      <ownedEnd xmi:id="ae_ct_tq_src" type="tbl_career_tests"  aggregation="composite" lower="1" upper="1"/>
+      <ownedEnd xmi:id="ae_ct_tq_tgt" type="tbl_test_questions" lower="0" upper="*"/>
+    </packagedElement>
+
+    <!-- professional_orientations ||--o{ learning_roadmaps -->
+    <packagedElement xmi:type="uml:Association" xmi:id="assoc_po_rm">
+      <memberEnd xmi:idref="ae_po_rm_src"/>
+      <memberEnd xmi:idref="ae_po_rm_tgt"/>
+      <ownedEnd xmi:id="ae_po_rm_src" type="tbl_orientations" aggregation="composite" lower="1" upper="1"/>
+      <ownedEnd xmi:id="ae_po_rm_tgt" type="tbl_roadmaps"     lower="0" upper="*"/>
+    </packagedElement>
+
+  </uml:Model>
+</xmi:XMI>

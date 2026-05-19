@@ -1,0 +1,188 @@
+@startuml class_diagram_ui
+title Диаграмма классов — Фронтенд (страницы и компоненты)
+
+skinparam classAttributeIconSize 0
+skinparam classBorderColor #555
+skinparam classBackgroundColor #E8F5E9
+skinparam linetype ortho
+
+class AuthPage {
+  + «input» Email
+  + «input» Пароль
+  + «input» Имя пользователя
+  + «input» Фамилия
+  + «checkbox» Согласие с условиями
+  + «captcha» Математическая капча
+  + «button» Войти
+  + «button» Зарегистрироваться
+  + «link» Уже есть аккаунт? Войти
+  + «navbar» Header
+}
+
+class CoursesPage {
+  + «card» Карточка курса
+  + «button» Подробнее
+  + «button» Записаться
+  + «list» Список курсов
+  + «navbar» Header
+  + «searchBox» Поиск курса
+}
+
+class CourseDetailPage {
+  + «section» Описание курса
+  + «list» Список групп
+  + «button» Записаться в группу
+  + «navbar» Header
+  + «tabs» Материалы / Задания / Форум
+}
+
+class AssignmentPage {
+  + «section» Условие задания
+  + «textarea» Поле ответа
+  + «button» Отправить ответ
+  + «label» Дедлайн
+  + «label» Максимальный балл
+  + «navbar» Header
+}
+
+class CircuitPage {
+  + «canvas» Холст симулятора
+  + «panel» Панель компонентов
+  + «button» Симулировать
+  + «button» Сдать схему
+  + «button» Очистить
+  + «toolbar» Инструменты
+  + «label» Статус симуляции
+}
+
+class LibraryPage {
+  + «card» Карточка материала
+  + «searchBox» Поиск по библиотеке
+  + «select» Фильтр по типу
+  + «select» Фильтр по курсу
+  + «button» Скачать / Открыть
+  + «pagination» Пагинация
+  + «list» Список материалов
+  + «navbar» Header
+}
+
+class ForumPage {
+  + «list» Разделы форума
+  + «navbar» Header
+  + «section» Описание раздела
+}
+
+class ForumSectionPage {
+  + «list» Список тем
+  + «button» Создать тему
+  + «modal» Форма создания темы
+  + «input» Заголовок темы
+  + «textarea» Текст сообщения
+  + «navbar» Header
+}
+
+class ForumTopicPage {
+  + «list» Сообщения обсуждения
+  + «textarea» Поле ответа
+  + «button» Ответить
+  + «label» Автор / Дата
+  + «navbar» Header
+}
+
+class SchedulePage {
+  + «calendar» Календарный вид
+  + «button» Переключить неделю
+  + «button» Добавить занятие
+  + «modal» Форма добавления занятия
+  + «input» Тема занятия
+  + «select» Группа
+  + «navbar» Header
+}
+
+class PeerReviewPage {
+  + «list» Работы для проверки
+  + «section» Содержимое работы
+  + «textarea» Комментарий рецензии
+  + «select» Оценка (1–5)
+  + «button» Отправить рецензию
+  + «navbar» Header
+}
+
+class AdminGroupsPage {
+  + «table» Таблица групп
+  + «button» Создать группу
+  + «modal» Форма создания группы
+  + «input» Название группы
+  + «select» Курс
+  + «button» Добавить студента
+  + «navbar» Header
+  + «topbar» Панель администратора
+}
+
+class AdminUsersPage {
+  + «table» Таблица пользователей
+  + «searchBox» Поиск пользователя
+  + «select» Изменить роль
+  + «button» Заблокировать
+  + «modal» Подтверждение блокировки
+  + «pagination» Пагинация
+  + «navbar» Header
+  + «topbar» Панель администратора
+}
+
+class AdminAssignmentsPage {
+  + «list» Список заданий
+  + «button» Создать задание
+  + «table» Работы на проверку
+  + «input» Оценка
+  + «textarea» Комментарий ментора
+  + «button» Сохранить оценку
+  + «navbar» Header
+  + «topbar» Панель администратора
+}
+
+class AuthStore {
+  + user: User | null
+  + token: string | null
+  + isAuthenticated: boolean
+  + login(user, token): void
+  + logout(): void
+  + hasRole(role): boolean
+}
+
+class CircuitStore {
+  + nodes: Record<ID, NodeDef>
+  + wires: Record<ID, Wire>
+  - connectionInProgress: Connection | null
+  + addNode(node): ID
+  + removeNode(id): void
+  + connectWire(wire): void
+  + removeWire(id): void
+  + runSimulation(): void
+  + exportCircuit(): CircuitData
+  + importCircuit(data): void
+  + clear(): void
+}
+
+class ProtectedRoute {
+  - requiredRole: string[]
+  + checkAuth(): boolean
+  + checkRole(): boolean
+}
+
+AuthPage --> AuthStore : использует
+CoursesPage --> AuthStore : читает токен
+AssignmentPage --> AuthStore : читает токен
+CircuitPage --> CircuitStore : управляет
+ForumPage --> AuthStore : читает токен
+AdminUsersPage --> AuthStore : проверяет роль
+AdminGroupsPage --> AuthStore : проверяет роль
+PeerReviewPage --> AuthStore : читает токен
+SchedulePage --> AuthStore : проверяет роль
+ProtectedRoute --> AuthStore : canActivate
+
+ForumPage --> ForumSectionPage : навигирует >
+ForumSectionPage --> ForumTopicPage : навигирует >
+CoursesPage --> CourseDetailPage : навигирует >
+
+@enduml

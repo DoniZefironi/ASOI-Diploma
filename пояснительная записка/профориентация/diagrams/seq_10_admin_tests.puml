@@ -1,0 +1,46 @@
+@startuml seq_10_admin_tests
+title Диаграмма последовательности: Управление тестами (Администратор)
+
+actor Администратор as A
+participant "AdminCareerTestsPage\n(React)" as AP
+participant "API Client\n(axios)" as API
+participant "ProfOrientationController\n(NestJS)" as PC
+participant "ProfOrientationService\n(NestJS)" as PS
+database "career_tests (БД)" as TestDB
+
+A -> AP: открыть /admin/career-tests
+AP -> API: GET /professional-orientation/admin/tests\nAuthorization: Bearer <admin_token>
+API -> PC: adminGetAllTests()
+PC -> PS: adminGetAllTests()
+PS -> TestDB: findAll()
+TestDB --> PS: CareerTest[]
+PS --> PC: CareerTest[]
+PC --> API: 200 OK { tests[] }
+API --> AP: tests[]
+AP -> A: отобразить список тестов\n(название, тип, кол-во вопросов, статус)
+
+A -> AP: нажать «Редактировать» на тесте holland
+AP -> API: PUT /professional-orientation/admin/tests/holland\n{ title, description, duration, isActive }\nAuthorization: Bearer <admin_token>
+API -> PC: adminUpdateTest('holland', dto)
+PC -> PS: adminUpdateTest('holland', dto)
+PS -> TestDB: findOne({ where: { type: 'holland' } })
+TestDB --> PS: CareerTest
+PS -> TestDB: save({ ...test, ...dto })
+TestDB --> PS: updatedTest
+PS --> PC: CareerTest
+PC --> API: 200 OK { test }
+API --> AP: updatedTest
+AP -> A: «Тест обновлён»
+
+A -> AP: нажать «Деактивировать» тест
+AP -> API: PUT /professional-orientation/admin/tests/holland\n{ isActive: false }\nAuthorization: Bearer <admin_token>
+API -> PC: adminUpdateTest('holland', { isActive: false })
+PC -> PS: adminUpdateTest('holland', { isActive: false })
+PS -> TestDB: save({ ...test, isActive: false })
+TestDB --> PS: updatedTest
+PS --> PC: CareerTest { isActive: false }
+PC --> API: 200 OK
+API --> AP: { isActive: false }
+AP -> A: «Тест деактивирован.\nНовые прохождения заблокированы.»
+
+@enduml

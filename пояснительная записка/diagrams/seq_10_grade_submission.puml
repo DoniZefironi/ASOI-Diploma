@@ -1,0 +1,45 @@
+@startuml
+title Диаграмма последовательности: Оценка работы студента (ментор)
+
+actor Ментор as M
+participant "GradingPage\n(React)" as GP
+participant "API Client\n(axios)" as API
+participant "AssignmentsController\n(NestJS)" as AC
+database "AssignmentSubmission (БД)" as SubDB
+
+M -> GP: открыть /admin/assignments/:id/submissions
+GP -> API: GET /submissions?assignmentId=:id&status=pending\nAuthorization: Bearer <token>
+API -> AC: getPendingSubmissions(assignmentId)
+AC -> SubDB: findPending({ assignmentId })
+SubDB --> AC: submissions[]
+AC --> API: 200 submissions[]
+API --> GP: submissions[]
+GP -> M: отрисовать список работ на проверку
+
+M -> GP: выбрать работу студента
+GP -> API: GET /submissions/:id
+API -> AC: getSubmission(submissionId)
+AC -> SubDB: findOne(id, { relations: ['student', 'assignment'] })
+SubDB --> AC: AssignmentSubmission { content, student }
+AC --> API: 200 submission
+API --> GP: детали работы
+GP -> M: отрисовать содержимое работы
+
+M -> GP: ввести оценку (баллы)
+M -> GP: написать комментарий для студента
+M -> GP: нажать «Сохранить оценку»
+GP -> GP: validateGrade()
+
+alt Оценка вне допустимого диапазона
+  GP -> M: «Оценка не может превышать максимальный балл»
+else Оценка корректна
+  GP -> API: PATCH /submissions/:id/grade\n{ score, mentorComment }\nAuthorization: Bearer <token>
+  API -> AC: gradeSubmission(submissionId, score, comment)
+  AC -> SubDB: update({ score, mentorComment, status: 'graded' })
+  SubDB --> AC: обновлённая запись
+  AC --> API: 200 { success: true }
+  API --> GP: успех
+  GP -> M: «Оценка успешно сохранена»
+end
+
+@enduml

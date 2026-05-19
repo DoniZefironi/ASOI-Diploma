@@ -1,0 +1,672 @@
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+/* ============================================================
+   GitHub Dark Design System — CSS Custom Properties
+   ============================================================ */
+
+:root {
+  /* Canvas */
+  --color-canvas-default:   #0d1117;
+  --color-canvas-overlay:   #161b22;
+  --color-canvas-inset:     #010409;
+  --color-canvas-subtle:    #161b22;
+
+  /* Foreground */
+  --color-fg-default:       #e6edf3;
+  --color-fg-muted:         #8b949e;
+  --color-fg-subtle:        #6e7681;
+  --color-fg-on-emphasis:   #ffffff;
+
+  /* Border */
+  --color-border-default:   #30363d;
+  --color-border-muted:     #21262d;
+  --color-border-subtle:    rgba(240,246,252,0.1);
+
+  /* Accent — Blue */
+  --color-accent-fg:        #2f81f7;
+  --color-accent-emphasis:  #1f6feb;
+  --color-accent-muted:     rgba(31,111,235,0.4);
+  --color-accent-subtle:    #1c2d3f;
+
+  /* Success — Green */
+  --color-success-fg:       #3fb950;
+  --color-success-emphasis: #2da44e;
+  --color-success-muted:    rgba(46,160,67,0.4);
+  --color-success-subtle:   #1a2d1a;
+
+  /* Attention — Orange */
+  --color-attention-fg:     #f0883e;
+  --color-attention-emphasis: #db6d28;
+  --color-attention-muted:  rgba(187,128,9,0.4);
+  --color-attention-subtle: #2d1f0a;
+
+  /* Danger — Red */
+  --color-danger-fg:        #f85149;
+  --color-danger-emphasis:  #cf222e;
+  --color-danger-muted:     rgba(248,81,73,0.4);
+  --color-danger-subtle:    #2d0f0f;
+
+  /* Done/IoT — Purple */
+  --color-done-fg:          #a371f7;
+  --color-done-emphasis:    #8250df;
+  --color-done-muted:       rgba(163,113,247,0.4);
+  --color-done-subtle:      #1e1530;
+
+  /* Career/Sponsors — Mint */
+  --color-career-fg:        #39d353;
+  --color-career-subtle:    #0f2d12;
+
+  /* Neutral scale */
+  --color-neutral-1: #161b22;
+  --color-neutral-2: #21262d;
+  --color-neutral-3: #30363d;
+  --color-neutral-4: #484f58;
+  --color-neutral-5: #6e7681;
+  --color-neutral-6: #8b949e;
+  --color-neutral-7: #b1bac4;
+
+  /* Typography */
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+  --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+
+  /* Shadows */
+  --shadow-sm: 0 0 0 1px #30363d;
+  --shadow-md: 0 3px 6px rgba(0,0,0,0.4), 0 0 0 1px #30363d;
+  --shadow-lg: 0 8px 24px rgba(0,0,0,0.6);
+  --shadow-focus: 0 0 0 3px rgba(47,129,247,0.4);
+
+  /* Transitions */
+  --transition-fast: 80ms cubic-bezier(0.33, 1, 0.68, 1);
+}
+
+/* ============================================================
+   Light Theme Override (GitHub Light)
+   ============================================================ */
+
+[data-theme="light"] {
+  color-scheme: light;
+
+  /* Canvas */
+  --color-canvas-default:   #ffffff;
+  --color-canvas-overlay:   #f6f8fa;
+  --color-canvas-inset:     #f0f2f5;
+  --color-canvas-subtle:    #f6f8fa;
+
+  /* Foreground */
+  --color-fg-default:       #1f2328;
+  --color-fg-muted:         #636c76;
+  --color-fg-subtle:        #6e7781;
+  --color-fg-on-emphasis:   #ffffff;
+
+  /* Border */
+  --color-border-default:   #d0d7de;
+  --color-border-muted:     #d8dee4;
+  --color-border-subtle:    rgba(31,35,40,0.15);
+
+  /* Accent — Blue */
+  --color-accent-fg:        #0969da;
+  --color-accent-emphasis:  #0550ae;
+  --color-accent-muted:     rgba(84,174,255,0.4);
+  --color-accent-subtle:    #ddf4ff;
+
+  /* Success — Green */
+  --color-success-fg:       #1a7f37;
+  --color-success-emphasis: #2da44e;
+  --color-success-muted:    rgba(74,194,107,0.4);
+  --color-success-subtle:   #dafbe1;
+
+  /* Attention — Orange */
+  --color-attention-fg:     #9a6700;
+  --color-attention-emphasis: #bf8700;
+  --color-attention-muted:  rgba(212,167,44,0.4);
+  --color-attention-subtle: #fff8c5;
+
+  /* Danger — Red */
+  --color-danger-fg:        #d1242f;
+  --color-danger-emphasis:  #cf222e;
+  --color-danger-muted:     rgba(255,129,130,0.4);
+  --color-danger-subtle:    #ffebe9;
+
+  /* Done/IoT — Purple */
+  --color-done-fg:          #8250df;
+  --color-done-emphasis:    #7922d8;
+  --color-done-muted:       rgba(194,151,255,0.4);
+  --color-done-subtle:      #fbefff;
+
+  /* Career — Green */
+  --color-career-fg:        #2da44e;
+  --color-career-subtle:    #dafbe1;
+
+  /* Neutral scale */
+  --color-neutral-1: #f6f8fa;
+  --color-neutral-2: #eaeef2;
+  --color-neutral-3: #d0d7de;
+  --color-neutral-4: #afb8c1;
+  --color-neutral-5: #8c959f;
+  --color-neutral-6: #636c76;
+  --color-neutral-7: #424a53;
+
+  /* Shadows */
+  --shadow-sm: 0 0 0 1px #d0d7de;
+  --shadow-md: 0 3px 6px rgba(140,149,159,0.15), 0 0 0 1px #d0d7de;
+  --shadow-lg: 0 8px 24px rgba(140,149,159,0.2);
+}
+
+/* ============================================================
+   Base Reset & Body
+   ============================================================ */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html {
+  color-scheme: dark;
+}
+
+html[data-theme="light"] {
+  color-scheme: light;
+}
+
+body {
+  background-color: var(--color-canvas-default);
+  color: var(--color-fg-default);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  margin: 0;
+  /* Плавное переключение темы */
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+/* ============================================================
+   Light Theme — Tailwind class overrides
+   Переопределяем все распространённые классы Tailwind для светлой темы
+   ============================================================ */
+
+/* Backgrounds */
+[data-theme="light"] .bg-gray-950,
+[data-theme="light"] .bg-\[\#0D1117\],
+[data-theme="light"] .bg-\[\#0d1117\] { background-color: var(--color-canvas-default) !important; }
+
+[data-theme="light"] .bg-gray-900,
+[data-theme="light"] .bg-\[\#111827\],
+[data-theme="light"] .bg-\[\#0D1117\] { background-color: var(--color-canvas-default) !important; }
+
+[data-theme="light"] .bg-gray-800,
+[data-theme="light"] .bg-\[\#161B22\],
+[data-theme="light"] .bg-\[\#161b22\],
+[data-theme="light"] .bg-\[\#1f2937\] { background-color: var(--color-canvas-overlay) !important; }
+
+[data-theme="light"] .bg-gray-750 { background-color: var(--color-canvas-subtle) !important; }
+
+[data-theme="light"] .bg-gray-700,
+[data-theme="light"] .bg-\[\#374151\] { background-color: var(--color-neutral-2) !important; }
+
+[data-theme="light"] .bg-gray-600,
+[data-theme="light"] .bg-\[\#4b5563\] { background-color: var(--color-neutral-3) !important; }
+
+/* Text colors
+   Стратегия:
+   1. Глобально text-white → тёмный текст (для заголовков/параграфов на белом/светлом фоне)
+   2. НО на цветных фонах (кнопки, бейджи, алерты) — возвращаем белый
+*/
+
+/* Шаг 1: глобальный оверрайд */
+[data-theme="light"] .text-white { color: var(--color-fg-default) !important; }
+[data-theme="light"] .text-gray-100 { color: var(--color-fg-default) !important; }
+[data-theme="light"] .text-gray-200 { color: var(--color-fg-default) !important; }
+[data-theme="light"] .text-gray-300 { color: var(--color-fg-muted) !important; }
+[data-theme="light"] .text-gray-400 { color: var(--color-fg-muted) !important; }
+[data-theme="light"] .text-gray-500 { color: var(--color-fg-subtle) !important; }
+
+/* Шаг 2: исключения — текст на цветных фонах остаётся белым */
+/* Элемент сам является кнопкой/бейджем с цветным bg */
+[data-theme="light"] .bg-blue-400.text-white,
+[data-theme="light"] .bg-blue-500.text-white,
+[data-theme="light"] .bg-blue-600.text-white,
+[data-theme="light"] .bg-blue-700.text-white,
+[data-theme="light"] .bg-green-500.text-white,
+[data-theme="light"] .bg-green-600.text-white,
+[data-theme="light"] .bg-green-700.text-white,
+[data-theme="light"] .bg-emerald-600.text-white,
+[data-theme="light"] .bg-red-500.text-white,
+[data-theme="light"] .bg-red-600.text-white,
+[data-theme="light"] .bg-red-700.text-white,
+[data-theme="light"] .bg-purple-500.text-white,
+[data-theme="light"] .bg-purple-600.text-white,
+[data-theme="light"] .bg-purple-700.text-white,
+[data-theme="light"] .bg-indigo-500.text-white,
+[data-theme="light"] .bg-indigo-600.text-white,
+[data-theme="light"] .bg-indigo-700.text-white,
+[data-theme="light"] .bg-yellow-500.text-white,
+[data-theme="light"] .bg-orange-500.text-white,
+[data-theme="light"] .bg-orange-600.text-white,
+[data-theme="light"] .bg-teal-500.text-white,
+[data-theme="light"] .bg-teal-600.text-white,
+[data-theme="light"] .bg-cyan-500.text-white,
+[data-theme="light"] .bg-cyan-600.text-white,
+[data-theme="light"] .bg-pink-500.text-white,
+[data-theme="light"] .bg-pink-600.text-white,
+[data-theme="light"] .bg-rose-500.text-white,
+[data-theme="light"] .bg-rose-600.text-white { color: #ffffff !important; }
+
+/* text-white внутри НАСЫЩЕННОГО цветного родителя (только конкретные классы, без /20 /30 и т.д.) */
+[data-theme="light"] .bg-blue-400 .text-white,   [data-theme="light"] .bg-blue-500 .text-white,
+[data-theme="light"] .bg-blue-600 .text-white,   [data-theme="light"] .bg-blue-700 .text-white,
+[data-theme="light"] .bg-green-500 .text-white,  [data-theme="light"] .bg-green-600 .text-white,
+[data-theme="light"] .bg-green-700 .text-white,  [data-theme="light"] .bg-emerald-600 .text-white,
+[data-theme="light"] .bg-red-500 .text-white,    [data-theme="light"] .bg-red-600 .text-white,
+[data-theme="light"] .bg-red-700 .text-white,    [data-theme="light"] .bg-purple-600 .text-white,
+[data-theme="light"] .bg-indigo-500 .text-white, [data-theme="light"] .bg-indigo-600 .text-white,
+[data-theme="light"] .bg-orange-500 .text-white, [data-theme="light"] .bg-orange-600 .text-white,
+[data-theme="light"] .bg-teal-500 .text-white,   [data-theme="light"] .bg-teal-600 .text-white,
+[data-theme="light"] .bg-cyan-500 .text-white,   [data-theme="light"] .bg-cyan-600 .text-white,
+[data-theme="light"] .bg-pink-600 .text-white,   [data-theme="light"] .bg-rose-600 .text-white,
+[data-theme="light"] .bg-yellow-500 .text-white { color: #ffffff !important; }
+
+/* Borders */
+[data-theme="light"] .border-gray-700,
+[data-theme="light"] .border-gray-800 { border-color: var(--color-border-default) !important; }
+[data-theme="light"] .border-gray-600 { border-color: var(--color-border-muted) !important; }
+[data-theme="light"] .border-\[\#30363d\] { border-color: var(--color-border-default) !important; }
+[data-theme="light"] .border-\[\#21262d\] { border-color: var(--color-border-muted) !important; }
+
+/* Divide */
+[data-theme="light"] .divide-gray-700 > * + * { border-color: var(--color-border-default) !important; }
+[data-theme="light"] .divide-gray-800 > * + * { border-color: var(--color-border-muted) !important; }
+
+/* Полупрозрачные цветные фоны — в светлой теме фон светлый, текст должен быть тёмным */
+[data-theme="light"] .bg-blue-900\/20,
+[data-theme="light"] .bg-blue-900\/30,
+[data-theme="light"] .bg-blue-900\/40,
+[data-theme="light"] .bg-green-900\/20,
+[data-theme="light"] .bg-green-900\/30,
+[data-theme="light"] .bg-red-900\/20,
+[data-theme="light"] .bg-red-900\/30,
+[data-theme="light"] .bg-purple-900\/20,
+[data-theme="light"] .bg-purple-900\/30,
+[data-theme="light"] .bg-yellow-900\/20,
+[data-theme="light"] .bg-orange-900\/20 {
+  background-color: rgba(0, 0, 0, 0.04) !important;
+}
+
+/* Текст внутри этих полупрозрачных блоков должен быть тёмным */
+[data-theme="light"] .bg-blue-900\/20 .text-white,
+[data-theme="light"] .bg-blue-900\/30 .text-white,
+[data-theme="light"] .bg-green-900\/20 .text-white,
+[data-theme="light"] .bg-red-900\/20 .text-white,
+[data-theme="light"] .bg-purple-900\/20 .text-white { color: var(--color-fg-default) !important; }
+
+/* Hover backgrounds */
+[data-theme="light"] .hover\:bg-gray-700:hover { background-color: var(--color-neutral-2) !important; }
+[data-theme="light"] .hover\:bg-gray-600:hover { background-color: var(--color-neutral-3) !important; }
+[data-theme="light"] .hover\:bg-gray-800:hover { background-color: var(--color-canvas-subtle) !important; }
+
+/* Rings */
+[data-theme="light"] .ring-gray-700 { --tw-ring-color: var(--color-border-default) !important; }
+
+/* ============================================================
+   Light Theme — Inline style color overrides via body selector
+   Покрываем страницы которые используют style={{ background: '#0d1117' }}
+   ============================================================ */
+
+/* Общий плавный переход для всех элементов при смене темы */
+[data-theme="light"] *,
+[data-theme="light"] *::before,
+[data-theme="light"] *::after {
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+/* min-h-screen с дефолтным фоном */
+[data-theme="light"] .min-h-screen {
+  background-color: var(--color-canvas-default);
+}
+
+/* Карточки и панели */
+[data-theme="light"] .rounded-xl,
+[data-theme="light"] .rounded-lg {
+  /* не меняем фон — только если явно задан серый */
+}
+
+/* Форма и инпуты */
+[data-theme="light"] input,
+[data-theme="light"] textarea,
+[data-theme="light"] select {
+  background-color: var(--color-canvas-default);
+  color: var(--color-fg-default);
+  border-color: var(--color-border-default);
+}
+
+[data-theme="light"] input::placeholder,
+[data-theme="light"] textarea::placeholder {
+  color: var(--color-fg-subtle);
+}
+
+/* ============================================================
+   Typography
+   ============================================================ */
+
+h1, h2, h3, h4, h5, h6 {
+  color: var(--color-fg-default);
+  font-weight: 600;
+  line-height: 1.25;
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+h1 { font-size: 32px; }
+h2 { font-size: 24px; }
+h3 { font-size: 20px; }
+h4 { font-size: 16px; }
+h5 { font-size: 14px; }
+h6 { font-size: 12px; }
+
+a {
+  color: var(--color-accent-fg);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+code, kbd, samp, pre {
+  font-family: var(--font-mono);
+  font-size: 85%;
+}
+
+/* ============================================================
+   Scrollbar — GitHub-like minimal style
+   ============================================================ */
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-border-default);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-neutral-4);
+}
+
+/* ============================================================
+   Focus visible — GitHub-style blue ring
+   ============================================================ */
+
+:focus-visible {
+  outline: 2px solid var(--color-accent-fg);
+  outline-offset: 2px;
+}
+
+/* ============================================================
+   Selection
+   ============================================================ */
+
+::selection {
+  background: var(--color-accent-muted);
+  color: var(--color-fg-default);
+}
+
+/* ============================================================
+   Utility classes
+   ============================================================ */
+
+.gh-container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 16px;
+}
+
+@media (min-width: 768px) {
+  .gh-container {
+    padding: 0 24px;
+  }
+}
+
+/* Divider */
+.gh-divider {
+  border: none;
+  border-top: 1px solid var(--color-border-default);
+  margin: 16px 0;
+}
+
+/* Label / meta text */
+.gh-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-fg-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* Monospace block */
+.gh-code-block {
+  background: var(--color-canvas-inset);
+  border: 1px solid var(--color-border-default);
+  border-radius: 6px;
+  padding: 16px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--color-fg-default);
+  overflow-x: auto;
+}
+
+/* Contribution-style dot (activity grid) */
+.gh-contrib-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  background: var(--color-neutral-2);
+}
+.gh-contrib-dot[data-level="1"] { background: var(--color-success-subtle); }
+.gh-contrib-dot[data-level="2"] { background: #26a641; }
+.gh-contrib-dot[data-level="3"] { background: var(--color-success-emphasis); }
+.gh-contrib-dot[data-level="4"] { background: var(--color-success-fg); }
+
+/* Status dots */
+.gh-status-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+.gh-status-dot--success  { background: var(--color-success-fg); }
+.gh-status-dot--pending  { background: var(--color-attention-fg); }
+.gh-status-dot--danger   { background: var(--color-danger-fg); }
+.gh-status-dot--neutral  { background: var(--color-fg-subtle); }
+.gh-status-dot--accent   { background: var(--color-accent-fg); }
+
+/* Tab underline nav (GitHub-style) */
+.gh-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-fg-muted);
+  border-bottom: 2px solid transparent;
+  transition: color var(--transition-fast), border-color var(--transition-fast);
+  white-space: nowrap;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.gh-tab:hover {
+  color: var(--color-fg-default);
+  border-bottom-color: var(--color-border-default);
+  text-decoration: none;
+}
+
+.gh-tab--active {
+  color: var(--color-fg-default);
+  border-bottom-color: var(--color-attention-fg);
+}
+
+.gh-tab .gh-tab-count {
+  background: var(--color-neutral-2);
+  border: 1px solid var(--color-border-muted);
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 500;
+  padding: 1px 6px;
+  color: var(--color-fg-muted);
+}
+
+/* Counter badge (like GitHub's notification bubble) */
+.gh-counter {
+  background: var(--color-danger-emphasis);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  border-radius: 20px;
+  padding: 0 5px;
+  min-width: 16px;
+  text-align: center;
+  line-height: 16px;
+}
+
+/* Progress bar */
+.gh-progress {
+  height: 8px;
+  background: var(--color-neutral-2);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.gh-progress-bar {
+  height: 100%;
+  border-radius: 4px;
+  background: var(--color-accent-fg);
+  transition: width 300ms ease;
+}
+
+.gh-progress-bar--success  { background: var(--color-success-fg); }
+.gh-progress-bar--attention { background: var(--color-attention-fg); }
+.gh-progress-bar--danger   { background: var(--color-danger-fg); }
+.gh-progress-bar--done     { background: var(--color-done-fg); }
+
+/* ============================================================
+   Animations (preserved from original + improved)
+   ============================================================ */
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideInLeft {
+  from { opacity: 0; transform: translateX(-20px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(20px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes pulse-soft {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.6; }
+}
+
+.animate-fade-in-up    { animation: fadeInUp 0.4s ease-out both; }
+.animate-slide-in-left { animation: slideInLeft 0.4s ease-out both; }
+.animate-slide-in-right{ animation: slideInRight 0.4s ease-out both; }
+.animate-fade-in       { animation: fadeIn 0.3s ease-out both; }
+.animate-pulse-soft    { animation: pulse-soft 2s ease-in-out infinite; }
+
+.animate-delay-100 { animation-delay: 0.1s; }
+.animate-delay-200 { animation-delay: 0.2s; }
+.animate-delay-300 { animation-delay: 0.3s; }
+.animate-delay-400 { animation-delay: 0.4s; }
+
+/* ============================================================
+   Line clamp utilities
+   ============================================================ */
+
+.line-clamp-1 {
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* ============================================================
+   Light Theme — Additional component overrides
+   ============================================================ */
+
+/* Shared UI Card */
+[data-theme="light"] .bg-gray-800\/60 { background-color: rgba(246,248,250,0.8) !important; }
+[data-theme="light"] .bg-gray-800\/40 { background-color: rgba(246,248,250,0.6) !important; }
+[data-theme="light"] .bg-gray-900\/40 { background-color: rgba(246,248,250,0.6) !important; }
+
+/* Admin table rows */
+[data-theme="light"] .bg-gray-800 {
+  background-color: var(--color-canvas-overlay) !important;
+}
+
+/* Borders with opacity */
+[data-theme="light"] .border-gray-700\/50 { border-color: rgba(208,215,222,0.5) !important; }
+[data-theme="light"] .divide-gray-700\/50 > * + * { border-color: rgba(208,215,222,0.5) !important; }
+
+/* Focus styles */
+[data-theme="light"] .focus\:border-blue-500:focus { border-color: var(--color-accent-fg) !important; }
+[data-theme="light"] .focus\:border-blue-600:focus { border-color: var(--color-accent-fg) !important; }
+
+/* Inline style fallback — pages that use style={{ background: 'var(--color-canvas-default)' }} work automatically */
+/* Pages still using old className="min-h-screen bg-[#0D1117]" - covered by bg-gh-canvas above */
+
+/* Dark overlay backgrounds (modals) */
+[data-theme="light"] .bg-black\/50,
+[data-theme="light"] .bg-black\/60 { background-color: rgba(0,0,0,0.3) !important; }
+
+/* Scrollbar light theme */
+[data-theme="light"] ::-webkit-scrollbar-thumb { background: var(--color-border-default); }
+[data-theme="light"] ::-webkit-scrollbar-thumb:hover { background: var(--color-neutral-4); }
+
+/* Smooth transition for all themed elements */
+*, *::before, *::after {
+  transition-property: background-color, border-color, color;
+  transition-duration: 0.15s;
+  transition-timing-function: ease;
+}
+/* Except transitions that should be fast/instant */
+.transition-none, [class*="animate-"], [class*="motion-"] {
+  transition: none !important;
+}

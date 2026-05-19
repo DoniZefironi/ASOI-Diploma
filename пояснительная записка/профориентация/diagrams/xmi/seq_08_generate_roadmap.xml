@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xmi:XMI xmi:version="2.1" xmlns:xmi="http://schema.omg.org/spec/XMI/2.1"
+         xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML">
+  <uml:Model xmi:id="model_seq08" name="Генерация дорожной карты">
+    <packagedElement xmi:type="uml:Interaction" xmi:id="ia_roadmap" name="Генерация дорожной карты обучения">
+
+      <lifeline xmi:id="ll_user" name="Студент"                   represents="ll_user"/>
+      <lifeline xmi:id="ll_c"    name="Браузер (Next.js)"          represents="ll_c"/>
+      <lifeline xmi:id="ll_pc"   name="ProfOrientationController"  represents="ll_pc"/>
+      <lifeline xmi:id="ll_rs"   name="RoadmapService"             represents="ll_rs"/>
+      <lifeline xmi:id="ll_ai"   name="Google Gemini 2.0 Flash"    represents="ll_ai"/>
+      <lifeline xmi:id="ll_db"   name="PostgreSQL"                 represents="ll_db"/>
+
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="m1s" covered="ll_user"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="m1r" covered="ll_c"/>
+      <message xmi:id="msg1" name="Выбрать специальность и нажать Получить дорожную карту" sendEvent="m1s" receiveEvent="m1r" messageSort="synchCall"/>
+
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="m2s" covered="ll_c"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="m2r" covered="ll_pc"/>
+      <message xmi:id="msg2" name="POST /professional-orientation/roadmap {professionId, orientationId}" sendEvent="m2s" receiveEvent="m2r" messageSort="synchCall"/>
+
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="m3s" covered="ll_pc"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="m3r" covered="ll_rs"/>
+      <message xmi:id="msg3" name="generateRoadmap(userId, professionId, orientationId)" sendEvent="m3s" receiveEvent="m3r" messageSort="synchCall"/>
+
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="m4s" covered="ll_rs"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="m4r" covered="ll_db"/>
+      <message xmi:id="msg4" name="SELECT professional_orientations WHERE id = orientationId" sendEvent="m4s" receiveEvent="m4r" messageSort="synchCall"/>
+
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="m5s" covered="ll_rs"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="m5r" covered="ll_rs"/>
+      <message xmi:id="msg5" name="buildPrompt(profession, traits, matchPercent)" sendEvent="m5s" receiveEvent="m5r" messageSort="synchCall"/>
+
+      <fragment xmi:type="uml:CombinedFragment" xmi:id="cf_gemini" interactionOperator="alt">
+        <operand xmi:id="op_gemini_ok">
+          <guard xmi:id="g_gemini_ok"><specification value="Gemini API доступен"/></guard>
+          <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="m6s" covered="ll_rs"/>
+          <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="m6r" covered="ll_ai"/>
+          <message xmi:id="msg6" name="generateContent(prompt)" sendEvent="m6s" receiveEvent="m6r" messageSort="synchCall"/>
+
+          <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="m7s" covered="ll_ai"/>
+          <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="m7r" covered="ll_rs"/>
+          <message xmi:id="msg7" name="JSON {phases: [{title, duration, goals[], resources[], checkpoint}]}" sendEvent="m7s" receiveEvent="m7r" messageSort="reply"/>
+        </operand>
+        <operand xmi:id="op_gemini_fail">
+          <guard xmi:id="g_gemini_fail"><specification value="Gemini API недоступен / превышена квота"/></guard>
+          <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="m8s" covered="ll_rs"/>
+          <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="m8r" covered="ll_rs"/>
+          <message xmi:id="msg8" name="generateFromTemplate(professionId)" sendEvent="m8s" receiveEvent="m8r" messageSort="synchCall"/>
+        </operand>
+      </fragment>
+
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="m9s" covered="ll_rs"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="m9r" covered="ll_db"/>
+      <message xmi:id="msg9" name="INSERT INTO learning_roadmaps {userId, orientationId, profession, phases}" sendEvent="m9s" receiveEvent="m9r" messageSort="synchCall"/>
+
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="m10s" covered="ll_pc"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="m10r" covered="ll_c"/>
+      <message xmi:id="msg10" name="200 OK {RoadmapDto {phases[], totalDuration}}" sendEvent="m10s" receiveEvent="m10r" messageSort="reply"/>
+
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="m11s" covered="ll_c"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="m11r" covered="ll_user"/>
+      <message xmi:id="msg11" name="Отобразить дорожную карту (4-5 фаз)" sendEvent="m11s" receiveEvent="m11r" messageSort="reply"/>
+    </packagedElement>
+  </uml:Model>
+</xmi:XMI>

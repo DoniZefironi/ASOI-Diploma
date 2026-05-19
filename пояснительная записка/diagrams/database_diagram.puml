@@ -1,0 +1,202 @@
+@startuml
+title Диаграмма базы данных
+
+hide methods
+skinparam classAttributeIconSize 0
+skinparam classBorderColor #666
+skinparam classBackgroundColor #FFFDE7
+skinparam linetype ortho
+
+entity users {
+  * id : Integer <<PK>>
+  --
+  * email : Text
+  * password : Text
+  * firstName : Text
+  * lastName : Text
+  avatar : Text
+  * isActive : Boolean
+  * createdAt : Timestamp
+  * updatedAt : Timestamp
+}
+
+entity user_roles {
+  * id : Integer <<PK>>
+  --
+  * userId : Integer <<FK>>
+  * role : Enum
+}
+
+entity courses {
+  * id : Integer <<PK>>
+  --
+  * name : Text
+  * type : Enum
+  * description : Text
+  * duration : Integer
+  * isActive : Boolean
+  imageUrl : Text
+  * createdAt : Timestamp
+  * updatedAt : Timestamp
+}
+
+entity course_groups {
+  * id : Integer <<PK>>
+  --
+  * name : Text
+  * year : Integer
+  * semester : Integer
+  * maxStudents : Integer
+  * isActive : Boolean
+  * startDate : Date
+  * endDate : Date
+  * courseId : Integer <<FK>>
+  * createdAt : Timestamp
+  * updatedAt : Timestamp
+}
+
+entity course_registrations {
+  * id : Integer <<PK>>
+  --
+  * userId : Integer <<FK>>
+  * courseGroupId : Integer <<FK>>
+  * status : Enum
+  * registeredAt : Timestamp
+  approvedAt : Timestamp
+  approvedBy : Integer
+}
+
+entity course_materials {
+  * id : Integer <<PK>>
+  --
+  * title : Text
+  * type : Enum
+  * fileUrl : Text
+  thumbnailUrl : Text
+  * isPublic : Boolean
+  * courseId : Integer <<FK>>
+  * uploadedById : Integer <<FK>>
+  * createdAt : Timestamp
+}
+
+entity assignments {
+  * id : Integer <<PK>>
+  --
+  * title : Text
+  * type : Enum
+  * maxScore : Integer
+  * deadline : Timestamp
+  * isActive : Boolean
+  * peerReviewEnabled : Boolean
+  * peerReviewsPerStudent : Integer
+  * courseGroupId : Integer <<FK>>
+  testCases : JSON
+  * createdAt : Timestamp
+}
+
+entity assignment_submissions {
+  * id : Integer <<PK>>
+  --
+  content : Text
+  attachments : JSON
+  repositoryUrl : Text
+  * status : Enum
+  submittedAt : Timestamp
+  finalScore : Integer
+  mentorFeedback : Text
+  * userId : Integer <<FK>>
+  * assignmentId : Integer <<FK>>
+  * createdAt : Timestamp
+}
+
+entity peer_reviews {
+  * id : Integer <<PK>>
+  --
+  * reviewerId : Integer <<FK>>
+  * submissionId : Integer <<FK>>
+  score : Decimal
+  criteriaScores : JSONB
+  feedback : Text
+  * isCompleted : Boolean
+  * createdAt : Timestamp
+}
+
+entity forum_sections {
+  * id : Integer <<PK>>
+  --
+  courseId : Integer <<FK>>
+  * title : Text
+  description : Text
+  * orderIndex : Integer
+  * isActive : Boolean
+  * createdAt : Timestamp
+}
+
+entity forum_topics {
+  * id : Integer <<PK>>
+  --
+  * sectionId : Integer <<FK>>
+  * authorId : Integer <<FK>>
+  * title : Text
+  content : Text
+  * isPinned : Boolean
+  * isClosed : Boolean
+  * viewsCount : Integer
+  lastPostAt : Timestamp
+  * createdAt : Timestamp
+}
+
+entity forum_posts {
+  * id : Integer <<PK>>
+  --
+  * topicId : Integer <<FK>>
+  * authorId : Integer <<FK>>
+  * content : Text
+  * isEdited : Boolean
+  * createdAt : Timestamp
+  updatedAt : Timestamp
+}
+
+entity schedule_items {
+  * id : Integer <<PK>>
+  --
+  * title : Text
+  * startTime : Timestamp
+  * endTime : Timestamp
+  * location : Text
+  meetingUrl : Text
+  * courseGroupId : Integer <<FK>>
+  instructorId : Integer <<FK>>
+  * createdAt : Timestamp
+}
+
+' Пользователи и роли
+users ||--o{ user_roles : "имеет"
+
+' Курсы и группы
+courses ||--o{ course_groups : "содержит"
+courses ||--o{ course_materials : "имеет"
+courses ||--o{ forum_sections : "имеет"
+
+' Группы
+course_groups ||--o{ course_registrations : "принимает"
+course_groups ||--o{ assignments : "содержит"
+course_groups ||--o{ schedule_items : "имеет"
+
+' Пользователи и учёба
+users ||--o{ course_registrations : "записывается"
+users ||--o{ assignment_submissions : "сдаёт"
+users ||--o{ peer_reviews : "пишет"
+users ||--o{ course_materials : "загружает"
+
+' Задания
+assignments ||--o{ assignment_submissions : "принимает"
+assignment_submissions ||--o{ peer_reviews : "получает"
+
+' Форум
+forum_sections ||--o{ forum_topics : "содержит"
+forum_topics ||--o{ forum_posts : "содержит"
+users ||--o{ forum_topics : "создаёт"
+users ||--o{ forum_posts : "пишет"
+
+@enduml

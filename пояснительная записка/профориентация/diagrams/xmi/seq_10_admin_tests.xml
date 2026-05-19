@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xmi:XMI xmi:version="2.1" xmlns:xmi="http://schema.omg.org/spec/XMI/2.1"
+         xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML">
+  <uml:Model xmi:id="model_seq10" name="Управление тестами (Администратор)">
+    <packagedElement xmi:type="uml:Interaction" xmi:id="ia_admin" name="Управление тестами (Администратор)">
+
+      <lifeline xmi:id="ll_admin" name="Администратор"    represents="ll_admin"/>
+      <lifeline xmi:id="ll_c"     name="Браузер (Next.js)" represents="ll_c"/>
+      <lifeline xmi:id="ll_ac"    name="AdminController"   represents="ll_ac"/>
+      <lifeline xmi:id="ll_as"    name="AdminService"      represents="ll_as"/>
+      <lifeline xmi:id="ll_db"    name="PostgreSQL"        represents="ll_db"/>
+
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="m1s" covered="ll_admin"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="m1r" covered="ll_c"/>
+      <message xmi:id="msg1" name="Открыть /admin/tests" sendEvent="m1s" receiveEvent="m1r" messageSort="synchCall"/>
+
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="m2s" covered="ll_c"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="m2r" covered="ll_ac"/>
+      <message xmi:id="msg2" name="GET /admin/tests Bearer admin_token" sendEvent="m2s" receiveEvent="m2r" messageSort="synchCall"/>
+
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="m3s" covered="ll_ac"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="m3r" covered="ll_as"/>
+      <message xmi:id="msg3" name="getAllTests()" sendEvent="m3s" receiveEvent="m3r" messageSort="synchCall"/>
+
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="m4s" covered="ll_as"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="m4r" covered="ll_db"/>
+      <message xmi:id="msg4" name="SELECT career_tests WITH COUNT(test_questions)" sendEvent="m4s" receiveEvent="m4r" messageSort="synchCall"/>
+
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="m5s" covered="ll_ac"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="m5r" covered="ll_c"/>
+      <message xmi:id="msg5" name="200 OK {tests[]}" sendEvent="m5s" receiveEvent="m5r" messageSort="reply"/>
+
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="m6s" covered="ll_admin"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="m6r" covered="ll_c"/>
+      <message xmi:id="msg6" name="Редактировать конфигурацию теста" sendEvent="m6s" receiveEvent="m6r" messageSort="synchCall"/>
+
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="m7s" covered="ll_c"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="m7r" covered="ll_ac"/>
+      <message xmi:id="msg7" name="PUT /admin/tests/:id {title, description, isActive}" sendEvent="m7s" receiveEvent="m7r" messageSort="synchCall"/>
+
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="m8s" covered="ll_as"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="m8r" covered="ll_db"/>
+      <message xmi:id="msg8" name="UPDATE career_tests SET ... WHERE id = ?" sendEvent="m8s" receiveEvent="m8r" messageSort="synchCall"/>
+
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="m9s" covered="ll_ac"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="m9r" covered="ll_c"/>
+      <message xmi:id="msg9" name="200 OK {updatedTest}" sendEvent="m9s" receiveEvent="m9r" messageSort="reply"/>
+
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="m10s" covered="ll_admin"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="m10r" covered="ll_c"/>
+      <message xmi:id="msg10" name="Деактивировать тест" sendEvent="m10s" receiveEvent="m10r" messageSort="synchCall"/>
+
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="m11s" covered="ll_c"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="m11r" covered="ll_ac"/>
+      <message xmi:id="msg11" name="PATCH /admin/tests/:id/toggle" sendEvent="m11s" receiveEvent="m11r" messageSort="synchCall"/>
+
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="m12s" covered="ll_as"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="m12r" covered="ll_db"/>
+      <message xmi:id="msg12" name="UPDATE career_tests SET isActive = NOT isActive WHERE id = ?" sendEvent="m12s" receiveEvent="m12r" messageSort="synchCall"/>
+
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="m13s" covered="ll_ac"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="m13r" covered="ll_c"/>
+      <message xmi:id="msg13" name="200 OK {isActive: false}" sendEvent="m13s" receiveEvent="m13r" messageSort="reply"/>
+
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="m14s" covered="ll_c"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="m14r" covered="ll_admin"/>
+      <message xmi:id="msg14" name="Тест деактивирован. Новые прохождения заблокированы." sendEvent="m14s" receiveEvent="m14r" messageSort="reply"/>
+    </packagedElement>
+  </uml:Model>
+</xmi:XMI>

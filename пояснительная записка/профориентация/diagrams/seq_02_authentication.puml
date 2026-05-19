@@ -1,0 +1,45 @@
+@startuml seq_02_authentication
+title Диаграмма последовательности: Проверка JWT-токена
+
+actor Пользователь as User
+participant "CareerPage\n(React)" as CP
+participant "API Client\n(axios)" as API
+participant "JwtAuthGuard\n(NestJS)" as Guard
+participant "ProfOrientationController\n(NestJS)" as PC
+database "users (БД)" as UserDB
+
+User -> CP: открыть /career
+CP -> API: GET /professional-orientation\nAuthorization: Bearer <token>
+API -> Guard: validateToken(token)
+
+alt Токен отсутствует
+  Guard --> API: 401 Unauthorized
+  API --> CP: ошибка 401
+  CP -> User: редирект на /auth
+else Токен присутствует
+  Guard -> Guard: jwt.verify(token, secret)
+
+  alt Токен просрочен или подпись неверна
+    Guard --> API: 401 Unauthorized
+    API --> CP: ошибка 401
+    CP -> CP: localStorage.removeItem('token')
+    CP -> User: редирект на /auth
+  else Токен валиден
+    Guard -> UserDB: findOne({ where: { id: payload.sub } })
+
+    alt Пользователь деактивирован
+      UserDB --> Guard: User { isActive: false }
+      Guard --> API: 403 Forbidden
+      API --> CP: ошибка 403
+      CP -> User: «Доступ запрещён»
+    else Пользователь активен
+      UserDB --> Guard: User { id, email, roles }
+      Guard -> PC: req.user = { userId, email, roles }
+      PC --> API: 200 { orientationData }
+      API --> CP: данные профориентации
+      CP -> User: отобразить страницу /career
+    end
+  end
+end
+
+@enduml

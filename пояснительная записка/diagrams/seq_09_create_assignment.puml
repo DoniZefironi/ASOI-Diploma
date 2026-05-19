@@ -1,0 +1,47 @@
+@startuml
+title Диаграмма последовательности: Создание задания (ментор)
+
+actor Ментор as M
+participant "CreateAssignmentPage\n(React)" as CAP
+participant "API Client\n(axios)" as API
+participant "AssignmentsController\n(NestJS)" as AC
+participant "MentorGuard\n(RoleGuard)" as MG
+database "Assignment (БД)" as ADB
+
+M -> CAP: открыть /admin/assignments/create
+CAP -> API: GET /courses/my\nAuthorization: Bearer <token>
+API -> AC: getMentorCourses(userId)
+AC --> API: courses[]
+API --> CAP: courses[]
+CAP -> M: отрисовать форму создания задания
+
+M -> CAP: выбрать курс и учебную группу
+M -> CAP: ввести название задания
+M -> CAP: выбрать тип (practice / test / peer_review / hackathon)
+M -> CAP: ввести описание и условие задания
+M -> CAP: установить дедлайн
+M -> CAP: нажать «Создать задание»
+CAP -> CAP: validateForm()
+
+alt Не заполнены обязательные поля
+  CAP -> M: показать ошибки валидации
+else Форма корректна
+  CAP -> API: POST /assignments\n{ courseId, groupId, title, type,\n  description, deadline }\nAuthorization: Bearer <token>
+  API -> MG: canActivate(token, MENTOR_ROLES)
+
+  alt Роль не входит в MENTOR_ROLES
+    MG --> API: 403 Forbidden
+    API --> CAP: ошибка 403
+    CAP -> M: «Нет прав доступа»
+  else Роль подтверждена
+    MG --> AC: разрешено
+    AC -> ADB: save(assignmentDto)
+    ADB --> AC: Assignment { id }
+    AC --> API: 201 { assignmentId }
+    API --> CAP: успех
+    CAP -> M: «Задание успешно создано»
+    CAP -> CAP: router.push('/admin/assignments')
+  end
+end
+
+@enduml

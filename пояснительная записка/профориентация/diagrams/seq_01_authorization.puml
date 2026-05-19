@@ -1,0 +1,52 @@
+@startuml seq_01_authorization
+title Диаграмма последовательности: Авторизация пользователя
+
+actor Пользователь as User
+participant "AuthPage\n(React)" as AP
+participant "API Client\n(axios)" as API
+participant "AuthController\n(NestJS)" as AC
+participant "AuthService\n(NestJS)" as AS
+database "users (БД)" as UserDB
+
+User -> AP: открыть /auth
+AP -> AP: render форма входа
+
+User -> AP: ввести email и пароль
+User -> AP: нажать «Войти»
+AP -> AP: validateForm()
+
+alt Поля пусты или email некорректен
+  AP -> User: отобразить ошибки валидации
+else Форма заполнена корректно
+  AP -> API: POST /auth/login\n{ email, password }
+  API -> AC: login(loginDto)
+  AC -> AS: validateUser(email, password)
+  AS -> UserDB: findOne({ where: { email } })
+
+  alt Пользователь не найден
+    UserDB --> AS: null
+    AS --> AC: null
+    AC --> API: 401 Unauthorized
+    API --> AP: ошибка 401
+    AP -> User: «Неверный email или пароль»
+  else Пользователь найден
+    UserDB --> AS: User { id, passwordHash, roles }
+    AS -> AS: bcrypt.compare(password, passwordHash)
+
+    alt Пароль неверный
+      AS --> AC: null
+      AC --> API: 401 Unauthorized
+      API --> AP: ошибка 401
+      AP -> User: «Неверный email или пароль»
+    else Пароль верный
+      AS -> AS: jwt.sign({ sub, email, roles })
+      AS --> AC: JwtToken
+      AC --> API: 200 { access_token, user }
+      API --> AP: { access_token, user }
+      AP -> AP: localStorage.setItem('token', access_token)
+      AP -> User: редирект на /career
+    end
+  end
+end
+
+@enduml

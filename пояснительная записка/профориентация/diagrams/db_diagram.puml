@@ -1,0 +1,88 @@
+@startuml db_diagram
+title Диаграмма базы данных — Платформа профориентации
+
+hide methods
+skinparam classAttributeIconSize 0
+skinparam classBorderColor #555
+skinparam classBackgroundColor #E8F5E9
+skinparam linetype ortho
+skinparam nodesep 60
+skinparam ranksep 80
+
+entity users {
+  * id : Integer <<PK>>
+  --
+  * email : Text
+  * password : Text
+  * firstName : Text
+  * lastName : Text
+  avatar : Text
+  * isActive : Boolean
+  * createdAt : Timestamp
+  * updatedAt : Timestamp
+}
+
+entity user_roles {
+  * id : Integer <<PK>>
+  --
+  * userId : Integer <<FK>>
+  * role : Enum
+}
+
+entity career_tests {
+  * id : Integer <<PK>>
+  --
+  * type : Text
+  * title : Text
+  * description : Text
+  * duration : Text
+  * answerFormat : Text
+  * questions : JSONB
+  * categoryMeta : JSONB
+  * isActive : Boolean
+}
+
+entity test_questions {
+  * id : Integer <<PK>>
+  --
+  * testId : Integer <<FK>>
+  * questionText : Text
+  * questionType : Text
+  * orderNum : Integer
+}
+
+entity professional_orientations {
+  * id : Integer <<PK>>
+  --
+  * userId : Integer <<FK>>
+  * testResult : JSONB
+  * recommendedProfession : Text
+  * createdAt : Timestamp
+  * updatedAt : Timestamp
+}
+
+entity learning_roadmaps {
+  * id : Integer <<PK>>
+  --
+  * userId : Integer <<FK>>
+  * orientationId : Integer <<FK>>
+  * profession : Text
+  * phases : JSONB
+  * totalDuration : Text
+  * createdAt : Timestamp
+}
+
+' Пользователи и роли
+users ||--o{ user_roles : "имеет"
+
+' Пользователи и результаты
+users ||--o{ professional_orientations : "проходит"
+users ||--o{ learning_roadmaps : "получает"
+
+' Тесты и вопросы
+career_tests ||--o{ test_questions : "содержит"
+
+' Результаты и дорожные карты
+professional_orientations ||--o{ learning_roadmaps : "порождает"
+
+@enduml

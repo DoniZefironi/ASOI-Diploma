@@ -1,0 +1,47 @@
+@startuml seq_08_generate_roadmap
+title Диаграмма последовательности: Генерация дорожной карты обучения
+
+actor Студент as S
+participant "CareerPage\n(React)" as CP
+participant "API Client\n(axios)" as API
+participant "ProfOrientationController\n(NestJS)" as PC
+participant "RoadmapService\n(NestJS)" as RS
+participant "Google Gemini\n2.0 Flash" as AI
+database "professional_orientations (БД)" as OrDB
+database "learning_roadmaps (БД)" as RmDB
+
+S -> CP: выбрать специальность из топ-5
+S -> CP: нажать «Получить дорожную карту»
+CP -> API: POST /professional-orientation/roadmap\n{ careerId, careerTitle, traitScores{},\nfiredRuleDescriptions[], confidence }\nAuthorization: Bearer <token>
+API -> PC: generateRoadmap(dto)
+PC -> RS: generateRoadmap(dto)
+
+RS -> RS: buildPrompt(careerTitle, confidence, traitScores, firedRuleDescriptions)
+
+note right of RS
+  Промпт содержит:
+  — целевую специальность
+  — % совместимости
+  — топ-3 сильных трейта
+  — слабые трейты (< 5)
+  — описание сработавших правил
+end note
+
+RS -> AI: generateContent(prompt)
+
+alt Gemini API доступен
+  AI --> RS: JSON { phases: [{ title, duration, goals[], resources[], checkpoint }] }
+  RS -> RS: validateResponse(json)
+else Gemini API недоступен / превышена квота
+  RS -> RS: generateFromTemplate(careerId)
+  note right: Резервный шаблонный генератор
+end
+
+RS -> RmDB: save({ userId, profession: careerTitle, phases, totalDuration })
+RmDB --> RS: savedRoadmap
+RS --> PC: RoadmapDto { phases[], totalDuration }
+PC --> API: 200 OK { roadmap }
+API --> CP: roadmap
+CP -> S: отобразить дорожную карту:\n4–5 фаз с целями, ресурсами,\nсроками и контрольными точками
+
+@enduml

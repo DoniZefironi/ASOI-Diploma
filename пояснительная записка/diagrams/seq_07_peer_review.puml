@@ -1,0 +1,54 @@
+@startuml
+title Диаграмма последовательности: Взаимное рецензирование
+
+actor Студент as S
+participant "PeerReviewPage\n(React)" as PRP
+participant "API Client\n(axios)" as API
+participant "PeerReviewController\n(NestJS)" as PRC
+database "PeerReview (БД)" as PRD
+database "AssignmentSubmission (БД)" as SubDB
+
+S -> PRP: открыть /peer-review
+PRP -> API: GET /peer-review/pending\nAuthorization: Bearer <token>
+API -> PRC: getPendingReviews(userId)
+PRC -> PRD: findPending({ reviewerId: userId })
+
+alt Нет работ для рецензирования
+  PRD --> PRC: []
+  PRC --> API: 200 []
+  API --> PRP: пустой список
+  PRP -> S: «Нет работ для проверки»
+else Есть работы для рецензирования
+  PRD --> PRC: PeerReview[] { submissionId }
+  PRC -> SubDB: findByIds(submissionIds)
+  SubDB --> PRC: submissions[]
+  PRC --> API: 200 reviews[]
+  API --> PRP: reviews[]
+  PRP -> S: отрисовать список работ
+
+  S -> PRP: выбрать работу
+  PRP -> API: GET /peer-review/:reviewId/submission
+  API -> PRC: getSubmissionForReview(reviewId, userId)
+  PRC --> API: 200 submissionContent
+  API --> PRP: контент работы
+  PRP -> S: отрисовать работу студента
+
+  S -> PRP: написать комментарий
+  S -> PRP: выставить оценку (1–5)
+  S -> PRP: нажать «Отправить рецензию»
+  PRP -> PRP: validateReview()
+
+  alt Комментарий пустой или оценка не выставлена
+    PRP -> S: показать ошибки валидации
+  else Рецензия заполнена
+    PRP -> API: POST /peer-review/:reviewId/submit\n{ score, comment }\nAuthorization: Bearer <token>
+    API -> PRC: submitReview(reviewId, userId, score, comment)
+    PRC -> PRD: update({ score, comment, status: 'completed' })
+    PRD --> PRC: PeerReview (обновлённый)
+    PRC --> API: 200 { success: true }
+    API --> PRP: успех
+    PRP -> S: «Рецензия успешно отправлена»
+  end
+end
+
+@enduml

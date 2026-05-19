@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xmi:XMI xmi:version="2.1" xmlns:xmi="http://schema.omg.org/spec/XMI/2.1"
+         xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML">
+  <uml:Model xmi:id="model_05" name="Сдача задания студентом">
+    <packagedElement xmi:type="uml:Interaction" xmi:id="int_05" name="Сдача задания студентом">
+
+      <lifeline xmi:id="ll_05_1" name="Студент"/>
+      <lifeline xmi:id="ll_05_2" name="AssignmentPage (React)"/>
+      <lifeline xmi:id="ll_05_3" name="API Client (axios)"/>
+      <lifeline xmi:id="ll_05_4" name="AssignmentsController (NestJS)"/>
+      <lifeline xmi:id="ll_05_5" name="Assignment (БД)"/>
+      <lifeline xmi:id="ll_05_6" name="AssignmentSubmission (БД)"/>
+
+      <message xmi:id="m_05_01" name="открыть /courses/:courseId/assignments/:assignId" messageSort="synchCall"
+               sendEvent="occ_05_01s" receiveEvent="occ_05_01r"/>
+      <message xmi:id="m_05_02" name="GET /assignments/:id Authorization: Bearer token" messageSort="synchCall"
+               sendEvent="occ_05_02s" receiveEvent="occ_05_02r"/>
+      <message xmi:id="m_05_03" name="getAssignment(id)" messageSort="synchCall"
+               sendEvent="occ_05_03s" receiveEvent="occ_05_03r"/>
+      <message xmi:id="m_05_04" name="findOne(id)" messageSort="synchCall"
+               sendEvent="occ_05_04s" receiveEvent="occ_05_04r"/>
+      <message xmi:id="m_05_05" name="Assignment { title, description, type, deadline }" messageSort="reply"
+               sendEvent="occ_05_05s" receiveEvent="occ_05_05r"/>
+      <message xmi:id="m_05_06" name="200 Assignment" messageSort="reply"
+               sendEvent="occ_05_06s" receiveEvent="occ_05_06r"/>
+      <message xmi:id="m_05_07" name="assignment" messageSort="reply"
+               sendEvent="occ_05_07s" receiveEvent="occ_05_07r"/>
+      <message xmi:id="m_05_08" name="отрисовать условие задания" messageSort="reply"
+               sendEvent="occ_05_08s" receiveEvent="occ_05_08r"/>
+      <message xmi:id="m_05_09" name="написать ответ в текстовое поле" messageSort="synchCall"
+               sendEvent="occ_05_09s" receiveEvent="occ_05_09r"/>
+      <message xmi:id="m_05_10" name="нажать «Отправить»" messageSort="synchCall"
+               sendEvent="occ_05_10s" receiveEvent="occ_05_10r"/>
+      <message xmi:id="m_05_11" name="validateContent()" messageSort="synchCall"
+               sendEvent="occ_05_11s" receiveEvent="occ_05_11r"/>
+      <message xmi:id="m_05_12" name="«Поле не может быть пустым»" messageSort="reply"
+               sendEvent="occ_05_12s" receiveEvent="occ_05_12r"/>
+      <message xmi:id="m_05_13" name="POST /assignments/:id/submit { content } Authorization: Bearer token" messageSort="synchCall"
+               sendEvent="occ_05_13s" receiveEvent="occ_05_13r"/>
+      <message xmi:id="m_05_14" name="submit(assignmentId, userId, content)" messageSort="synchCall"
+               sendEvent="occ_05_14s" receiveEvent="occ_05_14r"/>
+      <message xmi:id="m_05_15" name="save({ assignmentId, userId, content, status: 'pending', submittedAt })" messageSort="synchCall"
+               sendEvent="occ_05_15s" receiveEvent="occ_05_15r"/>
+      <message xmi:id="m_05_16" name="AssignmentSubmission { id }" messageSort="reply"
+               sendEvent="occ_05_16s" receiveEvent="occ_05_16r"/>
+      <message xmi:id="m_05_17" name="201 { submissionId }" messageSort="reply"
+               sendEvent="occ_05_17s" receiveEvent="occ_05_17r"/>
+      <message xmi:id="m_05_18" name="успех" messageSort="reply"
+               sendEvent="occ_05_18s" receiveEvent="occ_05_18r"/>
+      <message xmi:id="m_05_19" name="«Задание отправлено на проверку»" messageSort="reply"
+               sendEvent="occ_05_19s" receiveEvent="occ_05_19r"/>
+
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_05_01s" covered="ll_05_1" message="m_05_01"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_05_01r" covered="ll_05_2" message="m_05_01"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_05_02s" covered="ll_05_2" message="m_05_02"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_05_02r" covered="ll_05_3" message="m_05_02"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_05_03s" covered="ll_05_3" message="m_05_03"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_05_03r" covered="ll_05_4" message="m_05_03"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_05_04s" covered="ll_05_4" message="m_05_04"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_05_04r" covered="ll_05_5" message="m_05_04"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_05_05s" covered="ll_05_5" message="m_05_05"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_05_05r" covered="ll_05_4" message="m_05_05"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_05_06s" covered="ll_05_4" message="m_05_06"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_05_06r" covered="ll_05_3" message="m_05_06"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_05_07s" covered="ll_05_3" message="m_05_07"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_05_07r" covered="ll_05_2" message="m_05_07"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_05_08s" covered="ll_05_2" message="m_05_08"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_05_08r" covered="ll_05_1" message="m_05_08"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_05_09s" covered="ll_05_1" message="m_05_09"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_05_09r" covered="ll_05_2" message="m_05_09"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_05_10s" covered="ll_05_1" message="m_05_10"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_05_10r" covered="ll_05_2" message="m_05_10"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_05_11s" covered="ll_05_2" message="m_05_11"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_05_11r" covered="ll_05_2" message="m_05_11"/>
+
+      <fragment xmi:type="uml:CombinedFragment" xmi:id="cf_05_1" interactionOperator="alt">
+        <covered>ll_05_1</covered><covered>ll_05_2</covered><covered>ll_05_3</covered>
+        <covered>ll_05_4</covered><covered>ll_05_6</covered>
+        <operand xmi:type="uml:InteractionOperand" xmi:id="op_05_1a">
+          <guard xmi:id="g_05_1a"><specification xmi:type="uml:LiteralString" xmi:id="gs_05_1a" value="Ответ пустой"/></guard>
+          <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_05_12s" covered="ll_05_2" message="m_05_12"/>
+          <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_05_12r" covered="ll_05_1" message="m_05_12"/>
+        </operand>
+        <operand xmi:type="uml:InteractionOperand" xmi:id="op_05_1b">
+          <guard xmi:id="g_05_1b"><specification xmi:type="uml:LiteralString" xmi:id="gs_05_1b" value="Ответ заполнен"/></guard>
+          <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_05_13s" covered="ll_05_2" message="m_05_13"/>
+          <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_05_13r" covered="ll_05_3" message="m_05_13"/>
+          <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_05_14s" covered="ll_05_3" message="m_05_14"/>
+          <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_05_14r" covered="ll_05_4" message="m_05_14"/>
+          <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_05_15s" covered="ll_05_4" message="m_05_15"/>
+          <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_05_15r" covered="ll_05_6" message="m_05_15"/>
+          <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_05_16s" covered="ll_05_6" message="m_05_16"/>
+          <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_05_16r" covered="ll_05_4" message="m_05_16"/>
+          <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_05_17s" covered="ll_05_4" message="m_05_17"/>
+          <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_05_17r" covered="ll_05_3" message="m_05_17"/>
+          <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_05_18s" covered="ll_05_3" message="m_05_18"/>
+          <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_05_18r" covered="ll_05_2" message="m_05_18"/>
+          <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_05_19s" covered="ll_05_2" message="m_05_19"/>
+          <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_05_19r" covered="ll_05_1" message="m_05_19"/>
+        </operand>
+      </fragment>
+
+    </packagedElement>
+  </uml:Model>
+</xmi:XMI>

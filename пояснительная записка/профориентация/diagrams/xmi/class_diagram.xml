@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xmi:XMI xmi:version="2.1" xmlns:xmi="http://schema.omg.org/spec/XMI/2.1"
+         xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML">
+  <uml:Model xmi:id="model_class" name="Class Diagram — Профориентация (Controllers and Services)">
+
+    <!-- ===== PACKAGE: Auth ===== -->
+    <packagedElement xmi:type="uml:Package" xmi:id="pkg_auth" name="Auth">
+      <packagedElement xmi:type="uml:Class" xmi:id="cls_auth_ctrl" name="AuthController">
+        <ownedOperation xmi:id="op_ac1" name="login"    visibility="public"/>
+        <ownedOperation xmi:id="op_ac2" name="register" visibility="public"/>
+      </packagedElement>
+      <packagedElement xmi:type="uml:Class" xmi:id="cls_auth_svc" name="AuthService">
+        <ownedOperation xmi:id="op_as1" name="login"         visibility="public"/>
+        <ownedOperation xmi:id="op_as2" name="register"      visibility="public"/>
+        <ownedOperation xmi:id="op_as3" name="validateUser"  visibility="public"/>
+        <ownedOperation xmi:id="op_as4" name="generateToken" visibility="private"/>
+      </packagedElement>
+      <packagedElement xmi:type="uml:Association" xmi:id="assoc_ac_as">
+        <memberEnd xmi:idref="ae_ac_as_src"/>
+        <memberEnd xmi:idref="ae_ac_as_tgt"/>
+        <ownedEnd xmi:id="ae_ac_as_src" type="cls_auth_ctrl" lower="1" upper="1"/>
+        <ownedEnd xmi:id="ae_ac_as_tgt" type="cls_auth_svc"  lower="1" upper="1"/>
+      </packagedElement>
+    </packagedElement>
+
+    <!-- ===== PACKAGE: Users ===== -->
+    <packagedElement xmi:type="uml:Package" xmi:id="pkg_users" name="Users">
+      <packagedElement xmi:type="uml:Class" xmi:id="cls_users_ctrl" name="UsersController">
+        <ownedOperation xmi:id="op_uc1" name="findAll"      visibility="public"/>
+        <ownedOperation xmi:id="op_uc2" name="findById"     visibility="public"/>
+        <ownedOperation xmi:id="op_uc3" name="getMyProfile" visibility="public"/>
+        <ownedOperation xmi:id="op_uc4" name="updateRole"   visibility="public"/>
+        <ownedOperation xmi:id="op_uc5" name="deactivate"   visibility="public"/>
+      </packagedElement>
+      <packagedElement xmi:type="uml:Class" xmi:id="cls_users_svc" name="UsersService">
+        <ownedOperation xmi:id="op_us1" name="findAll"    visibility="public"/>
+        <ownedOperation xmi:id="op_us2" name="findById"   visibility="public"/>
+        <ownedOperation xmi:id="op_us3" name="updateRole" visibility="public"/>
+        <ownedOperation xmi:id="op_us4" name="setActive"  visibility="public"/>
+      </packagedElement>
+      <packagedElement xmi:type="uml:Association" xmi:id="assoc_uc_us">
+        <memberEnd xmi:idref="ae_uc_us_src"/>
+        <memberEnd xmi:idref="ae_uc_us_tgt"/>
+        <ownedEnd xmi:id="ae_uc_us_src" type="cls_users_ctrl" lower="1" upper="1"/>
+        <ownedEnd xmi:id="ae_uc_us_tgt" type="cls_users_svc"  lower="1" upper="1"/>
+      </packagedElement>
+    </packagedElement>
+
+    <!-- ===== PACKAGE: ProfessionalOrientation ===== -->
+    <packagedElement xmi:type="uml:Package" xmi:id="pkg_po" name="ProfessionalOrientation">
+      <packagedElement xmi:type="uml:Class" xmi:id="cls_po_ctrl" name="ProfOrientationController">
+        <ownedOperation xmi:id="op_poc1" name="getTests"         visibility="public"/>
+        <ownedOperation xmi:id="op_poc2" name="getTestQuestions" visibility="public"/>
+        <ownedOperation xmi:id="op_poc3" name="submitTest"       visibility="public"/>
+        <ownedOperation xmi:id="op_poc4" name="getResults"       visibility="public"/>
+        <ownedOperation xmi:id="op_poc5" name="getHistory"       visibility="public"/>
+        <ownedOperation xmi:id="op_poc6" name="getHistoryItem"   visibility="public"/>
+        <ownedOperation xmi:id="op_poc7" name="generateRoadmap"  visibility="public"/>
+      </packagedElement>
+      <packagedElement xmi:type="uml:Class" xmi:id="cls_po_svc" name="ProfOrientationService">
+        <ownedOperation xmi:id="op_pos1" name="submitTest"     visibility="public"/>
+        <ownedOperation xmi:id="op_pos2" name="getResults"     visibility="public"/>
+        <ownedOperation xmi:id="op_pos3" name="getHistory"     visibility="public"/>
+        <ownedOperation xmi:id="op_pos4" name="getHistoryItem" visibility="public"/>
+      </packagedElement>
+      <packagedElement xmi:type="uml:Association" xmi:id="assoc_poc_pos">
+        <memberEnd xmi:idref="ae_poc_pos_src"/>
+        <memberEnd xmi:idref="ae_poc_pos_tgt"/>
+        <ownedEnd xmi:id="ae_poc_pos_src" type="cls_po_ctrl" lower="1" upper="1"/>
+        <ownedEnd xmi:id="ae_poc_pos_tgt" type="cls_po_svc"  lower="1" upper="1"/>
+      </packagedElement>
+    </packagedElement>
+
+    <!-- ===== PACKAGE: InferenceEngine ===== -->
+    <packagedElement xmi:type="uml:Package" xmi:id="pkg_ie" name="InferenceEngine">
+      <packagedElement xmi:type="uml:Class" xmi:id="cls_ie_svc" name="InferenceEngineService">
+        <ownedOperation xmi:id="op_ie1" name="runInference"          visibility="public"/>
+        <ownedOperation xmi:id="op_ie2" name="normalizeScores"       visibility="public"/>
+        <ownedOperation xmi:id="op_ie3" name="runForwardChaining"    visibility="public"/>
+        <ownedOperation xmi:id="op_ie4" name="combineMYCIN"          visibility="public"/>
+        <ownedOperation xmi:id="op_ie5" name="buildPersonalityProfile" visibility="public"/>
+        <ownedOperation xmi:id="op_ie6" name="extractStrengths"      visibility="public"/>
+        <ownedOperation xmi:id="op_ie7" name="extractWeaknesses"     visibility="public"/>
+      </packagedElement>
+    </packagedElement>
+
+    <!-- ===== PACKAGE: Roadmap ===== -->
+    <packagedElement xmi:type="uml:Package" xmi:id="pkg_rm" name="Roadmap">
+      <packagedElement xmi:type="uml:Class" xmi:id="cls_rm_svc" name="RoadmapService">
+        <ownedOperation xmi:id="op_rm1" name="generateRoadmap"      visibility="public"/>
+        <ownedOperation xmi:id="op_rm2" name="generateWithGemini"   visibility="public"/>
+        <ownedOperation xmi:id="op_rm3" name="generateFromTemplate" visibility="public"/>
+        <ownedOperation xmi:id="op_rm4" name="buildPrompt"          visibility="private"/>
+      </packagedElement>
+    </packagedElement>
+
+    <!-- ===== PACKAGE: Admin ===== -->
+    <packagedElement xmi:type="uml:Package" xmi:id="pkg_admin" name="Admin">
+      <packagedElement xmi:type="uml:Class" xmi:id="cls_admin_ctrl" name="AdminController">
+        <ownedOperation xmi:id="op_admc1" name="getAllTests"       visibility="public"/>
+        <ownedOperation xmi:id="op_admc2" name="updateTest"        visibility="public"/>
+        <ownedOperation xmi:id="op_admc3" name="toggleTestActive"  visibility="public"/>
+        <ownedOperation xmi:id="op_admc4" name="addQuestion"       visibility="public"/>
+        <ownedOperation xmi:id="op_admc5" name="deleteQuestion"    visibility="public"/>
+        <ownedOperation xmi:id="op_admc6" name="getAnalytics"      visibility="public"/>
+        <ownedOperation xmi:id="op_admc7" name="getUsers"          visibility="public"/>
+        <ownedOperation xmi:id="op_admc8" name="updateUserRole"    visibility="public"/>
+      </packagedElement>
+      <packagedElement xmi:type="uml:Class" xmi:id="cls_admin_svc" name="AdminService">
+        <ownedOperation xmi:id="op_adms1" name="getAllTests"      visibility="public"/>
+        <ownedOperation xmi:id="op_adms2" name="updateTest"       visibility="public"/>
+        <ownedOperation xmi:id="op_adms3" name="toggleTestActive" visibility="public"/>
+        <ownedOperation xmi:id="op_adms4" name="addQuestion"      visibility="public"/>
+        <ownedOperation xmi:id="op_adms5" name="deleteQuestion"   visibility="public"/>
+        <ownedOperation xmi:id="op_adms6" name="getAnalytics"     visibility="public"/>
+      </packagedElement>
+      <packagedElement xmi:type="uml:Association" xmi:id="assoc_admc_adms">
+        <memberEnd xmi:idref="ae_admc_adms_src"/>
+        <memberEnd xmi:idref="ae_admc_adms_tgt"/>
+        <ownedEnd xmi:id="ae_admc_adms_src" type="cls_admin_ctrl" lower="1" upper="1"/>
+        <ownedEnd xmi:id="ae_admc_adms_tgt" type="cls_admin_svc"  lower="1" upper="1"/>
+      </packagedElement>
+    </packagedElement>
+
+    <!-- ===== CROSS-PACKAGE DEPENDENCIES ===== -->
+    <packagedElement xmi:type="uml:Dependency" xmi:id="dep_auth_users"
+                     client="cls_auth_svc" supplier="cls_users_svc"/>
+    <packagedElement xmi:type="uml:Dependency" xmi:id="dep_pos_ie"
+                     client="cls_po_svc" supplier="cls_ie_svc"/>
+    <packagedElement xmi:type="uml:Dependency" xmi:id="dep_pos_rm"
+                     client="cls_po_svc" supplier="cls_rm_svc"/>
+    <packagedElement xmi:type="uml:Dependency" xmi:id="dep_admin_users"
+                     client="cls_admin_svc" supplier="cls_users_svc"/>
+
+  </uml:Model>
+</xmi:XMI>

@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xmi:XMI xmi:version="2.1" xmlns:xmi="http://schema.omg.org/spec/XMI/2.1"
+         xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML">
+  <uml:Model xmi:id="model_12" name="Управление пользователями (администратор)">
+    <packagedElement xmi:type="uml:Interaction" xmi:id="int_12" name="Управление пользователями (администратор)">
+
+      <lifeline xmi:id="ll_12_1" name="Администратор"/>
+      <lifeline xmi:id="ll_12_2" name="UsersPage (React)"/>
+      <lifeline xmi:id="ll_12_3" name="API Client (axios)"/>
+      <lifeline xmi:id="ll_12_4" name="UsersController (NestJS)"/>
+      <lifeline xmi:id="ll_12_5" name="AdminGuard (RoleGuard)"/>
+      <lifeline xmi:id="ll_12_6" name="User (БД)"/>
+      <lifeline xmi:id="ll_12_7" name="UserRole (БД)"/>
+
+      <message xmi:id="m_12_01" name="открыть /admin/users" messageSort="synchCall"
+               sendEvent="occ_12_01s" receiveEvent="occ_12_01r"/>
+      <message xmi:id="m_12_02" name="GET /users?page=1&amp;limit=20 Authorization: Bearer token" messageSort="synchCall"
+               sendEvent="occ_12_02s" receiveEvent="occ_12_02r"/>
+      <message xmi:id="m_12_03" name="canActivate(token, 'admin')" messageSort="synchCall"
+               sendEvent="occ_12_03s" receiveEvent="occ_12_03r"/>
+      <message xmi:id="m_12_04" name="403 Forbidden" messageSort="reply"
+               sendEvent="occ_12_04s" receiveEvent="occ_12_04r"/>
+      <message xmi:id="m_12_05" name="ошибка 403" messageSort="reply"
+               sendEvent="occ_12_05s" receiveEvent="occ_12_05r"/>
+      <message xmi:id="m_12_06" name="«Нет прав доступа»" messageSort="reply"
+               sendEvent="occ_12_06s" receiveEvent="occ_12_06r"/>
+      <message xmi:id="m_12_07" name="разрешено" messageSort="reply"
+               sendEvent="occ_12_07s" receiveEvent="occ_12_07r"/>
+      <message xmi:id="m_12_08" name="findAll({ pagination, relations: ['roles'] })" messageSort="synchCall"
+               sendEvent="occ_12_08s" receiveEvent="occ_12_08r"/>
+      <message xmi:id="m_12_09" name="{ users[], total }" messageSort="reply"
+               sendEvent="occ_12_09s" receiveEvent="occ_12_09r"/>
+      <message xmi:id="m_12_10" name="200 { users[], meta: { total, page } }" messageSort="reply"
+               sendEvent="occ_12_10s" receiveEvent="occ_12_10r"/>
+      <message xmi:id="m_12_11" name="users[]" messageSort="reply"
+               sendEvent="occ_12_11s" receiveEvent="occ_12_11r"/>
+      <message xmi:id="m_12_12" name="отрисовать таблицу пользователей" messageSort="reply"
+               sendEvent="occ_12_12s" receiveEvent="occ_12_12r"/>
+      <message xmi:id="m_12_13" name="ввести запрос в поле поиска" messageSort="synchCall"
+               sendEvent="occ_12_13s" receiveEvent="occ_12_13r"/>
+      <message xmi:id="m_12_14" name="GET /users?search=query" messageSort="synchCall"
+               sendEvent="occ_12_14s" receiveEvent="occ_12_14r"/>
+      <message xmi:id="m_12_15" name="searchUsers(query)" messageSort="synchCall"
+               sendEvent="occ_12_15s" receiveEvent="occ_12_15r"/>
+      <message xmi:id="m_12_16" name="findByNameOrEmail(query)" messageSort="synchCall"
+               sendEvent="occ_12_16s" receiveEvent="occ_12_16r"/>
+      <message xmi:id="m_12_17" name="users[]" messageSort="reply"
+               sendEvent="occ_12_17s" receiveEvent="occ_12_17r"/>
+      <message xmi:id="m_12_18" name="200 users[]" messageSort="reply"
+               sendEvent="occ_12_18s" receiveEvent="occ_12_18r"/>
+      <message xmi:id="m_12_19" name="отфильтрованный список" messageSort="reply"
+               sendEvent="occ_12_19s" receiveEvent="occ_12_19r"/>
+      <message xmi:id="m_12_20" name="обновить таблицу" messageSort="reply"
+               sendEvent="occ_12_20s" receiveEvent="occ_12_20r"/>
+      <message xmi:id="m_12_21" name="выбрать пользователя → «Изменить роль»" messageSort="synchCall"
+               sendEvent="occ_12_21s" receiveEvent="occ_12_21r"/>
+      <message xmi:id="m_12_22" name="выбрать новую роль из списка" messageSort="synchCall"
+               sendEvent="occ_12_22s" receiveEvent="occ_12_22r"/>
+      <message xmi:id="m_12_23" name="нажать «Сохранить»" messageSort="synchCall"
+               sendEvent="occ_12_23s" receiveEvent="occ_12_23r"/>
+      <message xmi:id="m_12_24" name="PATCH /users/:id/role { role: 'mentor_electronics' }" messageSort="synchCall"
+               sendEvent="occ_12_24s" receiveEvent="occ_12_24r"/>
+      <message xmi:id="m_12_25" name="updateUserRole(userId, role)" messageSort="synchCall"
+               sendEvent="occ_12_25s" receiveEvent="occ_12_25r"/>
+      <message xmi:id="m_12_26" name="upsert({ userId, role })" messageSort="synchCall"
+               sendEvent="occ_12_26s" receiveEvent="occ_12_26r"/>
+      <message xmi:id="m_12_27" name="UserRole (обновлённый)" messageSort="reply"
+               sendEvent="occ_12_27s" receiveEvent="occ_12_27r"/>
+      <message xmi:id="m_12_28" name="200 успех" messageSort="reply"
+               sendEvent="occ_12_28s" receiveEvent="occ_12_28r"/>
+      <message xmi:id="m_12_29" name="обновлённый пользователь" messageSort="reply"
+               sendEvent="occ_12_29s" receiveEvent="occ_12_29r"/>
+      <message xmi:id="m_12_30" name="показать обновлённую роль" messageSort="reply"
+               sendEvent="occ_12_30s" receiveEvent="occ_12_30r"/>
+      <message xmi:id="m_12_31" name="нажать «Заблокировать пользователя»" messageSort="synchCall"
+               sendEvent="occ_12_31s" receiveEvent="occ_12_31r"/>
+      <message xmi:id="m_12_32" name="показать диалог подтверждения" messageSort="synchCall"
+               sendEvent="occ_12_32s" receiveEvent="occ_12_32r"/>
+      <message xmi:id="m_12_33" name="подтвердить" messageSort="synchCall"
+               sendEvent="occ_12_33s" receiveEvent="occ_12_33r"/>
+      <message xmi:id="m_12_34" name="«Нельзя заблокировать единственного администратора»" messageSort="reply"
+               sendEvent="occ_12_34s" receiveEvent="occ_12_34r"/>
+      <message xmi:id="m_12_35" name="PATCH /users/:id { isActive: false }" messageSort="synchCall"
+               sendEvent="occ_12_35s" receiveEvent="occ_12_35r"/>
+      <message xmi:id="m_12_36" name="deactivateUser(userId)" messageSort="synchCall"
+               sendEvent="occ_12_36s" receiveEvent="occ_12_36r"/>
+      <message xmi:id="m_12_37" name="update({ isActive: false })" messageSort="synchCall"
+               sendEvent="occ_12_37s" receiveEvent="occ_12_37r"/>
+      <message xmi:id="m_12_38" name="обновлено" messageSort="reply"
+               sendEvent="occ_12_38s" receiveEvent="occ_12_38r"/>
+      <message xmi:id="m_12_39" name="200 успех" messageSort="reply"
+               sendEvent="occ_12_39s" receiveEvent="occ_12_39r"/>
+      <message xmi:id="m_12_40" name="успех" messageSort="reply"
+               sendEvent="occ_12_40s" receiveEvent="occ_12_40r"/>
+      <message xmi:id="m_12_41" name="отметить пользователя как заблокированного" messageSort="reply"
+               sendEvent="occ_12_41s" receiveEvent="occ_12_41r"/>
+
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_12_01s" covered="ll_12_1" message="m_12_01"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_12_01r" covered="ll_12_2" message="m_12_01"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_12_02s" covered="ll_12_2" message="m_12_02"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_12_02r" covered="ll_12_3" message="m_12_02"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_12_03s" covered="ll_12_3" message="m_12_03"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_12_03r" covered="ll_12_5" message="m_12_03"/>
+
+      <fragment xmi:type="uml:CombinedFragment" xmi:id="cf_12_1" interactionOperator="alt">
+        <covered>ll_12_1</covered><covered>ll_12_2</covered><covered>ll_12_3</covered>
+        <covered>ll_12_4</covered><covered>ll_12_5</covered><covered>ll_12_6</covered><covered>ll_12_7</covered>
+        <operand xmi:type="uml:InteractionOperand" xmi:id="op_12_1a">
+          <guard xmi:id="g_12_1a"><specification xmi:type="uml:LiteralString" xmi:id="gs_12_1a" value="Роль не admin"/></guard>
+          <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_12_04s" covered="ll_12_5" message="m_12_04"/>
+          <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_12_04r" covered="ll_12_3" message="m_12_04"/>
+          <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_12_05s" covered="ll_12_3" message="m_12_05"/>
+          <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_12_05r" covered="ll_12_2" message="m_12_05"/>
+          <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_12_06s" covered="ll_12_2" message="m_12_06"/>
+          <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_12_06r" covered="ll_12_1" message="m_12_06"/>
+        </operand>
+        <operand xmi:type="uml:InteractionOperand" xmi:id="op_12_1b">
+          <guard xmi:id="g_12_1b"><specification xmi:type="uml:LiteralString" xmi:id="gs_12_1b" value="Роль admin подтверждена"/></guard>
+          <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_12_07s" covered="ll_12_5" message="m_12_07"/>
+          <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_12_07r" covered="ll_12_4" message="m_12_07"/>
+          <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_12_08s" covered="ll_12_4" message="m_12_08"/>
+          <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_12_08r" covered="ll_12_6" message="m_12_08"/>
+          <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_12_09s" covered="ll_12_6" message="m_12_09"/>
+          <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_12_09r" covered="ll_12_4" message="m_12_09"/>
+          <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_12_10s" covered="ll_12_4" message="m_12_10"/>
+          <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_12_10r" covered="ll_12_3" message="m_12_10"/>
+          <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_12_11s" covered="ll_12_3" message="m_12_11"/>
+          <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_12_11r" covered="ll_12_2" message="m_12_11"/>
+          <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_12_12s" covered="ll_12_2" message="m_12_12"/>
+          <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_12_12r" covered="ll_12_1" message="m_12_12"/>
+          <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_12_13s" covered="ll_12_1" message="m_12_13"/>
+          <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_12_13r" covered="ll_12_2" message="m_12_13"/>
+          <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_12_14s" covered="ll_12_2" message="m_12_14"/>
+          <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_12_14r" covered="ll_12_3" message="m_12_14"/>
+          <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_12_15s" covered="ll_12_3" message="m_12_15"/>
+          <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_12_15r" covered="ll_12_4" message="m_12_15"/>
+          <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_12_16s" covered="ll_12_4" message="m_12_16"/>
+          <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_12_16r" covered="ll_12_6" message="m_12_16"/>
+          <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_12_17s" covered="ll_12_6" message="m_12_17"/>
+          <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_12_17r" covered="ll_12_4" message="m_12_17"/>
+          <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_12_18s" covered="ll_12_4" message="m_12_18"/>
+          <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_12_18r" covered="ll_12_3" message="m_12_18"/>
+          <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_12_19s" covered="ll_12_3" message="m_12_19"/>
+          <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_12_19r" covered="ll_12_2" message="m_12_19"/>
+          <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_12_20s" covered="ll_12_2" message="m_12_20"/>
+          <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_12_20r" covered="ll_12_1" message="m_12_20"/>
+          <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_12_21s" covered="ll_12_1" message="m_12_21"/>
+          <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_12_21r" covered="ll_12_2" message="m_12_21"/>
+          <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_12_22s" covered="ll_12_1" message="m_12_22"/>
+          <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_12_22r" covered="ll_12_2" message="m_12_22"/>
+          <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_12_23s" covered="ll_12_1" message="m_12_23"/>
+          <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_12_23r" covered="ll_12_2" message="m_12_23"/>
+          <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_12_24s" covered="ll_12_2" message="m_12_24"/>
+          <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_12_24r" covered="ll_12_3" message="m_12_24"/>
+          <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_12_25s" covered="ll_12_3" message="m_12_25"/>
+          <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_12_25r" covered="ll_12_4" message="m_12_25"/>
+          <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_12_26s" covered="ll_12_4" message="m_12_26"/>
+          <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_12_26r" covered="ll_12_7" message="m_12_26"/>
+          <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_12_27s" covered="ll_12_7" message="m_12_27"/>
+          <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_12_27r" covered="ll_12_4" message="m_12_27"/>
+          <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_12_28s" covered="ll_12_4" message="m_12_28"/>
+          <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_12_28r" covered="ll_12_3" message="m_12_28"/>
+          <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_12_29s" covered="ll_12_3" message="m_12_29"/>
+          <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_12_29r" covered="ll_12_2" message="m_12_29"/>
+          <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_12_30s" covered="ll_12_2" message="m_12_30"/>
+          <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_12_30r" covered="ll_12_1" message="m_12_30"/>
+          <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_12_31s" covered="ll_12_1" message="m_12_31"/>
+          <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_12_31r" covered="ll_12_2" message="m_12_31"/>
+          <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_12_32s" covered="ll_12_2" message="m_12_32"/>
+          <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_12_32r" covered="ll_12_1" message="m_12_32"/>
+          <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_12_33s" covered="ll_12_1" message="m_12_33"/>
+          <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_12_33r" covered="ll_12_2" message="m_12_33"/>
+          <fragment xmi:type="uml:CombinedFragment" xmi:id="cf_12_2" interactionOperator="alt">
+            <covered>ll_12_1</covered><covered>ll_12_2</covered><covered>ll_12_3</covered>
+            <covered>ll_12_4</covered><covered>ll_12_6</covered>
+            <operand xmi:type="uml:InteractionOperand" xmi:id="op_12_2a">
+              <guard xmi:id="g_12_2a"><specification xmi:type="uml:LiteralString" xmi:id="gs_12_2a" value="Пользователь — единственный администратор"/></guard>
+              <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_12_34s" covered="ll_12_2" message="m_12_34"/>
+              <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_12_34r" covered="ll_12_1" message="m_12_34"/>
+            </operand>
+            <operand xmi:type="uml:InteractionOperand" xmi:id="op_12_2b">
+              <guard xmi:id="g_12_2b"><specification xmi:type="uml:LiteralString" xmi:id="gs_12_2b" value="Блокировка разрешена"/></guard>
+              <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_12_35s" covered="ll_12_2" message="m_12_35"/>
+              <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_12_35r" covered="ll_12_3" message="m_12_35"/>
+              <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_12_36s" covered="ll_12_3" message="m_12_36"/>
+              <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_12_36r" covered="ll_12_4" message="m_12_36"/>
+              <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_12_37s" covered="ll_12_4" message="m_12_37"/>
+              <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_12_37r" covered="ll_12_6" message="m_12_37"/>
+              <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_12_38s" covered="ll_12_6" message="m_12_38"/>
+              <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_12_38r" covered="ll_12_4" message="m_12_38"/>
+              <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_12_39s" covered="ll_12_4" message="m_12_39"/>
+              <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_12_39r" covered="ll_12_3" message="m_12_39"/>
+              <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_12_40s" covered="ll_12_3" message="m_12_40"/>
+              <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_12_40r" covered="ll_12_2" message="m_12_40"/>
+              <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_12_41s" covered="ll_12_2" message="m_12_41"/>
+              <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="occ_12_41r" covered="ll_12_1" message="m_12_41"/>
+            </operand>
+          </fragment>
+        </operand>
+      </fragment>
+
+    </packagedElement>
+  </uml:Model>
+</xmi:XMI>

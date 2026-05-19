@@ -1,0 +1,9 @@
+FROM node:22-alpine
+
+# Ограничиваем доступ к системе
+RUN addgroup -g 1001 -S sandbox && \
+    adduser -u 1001 -S sandbox -G sandbox
+
+USER sandbox
+
+WORKDIR /app

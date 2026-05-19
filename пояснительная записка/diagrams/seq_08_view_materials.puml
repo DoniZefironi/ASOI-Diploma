@@ -1,0 +1,48 @@
+@startuml
+title Диаграмма последовательности: Просмотр библиотеки материалов
+
+actor Студент as S
+participant "LibraryPage\n(React)" as LP
+participant "API Client\n(axios)" as API
+participant "MaterialsController\n(NestJS)" as MC
+database "CourseMaterial (БД)" as MatDB
+
+S -> LP: открыть /library
+LP -> API: GET /materials/public?page=1&limit=18
+API -> MC: getPublicMaterials(query)
+MC -> MatDB: findAll({ isPublic: true, pagination })
+MatDB --> MC: CourseMaterial[]
+MC --> API: 200 { materials[], meta }
+API --> LP: { materials[], meta }
+LP -> S: отрисовать книжную полку
+
+S -> LP: ввести поисковый запрос
+LP -> API: GET /materials/public?search=<text>&page=1
+API -> MC: getPublicMaterials({ search })
+MC -> MatDB: findAll({ where: LIKE search })
+MatDB --> MC: CourseMaterial[]
+MC --> API: 200 materials[]
+API --> LP: materials[]
+LP -> S: обновить список материалов
+
+S -> LP: выбрать фильтр по типу материала
+S -> LP: выбрать фильтр по курсу
+LP -> API: GET /materials/public?type=<type>&courseId=<id>
+API -> MC: getPublicMaterials({ type, courseId })
+MC -> MatDB: findAll({ type, courseId })
+MatDB --> MC: CourseMaterial[]
+MC --> API: 200 materials[]
+API --> LP: materials[]
+LP -> S: отрисовать отфильтрованный список
+
+S -> LP: нажать на карточку материала
+LP -> S: открыть детали материала\n(title, description, type, fileUrl)
+
+S -> LP: нажать «Скачать / Открыть»
+LP -> API: GET /materials/:id/download
+API -> MC: downloadFile(materialId)
+MC --> API: fileStream
+API --> LP: файл
+LP -> S: инициировать загрузку файла
+
+@enduml

@@ -1,0 +1,44 @@
+@startuml
+title Диаграмма последовательности: Работа с симулятором схем
+
+actor Студент as S
+participant "CircuitSimulatorPage\n(React)" as CSP
+participant "CircuitStore\n(Zustand)" as CS
+participant "API Client\n(axios)" as API
+participant "CircuitController\n(NestJS)" as CC
+database "CircuitSubmission (БД)" as CDB
+
+S -> CSP: открыть страницу задания с симулятором
+CSP -> CS: initStore()
+
+S -> CSP: перетащить компонент на холст
+CSP -> CS: addNode({ type, x, y })
+CS -> CS: обновить nodes[]
+
+S -> CSP: соединить компоненты проводом
+CSP -> CS: addWire({ from: {nodeId, slot}, to: {nodeId, slot} })
+CS -> CS: обновить wires[]
+
+S -> CSP: нажать «Симулировать»
+CSP -> CS: getCircuitData()
+CS --> CSP: { nodes[], wires[] }
+CSP -> CSP: propagateSignals(nodes, wires) — локально\n(макс. 50 итераций)
+
+alt Схема содержит ошибки соединений
+  CSP -> S: подсветить некорректные соединения
+else Схема корректна
+  CSP -> S: показать сигналы на элементах (SVG)
+
+  S -> CSP: нажать «Сдать схему»
+  CSP -> CS: getCircuitData()
+  CS --> CSP: { nodes[], wires[] }
+  CSP -> API: POST /circuit/assignments/:assignmentId/submit\n{ circuitData }\nAuthorization: Bearer <token>
+  API -> CC: submitCircuit(assignmentId, userId, circuitData)
+  CC -> CDB: save({ userId, assignmentId, circuitData, submittedAt })
+  CDB --> CC: CircuitSubmission { id }
+  CC --> API: 201 { submissionId }
+  API --> CSP: успех
+  CSP -> S: «Схема успешно отправлена на проверку»
+end
+
+@enduml

@@ -1,0 +1,51 @@
+@startuml
+title Диаграмма последовательности: Регистрация
+
+actor Пользователь as User
+participant "AuthPage\n(React)" as AP
+participant "API Client\n(axios)" as API
+participant "AuthController\n(NestJS)" as AC
+database "User (БД)" as DB
+
+User -> AP: открыть /auth → переключить на «Создать аккаунт»
+AP -> AP: render режим регистрации
+
+User -> AP: ввести имя и фамилию
+User -> AP: ввести email
+User -> AP: ввести пароль
+User -> AP: установить чекбокс согласия с условиями
+User -> AP: решить математическую капчу
+User -> AP: нажать «Создать аккаунт»
+AP -> AP: validateForm()
+
+alt Поля не заполнены / email некорректен / чекбокс не установлен
+  AP -> User: отобразить ошибки валидации
+else Форма корректна
+  AP -> AP: проверить ответ капчи локально
+
+  alt Ответ капчи неверный
+    AP -> User: «Неверный ответ. Попробуйте ещё раз»
+  else Капча решена верно
+    AP -> API: POST /auth/register\n{ email, password, firstName, lastName }
+    API -> AC: register(registerDto)
+    AC -> DB: findOne({ where: { email } })
+
+    alt Email уже зарегистрирован
+      DB --> AC: User (существующий)
+      AC --> API: 409 Conflict
+      API --> AP: ошибка 409
+      AP -> User: alert «Аккаунт с таким email уже существует»
+    else Email свободен
+      DB --> AC: null
+      AC -> AC: bcrypt.hash(password, 12)
+      AC -> DB: save({ firstName, lastName, email,\n  passwordHash, role: REGISTERED_USER })
+      DB --> AC: User { id }
+      AC --> API: 201 { id, email }
+      API --> AP: успех
+      AP -> User: alert «Аккаунт успешно создан! Войдите.»
+      AP -> AP: переключить на режим входа
+    end
+  end
+end
+
+@enduml

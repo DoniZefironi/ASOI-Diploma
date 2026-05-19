@@ -1,0 +1,48 @@
+@startuml
+title Диаграмма последовательности: Запись на курс
+
+actor Студент as S
+participant "CoursesPage\n(React)" as CP
+participant "API Client\n(axios)" as API
+participant "CoursesController\n(NestJS)" as CC
+database "Course (БД)" as CourseDB
+database "CourseRegistration (БД)" as RegDB
+
+S -> CP: открыть /courses
+CP -> API: GET /courses
+API -> CC: getCourses()
+CC -> CourseDB: findAll({ where: { isActive: true } })
+CourseDB --> CC: Course[]
+CC --> API: 200 Course[]
+API --> CP: courses[]
+CP -> S: отрисовать карточки курсов
+
+S -> CP: нажать «Подробнее» на курсе
+CP -> API: GET /courses/:id
+API -> CC: getCourseById(id)
+CC -> CourseDB: findOne(id, { relations: ['groups'] })
+CourseDB --> CC: Course { groups[], description }
+CC --> API: 200 courseDetails
+API --> CP: courseDetails
+CP -> S: отрисовать страницу курса с группами
+
+S -> CP: нажать «Записаться»
+CP -> API: POST /course-registrations\n{ courseId }\nAuthorization: Bearer <token>
+API -> CC: enroll(courseId, userId)
+CC -> RegDB: findOne({ courseId, userId })
+
+alt Студент уже записан
+  RegDB --> CC: CourseRegistration (существующая)
+  CC --> API: 409 Conflict
+  API --> CP: ошибка 409
+  CP -> S: «Вы уже записаны на этот курс»
+else Запись свободна
+  RegDB --> CC: null
+  CC -> RegDB: save({ courseId, userId, enrolledAt })
+  RegDB --> CC: CourseRegistration { id }
+  CC --> API: 201 { registrationId }
+  API --> CP: успех
+  CP -> S: «Вы успешно записаны»
+end
+
+@enduml

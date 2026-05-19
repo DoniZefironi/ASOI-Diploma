@@ -1,0 +1,43 @@
+# Stage 1: Builder
+FROM node:18-alpine AS builder
+WORKDIR /app
+COPY package.json package-lock.json* ./
+RUN npm ci
+COPY . .
+RUN npm run build
+
+# Stage 2: Production
+FROM node:18-alpine AS production
+WORKDIR /app
+
+ENV NODE_ENV=production
+ENV PORT=2904
+
+RUN addgroup -g 1001 -S nodejs
+RUN adduser -S nestjs -u 1001
+
+# Копируем package files для production зависимостей
+COPY package.json package-lock.json* ./
+RUN npm ci --only=production --omit=dev
+
+# Копируем собранное приложение
+COPY --from=builder --chown=nestjs:nodejs /app/dist ./dist
+
+# Фикс для crypto в Alpine - устанавливаем необходимые пакеты
+RUN apk add --no-cache curl
+
+RUN mkdir -p /app/uploads && chown -R nestjs:nodejs /app/uploads
+
+# Явный фикс для crypto.randomUUID() в Alpine
+RUN echo "const crypto = require('crypto');" > crypto-fix.js && \
+    echo "global.crypto = { randomUUID: () => crypto.randomUUID() };" >> crypto-fix.js
+
+USER nestjs
+
+EXPOSE 2904
+
+HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
+  CMD curl -f http://localhost:2904/health || exit 1
+
+# Запускаем с фиксом для crypto
+CMD ["node", "-r", "./crypto-fix.js", "dist/main"]

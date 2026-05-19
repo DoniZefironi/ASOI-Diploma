@@ -1,0 +1,43 @@
+@startuml
+title Диаграмма последовательности: Авторизация
+
+actor Пользователь as User
+participant "AuthPage\n(React)" as AP
+participant "AuthStore\n(Zustand)" as AS
+participant "API Client\n(axios)" as API
+participant "AuthController\n(NestJS)" as AC
+database "User (БД)" as DB
+
+User -> AP: открыть /auth
+AP -> AP: render режим входа
+
+User -> AP: ввести email
+User -> AP: ввести пароль
+User -> AP: нажать «Войти»
+AP -> AP: validateForm()
+
+alt Поля не заполнены или email некорректен
+  AP -> User: отобразить ошибки валидации полей
+else Форма заполнена корректно
+  AP -> API: POST /auth/login\n{ email, password }
+  API -> AC: login(loginDto)
+  AC -> DB: findOne({ where: { email } })
+
+  alt Пользователь не найден или пароль неверный
+    DB --> AC: null / bcrypt.compare → false
+    AC --> API: 401 Unauthorized
+    API --> AP: ошибка 401
+    AP -> User: alert «Неверный email или пароль»
+  else Данные верны
+    DB --> AC: User { id, passwordHash, roles }
+    AC -> AC: bcrypt.compare(password, passwordHash) → true
+    AC -> AC: jwt.sign({ sub, email, roles })
+    AC --> API: 200 { access_token, user }
+    API --> AP: { access_token, user }
+    AP -> AS: setToken(access_token)
+    AP -> AS: setUser(user)
+    AP -> AP: router.push('/')
+  end
+end
+
+@enduml

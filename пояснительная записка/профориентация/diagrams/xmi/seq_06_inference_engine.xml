@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xmi:XMI xmi:version="2.1" xmlns:xmi="http://schema.omg.org/spec/XMI/2.1"
+         xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML">
+  <uml:Model xmi:id="model_seq06" name="Механизм прямого вывода">
+    <packagedElement xmi:type="uml:Interaction" xmi:id="ia_infer" name="Механизм прямого вывода (Forward Chaining + MYCIN)">
+
+      <lifeline xmi:id="ll_ps"  name="ProfOrientationService"  represents="ll_ps"/>
+      <lifeline xmi:id="ll_ie"  name="InferenceEngineService"  represents="ll_ie"/>
+      <lifeline xmi:id="ll_kb"  name="KnowledgeBase"           represents="ll_kb"/>
+
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="m1s" covered="ll_ps"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="m1r" covered="ll_ie"/>
+      <message xmi:id="msg1" name="runInference(traitsVector)" sendEvent="m1s" receiveEvent="m1r" messageSort="synchCall"/>
+
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="m2s" covered="ll_ie"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="m2r" covered="ll_kb"/>
+      <message xmi:id="msg2" name="loadRules()" sendEvent="m2s" receiveEvent="m2r" messageSort="synchCall"/>
+
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="m3s" covered="ll_kb"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="m3r" covered="ll_ie"/>
+      <message xmi:id="msg3" name="rules[]: {profession, conditions[], CF}" sendEvent="m3s" receiveEvent="m3r" messageSort="reply"/>
+
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="m4s" covered="ll_ie"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="m4r" covered="ll_ie"/>
+      <message xmi:id="msg4" name="normalizeScores(rawScores) → traits[9] ∈ [0..10]" sendEvent="m4s" receiveEvent="m4r" messageSort="synchCall"/>
+
+      <fragment xmi:type="uml:CombinedFragment" xmi:id="cf_loop_rules" interactionOperator="loop">
+        <operand xmi:id="op_rules">
+          <guard xmi:id="g_rules"><specification value="Для каждого правила rules[i]"/></guard>
+          <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="m5s" covered="ll_ie"/>
+          <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="m5r" covered="ll_ie"/>
+          <message xmi:id="msg5" name="checkConditions(traits, rule.conditions)" sendEvent="m5s" receiveEvent="m5r" messageSort="synchCall"/>
+
+          <fragment xmi:type="uml:CombinedFragment" xmi:id="cf_fired" interactionOperator="alt">
+            <operand xmi:id="op_fired">
+              <guard xmi:id="g_fired"><specification value="Правило сработало (все условия выполнены)"/></guard>
+              <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="m6s" covered="ll_ie"/>
+              <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="m6r" covered="ll_ie"/>
+              <message xmi:id="msg6" name="combineMYCIN(CF[profession], rule.CF)" sendEvent="m6s" receiveEvent="m6r" messageSort="synchCall"/>
+            </operand>
+          </fragment>
+        </operand>
+      </fragment>
+
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="m7s" covered="ll_ie"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="m7r" covered="ll_ie"/>
+      <message xmi:id="msg7" name="Фильтр CF × 100 >= 35%; сортировка; топ-5" sendEvent="m7s" receiveEvent="m7r" messageSort="synchCall"/>
+
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="m8s" covered="ll_ie"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="m8r" covered="ll_ie"/>
+      <message xmi:id="msg8" name="buildPersonalityProfile(traits) → архетип" sendEvent="m8s" receiveEvent="m8r" messageSort="synchCall"/>
+
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="m9s" covered="ll_ie"/>
+      <fragment xmi:type="uml:MessageOccurrenceSpecification" xmi:id="m9r" covered="ll_ps"/>
+      <message xmi:id="msg9" name="InferenceResult {topProfessions, personalityProfile, strengths, weaknesses}" sendEvent="m9s" receiveEvent="m9r" messageSort="reply"/>
+    </packagedElement>
+  </uml:Model>
+</xmi:XMI>

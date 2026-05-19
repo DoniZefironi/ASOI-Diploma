@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xmi:XMI xmi:version="2.1" xmlns:xmi="http://schema.omg.org/spec/XMI/2.1"
+         xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML">
+  <uml:Model xmi:id="model_ctrl" name="Controllers">
+    <packagedElement xmi:type="uml:Package" xmi:id="pkg_guards" name="guards">
+
+      <packagedElement xmi:type="uml:Interface" xmi:id="iface_can_activate" name="CanActivate">
+        <ownedOperation xmi:id="op_ca1" name="canActivate" visibility="public"/>
+      </packagedElement>
+
+      <packagedElement xmi:type="uml:Class" xmi:id="cls_jwt_guard" name="JwtAuthGuard">
+        <ownedOperation xmi:id="op_jwt1" name="canActivate" visibility="public"/>
+        <interfaceRealization xmi:id="ir_jwt" client="cls_jwt_guard" supplier="iface_can_activate"/>
+      </packagedElement>
+
+      <packagedElement xmi:type="uml:Class" xmi:id="cls_roles_guard" name="RolesGuard">
+        <ownedOperation xmi:id="op_rg1" name="canActivate" visibility="public"/>
+        <interfaceRealization xmi:id="ir_rg" client="cls_roles_guard" supplier="iface_can_activate"/>
+      </packagedElement>
+
+    </packagedElement>
+
+    <packagedElement xmi:type="uml:Package" xmi:id="pkg_ctrl" name="controllers">
+
+      <packagedElement xmi:type="uml:Class" xmi:id="cls_auth_ctrl" name="AuthController">
+        <ownedAttribute xmi:id="a_ac1" name="authService" visibility="private"/>
+        <ownedOperation xmi:id="op_ac1" name="login" visibility="public"/>
+        <ownedOperation xmi:id="op_ac2" name="register" visibility="public"/>
+        <ownedOperation xmi:id="op_ac3" name="debug" visibility="public"/>
+      </packagedElement>
+
+      <packagedElement xmi:type="uml:Class" xmi:id="cls_users_ctrl" name="UsersController">
+        <ownedAttribute xmi:id="a_uc1" name="usersService" visibility="private"/>
+        <ownedOperation xmi:id="op_uc1" name="findAll" visibility="public"/>
+        <ownedOperation xmi:id="op_uc2" name="findOne" visibility="public"/>
+        <ownedOperation xmi:id="op_uc3" name="getProfile" visibility="public"/>
+        <ownedOperation xmi:id="op_uc4" name="findMentorsByCourseType" visibility="public"/>
+        <ownedOperation xmi:id="op_uc5" name="updateRoles" visibility="public"/>
+      </packagedElement>
+
+      <packagedElement xmi:type="uml:Class" xmi:id="cls_courses_ctrl" name="CoursesController">
+        <ownedAttribute xmi:id="a_cc1" name="coursesService" visibility="private"/>
+        <ownedOperation xmi:id="op_cc1" name="findAll" visibility="public"/>
+        <ownedOperation xmi:id="op_cc2" name="findOne" visibility="public"/>
+        <ownedOperation xmi:id="op_cc3" name="findByType" visibility="public"/>
+        <ownedOperation xmi:id="op_cc4" name="create" visibility="public"/>
+        <ownedOperation xmi:id="op_cc5" name="update" visibility="public"/>
+        <ownedOperation xmi:id="op_cc6" name="remove" visibility="public"/>
+      </packagedElement>
+
+      <packagedElement xmi:type="uml:Class" xmi:id="cls_groups_ctrl" name="CourseGroupsController">
+        <ownedAttribute xmi:id="a_gc1" name="courseGroupsService" visibility="private"/>
+        <ownedOperation xmi:id="op_gc1" name="findAll" visibility="public"/>
+        <ownedOperation xmi:id="op_gc2" name="findOne" visibility="public"/>
+        <ownedOperation xmi:id="op_gc3" name="getGroupsByCourse" visibility="public"/>
+        <ownedOperation xmi:id="op_gc4" name="getGroupStudents" visibility="public"/>
+        <ownedOperation xmi:id="op_gc5" name="create" visibility="public"/>
+        <ownedOperation xmi:id="op_gc6" name="update" visibility="public"/>
+        <ownedOperation xmi:id="op_gc7" name="remove" visibility="public"/>
+        <ownedOperation xmi:id="op_gc8" name="register" visibility="public"/>
+        <ownedOperation xmi:id="op_gc9" name="approveRegistration" visibility="public"/>
+        <ownedOperation xmi:id="op_gc10" name="rejectRegistration" visibility="public"/>
+      </packagedElement>
+
+      <packagedElement xmi:type="uml:Class" xmi:id="cls_assign_ctrl" name="AssignmentsController">
+        <ownedAttribute xmi:id="a_asc1" name="assignmentsService" visibility="private"/>
+        <ownedOperation xmi:id="op_asc1" name="findAllAssignments" visibility="public"/>
+        <ownedOperation xmi:id="op_asc2" name="findAssignmentById" visibility="public"/>
+        <ownedOperation xmi:id="op_asc3" name="getCourseGroupAssignments" visibility="public"/>
+        <ownedOperation xmi:id="op_asc4" name="createAssignment" visibility="public"/>
+        <ownedOperation xmi:id="op_asc5" name="updateAssignment" visibility="public"/>
+        <ownedOperation xmi:id="op_asc6" name="removeAssignment" visibility="public"/>
+        <ownedOperation xmi:id="op_asc7" name="createSubmission" visibility="public"/>
+        <ownedOperation xmi:id="op_asc8" name="getMySubmissions" visibility="public"/>
+        <ownedOperation xmi:id="op_asc9" name="getSubmissionById" visibility="public"/>
+        <ownedOperation xmi:id="op_asc10" name="getAssignmentSubmissions" visibility="public"/>
+        <ownedOperation xmi:id="op_asc11" name="createPeerReview" visibility="public"/>
+        <ownedOperation xmi:id="op_asc12" name="calculateFinalGrade" visibility="public"/>
+        <ownedOperation xmi:id="op_asc13" name="getCourseGroupGrades" visibility="public"/>
+      </packagedElement>
+
+      <packagedElement xmi:type="uml:Class" xmi:id="cls_mat_ctrl" name="MaterialsController">
+        <ownedAttribute xmi:id="a_mc1" name="materialsService" visibility="private"/>
+        <ownedOperation xmi:id="op_mc1" name="findAll" visibility="public"/>
+        <ownedOperation xmi:id="op_mc2" name="getPublicMaterials" visibility="public"/>
+        <ownedOperation xmi:id="op_mc3" name="findByCourse" visibility="public"/>
+        <ownedOperation xmi:id="op_mc4" name="findByType" visibility="public"/>
+        <ownedOperation xmi:id="op_mc5" name="findOne" visibility="public"/>
+        <ownedOperation xmi:id="op_mc6" name="create" visibility="public"/>
+        <ownedOperation xmi:id="op_mc7" name="update" visibility="public"/>
+        <ownedOperation xmi:id="op_mc8" name="remove" visibility="public"/>
+      </packagedElement>
+
+      <packagedElement xmi:type="uml:Class" xmi:id="cls_forum_ctrl" name="ForumController">
+        <ownedAttribute xmi:id="a_fc1" name="forumService" visibility="private"/>
+        <ownedOperation xmi:id="op_fc1" name="findAllSections" visibility="public"/>
+        <ownedOperation xmi:id="op_fc2" name="getSectionsByCourse" visibility="public"/>
+        <ownedOperation xmi:id="op_fc3" name="createSection" visibility="public"/>
+        <ownedOperation xmi:id="op_fc4" name="updateSection" visibility="public"/>
+        <ownedOperation xmi:id="op_fc5" name="deleteSection" visibility="public"/>
+        <ownedOperation xmi:id="op_fc6" name="getTopicsBySection" visibility="public"/>
+        <ownedOperation xmi:id="op_fc7" name="createTopic" visibility="public"/>
+        <ownedOperation xmi:id="op_fc8" name="updateTopic" visibility="public"/>
+        <ownedOperation xmi:id="op_fc9" name="toggleTopicPinned" visibility="public"/>
+        <ownedOperation xmi:id="op_fc10" name="toggleTopicClosed" visibility="public"/>
+        <ownedOperation xmi:id="op_fc11" name="deleteTopic" visibility="public"/>
+        <ownedOperation xmi:id="op_fc12" name="getPostsByTopic" visibility="public"/>
+        <ownedOperation xmi:id="op_fc13" name="createPost" visibility="public"/>
+        <ownedOperation xmi:id="op_fc14" name="updatePost" visibility="public"/>
+        <ownedOperation xmi:id="op_fc15" name="deletePost" visibility="public"/>
+      </packagedElement>
+
+      <packagedElement xmi:type="uml:Class" xmi:id="cls_sched_ctrl" name="ScheduleController">
+        <ownedAttribute xmi:id="a_sc1" name="scheduleService" visibility="private"/>
+        <ownedOperation xmi:id="op_sc1" name="findAll" visibility="public"/>
+        <ownedOperation xmi:id="op_sc2" name="getUserSchedule" visibility="public"/>
+        <ownedOperation xmi:id="op_sc3" name="findByCourseGroup" visibility="public"/>
+        <ownedOperation xmi:id="op_sc4" name="findByDateRange" visibility="public"/>
+        <ownedOperation xmi:id="op_sc5" name="findOne" visibility="public"/>
+        <ownedOperation xmi:id="op_sc6" name="create" visibility="public"/>
+        <ownedOperation xmi:id="op_sc7" name="update" visibility="public"/>
+        <ownedOperation xmi:id="op_sc8" name="remove" visibility="public"/>
+      </packagedElement>
+
+      <packagedElement xmi:type="uml:Class" xmi:id="cls_circuit_ctrl" name="CircuitController">
+        <ownedAttribute xmi:id="a_circ1" name="circuitService" visibility="private"/>
+        <ownedOperation xmi:id="op_circ1" name="submitCircuit" visibility="public"/>
+        <ownedOperation xmi:id="op_circ2" name="getMySubmissions" visibility="public"/>
+        <ownedOperation xmi:id="op_circ3" name="getSubmission" visibility="public"/>
+      </packagedElement>
+
+      <!-- Guard dependencies -->
+      <packagedElement xmi:type="uml:Dependency" xmi:id="dep_ac_jwt" client="cls_auth_ctrl" supplier="cls_jwt_guard"/>
+      <packagedElement xmi:type="uml:Dependency" xmi:id="dep_uc_jwt" client="cls_users_ctrl" supplier="cls_jwt_guard"/>
+      <packagedElement xmi:type="uml:Dependency" xmi:id="dep_uc_rg"  client="cls_users_ctrl" supplier="cls_roles_guard"/>
+      <packagedElement xmi:type="uml:Dependency" xmi:id="dep_cc_jwt" client="cls_courses_ctrl" supplier="cls_jwt_guard"/>
+      <packagedElement xmi:type="uml:Dependency" xmi:id="dep_cc_rg"  client="cls_courses_ctrl" supplier="cls_roles_guard"/>
+      <packagedElement xmi:type="uml:Dependency" xmi:id="dep_gc_jwt" client="cls_groups_ctrl" supplier="cls_jwt_guard"/>
+      <packagedElement xmi:type="uml:Dependency" xmi:id="dep_gc_rg"  client="cls_groups_ctrl" supplier="cls_roles_guard"/>
+      <packagedElement xmi:type="uml:Dependency" xmi:id="dep_asc_jwt" client="cls_assign_ctrl" supplier="cls_jwt_guard"/>
+      <packagedElement xmi:type="uml:Dependency" xmi:id="dep_asc_rg"  client="cls_assign_ctrl" supplier="cls_roles_guard"/>
+      <packagedElement xmi:type="uml:Dependency" xmi:id="dep_mc_jwt" client="cls_mat_ctrl" supplier="cls_jwt_guard"/>
+      <packagedElement xmi:type="uml:Dependency" xmi:id="dep_mc_rg"  client="cls_mat_ctrl" supplier="cls_roles_guard"/>
+      <packagedElement xmi:type="uml:Dependency" xmi:id="dep_fc_jwt" client="cls_forum_ctrl" supplier="cls_jwt_guard"/>
+      <packagedElement xmi:type="uml:Dependency" xmi:id="dep_fc_rg"  client="cls_forum_ctrl" supplier="cls_roles_guard"/>
+      <packagedElement xmi:type="uml:Dependency" xmi:id="dep_sc_jwt" client="cls_sched_ctrl" supplier="cls_jwt_guard"/>
+      <packagedElement xmi:type="uml:Dependency" xmi:id="dep_sc_rg"  client="cls_sched_ctrl" supplier="cls_roles_guard"/>
+      <packagedElement xmi:type="uml:Dependency" xmi:id="dep_circ_jwt" client="cls_circuit_ctrl" supplier="cls_jwt_guard"/>
+
+    </packagedElement>
+  </uml:Model>
+</xmi:XMI>

@@ -1,0 +1,7 @@
+node_modules
+.next
+.git
+.dockerignore
+*.log
+.vscode
+public # Если вы не хотите копировать статику, но обычно ее копируют
