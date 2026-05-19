@@ -9,6 +9,7 @@ import { useRoom } from '@/features/rooms/useRoom';
 import CircuitSimulator from '@/features/circuit/CircuitSimulator';
 import { SimulatorClientWrapper } from '@/features/Schematic/components/SimulatorClientWrapper';
 import { useCircuitStore } from '@/features/circuit/store/circuit.store';
+import CompilerRoom from '@/features/rooms/CompilerRoom';
 
 function OnlineBar({ users, connected }: { users: { userId: number; name: string }[]; connected: boolean }) {
   return (
@@ -91,7 +92,7 @@ export default function RoomEditorPage() {
         <div className="flex items-center gap-3">
           <Link href={`/rooms/${room.id}`} className="text-gray-400 hover:text-white text-sm">← {room.name}</Link>
           <span className="text-gray-600">|</span>
-          <span className="text-gray-300 text-sm">{room.type === 'circuit' ? '⚡ Логические схемы' : '🌐 IoT Simulator'}</span>
+          <span className="text-gray-300 text-sm">{room.type === 'circuit' ? '⚡ Логические схемы' : room.type === 'compiler' ? '💻 Компилятор' : '🌐 IoT Simulator'}</span>
           {!canEdit && <span className="text-xs bg-gray-700 text-gray-400 px-2 py-0.5 rounded">Только просмотр</span>}
         </div>
         <div className="flex items-center gap-3">
@@ -112,9 +113,9 @@ export default function RoomEditorPage() {
       {/* Simulator */}
       <div className="flex-1 overflow-hidden">
         {room.type === 'circuit' ? (
-          <CircuitSimulator
-            starterCircuit={room.state}
-          />
+          <CircuitSimulator starterCircuit={room.state} />
+        ) : room.type === 'compiler' ? (
+          <CompilerRoom room={room} canEdit={canEdit} pushState={pushState} onStateSync={handleStateSync} />
         ) : (
           <SimulatorClientWrapper />
         )}

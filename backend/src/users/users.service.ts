@@ -133,4 +133,12 @@ export class UsersService {
     });
     return this.getProfile(userId);
   }
+
+  async toggleBan(id: number): Promise<{ isActive: boolean }> {
+    const user = await this.usersRepository.findOne({ where: { id } });
+    if (!user) throw new NotFoundException('User not found');
+    user.isActive = !user.isActive;
+    await this.usersRepository.save(user);
+    return { isActive: user.isActive };
+  }
 }

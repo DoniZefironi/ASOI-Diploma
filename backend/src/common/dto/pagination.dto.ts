@@ -1,5 +1,5 @@
 // src/common/dto/pagination.dto.ts
-import { IsOptional, IsInt, Min, Max, IsString, IsEnum, IsDateString, IsNumber } from 'class-validator';
+import { IsOptional, IsInt, Min, IsString, IsEnum, IsDateString, IsNumber } from 'class-validator';
 import { Type } from 'class-transformer';
 
 export enum SortOrder {
@@ -18,7 +18,6 @@ export class PaginationDto {
   @Type(() => Number)
   @IsInt()
   @Min(1)
-  @Max(100)
   limit?: number = 10;
 }
 

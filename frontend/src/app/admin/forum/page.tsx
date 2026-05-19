@@ -367,9 +367,9 @@ function CreateSectionModal({ onClose, onSuccess }: CreateSectionModalProps) {
 
   return (
     <Modal title="Создать раздел" onClose={onClose}
-      footer={<><ModalCancelBtn onClose={onClose} /><ModalSubmitBtn loading={isLoading} label="Создать" /></>}
+      footer={<><ModalCancelBtn onClose={onClose} /><ModalSubmitBtn loading={isLoading} label="Создать" form="forum-create-section-form" /></>}
     >
-      <form onSubmit={handleSubmit}>
+      <form id="forum-create-section-form" onSubmit={handleSubmit}>
         <ModalField label="Название" required>
           <input type="text" value={formData.title} onChange={e => setFormData({ ...formData, title: e.target.value })} style={modalInputStyle} required autoFocus />
         </ModalField>
@@ -430,9 +430,9 @@ function EditSectionModal({ section, onClose, onSuccess }: EditSectionModalProps
 
   return (
     <Modal title="Редактировать раздел" onClose={onClose}
-      footer={<><ModalCancelBtn onClose={onClose} /><ModalSubmitBtn loading={isLoading} label="Сохранить" loadingLabel="Сохранение..." /></>}
+      footer={<><ModalCancelBtn onClose={onClose} /><ModalSubmitBtn loading={isLoading} label="Сохранить" loadingLabel="Сохранение..." form="forum-edit-section-form" /></>}
     >
-      <form onSubmit={handleSubmit}>
+      <form id="forum-edit-section-form" onSubmit={handleSubmit}>
         <ModalField label="Название" required>
           <input type="text" value={formData.title} onChange={e => setFormData({ ...formData, title: e.target.value })} style={modalInputStyle} required autoFocus />
         </ModalField>

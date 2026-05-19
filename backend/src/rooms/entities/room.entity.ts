@@ -6,8 +6,9 @@ import { User } from '../../users/entities/user.entity';
 import { RoomMember } from './room-member.entity';
 
 export enum RoomType {
-  CIRCUIT = 'circuit',
-  IOT     = 'iot',
+  CIRCUIT  = 'circuit',
+  IOT      = 'iot',
+  COMPILER = 'compiler',
 }
 
 @Entity('rooms')

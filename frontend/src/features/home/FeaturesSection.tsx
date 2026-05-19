@@ -6,7 +6,7 @@ import { useEffect, useRef, useState } from 'react';
 const FEATURES = [
   {
     letter: 'Схм',
-    title: 'Симулятор схем',
+    title: 'Эмулятор схем',
     description: 'Проектируйте логические схемы, тестируйте вентили и триггеры в реальном времени с ИИ-помощником.',
     href: '/circuit',
     accentVar: 'var(--color-accent-fg)',

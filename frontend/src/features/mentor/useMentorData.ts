@@ -21,33 +21,32 @@ export function useMentorData() {
     try {
       setIsLoading(true);
       const [groupsData, coursesData] = await Promise.all([
-        apiClient.get('/course-groups'),
+        apiClient.get('/course-groups?limit=1000'),
         apiClient.get('/courses'),
       ]);
 
-      // Получаем тип курса ментора из роли (только если пользователь не null)
       const userRoles = user?.roles || [];
       const courseType = getCourseTypeFromRole(userRoles);
       setMentorCourseType(courseType);
 
-      // Фильтруем группы по ментору и по типу курса
-      let userGroups = groupsData?.filter((group: any) =>
-        user?.id && group.instructor?.id?.toString() === user.id
-      ) || [];
+      const allGroups: any[] = groupsData || [];
+      const allCourses: any[] = coursesData || [];
 
-      // Если это ментор (не админ), фильтруем по типу курса
-      if (courseType) {
-        userGroups = userGroups.filter((group: any) => 
-          group.course?.type === courseType
-        );
-      }
+      // Менторы видят группы своего направления; админ — все группы
+      const filteredGroups = courseType
+        ? allGroups.filter((g: any) => g.course?.type === courseType)
+        : allGroups;
 
-      setGroups(userGroups);
-      setCourses(coursesData || []);
+      setGroups(filteredGroups);
 
-      // Получаем ID курсов, которые ведёт ментор
-      const courseIds = Array.from(new Set(userGroups.map((g: any) => g.courseId as number))) as number[];
+      // Курсы — только те, у которых есть группы (для ментора — своего типа)
+      const courseIds = Array.from(new Set(filteredGroups.map((g: any) => g.courseId as number))) as number[];
       setMentorCourseIds(courseIds);
+
+      const filteredCourses = courseType
+        ? allCourses.filter((c: any) => c.type === courseType)
+        : allCourses;
+      setCourses(filteredCourses);
     } catch (error) {
       console.error('Failed to load mentor data:', error);
     } finally {

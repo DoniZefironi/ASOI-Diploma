@@ -61,4 +61,10 @@ export class UsersController {
   updateRoles(@Param('id') id: string, @Body('roles') roles: UserRoleEnum[]) {
     return this.usersService.updateUserRoles(+id, roles);
   }
+
+  @Patch(':id/ban')
+  @Roles(UserRoleEnum.ADMIN)
+  toggleBan(@Param('id') id: string) {
+    return this.usersService.toggleBan(+id);
+  }
 }

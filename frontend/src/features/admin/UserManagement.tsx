@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useUsers } from '@/shared/api/admin';
 import { apiClient } from '@/shared/api/client';
 import { Badge } from '@/shared/ui/badge';
-import { Shield, RefreshCw, Users } from 'lucide-react';
+import { Shield, RefreshCw, Users, Ban, CheckCircle2 } from 'lucide-react';
 
 const getRoleLabel = (role: string): string => {
   const roleLabels: Record<string, string> = {
@@ -31,9 +31,11 @@ const getRoleBadgeVariant = (role: string): 'default' | 'accent' | 'success' | '
 };
 
 // ── Icon components ────────────────────────────────────────────────
-const ShieldIcon = () => <Shield size={14} />;
-const SyncIcon = () => <RefreshCw size={14} />;
-const UsersIcon = () => <Users size={16} />;
+const ShieldIcon   = () => <Shield       size={14} />;
+const SyncIcon     = () => <RefreshCw    size={14} />;
+const UsersIcon    = () => <Users        size={16} />;
+const BanIcon      = () => <Ban          size={14} />;
+const UnbanIcon    = () => <CheckCircle2 size={14} />;
 
 // ── Modal ──────────────────────────────────────────────────────────
 function RoleDialog({ user, isOpen, onClose, onSave, isUpdating }: any) {
@@ -142,6 +144,7 @@ export default function UserManagement() {
   const [isRoleDialogOpen, setIsRoleDialogOpen] = useState(false);
   const [localUpdating, setLocalUpdating] = useState(false);
   const [isSyncing, setIsSyncing] = useState(false);
+  const [banningId, setBanningId] = useState<number | null>(null);
 
   const handleEditRoles = (user: any) => {
     setSelectedUser(user);
@@ -174,6 +177,20 @@ export default function UserManagement() {
       alert('Ошибка при синхронизации ролей');
     } finally {
       setIsSyncing(false);
+    }
+  };
+
+  const handleToggleBan = async (user: any) => {
+    const action = user.isActive !== false ? 'заблокировать' : 'разблокировать';
+    if (!confirm(`${action.charAt(0).toUpperCase() + action.slice(1)} пользователя ${user.firstName} ${user.lastName}?`)) return;
+    setBanningId(user.id);
+    try {
+      await apiClient.patch(`/users/${user.id}/ban`, {});
+      mutate();
+    } catch {
+      alert('Ошибка при изменении статуса пользователя');
+    } finally {
+      setBanningId(null);
     }
   };
 
@@ -303,18 +320,36 @@ export default function UserManagement() {
                     </td>
                     {/* Actions */}
                     <td style={{ padding: '12px 16px', textAlign: 'right' }}>
-                      <button
-                        onClick={() => handleEditRoles(user)}
-                        disabled={isUpdating}
-                        style={{
-                          display: 'inline-flex', alignItems: 'center', gap: 5,
-                          padding: '4px 10px', fontSize: 12, fontWeight: 500,
-                          color: 'var(--color-fg-default)', background: 'var(--color-border-muted)',
-                          border: '1px solid var(--color-border-default)', borderRadius: 6, cursor: 'pointer',
-                        }}
-                      >
-                        <ShieldIcon /> Роли
-                      </button>
+                      <div style={{ display: 'inline-flex', gap: 6 }}>
+                        <button
+                          onClick={() => handleEditRoles(user)}
+                          disabled={isUpdating || banningId === user.id}
+                          style={{
+                            display: 'inline-flex', alignItems: 'center', gap: 5,
+                            padding: '4px 10px', fontSize: 12, fontWeight: 500,
+                            color: 'var(--color-fg-default)', background: 'var(--color-canvas-inset)',
+                            border: '1px solid var(--color-border-default)', borderRadius: 6, cursor: 'pointer',
+                          }}
+                        >
+                          <ShieldIcon /> Роли
+                        </button>
+                        <button
+                          onClick={() => handleToggleBan(user)}
+                          disabled={banningId === user.id}
+                          title={user.isActive !== false ? 'Заблокировать' : 'Разблокировать'}
+                          style={{
+                            display: 'inline-flex', alignItems: 'center', gap: 5,
+                            padding: '4px 10px', fontSize: 12, fontWeight: 500,
+                            color: user.isActive !== false ? 'var(--color-danger-fg)' : 'var(--color-success-fg)',
+                            background: user.isActive !== false ? 'var(--color-danger-subtle)' : 'var(--color-success-subtle)',
+                            border: `1px solid ${user.isActive !== false ? 'var(--color-danger-muted)' : 'var(--color-success-muted)'}`,
+                            borderRadius: 6, cursor: banningId === user.id ? 'not-allowed' : 'pointer', opacity: banningId === user.id ? 0.5 : 1,
+                          }}
+                        >
+                          {user.isActive !== false ? <BanIcon /> : <UnbanIcon />}
+                          {user.isActive !== false ? 'Бан' : 'Снять'}
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 );

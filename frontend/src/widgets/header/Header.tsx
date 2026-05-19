@@ -76,6 +76,7 @@ export const Header = () => {
       { href: '/rooms',             label: 'Комнаты',      icon: <CircuitIcon /> },
       { href: '/career',            label: 'Карьера',      icon: <BriefcaseIcon /> },
       { href: '/hackathons',        label: 'Соревнования', icon: <TrophyIcon /> },
+      { href: '/olympiads',         label: 'Олимпиады',    icon: <TrophyIcon /> },
       { href: '/prof-orientation',  label: 'Ориентация',   icon: <CompassIcon /> },
     ] : []),
     // Компилятор — только computer_science или admin

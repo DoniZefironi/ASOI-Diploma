@@ -28,8 +28,8 @@ const Badge = ({ children, variant = 'default', className = '' }: { children: Re
 const Dialog = ({ open, onOpenChange, children }: { open: boolean; onOpenChange: (v: boolean) => void; children: React.ReactNode }) => {
   if (!open) return null;
   return (
-    <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4" onClick={() => onOpenChange(false)}>
-      <div className="bg-gray-800 rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
+    <div style={{ position: 'fixed', inset: 0, zIndex: 100, background: 'rgba(0,0,0,0.72)', backdropFilter: 'blur(2px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16 }} onClick={() => onOpenChange(false)}>
+      <div style={{ background: 'var(--color-canvas-overlay)', border: '1px solid var(--color-border-default)', borderRadius: 12, boxShadow: '0 16px 48px rgba(0,0,0,0.5)', maxWidth: 680, width: '100%', maxHeight: '90vh', overflowY: 'auto' }} onClick={e => e.stopPropagation()}>
         {children}
       </div>
     </div>
@@ -158,8 +158,8 @@ export default function VocabularyManagement() {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold text-gh-fg">Словарь Technical English</h1>
-          <p className="text-gray-400">Управление карточками технического английского</p>
+          <h1 className="text-3xl font-bold text-gh-fg">Словарь IT-терминов</h1>
+          <p className="text-gray-400">Управление карточками технической лексики для студентов</p>
         </div>
         <div className="flex items-center gap-2">
           <Badge variant="secondary">{filtered.length} / {terms.length}</Badge>

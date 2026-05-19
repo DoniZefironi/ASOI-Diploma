@@ -138,9 +138,9 @@ export function ModalCancelBtn({ onClose }: { onClose: () => void }) {
 }
 
 /** Standard submit button */
-export function ModalSubmitBtn({ loading, label, loadingLabel, disabled }: { loading: boolean; label: string; loadingLabel?: string; disabled?: boolean }) {
+export function ModalSubmitBtn({ loading, label, loadingLabel, disabled, form }: { loading: boolean; label: string; loadingLabel?: string; disabled?: boolean; form?: string }) {
   return (
-    <button type="submit" disabled={loading || disabled}
+    <button type="submit" form={form} disabled={loading || disabled}
       style={{ padding: '7px 20px', fontSize: 13, fontWeight: 600, color: '#fff', background: loading || disabled ? 'var(--color-accent-muted)' : 'var(--color-accent-emphasis)', border: 'none', borderRadius: 8, cursor: loading || disabled ? 'not-allowed' : 'pointer', transition: 'background 120ms' }}
       onMouseEnter={e => !loading && !disabled && (e.currentTarget.style.background = 'var(--color-accent-fg)')}
       onMouseLeave={e => !loading && !disabled && (e.currentTarget.style.background = 'var(--color-accent-emphasis)')}

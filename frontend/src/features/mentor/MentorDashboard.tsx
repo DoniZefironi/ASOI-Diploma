@@ -51,9 +51,6 @@ export default function MentorDashboard() {
     totalStudents: groups.reduce((acc: number, group: any) => {
       return acc + (group.registrations?.filter((r: any) => r.status === 'approved').length || 0);
     }, 0),
-    pendingRegistrations: groups.reduce((acc: number, group: any) => {
-      return acc + (group.registrations?.filter((r: any) => r.status === 'pending').length || 0);
-    }, 0),
     totalCourses: courses.length,
   };
 
@@ -71,7 +68,7 @@ export default function MentorDashboard() {
         </p>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 md:grid-cols-3">
         <StatCard
           title="Мои курсы"
           value={stats.totalCourses}
@@ -89,12 +86,6 @@ export default function MentorDashboard() {
           value={stats.totalStudents}
           description="Во всех группах"
           icon="👨‍🎓"
-        />
-        <StatCard
-          title="Ожидают одобрения"
-          value={stats.pendingRegistrations}
-          description="Заявки на курсы"
-          icon="⏳"
         />
       </div>
 
@@ -124,6 +115,26 @@ export default function MentorDashboard() {
           title="🏆 Хакатоны"
           description="Управление хакатонами"
           href="/mentor/hackathons"
+        />
+        <QuickActionCard
+          title="🎓 Факультативы"
+          description="Управление факультативными курсами"
+          href="/mentor/electives"
+        />
+        <QuickActionCard
+          title="💬 Форум"
+          description="Модерация форума студентов"
+          href="/mentor/forum"
+        />
+        <QuickActionCard
+          title="📗 Словарь"
+          description="IT-термины для студентов"
+          href="/mentor/vocabulary"
+        />
+        <QuickActionCard
+          title="🏅 Олимпиады"
+          description="Соревнования по программированию"
+          href="/mentor/olympiads"
         />
       </div>
 

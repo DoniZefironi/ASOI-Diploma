@@ -5,24 +5,19 @@ import { useRouter } from 'next/navigation';
 import { useAuth, hasMentorRole, hasAdminRole } from '@/shared/lib/auth-context';
 import { useAuthStore } from '@/shared/store/auth-store';
 import { GhSidebar, SidebarItem } from '@/shared/ui/sidebar/GhSidebar';
-import { LayoutDashboard, Users, Calendar, FileText, Folder, Trophy, GraduationCap } from 'lucide-react';
-
-const DashboardIcon = () => <LayoutDashboard size={16} />;
-const GroupsIcon = () => <Users size={16} />;
-const CalendarIcon = () => <Calendar size={16} />;
-const FileTextIcon = () => <FileText size={16} />;
-const FolderIcon = () => <Folder size={16} />;
-const TrophyIcon = () => <Trophy size={16} />;
-const GraduationIcon = () => <GraduationCap size={16} />;
+import { LayoutDashboard, Users, Calendar, FileText, Folder, Trophy, GraduationCap, MessageSquare, BookMarked, Medal } from 'lucide-react';
 
 const menuItems: SidebarItem[] = [
-  { href: '/mentor',              label: 'Дашборд',      icon: <DashboardIcon /> },
-  { href: '/mentor/groups',       label: 'Группы',       icon: <GroupsIcon /> },
-  { href: '/mentor/schedule',     label: 'Расписание',   icon: <CalendarIcon /> },
-  { href: '/mentor/assignments',  label: 'Задания',      icon: <FileTextIcon /> },
-  { href: '/mentor/materials',    label: 'Материалы',    icon: <FolderIcon /> },
-  { href: '/mentor/hackathons',   label: 'Хакатоны',     icon: <TrophyIcon /> },
-  { href: '/mentor/electives',    label: 'Факультативы', icon: <GraduationIcon /> },
+  { href: '/mentor',              label: 'Дашборд',      icon: <LayoutDashboard size={16} /> },
+  { href: '/mentor/groups',       label: 'Группы',       icon: <Users           size={16} /> },
+  { href: '/mentor/schedule',     label: 'Расписание',   icon: <Calendar        size={16} /> },
+  { href: '/mentor/assignments',  label: 'Задания',      icon: <FileText        size={16} /> },
+  { href: '/mentor/materials',    label: 'Материалы',    icon: <Folder          size={16} /> },
+  { href: '/mentor/hackathons',   label: 'Хакатоны',     icon: <Trophy          size={16} /> },
+  { href: '/mentor/electives',    label: 'Факультативы', icon: <GraduationCap   size={16} /> },
+  { href: '/mentor/forum',        label: 'Форум',        icon: <MessageSquare   size={16} /> },
+  { href: '/mentor/vocabulary',   label: 'Словарь',      icon: <BookMarked      size={16} /> },
+  { href: '/mentor/olympiads',    label: 'Олимпиады',    icon: <Medal           size={16} /> },
 ];
 
 export default function MentorLayout({ children }: { children: React.ReactNode }) {

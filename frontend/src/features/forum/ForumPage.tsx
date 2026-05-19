@@ -238,9 +238,9 @@ function CreateSectionModal({ onClose, onSuccess }: { onClose: () => void; onSuc
 
   return (
     <SharedModal title="Создать раздел" onClose={onClose}
-      footer={<><ModalCancelBtn onClose={onClose} /><ModalSubmitBtn loading={isLoading} label="Создать" /></>}
+      footer={<><ModalCancelBtn onClose={onClose} /><ModalSubmitBtn loading={isLoading} label="Создать" form="forum-section-form" /></>}
     >
-      <form onSubmit={handleSubmit}>
+      <form id="forum-section-form" onSubmit={handleSubmit}>
         <ModalField label="Название" required><input type="text" value={formData.title} onChange={e => setFormData({ ...formData, title: e.target.value })} style={modalInputStyle} required /></ModalField>
         <ModalField label="Описание"><textarea value={formData.description} onChange={e => setFormData({ ...formData, description: e.target.value })} style={{ ...modalInputStyle, resize: 'vertical' }} rows={3} /></ModalField>
         <ModalField label="ID курса" required><input type="number" value={formData.courseId} onChange={e => setFormData({ ...formData, courseId: e.target.value })} style={modalInputStyle} required /></ModalField>

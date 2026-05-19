@@ -320,9 +320,9 @@ function CreateTopicModal({ sectionId, onClose, onSuccess }: { sectionId: number
 
   return (
     <SharedModal title="Новая тема" onClose={onClose} maxWidth={540}
-      footer={<><ModalCancelBtn onClose={onClose} /><ModalSubmitBtn loading={isLoading} label="Создать тему" loadingLabel="Создание..." /></>}
+      footer={<><ModalCancelBtn onClose={onClose} /><ModalSubmitBtn loading={isLoading} label="Создать тему" loadingLabel="Создание..." form="forum-topic-form" /></>}
     >
-      <form onSubmit={handleSubmit}>
+      <form id="forum-topic-form" onSubmit={handleSubmit}>
         <ModalField label="Заголовок" required>
           <input type="text" value={formData.title} onChange={e => setFormData({ ...formData, title: e.target.value })} style={modalInputStyle} placeholder="Тема вашего вопроса..." required autoFocus />
         </ModalField>

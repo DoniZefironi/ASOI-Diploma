@@ -113,13 +113,15 @@ function RecentActivity() {
 
 function QuickActions() {
   const actions = [
-    { href: '/admin/courses', label: 'Создать курс', description: 'Добавить новый учебный курс' },
-    { href: '/admin/users', label: 'Управление пользователями', description: 'Назначение ролей' },
-    { href: '/admin/groups', label: 'Создать группу', description: 'Новая учебная группа' },
-    { href: '/admin/schedule', label: 'Расписание', description: 'Добавить занятие' },
-    { href: '/admin/course-registrations', label: 'Новый студент?', description: 'Новая заявка в группу' },
-    { href: '/admin/forum', label: 'Управление форумом', description: 'Разделы и темы' },
-    { href: '/admin/career-tests', label: 'Тесты профориентации', description: 'Управление тестами и вопросами' },
+    { href: '/admin/users',                     label: 'Пользователи',          description: 'Назначение ролей и управление' },
+    { href: '/admin/courses',                   label: 'Курсы',                  description: 'Добавить или редактировать курс' },
+    { href: '/admin/groups',                    label: 'Группы',                 description: 'Создать учебную группу' },
+    { href: '/admin/course-registrations',      label: 'Записи на курсы',        description: 'Одобрить или отклонить заявки' },
+    { href: '/admin/forum',                     label: 'Форум',                  description: 'Управление разделами и темами' },
+    { href: '/admin/career-tests',              label: 'Тесты профориентации',   description: 'Управление тестами и вопросами' },
+    { href: '/admin/analytics',                 label: 'Посещаемость',           description: 'Статистика активности' },
+    { href: '/admin/prof-orientation-analysis', label: 'Анализ профориентации',  description: 'Результаты диагностики' },
+    { href: '/mentor',                          label: 'Панель ментора →',        description: 'Учебный контент, расписание, задания' },
   ];
 
   return (

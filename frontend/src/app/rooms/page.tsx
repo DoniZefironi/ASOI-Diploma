@@ -5,10 +5,10 @@ import Link from 'next/link';
 import { useAuth } from '@/shared/lib/auth-context';
 import { roomsApi, Room } from '@/features/rooms/api';
 import { Modal, ModalField, ModalCancelBtn, ModalSubmitBtn, modalInputStyle } from '@/shared/ui/modal';
-import { Zap, Globe, Plus, Users, ArrowRight, LogIn, Lock } from 'lucide-react';
+import { Zap, Globe, Terminal, Plus, Users, ArrowRight, LogIn, Lock } from 'lucide-react';
 
-const TYPE_ICON  = { circuit: <Zap size={14} />,   iot: <Globe size={14} /> } as const;
-const TYPE_LABEL = { circuit: 'Логические схемы',   iot: 'IoT Simulator'     } as const;
+const TYPE_ICON  = { circuit: <Zap size={14} />, iot: <Globe size={14} />, compiler: <Terminal size={14} /> } as const;
+const TYPE_LABEL = { circuit: 'Логические схемы',  iot: 'IoT Simulator',     compiler: 'Компилятор' } as const;
 
 const ROLE_CFG: Record<string, { label: string; color: string; bg: string }> = {
   owner:  { label: 'Владелец',    color: 'var(--color-done-fg)',    bg: 'var(--color-done-subtle)' },
@@ -18,7 +18,7 @@ const ROLE_CFG: Record<string, { label: string; color: string; bg: string }> = {
 
 // ── New room modal ──────────────────────────────────────────────────
 function NewRoomModal({ onClose, onCreated }: { onClose: () => void; onCreated: (r: Room) => void }) {
-  const [form, setForm]   = useState({ name: '', description: '', type: 'circuit' as 'circuit' | 'iot', isPublic: false });
+  const [form, setForm]   = useState({ name: '', description: '', type: 'circuit' as 'circuit' | 'iot' | 'compiler', isPublic: false });
   const [saving, setSaving] = useState(false);
   const [error, setError]   = useState('');
 
@@ -33,9 +33,9 @@ function NewRoomModal({ onClose, onCreated }: { onClose: () => void; onCreated: 
 
   return (
     <Modal title="Создать комнату" onClose={onClose}
-      footer={<><ModalCancelBtn onClose={onClose} /><ModalSubmitBtn loading={saving} label="Создать" loadingLabel="Создание..." /></>}
+      footer={<><ModalCancelBtn onClose={onClose} /><ModalSubmitBtn loading={saving} label="Создать" loadingLabel="Создание..." form="room-create-form" /></>}
     >
-      <form onSubmit={handleSubmit}>
+      <form id="room-create-form" onSubmit={handleSubmit}>
         <ModalField label="Название" required>
           <input value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
             style={modalInputStyle} placeholder="Название комнаты" autoFocus />
@@ -48,7 +48,7 @@ function NewRoomModal({ onClose, onCreated }: { onClose: () => void; onCreated: 
 
         <ModalField label="Тип симулятора">
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-            {(['circuit', 'iot'] as const).map(t => (
+            {(['circuit', 'iot', 'compiler'] as const).map(t => (
               <button key={t} type="button" onClick={() => setForm(f => ({ ...f, type: t }))}
                 style={{
                   display: 'flex', alignItems: 'center', gap: 8, padding: '10px 14px', borderRadius: 8,

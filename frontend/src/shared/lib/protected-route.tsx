@@ -22,6 +22,7 @@ const AUTH_REQUIRED = [
   '/shematic',
   '/simulator',
   '/mqtt-expert',
+  '/olympiads',
 ];
 
 // Только менторы и админы

@@ -32,6 +32,10 @@ import { Notification } from './notifications/entities/notification.entity';
 import { VocabularyModule } from './vocabulary/vocabulary.module';
 import { VocabTerm } from './vocabulary/entities/vocab-term.entity';
 import { RoomsModule } from './rooms/rooms.module';
+import { OlympiadsModule } from './olympiads/olympiads.module';
+import { Olympiad } from './olympiads/entities/olympiad.entity';
+import { OlympiadProblem } from './olympiads/entities/olympiad-problem.entity';
+import { OlympiadSubmission } from './olympiads/entities/olympiad-submission.entity';
 import { Room } from './rooms/entities/room.entity';
 import { RoomMember } from './rooms/entities/room-member.entity';
 import { InternshipsModule } from './internships/internships.module';
@@ -126,6 +130,9 @@ import { PeerReviewSession } from './assignments/entities/peer-review-session.en
             VocabTerm,
             Room,
             RoomMember,
+            Olympiad,
+            OlympiadProblem,
+            OlympiadSubmission,
           ],
           synchronize: configService.get('NODE_ENV') !== 'production',
           logging: configService.get('NODE_ENV') !== 'production',
@@ -159,6 +166,7 @@ import { PeerReviewSession } from './assignments/entities/peer-review-session.en
     NotificationsModule,
     VocabularyModule,
     RoomsModule,
+    OlympiadsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -12,7 +12,7 @@ export interface Room {
   id: number;
   name: string;
   description: string;
-  type: 'circuit' | 'iot';
+  type: 'circuit' | 'iot' | 'compiler';
   ownerId: number;
   owner: { id: number; firstName: string; lastName: string; email: string };
   state: any;
@@ -30,7 +30,7 @@ export const roomsApi = {
   getRoom:          (id: number) => apiClient.get(`/rooms/${id}`) as Promise<Room>,
   getByInvite:      (code: string) => apiClient.get(`/rooms/invite/${code}`) as Promise<Room>,
   joinByInvite:     (code: string) => apiClient.post(`/rooms/invite/${code}/join`, {}) as Promise<Room>,
-  createRoom:       (data: { name: string; description?: string; type: 'circuit' | 'iot'; isPublic?: boolean }) =>
+  createRoom:       (data: { name: string; description?: string; type: 'circuit' | 'iot' | 'compiler'; isPublic?: boolean }) =>
                       apiClient.post('/rooms', data) as Promise<Room>,
   updateRoom:       (id: number, data: any) => apiClient.patch(`/rooms/${id}`, data) as Promise<Room>,
   deleteRoom:       (id: number)            => apiClient.delete(`/rooms/${id}`),
