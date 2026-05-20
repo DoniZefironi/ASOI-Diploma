@@ -1,0 +1,295 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Enterprise Architect — Package Diagram
+  Тема 2: Электроника + Английский + Хакатоны
+  Импорт: File > Import/Export > Import Package from XMI File
+-->
+<xmi:XMI xmi:version="2.1"
+         xmlns:xmi="http://www.omg.org/XMI"
+         xmlns:uml="http://www.omg.org/spec/UML/20110701">
+
+  <xmi:Documentation exporter="Enterprise Architect" exporterVersion="6.5"/>
+
+  <uml:Model xmi:type="uml:Model" xmi:id="MDL_T2" name="Тема 2 — Электроника + Английский" visibility="public">
+
+    <!-- ══════════════════════════════════════════════════════════════
+         FRONTEND  —  frontend/src
+    ══════════════════════════════════════════════════════════════ -->
+
+    <packagedElement xmi:type="uml:Package" xmi:id="T2_FE" name="frontend/src" visibility="public">
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_FE_REF_APP"    name="app/"      visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_FE_REF_WID"    name="widgets/"  visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_FE_REF_FEAT"   name="features/" visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_FE_REF_SHARED" name="shared/"   visibility="public"/>
+    </packagedElement>
+
+    <!-- ─── app/ ─────────────────────────────────────────────── -->
+    <packagedElement xmi:type="uml:Package" xmi:id="T2_APP" name="app" visibility="public">
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_APP_LAYOUT"      name="layout.tsx"                              visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_APP_AUTH"        name="auth/page.tsx"                           visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_APP_CIRCUIT"     name="circuit/page.tsx"                        visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_APP_ASSIGN_ID"   name="assignments/[id]/page.tsx"               visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_APP_PR"          name="peer-review/page.tsx"                    visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_APP_LIBRARY"     name="library/page.tsx"                        visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_APP_FORUM_P"     name="forum/page.tsx"                          visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_APP_FORUM_S"     name="forum/[id]/page.tsx"                     visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_APP_FORUM_T"     name="forum/topic/[id]/page.tsx"               visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_APP_HACK_ID"     name="hackathons/[hackathonId]/page.tsx"        visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_APP_HACK_TEAM"   name="hackathons/[hackathonId]/team/[teamId]/page.tsx" visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_APP_COURSES_P"   name="courses/page.tsx"                        visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_APP_COURSES_V"   name="courses/english-vocab/page.tsx"          visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_APP_DASH"        name="dashboard/page.tsx"                      visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_APP_PROFILE"     name="profile/page.tsx"                        visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_APP_PROFILE_ID"  name="profile/[id]/page.tsx"                   visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_APP_MENTOR_P"    name="mentor/page.tsx"                         visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_APP_MENTOR_L"    name="mentor/layout.tsx"                       visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_APP_MENTOR_GR"   name="mentor/groups/page.tsx"                  visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_APP_MENTOR_GID"  name="mentor/groups/[id]/page.tsx"             visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_APP_MENTOR_AS"   name="mentor/assignments/page.tsx"             visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_APP_MENTOR_MA"   name="mentor/materials/page.tsx"               visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_APP_MENTOR_HA"   name="mentor/hackathons/page.tsx"              visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_APP_MENTOR_FO"   name="mentor/forum/page.tsx"                   visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_APP_MENTOR_VO"   name="mentor/vocabulary/page.tsx"              visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_APP_ADMIN_P"     name="admin/page.tsx"                          visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_APP_ADMIN_L"     name="admin/layout.tsx"                        visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_APP_ADMIN_GR"    name="admin/groups/page.tsx"                   visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_APP_ADMIN_AS"    name="admin/assignments/page.tsx"              visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_APP_ADMIN_MA"    name="admin/materials/page.tsx"                visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_APP_ADMIN_VO"    name="admin/vocabulary/page.tsx"               visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_APP_ADMIN_HA"    name="admin/hackathons/[id]/page.tsx"          visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_APP_ADMIN_FO"    name="admin/forum/page.tsx"                    visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_APP_ADMIN_CR"    name="admin/course-registrations/page.tsx"     visibility="public"/>
+    </packagedElement>
+
+    <!-- ─── widgets/ ─────────────────────────────────────────── -->
+    <packagedElement xmi:type="uml:Package" xmi:id="T2_WIDGETS" name="widgets" visibility="public">
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_W_HEADER"  name="header/Header.tsx"               visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_W_FOOTER"  name="footer/Footer.tsx"               visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_W_VIDEO"   name="video-background/VideoBackground.tsx" visibility="public"/>
+    </packagedElement>
+
+    <!-- ─── features/ ────────────────────────────────────────── -->
+    <packagedElement xmi:type="uml:Package" xmi:id="T2_FEATURES" name="features" visibility="public">
+      <!-- auth -->
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_F_AUTHPAGE"     name="auth/AuthPage.tsx"                      visibility="public"/>
+      <!-- home -->
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_F_FEATSEC"      name="home/FeaturesSection.tsx"               visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_F_STATSSEC"     name="home/StatsSection.tsx"                  visibility="public"/>
+      <!-- courses-page -->
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_F_COURSESPAGE"  name="courses-page/CoursesPage.tsx"           visibility="public"/>
+      <!-- profile -->
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_F_PROFILEPAGE"  name="profile/ProfilePage.tsx"                visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_F_PUBPROFILE"   name="profile/PublicProfilePage.tsx"          visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_F_ACHSEC"       name="profile/AchievementsSection.tsx"        visibility="public"/>
+      <!-- circuit -->
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_F_CIRCUITSIM"   name="circuit/CircuitSimulator.tsx"           visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_F_AIASSIST"     name="circuit/components/AiAssistant.tsx"     visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_F_NODEVIEW"     name="circuit/components/NodeView.tsx"        visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_F_WIREVIEW"     name="circuit/components/WireView.tsx"        visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_F_PALETTE"      name="circuit/components/Palette.tsx"         visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_F_PREVWIRE"     name="circuit/components/PreviewWire.tsx"     visibility="public"/>
+      <!-- assignments -->
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_F_ASSIGNDET"    name="assignments/AssignmentDetailPage.tsx"   visibility="public"/>
+      <!-- peer-review -->
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_F_PRPAGE"       name="peer-review/PeerReviewPage.tsx"         visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_F_MPRPAGE"      name="peer-review/MentorPeerReviewPage.tsx"   visibility="public"/>
+      <!-- english -->
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_F_TECHVOC"      name="english/TechVocabulary.tsx"             visibility="public"/>
+      <!-- library -->
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_F_LIBPAGE"      name="library/LibraryPage.tsx"                visibility="public"/>
+      <!-- forum -->
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_F_FORUMPAGE"    name="forum/ForumPage.tsx"                    visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_F_FORUMSEC"     name="forum/ForumSectionPage.tsx"             visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_F_FORUMTOP"     name="forum/ForumTopicPage.tsx"               visibility="public"/>
+      <!-- groups -->
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_F_GROUPDET"     name="groups/GroupDetailPage.tsx"             visibility="public"/>
+      <!-- dashboard -->
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_F_DASHPAGE"     name="dashboard/DashboardPage.tsx"            visibility="public"/>
+      <!-- mentor -->
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_F_MENTORDASH"   name="mentor/MentorDashboard.tsx"             visibility="public"/>
+      <!-- admin -->
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_F_ADMINDASH"    name="admin/AdminDashboard.tsx"               visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_F_ADMINSIDEB"   name="admin/AdminSidebar.tsx"                 visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_F_GROUPMGMT"    name="admin/GroupManagement.tsx"              visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_F_GROUPFORM"    name="admin/GroupForm.tsx"                    visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_F_ASSIGNMGMT"   name="admin/AssignmentManagement.tsx"         visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_F_ASSIGNFORM"   name="admin/AssignmentForm.tsx"               visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_F_MATMGMT"      name="admin/MaterialManagement.tsx"           visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_F_MATFORM"      name="admin/MaterialForm.tsx"                 visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_F_VOCMGMT"      name="admin/VocabularyManagement.tsx"         visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_F_CIRCUITMGMT"  name="admin/CircuitSimManagement.tsx"         visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_F_CIRCUITSIMF"  name="admin/CircuitSimForm.tsx"               visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_F_COURSEREGS"   name="admin/CourseRegistrations.tsx"          visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_F_ADMINHACKS"   name="admin/hackathons/AdminHackathons.tsx"   visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_F_HACKFORM"     name="admin/hackathons/HackathonForm.tsx"     visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_F_HACKS"        name="admin/hackathons/Hackathons.tsx"        visibility="public"/>
+      <!-- notifications -->
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_F_NOTIFBELL"    name="notifications/NotificationBell.tsx"    visibility="public"/>
+    </packagedElement>
+
+    <!-- ─── shared/ ──────────────────────────────────────────── -->
+    <packagedElement xmi:type="uml:Package" xmi:id="T2_SHARED" name="shared" visibility="public">
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_SH_CLIENT"     name="api/client.ts"                          visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_SH_AUTHAPI"    name="api/authApi.ts"                         visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_SH_HACKAPI"    name="api/hackathons/index.ts"                visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_SH_FORUMAPI"   name="api/forum/index.ts"                     visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_SH_PRAPI"      name="api/admin/peer-reviews.ts"              visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_SH_ASSIGNAPI"  name="api/admin/assignments.ts"               visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_SH_MATAPI"     name="api/admin/materials.ts"                 visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_SH_CGAPI"      name="api/admin/course-groups.ts"             visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_SH_REGAPI"     name="api/admin/registrations.ts"             visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_SH_AUTHCTX"    name="lib/auth-context.tsx"                   visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_SH_THEME"      name="lib/theme.tsx"                          visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_SH_PROTROUTE"  name="lib/protected-route.tsx"                visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_SH_BADGE"      name="ui/badge/Badge.tsx"                     visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_SH_BUTTON"     name="ui/button/Button.tsx"                   visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_SH_CARD"       name="ui/card/Card.tsx"                       visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_SH_INPUT"      name="ui/input/input.tsx"                     visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_SH_SIDEBAR"    name="ui/sidebar/GhSidebar.tsx"               visibility="public"/>
+    </packagedElement>
+
+    <!-- ══════════════════════════════════════════════════════════════
+         BACKEND  —  backend/src
+    ══════════════════════════════════════════════════════════════ -->
+
+    <packagedElement xmi:type="uml:Package" xmi:id="T2_BE" name="backend/src" visibility="public">
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_BE_REF_AUTH"    name="auth/"             visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_BE_REF_USERS"   name="users/"            visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_BE_REF_CRS"     name="courses/"          visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_BE_REF_CG"      name="course-groups/"    visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_BE_REF_CIRC"    name="circuit/"          visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_BE_REF_ASSIGN"  name="assignments/"      visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_BE_REF_VOC"     name="vocabulary/"       visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_BE_REF_MAT"     name="materials/"        visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_BE_REF_FORUM"   name="forum/"            visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_BE_REF_HACK"    name="hackathons/"       visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_BE_REF_ACH"     name="achievements/"     visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_BE_REF_NOTIF"   name="notifications/"    visibility="public"/>
+    </packagedElement>
+
+    <!-- ─── auth ─────────────────────────────────────────────── -->
+    <packagedElement xmi:type="uml:Package" xmi:id="T2_BE_AUTH" name="auth" visibility="public">
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_BE_AUTHM"  name="auth.module.ts"              visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_BE_AUTHC"  name="auth.controller.ts"          visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_BE_AUTHS"  name="auth.service.ts"             visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_BE_JWTG"   name="guards/jwt-auth.guard.ts"    visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_BE_ROLESG" name="guards/roles.guard.ts"       visibility="public"/>
+    </packagedElement>
+
+    <!-- ─── users ────────────────────────────────────────────── -->
+    <packagedElement xmi:type="uml:Package" xmi:id="T2_BE_USERS" name="users" visibility="public">
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_BE_USERM"  name="users.module.ts"               visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_BE_USERC"  name="users.controller.ts"           visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_BE_USERS2" name="users.service.ts"              visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_BE_USERE"  name="entities/user.entity.ts"       visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_BE_ROLESE" name="entities/user-role.entity.ts"  visibility="public"/>
+    </packagedElement>
+
+    <!-- ─── courses ──────────────────────────────────────────── -->
+    <packagedElement xmi:type="uml:Package" xmi:id="T2_BE_COURSES" name="courses" visibility="public">
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_BE_COURSESM" name="courses.module.ts"           visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_BE_COURSESC" name="courses.controller.ts"       visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_BE_COURSESS" name="courses.service.ts"          visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_BE_COURSESE" name="entities/course.entity.ts"   visibility="public"/>
+    </packagedElement>
+
+    <!-- ─── course-groups ────────────────────────────────────── -->
+    <packagedElement xmi:type="uml:Package" xmi:id="T2_BE_CG" name="course-groups" visibility="public">
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_BE_CGM"  name="course-groups.module.ts"                       visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_BE_CGC"  name="course-groups.controller.ts"                   visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_BE_CGS"  name="course-groups.service.ts"                      visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_BE_CGE1" name="entities/course-group.entity.ts"                visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_BE_CGE2" name="entities/course-group-registration.entity.ts"  visibility="public"/>
+    </packagedElement>
+
+    <!-- ─── circuit ──────────────────────────────────────────── -->
+    <packagedElement xmi:type="uml:Package" xmi:id="T2_BE_CIRCUIT" name="circuit" visibility="public">
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_BE_CIRCM"  name="circuit.module.ts"                    visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_BE_CIRCC"  name="circuit.controller.ts"                visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_BE_CIRCS"  name="circuit.service.ts"                   visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_BE_CIRCE"  name="entities/circuit-submission.entity.ts" visibility="public"/>
+    </packagedElement>
+
+    <!-- ─── assignments ──────────────────────────────────────── -->
+    <packagedElement xmi:type="uml:Package" xmi:id="T2_BE_ASSIGN" name="assignments" visibility="public">
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_BE_ASSIGNM"   name="assignments.module.ts"                     visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_BE_ASSIGNC"   name="assignments.controller.ts"                 visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_BE_ASSIGNS"   name="assignments.service.ts"                    visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_BE_ASSIGNE1"  name="entities/assignment.entity.ts"             visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_BE_ASSIGNE2"  name="entities/assignment-submission.entity.ts"  visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_BE_ASSIGNE3"  name="entities/assignment-test-case.entity.ts"   visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_BE_PRC"       name="peer-review.controller.ts"                 visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_BE_PRS"       name="peer-review.service.ts"                    visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_BE_PRE"       name="entities/peer-review.entity.ts"            visibility="public"/>
+    </packagedElement>
+
+    <!-- ─── vocabulary ───────────────────────────────────────── -->
+    <packagedElement xmi:type="uml:Package" xmi:id="T2_BE_VOCAB" name="vocabulary" visibility="public">
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_BE_VOCM"  name="vocabulary.module.ts"              visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_BE_VOCC"  name="vocabulary.controller.ts"          visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_BE_VOCS"  name="vocabulary.service.ts"             visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_BE_VOCE"  name="entities/vocabulary-word.entity.ts" visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_BE_VOCD"  name="dto/vocab-term.dto.ts"              visibility="public"/>
+    </packagedElement>
+
+    <!-- ─── materials ────────────────────────────────────────── -->
+    <packagedElement xmi:type="uml:Package" xmi:id="T2_BE_MATERIALS" name="materials" visibility="public">
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_BE_MATM"  name="materials.module.ts"               visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_BE_MATC"  name="materials.controller.ts"           visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_BE_MATS"  name="materials.service.ts"              visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_BE_MATE"  name="entities/course-material.entity.ts" visibility="public"/>
+    </packagedElement>
+
+    <!-- ─── forum ────────────────────────────────────────────── -->
+    <packagedElement xmi:type="uml:Package" xmi:id="T2_BE_FORUM" name="forum" visibility="public">
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_BE_FORM"  name="forum.module.ts"                  visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_BE_FORC"  name="forum.controller.ts"              visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_BE_FORS"  name="forum.service.ts"                 visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_BE_FORE1" name="entities/forum-section.entity.ts" visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_BE_FORE2" name="entities/forum-topic.entity.ts"   visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_BE_FORE3" name="entities/forum-post.entity.ts"    visibility="public"/>
+    </packagedElement>
+
+    <!-- ─── hackathons ───────────────────────────────────────── -->
+    <packagedElement xmi:type="uml:Package" xmi:id="T2_BE_HACK" name="hackathons" visibility="public">
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_BE_HACKM"  name="hackathons.module.ts"                   visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_BE_HACKC"  name="hackathons.controller.ts"               visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_BE_HACKS"  name="hackathons.service.ts"                  visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_BE_HACKE1" name="entities/hackathon.entity.ts"           visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_BE_HACKE2" name="entities/hackathon-team.entity.ts"      visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_BE_HACKE3" name="entities/hackathon-submission.entity.ts" visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_BE_HACKE4" name="entities/hackathon-task.entity.ts"      visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_BE_HACKE5" name="entities/hackathon-stage.entity.ts"     visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_BE_HACKD1" name="dto/create-hackathon.dto.ts"            visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_BE_HACKD2" name="dto/create-team.dto.ts"                 visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_BE_HACKD3" name="dto/grade-project.dto.ts"               visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_BE_HACKD4" name="dto/submit-project.dto.ts"              visibility="public"/>
+    </packagedElement>
+
+    <!-- ─── achievements ─────────────────────────────────────── -->
+    <packagedElement xmi:type="uml:Package" xmi:id="T2_BE_ACH" name="achievements" visibility="public">
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_BE_ACHM" name="achievements.module.ts"       visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_BE_ACHC" name="achievements.controller.ts"   visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_BE_ACHS" name="achievements.service.ts"      visibility="public"/>
+    </packagedElement>
+
+    <!-- ─── notifications ────────────────────────────────────── -->
+    <packagedElement xmi:type="uml:Package" xmi:id="T2_BE_NOTIF" name="notifications" visibility="public">
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_BE_NOTIFM" name="notifications.module.ts"     visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T2_BE_NOTIFC" name="notifications.controller.ts" visibility="public"/>
+    </packagedElement>
+
+    <!-- ══ зависимости (packageImport) ══════════════════════════ -->
+    <packageImport xmi:id="T2_IMP_FEAT_SHARED"  importingPackage="T2_FEATURES"   importedPackage="T2_SHARED"/>
+    <packageImport xmi:id="T2_IMP_APP_FEATURES" importingPackage="T2_APP"        importedPackage="T2_FEATURES"/>
+    <packageImport xmi:id="T2_IMP_CG_AUTH"      importingPackage="T2_BE_CG"      importedPackage="T2_BE_AUTH"/>
+    <packageImport xmi:id="T2_IMP_CIRC_AUTH"    importingPackage="T2_BE_CIRCUIT" importedPackage="T2_BE_AUTH"/>
+    <packageImport xmi:id="T2_IMP_ASSIGN_AUTH"  importingPackage="T2_BE_ASSIGN"  importedPackage="T2_BE_AUTH"/>
+    <packageImport xmi:id="T2_IMP_VOC_AUTH"     importingPackage="T2_BE_VOCAB"   importedPackage="T2_BE_AUTH"/>
+    <packageImport xmi:id="T2_IMP_MAT_AUTH"     importingPackage="T2_BE_MATERIALS" importedPackage="T2_BE_AUTH"/>
+    <packageImport xmi:id="T2_IMP_FORUM_AUTH"   importingPackage="T2_BE_FORUM"   importedPackage="T2_BE_AUTH"/>
+    <packageImport xmi:id="T2_IMP_HACK_AUTH"    importingPackage="T2_BE_HACK"    importedPackage="T2_BE_AUTH"/>
+    <packageImport xmi:id="T2_IMP_BE_USERS"     importingPackage="T2_BE_AUTH"    importedPackage="T2_BE_USERS"/>
+
+  </uml:Model>
+</xmi:XMI>

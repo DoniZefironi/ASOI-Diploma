@@ -1,0 +1,262 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Enterprise Architect — Package Diagram
+  Тема 1: Информатика / CS
+  Импорт: File > Import/Export > Import Package from XMI File
+  Затем: Create Diagram > Package Diagram, перетащить пакеты на canvas
+-->
+<xmi:XMI xmi:version="2.1"
+         xmlns:xmi="http://www.omg.org/XMI"
+         xmlns:uml="http://www.omg.org/spec/UML/20110701">
+
+  <xmi:Documentation exporter="Enterprise Architect" exporterVersion="6.5"/>
+
+  <uml:Model xmi:type="uml:Model" xmi:id="MDL_T1" name="Тема 1 — Информатика" visibility="public">
+
+    <!-- ══════════════════════════════════════════════════════════════
+         FRONTEND  —  frontend/src
+    ══════════════════════════════════════════════════════════════ -->
+
+    <packagedElement xmi:type="uml:Package" xmi:id="T1_FE" name="frontend/src" visibility="public">
+      <!-- перечисляем вложенные пакеты как прямые члены -->
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_FE_REF_APP"     name="app/"      visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_FE_REF_WID"     name="widgets/"  visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_FE_REF_FEAT"    name="features/" visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_FE_REF_SHARED"  name="shared/"   visibility="public"/>
+    </packagedElement>
+
+    <!-- ─── app/ ─────────────────────────────────────────────── -->
+    <packagedElement xmi:type="uml:Package" xmi:id="T1_APP" name="app" visibility="public">
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_APP_LAYOUT"    name="layout.tsx"                         visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_APP_NF"        name="not-found.tsx"                      visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_APP_AUTH"      name="auth/page.tsx"                      visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_APP_PROFILE"   name="profile/page.tsx"                   visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_APP_PROF_ID"   name="profile/[id]/page.tsx"              visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_APP_PROFORI"   name="prof-orientation/page.tsx"          visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_APP_CAREER"    name="career/page.tsx"                    visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_APP_CAREER_T"  name="career/test/[type]/page.tsx"        visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_APP_COMPILER"  name="complilier/page.tsx"                visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_APP_OLY"       name="olympiads/page.tsx"                 visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_APP_ELEC"      name="electives/page.tsx"                 visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_APP_ELEC_ID"   name="electives/[id]/page.tsx"            visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_APP_COURSES"   name="courses/page.tsx"                   visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_APP_COURSES_ID" name="courses/[id]/page.tsx"             visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_APP_DASH"      name="dashboard/page.tsx"                 visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_APP_MENTOR_P"  name="mentor/page.tsx"                    visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_APP_MENTOR_L"  name="mentor/layout.tsx"                  visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_APP_MENTOR_EL" name="mentor/electives/page.tsx"          visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_APP_MENTOR_OL" name="mentor/olympiads/page.tsx"          visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_APP_ADMIN_P"   name="admin/page.tsx"                     visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_APP_ADMIN_L"   name="admin/layout.tsx"                   visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_APP_ADMIN_USR" name="admin/users/page.tsx"               visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_APP_ADMIN_CRS" name="admin/courses/page.tsx"             visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_APP_ADMIN_CT"  name="admin/career-tests/page.tsx"        visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_APP_ADMIN_PA"  name="admin/prof-orientation-analysis/page.tsx" visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_APP_ADMIN_EL"  name="admin/electives/page.tsx"           visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_APP_ADMIN_AN"  name="admin/analytics/page.tsx"           visibility="public"/>
+    </packagedElement>
+
+    <!-- ─── widgets/ ─────────────────────────────────────────── -->
+    <packagedElement xmi:type="uml:Package" xmi:id="T1_WIDGETS" name="widgets" visibility="public">
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_W_HEADER"   name="header/Header.tsx"              visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_W_FOOTER"   name="footer/Footer.tsx"              visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_W_VIDEO"    name="video-background/VideoBackground.tsx" visibility="public"/>
+    </packagedElement>
+
+    <!-- ─── features/ ────────────────────────────────────────── -->
+    <packagedElement xmi:type="uml:Package" xmi:id="T1_FEATURES" name="features" visibility="public">
+      <!-- auth -->
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_F_AUTHPAGE"    name="auth/AuthPage.tsx"                  visibility="public"/>
+      <!-- home -->
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_F_FEATSEC"     name="home/FeaturesSection.tsx"           visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_F_STATSSEC"    name="home/StatsSection.tsx"              visibility="public"/>
+      <!-- courses-page -->
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_F_COURSESPAGE" name="courses-page/CoursesPage.tsx"       visibility="public"/>
+      <!-- profile -->
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_F_PROFILEPAGE" name="profile/ProfilePage.tsx"            visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_F_PUBPROFILE"  name="profile/PublicProfilePage.tsx"      visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_F_ACHSEC"      name="profile/AchievementsSection.tsx"    visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_F_MYCOURSESM"  name="profile/components/MyCoursesModal.tsx"           visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_F_PROFORIMOD"  name="profile/components/ProfOrientationTestModal.tsx" visibility="public"/>
+      <!-- prof-orientation -->
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_F_EXPERTSYS"   name="prof-orientation/ExpertSystemPage.tsx" visibility="public"/>
+      <!-- career-page / career-test -->
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_F_CAREERPAGE"  name="career-page/CareerPage.tsx"         visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_F_CAREERSEC"   name="career/CareerSection.tsx"           visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_F_CAREERTST"   name="career-test/CareerTestPage.tsx"     visibility="public"/>
+      <!-- compel (компилятор) -->
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_F_COMPILERP"   name="compel/pages/index.tsx"             visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_F_CODEEDIT"    name="compel/components/CodeEditor.tsx"   visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_F_OUTPUTDISP"  name="compel/components/OutputDisplay.tsx" visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_F_SANDBOXCTRL" name="compel/components/SandboxControls.tsx" visibility="public"/>
+      <!-- electives -->
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_F_ELECTPAGE"   name="electives/ElectivesPage.tsx"           visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_F_ELECTDET"    name="electives/ElectiveDetailPage.tsx"      visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_F_ADMINELECT"  name="electives/AdminElectivesPage.tsx"      visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_F_ADMINELDET"  name="electives/AdminElectiveDetailPage.tsx" visibility="public"/>
+      <!-- dashboard -->
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_F_DASHPAGE"    name="dashboard/DashboardPage.tsx"        visibility="public"/>
+      <!-- mentor -->
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_F_MENTORDASH"  name="mentor/MentorDashboard.tsx"         visibility="public"/>
+      <!-- admin -->
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_F_ADMINDASH"   name="admin/AdminDashboard.tsx"           visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_F_ADMINSIDEB"  name="admin/AdminSidebar.tsx"             visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_F_USERMGMT"    name="admin/UserManagement.tsx"           visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_F_COURSEMGMT"  name="admin/CourseManagement.tsx"         visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_F_COURSEFORM"  name="admin/CourseForm.tsx"               visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_F_SITEANLYT"   name="admin/SiteAnalyticsPage.tsx"        visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_F_PROFANLYT"   name="admin/ProfOrientationAnalysis.tsx"  visibility="public"/>
+      <!-- notifications -->
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_F_NOTIFBELL"   name="notifications/NotificationBell.tsx" visibility="public"/>
+    </packagedElement>
+
+    <!-- ─── shared/ ──────────────────────────────────────────── -->
+    <packagedElement xmi:type="uml:Package" xmi:id="T1_SHARED" name="shared" visibility="public">
+      <!-- api -->
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_SH_CLIENT"      name="api/client.ts"                       visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_SH_AUTHAPI"     name="api/authApi.ts"                      visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_SH_PROFORI"     name="api/prof-orientation.ts"             visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_SH_ELECTIVES"   name="api/electives.ts"                    visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_SH_OLYMPIADS"   name="api/olympiads/index.ts"              visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_SH_ADMSTATS"    name="api/admin/stats.ts"                  visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_SH_ADMUSERS"    name="api/admin/users.ts"                  visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_SH_ADMCOURSES"  name="api/admin/courses.ts"                visibility="public"/>
+      <!-- lib -->
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_SH_AUTHCTX"     name="lib/auth-context.tsx"                visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_SH_THEME"       name="lib/theme.tsx"                       visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_SH_PROTROUTE"   name="lib/protected-route.tsx"             visibility="public"/>
+      <!-- ui -->
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_SH_BADGE"       name="ui/badge/Badge.tsx"                  visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_SH_BUTTON"      name="ui/button/Button.tsx"                visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_SH_CARD"        name="ui/card/Card.tsx"                    visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_SH_INPUT"       name="ui/input/input.tsx"                  visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_SH_SIDEBAR"     name="ui/sidebar/GhSidebar.tsx"            visibility="public"/>
+    </packagedElement>
+
+    <!-- ── зависимости frontend ─────────────────────────────── -->
+    <packagedElement xmi:type="uml:Package" xmi:id="T1_FE_DEP1" name="«use»" visibility="public">
+      <packageImport xmi:id="T1_DEP_FEAT_SHARED" importedPackage="T1_SHARED"/>
+    </packagedElement>
+
+    <!-- ══════════════════════════════════════════════════════════════
+         BACKEND  —  backend/src
+    ══════════════════════════════════════════════════════════════ -->
+
+    <packagedElement xmi:type="uml:Package" xmi:id="T1_BE" name="backend/src" visibility="public">
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_BE_REF_AUTH"   name="auth/"                   visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_BE_REF_USERS"  name="users/"                  visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_BE_REF_CRS"    name="courses/"                visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_BE_REF_PO"     name="professional-orientation/" visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_BE_REF_COMP"   name="compiler/"               visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_BE_REF_OLY"    name="olympiads/"              visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_BE_REF_EL"     name="electives/"              visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_BE_REF_AN"     name="analytics/"              visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_BE_REF_ACH"    name="achievements/"           visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_BE_REF_NOTIF"  name="notifications/"          visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_BE_REF_MAIN"   name="app.module.ts"           visibility="public"/>
+    </packagedElement>
+
+    <!-- ─── auth ─────────────────────────────────────────────── -->
+    <packagedElement xmi:type="uml:Package" xmi:id="T1_BE_AUTH" name="auth" visibility="public">
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_BE_AUTHM"  name="auth.module.ts"             visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_BE_AUTHC"  name="auth.controller.ts"         visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_BE_AUTHS"  name="auth.service.ts"            visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_BE_JWTG"   name="guards/jwt-auth.guard.ts"   visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_BE_ROLESG" name="guards/roles.guard.ts"      visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_BE_ROLESD" name="decorators/roles.decorator.ts" visibility="public"/>
+    </packagedElement>
+
+    <!-- ─── users ────────────────────────────────────────────── -->
+    <packagedElement xmi:type="uml:Package" xmi:id="T1_BE_USERS" name="users" visibility="public">
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_BE_USERM"   name="users.module.ts"               visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_BE_USERC"   name="users.controller.ts"           visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_BE_USERS2"  name="users.service.ts"              visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_BE_USERE"   name="entities/user.entity.ts"       visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_BE_ROLESE"  name="entities/user-role.entity.ts"  visibility="public"/>
+    </packagedElement>
+
+    <!-- ─── courses ──────────────────────────────────────────── -->
+    <packagedElement xmi:type="uml:Package" xmi:id="T1_BE_COURSES" name="courses" visibility="public">
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_BE_COURSESM" name="courses.module.ts"           visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_BE_COURSESC" name="courses.controller.ts"       visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_BE_COURSESS" name="courses.service.ts"          visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_BE_COURSESE" name="entities/course.entity.ts"   visibility="public"/>
+    </packagedElement>
+
+    <!-- ─── professional-orientation ────────────────────────── -->
+    <packagedElement xmi:type="uml:Package" xmi:id="T1_BE_PROFORI" name="professional-orientation" visibility="public">
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_BE_PORIM"  name="professional-orientation.module.ts"     visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_BE_PORIC"  name="professional-orientation.controller.ts" visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_BE_PORIS"  name="professional-orientation.service.ts"    visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_BE_PORIE1" name="entities/professional-orientation.entity.ts" visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_BE_PORIE2" name="entities/career-test.entity.ts"             visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_BE_PORI_D1" name="dto/submit-test.dto.ts"                    visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_BE_PORI_D2" name="dto/submit-expert-result.dto.ts"           visibility="public"/>
+    </packagedElement>
+
+    <!-- ─── compiler ─────────────────────────────────────────── -->
+    <packagedElement xmi:type="uml:Package" xmi:id="T1_BE_COMPILER" name="compiler" visibility="public">
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_BE_COMPILERM" name="compiler.module.ts"                  visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_BE_COMPILERC" name="controllers/compiler.controller.ts"  visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_BE_COMPILERS" name="services/compiler.service.ts"        visibility="public"/>
+    </packagedElement>
+
+    <!-- ─── olympiads ────────────────────────────────────────── -->
+    <packagedElement xmi:type="uml:Package" xmi:id="T1_BE_OLYMPIADS" name="olympiads" visibility="public">
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_BE_OLYM"  name="olympiads.module.ts"                   visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_BE_OLYC"  name="olympiads.controller.ts"               visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_BE_OLYS"  name="olympiads.service.ts"                  visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_BE_OLYE1" name="entities/olympiad.entity.ts"            visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_BE_OLYE2" name="entities/olympiad-problem.entity.ts"    visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_BE_OLYE3" name="entities/olympiad-submission.entity.ts" visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_BE_OLYD1" name="dto/create-olympiad.dto.ts"             visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_BE_OLYD2" name="dto/create-problem.dto.ts"              visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_BE_OLYD3" name="dto/submit-solution.dto.ts"             visibility="public"/>
+    </packagedElement>
+
+    <!-- ─── electives ────────────────────────────────────────── -->
+    <packagedElement xmi:type="uml:Package" xmi:id="T1_BE_ELECTIVES" name="electives" visibility="public">
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_BE_ELM"  name="electives.module.ts"                   visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_BE_ELC"  name="electives.controller.ts"               visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_BE_ELS"  name="electives.service.ts"                  visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_BE_ELE1" name="entities/elective.entity.ts"            visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_BE_ELE2" name="entities/elective-enrollment.entity.ts" visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_BE_ELD1" name="dto/create-elective.dto.ts"             visibility="public"/>
+    </packagedElement>
+
+    <!-- ─── analytics ────────────────────────────────────────── -->
+    <packagedElement xmi:type="uml:Package" xmi:id="T1_BE_ANALYTICS" name="analytics" visibility="public">
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_BE_ANM"  name="analytics.module.ts"           visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_BE_ANC"  name="analytics.controller.ts"       visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_BE_ANS"  name="analytics.service.ts"          visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_BE_ANE"  name="entities/site-visit.entity.ts" visibility="public"/>
+    </packagedElement>
+
+    <!-- ─── achievements ─────────────────────────────────────── -->
+    <packagedElement xmi:type="uml:Package" xmi:id="T1_BE_ACH" name="achievements" visibility="public">
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_BE_ACHM" name="achievements.module.ts"       visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_BE_ACHC" name="achievements.controller.ts"   visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_BE_ACHS" name="achievements.service.ts"      visibility="public"/>
+    </packagedElement>
+
+    <!-- ─── notifications ────────────────────────────────────── -->
+    <packagedElement xmi:type="uml:Package" xmi:id="T1_BE_NOTIF" name="notifications" visibility="public">
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_BE_NOTIFM" name="notifications.module.ts"     visibility="public"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="T1_BE_NOTIFC" name="notifications.controller.ts" visibility="public"/>
+    </packagedElement>
+
+    <!-- ══ зависимости (packageImport) ══════════════════════════
+         features/ использует shared/api, lib, ui
+         backend modules используют auth guards
+    ════════════════════════════════════════════════════════════ -->
+    <packageImport xmi:id="T1_IMP_FEAT_SHARED"   importingPackage="T1_FEATURES"    importedPackage="T1_SHARED"/>
+    <packageImport xmi:id="T1_IMP_APP_FEATURES"  importingPackage="T1_APP"         importedPackage="T1_FEATURES"/>
+    <packageImport xmi:id="T1_IMP_PROFORI_AUTH"  importingPackage="T1_BE_PROFORI"  importedPackage="T1_BE_AUTH"/>
+    <packageImport xmi:id="T1_IMP_OLY_AUTH"      importingPackage="T1_BE_OLYMPIADS" importedPackage="T1_BE_AUTH"/>
+    <packageImport xmi:id="T1_IMP_EL_AUTH"       importingPackage="T1_BE_ELECTIVES" importedPackage="T1_BE_AUTH"/>
+    <packageImport xmi:id="T1_IMP_COMP_AUTH"     importingPackage="T1_BE_COMPILER"  importedPackage="T1_BE_AUTH"/>
+    <packageImport xmi:id="T1_IMP_AN_AUTH"       importingPackage="T1_BE_ANALYTICS" importedPackage="T1_BE_AUTH"/>
+    <packageImport xmi:id="T1_IMP_BE_USERS"      importingPackage="T1_BE_AUTH"      importedPackage="T1_BE_USERS"/>
+
+  </uml:Model>
+</xmi:XMI>
