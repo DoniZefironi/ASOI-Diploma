@@ -133,7 +133,12 @@
       "Bash(grep -oi 'Таблица 2\\\\.[2-9][0-9].\\\\{0,60\\\\}' /tmp/doc_new_clean.txt)",
       "Bash(grep -oi 'хакатон.\\\\{0,300\\\\}' /tmp/doc_new_clean.txt)",
       "Bash(grep -oi 'словарн.\\\\{0,200\\\\}\\\\|vocab.\\\\{0,200\\\\}\\\\|карточк.\\\\{0,200\\\\}' /tmp/doc_new_clean.txt)",
-      "Bash(Get-ChildItem -Path \"c:\\\\Users\\\\hohol\\\\Documents\\\\GitHub\\\\ASOI-Diploma\\\\backend\\\\src\" -Directory)"
+      "Bash(Get-ChildItem -Path \"c:\\\\Users\\\\hohol\\\\Documents\\\\GitHub\\\\ASOI-Diploma\\\\backend\\\\src\" -Directory)",
+      "Bash(Get-Item \"C:\\\\Users\\\\hohol\\\\.claude\\\\projects\\\\c--Users-hohol-Documents-GitHub-ASOI-Diploma\\\\1a3c7355-feea-4162-8af3-29135591a0f2.jsonl\")",
+      "Bash(Select-Object Length, LastWriteTime)",
+      "Bash(grep -o 'SD_T1[^\"]*\\\\|SD-T1[^\"]*\\\\|Тема 1.*Студент\\\\|Тема 1.*Ментор\\\\|Тема 1.*Адм\\\\|@startuml SD_T1\\\\|title Т1' \"C:/Users/hohol/.claude/projects/c--Users-hohol-Documents-GitHub-ASOI-Diploma/1a3c7355-feea-4162-8af3-29135591a0f2.jsonl\" 2>/dev/null | head -60)",
+      "Read(//c/Users/hohol/.claude/projects/c--Users-hohol-Documents-GitHub-ASOI-Diploma/**)",
+      "Bash(python3)"
     ],
     "additionalDirectories": [
       "c:\\Users\\hohol\\Documents\\GitHub\\ASOI-Diploma\\frontend\\src\\app\\rooms\\join",
