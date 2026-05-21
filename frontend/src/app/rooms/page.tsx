@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { Pagination, usePagination } from '@/shared/ui/Pagination';
 import Link from 'next/link';
 import { useAuth } from '@/shared/lib/auth-context';
 import { roomsApi, Room } from '@/features/rooms/api';
@@ -190,6 +191,9 @@ export default function RoomsPage() {
 
   const myRole = (room: Room) => room.members.find(m => m.userId === user?.id)?.role;
 
+  const myPag  = usePagination(myRooms,     10);
+  const pubPag = usePagination(publicRooms, 10);
+
   const handleJoin = async () => {
     const code = inviteInput.trim().split('/').pop() || '';
     if (!code) { setJoinError('Введите инвайт-код или ссылку'); return; }
@@ -290,9 +294,12 @@ export default function RoomsPage() {
               </button>
             </div>
           ) : (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-              {myRooms.map(r => <RoomCard key={r.id} room={r} myRole={myRole(r)} />)}
-            </div>
+            <>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                {myPag.slice.map(r => <RoomCard key={r.id} room={r} myRole={myRole(r)} />)}
+              </div>
+              <Pagination page={myPag.page} totalPages={myPag.totalPages} onPage={myPag.setPage} total={myPag.total} pageSize={10} />
+            </>
           )
         ) : (
           publicRooms.length === 0 ? (
@@ -302,9 +309,12 @@ export default function RoomsPage() {
               <p style={{ color: 'var(--color-fg-muted)', fontSize: 13, margin: 0 }}>Создайте публичную комнату, чтобы другие могли присоединиться</p>
             </div>
           ) : (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-              {publicRooms.map(r => <RoomCard key={r.id} room={r} />)}
-            </div>
+            <>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                {pubPag.slice.map(r => <RoomCard key={r.id} room={r} />)}
+              </div>
+              <Pagination page={pubPag.page} totalPages={pubPag.totalPages} onPage={pubPag.setPage} total={pubPag.total} pageSize={10} />
+            </>
           )
         )}
       </div>

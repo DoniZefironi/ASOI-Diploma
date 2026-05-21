@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useMemo } from 'react';
+import { Pagination, usePagination } from '@/shared/ui/Pagination';
 import { Card, CardHeader, CardTitle, CardContent } from '@/shared/ui/card';
 import { Button } from '@/shared/ui/button';
 import { Plus, Edit, Trash2, Loader2, ClipboardList, ChevronDown, ChevronUp, Users, BarChart2, X } from 'lucide-react';
@@ -427,6 +428,8 @@ export default function AssignmentManagement() {
     return result;
   }, [assignments, search, filterType, sortBy, sortOrder, mentorCourseType]);
 
+  const { page, setPage, totalPages, slice: pageAssignments, total: asnTotal } = usePagination(filteredAssignments ?? [], 20);
+
   const handleCreate = () => {
     setEditingAssignment(null);
     setIsDialogOpen(true);
@@ -501,7 +504,7 @@ export default function AssignmentManagement() {
         </div>
         <div className="flex items-center space-x-2">
           <Badge variant="secondary" className="text-sm">
-            Всего: {filteredAssignments?.length || 0}
+            Всего: {asnTotal}
           </Badge>
           <Button onClick={handleCreate} className="gap-2">
             <Plus className="h-4 w-4" />
@@ -571,7 +574,7 @@ export default function AssignmentManagement() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
-                {filteredAssignments?.map((assignment: Assignment) => (
+                {pageAssignments.map((assignment: Assignment) => (
                   <tr key={assignment.id} className="bg-gray-800 border-b-2 border-b-white">
                     <td className="px-4 py-3">
                       <div className="flex flex-col">
@@ -634,6 +637,7 @@ export default function AssignmentManagement() {
             </table>
           </div>
 
+          <Pagination page={page} totalPages={totalPages} onPage={setPage} total={asnTotal} pageSize={20} />
           {(!filteredAssignments || filteredAssignments.length === 0) && (
             <div className="text-center py-8 text-gray-400">
               <p>Задания не найдены</p>

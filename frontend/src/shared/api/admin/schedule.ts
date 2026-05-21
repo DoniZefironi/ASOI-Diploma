@@ -3,16 +3,10 @@ import useSWR from 'swr';
 import useSWRMutation from 'swr/mutation';
 import { apiClient } from '../client';
 
+const BASE = '/schedule';
+const FETCH_KEY = `${BASE}?limit=1000`;
+
 const fetcher = (url: string) => apiClient.get(url);
-
-const createMutation = (url: string, { arg }: { arg: any }) =>
-  apiClient.post(url, arg);
-
-const updateMutation = (url: string, { arg }: { arg: { id: number; data: any } }) =>
-  apiClient.put(`${url}/${arg.id}`, arg.data);
-
-const deleteMutation = (url: string, { arg }: { arg: number }) =>
-  apiClient.delete(`${url}/${arg}`);
 
 export interface ScheduleItem {
   id: number;
@@ -44,7 +38,7 @@ export interface ScheduleItem {
 
 export function useSchedule() {
   const { data, error, isLoading, mutate } = useSWR<ScheduleItem[]>(
-    '/schedule',
+    FETCH_KEY,
     fetcher,
     {
       revalidateOnFocus: false,
@@ -53,32 +47,25 @@ export function useSchedule() {
   );
 
   const { trigger: createScheduleItem, isMutating: isCreating } = useSWRMutation(
-    '/schedule',
-    createMutation,
-    {
-      onSuccess: () => {
-        mutate();
-      },
-    }
+    FETCH_KEY,
+    (_key: string, { arg }: { arg: any }) => apiClient.post(BASE, arg),
+    { onSuccess: () => mutate() }
   );
 
   const { trigger: updateScheduleItem, isMutating: isUpdating } = useSWRMutation(
-    '/schedule',
-    updateMutation,
-    {
-      onSuccess: () => {
-        mutate();
-      },
-    }
+    FETCH_KEY,
+    (_key: string, { arg }: { arg: { id: number; data: any } }) => apiClient.put(`${BASE}/${arg.id}`, arg.data),
+    { onSuccess: () => mutate() }
   );
 
   const { trigger: deleteScheduleItem, isMutating: isDeleting } = useSWRMutation(
-    '/schedule',
-    deleteMutation,
+    FETCH_KEY,
+    (_key: string, { arg }: { arg: number }) => apiClient.delete(`${BASE}/${arg}`),
     {
       onSuccess: (deletedId) => {
-        mutate((currentData: ScheduleItem[] | undefined) =>
-          currentData ? currentData.filter((item: ScheduleItem) => item.id !== deletedId) : [],
+        mutate(
+          (currentData: ScheduleItem[] | undefined) =>
+            currentData ? currentData.filter((item: ScheduleItem) => item.id !== deletedId) : [],
           false
         );
       },
@@ -101,11 +88,11 @@ export function useSchedule() {
 
 export function useUserSchedule(startDate?: string, endDate?: string) {
   const isAuthorized = typeof window !== 'undefined' && !!localStorage.getItem('access_token');
-  
+
   const params = new URLSearchParams();
   if (startDate) params.append('startDate', startDate);
   if (endDate) params.append('endDate', endDate);
-  
+
   const queryString = params.toString();
   const url = isAuthorized ? `/schedule/user${queryString ? `?${queryString}` : ''}` : null;
 

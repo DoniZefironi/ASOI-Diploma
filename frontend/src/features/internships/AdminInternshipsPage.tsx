@@ -1,5 +1,6 @@
 'use client';
 import React, { useState } from 'react';
+import { Pagination, usePagination } from '@/shared/ui/Pagination';
 import { useAdminInternships, type Internship } from '@/shared/api/internships';
 import { apiClient } from '@/shared/api/client';
 import { Card } from '@/shared/ui/card';
@@ -195,6 +196,7 @@ export default function AdminInternshipsPage() {
   const [showCreate, setShowCreate] = useState(false);
   const [editId, setEditId] = useState<number | null>(null);
   const [saving, setSaving] = useState(false);
+  const { page, setPage, totalPages, slice: pageInternships, total } = usePagination(internships ?? [], 15);
 
   const handleCreate = async (form: FormState) => {
     setSaving(true);
@@ -269,7 +271,7 @@ export default function AdminInternshipsPage() {
         </Card>
       ) : (
         <div className="space-y-4">
-          {internships.map(internship => (
+          {pageInternships.map(internship => (
             <Card key={internship.id} className="p-5">
               {editId === internship.id && (
                 <Modal title={`Редактирование: ${internship.title}`} onClose={() => setEditId(null)} maxWidth={700}>
@@ -321,6 +323,7 @@ export default function AdminInternshipsPage() {
               )}
             </Card>
           ))}
+          <Pagination page={page} totalPages={totalPages} onPage={setPage} total={total} pageSize={15} />
         </div>
       )}
     </div>

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useMemo } from 'react';
+import { Pagination, usePagination } from '@/shared/ui/Pagination';
 import { Card, CardHeader, CardTitle, CardContent } from '@/shared/ui/card';
 import { Button } from '@/shared/ui/button';
 import { Plus, Edit, Trash2, Loader2, FileText, Video, Image, Code, FolderGit } from 'lucide-react';
@@ -143,6 +144,8 @@ export default function MaterialManagement() {
     return result;
   }, [materials, search, sortBy, sortOrder, mentorCourseType]);
 
+  const { page, setPage, totalPages, slice: pageMaterials, total: matTotal } = usePagination(filteredMaterials ?? [], 20);
+
   const handleCreate = () => {
     setEditingMaterial(null);
     setIsDialogOpen(true);
@@ -216,7 +219,7 @@ export default function MaterialManagement() {
         </div>
         <div className="flex items-center space-x-2">
           <Badge variant="secondary" className="text-sm">
-            Всего: {filteredMaterials?.length || 0}
+            Всего: {matTotal}
           </Badge>
           <Button onClick={handleCreate} className="gap-2 flex justify-center">
             <Plus className="h-4 w-4" />
@@ -271,7 +274,7 @@ export default function MaterialManagement() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
-                {filteredMaterials?.map((material: any) => (
+                {pageMaterials.map((material: any) => (
                   <tr key={material.id} className="bg-gray-800 border-b-2 border-b-white">
                     <td className="px-4 py-3">
                       <div className="flex flex-col">
@@ -326,6 +329,7 @@ export default function MaterialManagement() {
             </table>
           </div>
 
+          <Pagination page={page} totalPages={totalPages} onPage={setPage} total={matTotal} pageSize={20} />
           {(!filteredMaterials || filteredMaterials.length === 0) && (
             <div className="text-center py-8 text-gray-400">
               <FileText className="h-12 w-12 mx-auto mb-4 opacity-50" />

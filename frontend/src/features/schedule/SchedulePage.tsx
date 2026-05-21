@@ -2,6 +2,7 @@
 'use client';
 
 import React, { useState, useEffect, useMemo } from 'react';
+import { Pagination, usePagination } from '@/shared/ui/Pagination';
 import { useAuth } from '@/shared/lib/auth-context';
 import { Card } from '@/shared/ui/card';
 import { Button } from '@/shared/ui/button';
@@ -267,9 +268,9 @@ export default function SchedulePage() {
     try {
       setIsLoading(true);
       const [schedData, assData, hackData, regData, electData] = await Promise.all([
-        apiClient.get('/schedule'),
-        apiClient.get('/assignments'),
-        apiClient.get('/hackathons'),
+        apiClient.get('/schedule?limit=1000'),
+        apiClient.get('/assignments?limit=1000'),
+        apiClient.get('/hackathons?limit=1000'),
         apiClient.get('/course-groups/user/registrations'),
         apiClient.get('/electives').catch(() => []),
       ]);
@@ -282,11 +283,10 @@ export default function SchedulePage() {
       setElectives((electData || []).filter((e: any) => e.isEnrolled));
 
       // Auto-expand current + next week
-      const weeks = buildWeeks((schedData || []).filter((i: any) => ids.includes(i.courseGroupId)), (assData || []).filter((a: any) => ids.includes(a.courseGroupId)), hackData || [], (electData || []).filter((e: any) => e.isEnrolled));
+      const builtWeeks = buildWeeks((schedData || []).filter((i: any) => ids.includes(i.courseGroupId)), (assData || []).filter((a: any) => ids.includes(a.courseGroupId)), hackData || [], (electData || []).filter((e: any) => e.isEnrolled));
       const now = new Date();
       const toExpand = new Set<string>();
-      weeks.forEach(w => { if (w.weekEnd >= now) toExpand.add(w.weekStart.toISOString()); });
-      // keep at most 2 expanded
+      builtWeeks.forEach(w => { if (w.weekEnd >= now) toExpand.add(w.weekStart.toISOString()); });
       const arr = Array.from(toExpand);
       setExpandedWeeks(new Set(arr.slice(0, 2)));
     } catch { /* ignore */ }
@@ -311,7 +311,7 @@ export default function SchedulePage() {
     return Array.from(map.values()).sort((a, b) => a.weekStart.getTime() - b.weekStart.getTime());
   };
 
-  const filteredWeeks = useMemo(() => {
+  const allFilteredWeeks = useMemo(() => {
     const now = new Date();
     let weeks = buildWeeks(schedule, assignments, hackathons, electives);
     if (filterType === 'schedule')    weeks = weeks.filter(w => w.scheduleItems.length > 0);
@@ -321,6 +321,8 @@ export default function SchedulePage() {
     if (!showPast) weeks = weeks.filter(w => w.weekEnd >= now);
     return weeks;
   }, [schedule, assignments, hackathons, electives, filterType, showPast]);
+
+  const { page: weekPage, setPage: setWeekPage, totalPages: weekTotalPages, slice: filteredWeeks, total: weeksTotal } = usePagination(allFilteredWeeks, 8);
 
   const toggle = (key: string) => {
     setExpandedWeeks(prev => { const n = new Set(prev); n.has(key) ? n.delete(key) : n.add(key); return n; });
@@ -401,7 +403,7 @@ export default function SchedulePage() {
               </label>
 
               <div style={{ marginLeft: 'auto', display: 'flex', gap: 6 }}>
-                <button onClick={() => setExpandedWeeks(new Set(filteredWeeks.map(w => w.weekStart.toISOString())))} style={{ fontSize: 11, color: 'var(--color-fg-muted)', background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline' }}>
+                <button onClick={() => setExpandedWeeks(new Set(allFilteredWeeks.map(w => w.weekStart.toISOString())))} style={{ fontSize: 11, color: 'var(--color-fg-muted)', background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline' }}>
                   Развернуть все
                 </button>
                 <button onClick={() => setExpandedWeeks(new Set())} style={{ fontSize: 11, color: 'var(--color-fg-muted)', background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline' }}>
@@ -432,16 +434,19 @@ export default function SchedulePage() {
                 )}
               </div>
             ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                {filteredWeeks.map(week => (
-                  <WeekBlock
-                    key={week.weekStart.toISOString()}
-                    week={week}
-                    isExpanded={expandedWeeks.has(week.weekStart.toISOString())}
-                    onToggle={() => toggle(week.weekStart.toISOString())}
-                  />
-                ))}
-              </div>
+              <>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                  {filteredWeeks.map(week => (
+                    <WeekBlock
+                      key={week.weekStart.toISOString()}
+                      week={week}
+                      isExpanded={expandedWeeks.has(week.weekStart.toISOString())}
+                      onToggle={() => toggle(week.weekStart.toISOString())}
+                    />
+                  ))}
+                </div>
+                <Pagination page={weekPage} totalPages={weekTotalPages} onPage={setWeekPage} total={weeksTotal} pageSize={8} />
+              </>
             )}
           </>
         )}

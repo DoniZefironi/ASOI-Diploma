@@ -6,6 +6,7 @@ import { useUsers } from '@/shared/api/admin';
 import { apiClient } from '@/shared/api/client';
 import { Badge } from '@/shared/ui/badge';
 import { Shield, RefreshCw, Users, Ban, CheckCircle2 } from 'lucide-react';
+import { Pagination, usePagination } from '@/shared/ui/Pagination';
 
 const getRoleLabel = (role: string): string => {
   const roleLabels: Record<string, string> = {
@@ -145,6 +146,7 @@ export default function UserManagement() {
   const [localUpdating, setLocalUpdating] = useState(false);
   const [isSyncing, setIsSyncing] = useState(false);
   const [banningId, setBanningId] = useState<number | null>(null);
+  const { page, setPage, totalPages, slice: pageUsers, total } = usePagination(users ?? [], 20);
 
   const handleEditRoles = (user: any) => {
     setSelectedUser(user);
@@ -272,7 +274,7 @@ export default function UserManagement() {
               </tr>
             </thead>
             <tbody>
-              {users?.map((user: any) => {
+              {pageUsers.map((user: any) => {
                 const userRoles = getUserRoles(user);
                 const displayName = [user.firstName, user.lastName].filter(Boolean).join(' ') || 'Пользователь';
                 const avatarLetter = displayName.charAt(0).toUpperCase();
@@ -362,6 +364,9 @@ export default function UserManagement() {
               Пользователи не найдены
             </div>
           )}
+        </div>
+        <div style={{ borderTop: '1px solid var(--color-border-muted)' }}>
+          <Pagination page={page} totalPages={totalPages} onPage={setPage} total={total} pageSize={20} />
         </div>
       </div>
 

@@ -3,16 +3,10 @@ import useSWR from 'swr';
 import useSWRMutation from 'swr/mutation';
 import { apiClient } from '../client';
 
+const BASE = '/materials';
+const FETCH_KEY = `${BASE}?limit=1000`;
+
 const fetcher = (url: string) => apiClient.get(url);
-
-const createMutation = (url: string, { arg }: { arg: any }) =>
-  apiClient.post(url, arg);
-
-const updateMutation = (url: string, { arg }: { arg: { id: number; data: any } }) =>
-  apiClient.put(`${url}/${arg.id}`, arg.data);
-
-const deleteMutation = (url: string, { arg }: { arg: number }) =>
-  apiClient.delete(`${url}/${arg}`);
 
 export interface Material {
   id: number;
@@ -24,7 +18,7 @@ export interface Material {
 
 export function useMaterials() {
   const { data, error, isLoading, mutate } = useSWR<Material[]>(
-    '/materials',
+    FETCH_KEY,
     fetcher,
     {
       revalidateOnFocus: false,
@@ -33,32 +27,25 @@ export function useMaterials() {
   );
 
   const { trigger: createMaterial, isMutating: isCreating } = useSWRMutation(
-    '/materials',
-    createMutation,
-    {
-      onSuccess: () => {
-        mutate();
-      },
-    }
+    FETCH_KEY,
+    (_key: string, { arg }: { arg: any }) => apiClient.post(BASE, arg),
+    { onSuccess: () => mutate() }
   );
 
   const { trigger: updateMaterial, isMutating: isUpdating } = useSWRMutation(
-    '/materials',
-    updateMutation,
-    {
-      onSuccess: () => {
-        mutate();
-      },
-    }
+    FETCH_KEY,
+    (_key: string, { arg }: { arg: { id: number; data: any } }) => apiClient.put(`${BASE}/${arg.id}`, arg.data),
+    { onSuccess: () => mutate() }
   );
 
   const { trigger: deleteMaterial, isMutating: isDeleting } = useSWRMutation(
-    '/materials',
-    deleteMutation,
+    FETCH_KEY,
+    (_key: string, { arg }: { arg: number }) => apiClient.delete(`${BASE}/${arg}`),
     {
       onSuccess: (deletedId) => {
-        mutate((currentData: Material[] | undefined) =>
-          currentData ? currentData.filter((material: Material) => material.id !== deletedId) : [],
+        mutate(
+          (currentData: Material[] | undefined) =>
+            currentData ? currentData.filter((m: Material) => m.id !== deletedId) : [],
           false
         );
       },

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useMemo, useCallback, useEffect } from 'react';
+import { Pagination, usePagination } from '@/shared/ui/Pagination';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
 import { Button } from '@/shared/ui/button';
 import { BookOpen, Plus, Edit, Trash2, Loader2, AlertTriangle, ChevronDown, ChevronUp } from 'lucide-react';
@@ -124,7 +125,7 @@ export default function VocabularyManagement() {
 
   useEffect(() => { load(); }, [load]);
 
-  const filtered = useMemo(() => {
+  const filteredAll = useMemo(() => {
     const q = search.toLowerCase();
     let result = terms.filter(t =>
       (!q || t.term.toLowerCase().includes(q) || t.translation.toLowerCase().includes(q)) &&
@@ -136,6 +137,8 @@ export default function VocabularyManagement() {
     });
     return result;
   }, [terms, search, catFilter, sortBy, sortOrder]);
+
+  const { page, setPage, totalPages, slice: filtered, total } = usePagination(filteredAll, 20);
 
   const handleSave = async (data: any) => {
     setSaving(true);
@@ -162,7 +165,7 @@ export default function VocabularyManagement() {
           <p className="text-gray-400">Управление карточками технической лексики для студентов</p>
         </div>
         <div className="flex items-center gap-2">
-          <Badge variant="secondary">{filtered.length} / {terms.length}</Badge>
+          <Badge variant="secondary">{total} / {terms.length}</Badge>
           <Button onClick={() => { setEditTerm(null); setShowForm(true); }} className="gap-2">
             <Plus className="h-4 w-4" /> Добавить термин
           </Button>
@@ -240,6 +243,7 @@ export default function VocabularyManagement() {
               ))}
             </div>
           )}
+          <Pagination page={page} totalPages={totalPages} onPage={setPage} total={total} pageSize={20} />
         </CardContent>
       </Card>
 

@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { olympiadsApi, type Olympiad } from '@/shared/api/olympiads';
 import { Trophy, Clock, Code2, Users, ChevronRight, Lock } from 'lucide-react';
+import { Pagination, usePagination } from '@/shared/ui/Pagination';
 
 function getStatus(o: Olympiad): 'upcoming' | 'active' | 'ended' {
   const now = new Date();
@@ -45,7 +46,8 @@ export default function OlympiadsPage() {
     olympiadsApi.getAll().then(setOlympiads).catch(() => {}).finally(() => setLoading(false));
   }, []);
 
-  const filtered = olympiads.filter(o => filter === 'all' || getStatus(o) === filter);
+  const filteredAll = olympiads.filter(o => filter === 'all' || getStatus(o) === filter);
+  const { page, setPage, totalPages, slice: filtered, total } = usePagination(filteredAll, 12);
 
   return (
     <div style={{ minHeight: '100vh', background: 'var(--color-canvas-default)', padding: '28px 0 64px' }}>
@@ -156,6 +158,7 @@ export default function OlympiadsPage() {
             })}
           </div>
         )}
+        <Pagination page={page} totalPages={totalPages} onPage={setPage} total={total} pageSize={12} />
       </div>
     </div>
   );

@@ -9,6 +9,7 @@ import { Plus, Users2, Edit, Trash2, Loader2, BookOpen } from 'lucide-react';
 import GroupForm from './GroupForm';
 import Link from 'next/link';
 import DataTableFilters from '@/features/common/DataTableFilters';
+import { Pagination, usePagination } from '@/shared/ui/Pagination';
 
 const courseTypeLabels: Record<string, string> = {
   'english': 'Английский язык',
@@ -153,6 +154,8 @@ export default function GroupManagement() {
     return result;
   }, [groups, search, filterCourse, filterYear, sortBy, sortOrder, mentorCourseType]);
 
+  const { page, setPage, totalPages, slice: pageGroups, total: groupsTotal } = usePagination(filteredGroups ?? [], 20);
+
   const handleCreate = () => {
     setEditingGroup(null);
     setIsDialogOpen(true);
@@ -216,7 +219,7 @@ export default function GroupManagement() {
           )}
         </div>
         <div className="flex items-center space-x-2">
-          <Badge variant="secondary">Всего: {filteredGroups?.length || 0}</Badge>
+          <Badge variant="secondary">Всего: {groupsTotal}</Badge>
           <Button onClick={handleCreate} className="gap-2">
             <Plus className="h-4 w-4" />
             Создать группу
@@ -283,7 +286,7 @@ export default function GroupManagement() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredGroups?.map((g: any) => (
+              {pageGroups.map((g: any) => (
                 <TableRow key={g.id}>
                   <TableCell>
                     <Link
@@ -326,6 +329,7 @@ export default function GroupManagement() {
             </TableBody>
           </Table>
 
+          <Pagination page={page} totalPages={totalPages} onPage={setPage} total={groupsTotal} pageSize={20} />
           {(!filteredGroups || filteredGroups.length === 0) && (
             <div className="text-center py-8 text-gray-400">
               <Users2 className="h-12 w-12 mx-auto mb-3 opacity-50" />

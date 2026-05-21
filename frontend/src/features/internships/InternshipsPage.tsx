@@ -1,5 +1,6 @@
 'use client';
 import React, { useState } from 'react';
+import { Pagination, usePagination } from '@/shared/ui/Pagination';
 import Link from 'next/link';
 import { useInternships, type Internship } from '@/shared/api/internships';
 import type { ReactNode } from 'react';
@@ -152,7 +153,7 @@ export default function InternshipsPage() {
   const [search, setSearch] = useState('');
   const [formatFilter, setFormatFilter] = useState('all');
 
-  const filtered = (internships ?? []).filter(i => {
+  const filteredAll = (internships ?? []).filter(i => {
     const q = search.toLowerCase();
     const matchesSearch = !q ||
       i.title.toLowerCase().includes(q) ||
@@ -162,8 +163,9 @@ export default function InternshipsPage() {
     return matchesSearch && matchesFormat;
   });
 
-  const activeCount = filtered.filter(i => !i.deadline || new Date(i.deadline) >= new Date()).length;
-  const expiredCount = filtered.length - activeCount;
+  const { page, setPage, totalPages, slice: filtered, total: filteredCount } = usePagination(filteredAll, 15);
+  const activeCount  = filteredAll.filter(i => !i.deadline || new Date(i.deadline) >= new Date()).length;
+  const expiredCount = filteredAll.length - activeCount;
 
   const filterBtn = (val: string, label: string) => {
     const isActive = formatFilter === val;
@@ -247,13 +249,14 @@ export default function InternshipsPage() {
             ) : (
               <>
                 <p style={{ fontSize: 12, color: 'var(--color-fg-muted)', marginBottom: 10 }}>
-                  {pluralInternships(filtered.length)}{(search || formatFilter !== 'all') && ' по запросу'}
+                  {pluralInternships(filteredCount)}{(search || formatFilter !== 'all') && ' по запросу'}
                   {' · '}<span style={{ color: 'var(--color-success-fg)' }}>{activeCount} активных</span>
                   {expiredCount > 0 && <span style={{ color: 'var(--color-fg-subtle)' }}> · {expiredCount} завершено</span>}
                 </p>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                   {filtered.map(i => <InternshipCard key={i.id} internship={i} />)}
                 </div>
+                <Pagination page={page} totalPages={totalPages} onPage={setPage} total={filteredCount} pageSize={15} />
               </>
             )}
           </div>

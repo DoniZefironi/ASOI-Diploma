@@ -2,6 +2,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { Pagination, usePagination } from '@/shared/ui/Pagination';
 import { useSearchParams } from 'next/navigation';
 import { CourseCardWithRegistration } from '@/shared/ui/card';
 import { useCourses } from '@/shared/api/admin';
@@ -51,11 +52,13 @@ export const CoursesPage = () => {
   }, [searchParams]);
 
   const mapped = courses?.map(mapCourse) ?? [];
-  const filtered = filterType === 'all' ? mapped : mapped.filter(c => c.category === filterType);
+  const filteredAll = filterType === 'all' ? mapped : mapped.filter(c => c.category === filterType);
+  const { page, setPage, totalPages, slice: filtered, total: filteredCount } = usePagination(filteredAll, 12);
   const totalHours = mapped.reduce((s, c) => s + (c.duration || 0), 0);
 
   const countByType = (type: string) =>
     type === 'all' ? mapped.length : mapped.filter(c => c.category === type).length;
+
 
   if (isLoading) {
     return (
@@ -135,12 +138,15 @@ export const CoursesPage = () => {
             </div>
 
             {/* Course list */}
-            {filtered.length > 0 ? (
-              <div style={{ borderRadius: 10, overflow: 'hidden', border: '1px solid var(--color-border-default)' }}>
-                {filtered.map((course, i) => (
-                  <CourseCardWithRegistration key={course.id} course={course} index={i} />
-                ))}
-              </div>
+            {filteredCount > 0 ? (
+              <>
+                <div style={{ borderRadius: 10, overflow: 'hidden', border: '1px solid var(--color-border-default)' }}>
+                  {filtered.map((course, i) => (
+                    <CourseCardWithRegistration key={course.id} course={course} index={i} />
+                  ))}
+                </div>
+                <Pagination page={page} totalPages={totalPages} onPage={setPage} total={filteredCount} pageSize={12} />
+              </>
             ) : (
               <div style={{ background: 'var(--color-canvas-overlay)', border: '1px dashed var(--color-border-default)', borderRadius: 10, padding: '48px 24px', textAlign: 'center' }}>
                 <BookOpen size={28} color="var(--color-fg-subtle)" style={{ margin: '0 auto 12px' }} />

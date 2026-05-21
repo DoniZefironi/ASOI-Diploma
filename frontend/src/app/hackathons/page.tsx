@@ -4,6 +4,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import { apiClient } from '@/shared/api/client';
 import { useAuth } from '@/shared/lib/auth-context';
+import { Pagination, usePagination } from '@/shared/ui/Pagination';
 
 // ── Types ──────────────────────────────────────────────────────────────────
 interface Hackathon {
@@ -177,7 +178,7 @@ export default function HackathonsPage() {
       .finally(() => setLoading(false));
   }, []);
 
-  const filtered = useMemo(() => {
+  const filteredAll = useMemo(() => {
     const q = search.toLowerCase();
     return hackathons.filter(h => {
       const s = getStatus(h);
@@ -186,6 +187,7 @@ export default function HackathonsPage() {
       return matchSearch && matchFilter;
     });
   }, [hackathons, search, filter]);
+  const { page, setPage, totalPages, slice: filtered, total: filteredTotal } = usePagination(filteredAll, 10);
 
   const counts = useMemo(() => ({
     all:          hackathons.length,
@@ -272,6 +274,7 @@ export default function HackathonsPage() {
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                 {filtered.map(h => <HackathonCard key={h.id} h={h} isAdmin={isAdmin || !!isMentor} />)}
+                <Pagination page={page} totalPages={totalPages} onPage={setPage} total={filteredTotal} pageSize={10} />
               </div>
             )}
           </div>
