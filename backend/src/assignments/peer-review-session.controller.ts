@@ -17,6 +17,11 @@ export class PeerReviewSessionController {
     return this.sessionService.findAll();
   }
 
+  @Get('my-active')
+  getMyActiveSessions(@Request() req) {
+    return this.sessionService.getSessionsForStudent(req.user.userId);
+  }
+
   @Get('assignment/:assignmentId')
   findByAssignment(@Param('assignmentId') assignmentId: string) {
     return this.sessionService.findByAssignmentId(+assignmentId);

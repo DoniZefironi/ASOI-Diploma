@@ -95,13 +95,12 @@ export class ScheduleService {
   async getUserSchedule(userId: number, startDate?: Date, endDate?: Date): Promise<ScheduleItem[]> {
     let query = this.scheduleRepository
       .createQueryBuilder('schedule')
-      .innerJoin('schedule.courseGroup', 'courseGroup')
-      .innerJoin('courseGroup.registrations', 'registration')
-      .where('registration.userId = :userId', { userId })
-      .andWhere('registration.status = :status', { status: 'approved' })
-      .leftJoinAndSelect('schedule.courseGroup', 'cg')
+      .innerJoinAndSelect('schedule.courseGroup', 'cg')
       .leftJoinAndSelect('cg.course', 'course')
       .leftJoinAndSelect('schedule.instructor', 'instructor')
+      .innerJoin('cg.registrations', 'registration')
+      .where('registration.userId = :userId', { userId })
+      .andWhere('registration.status = :status', { status: 'approved' })
       .orderBy('schedule.startTime', 'ASC');
 
     if (startDate && endDate) {

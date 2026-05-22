@@ -26,9 +26,8 @@ export class ScheduleController {
     @Query('startDate') startDate?: string,
     @Query('endDate') endDate?: string,
   ) {
-    const start = startDate ? new Date(startDate) : new Date();
-    const end = endDate ? new Date(endDate) : new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
-    
+    const start = startDate ? new Date(startDate) : undefined;
+    const end   = endDate   ? new Date(endDate)   : undefined;
     return this.scheduleService.getUserSchedule(req.user.userId, start, end);
   }
 

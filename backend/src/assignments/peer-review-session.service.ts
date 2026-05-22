@@ -5,6 +5,7 @@ import { Repository } from 'typeorm';
 import { PeerReviewSession } from './entities/peer-review-session.entity';
 import { AssignmentSubmission, SubmissionStatus } from './entities/assignment-submission.entity';
 import { PeerReview } from './entities/peer-review.entity';
+import { CourseRegistration } from '../course-groups/entities/course-registration.entity';
 
 @Injectable()
 export class PeerReviewSessionService {
@@ -15,6 +16,8 @@ export class PeerReviewSessionService {
     private submissionRepository: Repository<AssignmentSubmission>,
     @InjectRepository(PeerReview)
     private peerReviewRepository: Repository<PeerReview>,
+    @InjectRepository(CourseRegistration)
+    private registrationRepository: Repository<CourseRegistration>,
   ) {}
 
   async createSession(dto: {
@@ -163,6 +166,47 @@ export class PeerReviewSessionService {
         status: sub.status,
       };
     });
+  }
+
+  /** Sessions where the student's course group is enrolled — visible to students */
+  async getSessionsForStudent(userId: number): Promise<any[]> {
+    const registrations = await this.registrationRepository.find({
+      where: { userId, status: 'approved' as any },
+      select: ['courseGroupId'],
+    });
+    if (!registrations.length) return [];
+
+    const groupIds = registrations.map(r => r.courseGroupId);
+    const sessions = await this.sessionRepository.find({
+      where: groupIds.map(id => ({ courseGroupId: id, isActive: true })),
+      relations: ['assignment', 'courseGroup'],
+      order: { createdAt: 'DESC' },
+    });
+
+    const hasSubmitted = await this.submissionRepository.find({
+      where: sessions.map(s => ({ assignmentId: s.assignmentId, userId })),
+      select: ['assignmentId'],
+    });
+    const submittedIds = new Set(hasSubmitted.map(s => s.assignmentId));
+
+    const myReviews = sessions.length
+      ? await this.peerReviewRepository.count({ where: { reviewerId: userId } })
+      : 0;
+
+    return sessions.map(s => ({
+      id: s.id,
+      title: s.title,
+      description: s.description,
+      assignmentId: s.assignmentId,
+      assignmentTitle: s.assignment?.title,
+      courseGroupId: s.courseGroupId,
+      courseGroupName: s.courseGroup?.name,
+      startDate: s.startDate,
+      endDate: s.endDate,
+      isDistributed: s.isDistributed,
+      criteria: s.criteria,
+      hasSubmitted: submittedIds.has(s.assignmentId),
+    }));
   }
 
   async updateSession(id: number, dto: Partial<PeerReviewSession>): Promise<PeerReviewSession> {

@@ -3,8 +3,8 @@
 
 import { useState } from 'react';
 import { useAuth } from '@/shared/lib/auth-context';
-import { usePeerReviewsToReview, useCreatePeerReview, type PeerReview, type ReviewCriterion } from '@/shared/api/admin/peer-reviews';
-import { CheckCircle, Loader2, Star, ExternalLink, Send, ChevronDown } from 'lucide-react';
+import { usePeerReviewsToReview, useCreatePeerReview, useMyActiveSessions, type PeerReview, type ReviewCriterion } from '@/shared/api/admin/peer-reviews';
+import { CheckCircle, Loader2, Star, ExternalLink, Send, ChevronDown, Clock, AlertCircle } from 'lucide-react';
 import Link from 'next/link';
 
 // ── Criterion scoring ─────────────────────────────────────────────
@@ -228,6 +228,7 @@ function ReviewCard({ review, onSubmitted }: { review: PeerReview; onSubmitted: 
 export default function PeerReviewPage() {
   const [selectedAssignment, setSelectedAssignment] = useState<string | null>(null);
   const { reviews, isLoading, mutate } = usePeerReviewsToReview();
+  const { sessions } = useMyActiveSessions();
 
   const filtered = selectedAssignment ? reviews.filter(r => r.assignmentId?.toString() === selectedAssignment) : reviews;
   const pending   = reviews.filter(r => !r.isCompleted);
@@ -286,14 +287,72 @@ export default function PeerReviewPage() {
               </div>
             )}
 
+            {/* Active sessions — shown when reviews not yet distributed */}
+            {sessions.length > 0 && (
+              <div style={{ marginBottom: 20 }}>
+                <p style={{ margin: '0 0 10px', fontSize: 11, fontWeight: 700, color: 'var(--color-fg-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                  Активные сессии взаимопроверки
+                </p>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                  {sessions.map((s: any) => {
+                    const now = new Date();
+                    const start = new Date(s.startDate);
+                    const end   = new Date(s.endDate);
+                    const active = now >= start && now <= end;
+                    const upcoming = now < start;
+                    return (
+                      <div key={s.id} style={{ background: 'var(--color-canvas-overlay)', border: '1px solid var(--color-border-default)', borderRadius: 10, padding: '14px 16px', display: 'flex', alignItems: 'center', gap: 14 }}>
+                        <div style={{ width: 36, height: 36, borderRadius: 8, background: active ? 'rgba(63,185,80,0.1)' : 'rgba(210,153,34,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                          {active ? <CheckCircle size={18} color="var(--color-success-fg)" /> : <Clock size={18} color="#d29922" />}
+                        </div>
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <p style={{ margin: 0, fontSize: 14, fontWeight: 600, color: 'var(--color-fg-default)' }}>{s.title}</p>
+                          <p style={{ margin: '2px 0 0', fontSize: 12, color: 'var(--color-fg-muted)' }}>
+                            {s.assignmentTitle} · {start.toLocaleDateString('ru-RU')} — {end.toLocaleDateString('ru-RU')}
+                          </p>
+                        </div>
+                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 4, flexShrink: 0 }}>
+                          {s.isDistributed
+                            ? <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--color-success-fg)', background: 'rgba(63,185,80,0.1)', padding: '2px 8px', borderRadius: 20 }}>Рецензии назначены</span>
+                            : <span style={{ fontSize: 11, fontWeight: 600, color: '#d29922', background: 'rgba(210,153,34,0.1)', padding: '2px 8px', borderRadius: 20 }}>Ожидает распределения</span>
+                          }
+                          {!s.hasSubmitted && (
+                            <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, color: 'var(--color-danger-fg)' }}>
+                              <AlertCircle size={11} /> Сдайте задание
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
             {/* Reviews list */}
             {filtered.length === 0 ? (
               <div style={{ background: 'var(--color-canvas-overlay)', border: '1px dashed var(--color-border-default)', borderRadius: 12, padding: '56px 24px', textAlign: 'center' }}>
-                <CheckCircle size={28} color="var(--color-success-fg)" style={{ margin: '0 auto 12px' }} />
-                <p style={{ color: 'var(--color-fg-default)', fontWeight: 600, margin: '0 0 4px' }}>
-                  {selectedAssignment ? 'Нет работ для этого задания' : 'Все рецензии завершены!'}
-                </p>
-                <p style={{ color: 'var(--color-fg-muted)', fontSize: 13, margin: 0 }}>Отличная работа!</p>
+                {reviews.length === 0 && sessions.length === 0 ? (
+                  <>
+                    <Star size={28} color="var(--color-fg-subtle)" style={{ margin: '0 auto 12px' }} />
+                    <p style={{ color: 'var(--color-fg-default)', fontWeight: 600, margin: '0 0 4px' }}>Рецензий пока нет</p>
+                    <p style={{ color: 'var(--color-fg-muted)', fontSize: 13, margin: 0 }}>Ментор создаст сессию и назначит работы для проверки</p>
+                  </>
+                ) : reviews.length === 0 && sessions.some((s: any) => !s.isDistributed) ? (
+                  <>
+                    <Clock size={28} color="#d29922" style={{ margin: '0 auto 12px' }} />
+                    <p style={{ color: 'var(--color-fg-default)', fontWeight: 600, margin: '0 0 4px' }}>Ожидайте распределения</p>
+                    <p style={{ color: 'var(--color-fg-muted)', fontSize: 13, margin: 0 }}>Ментор ещё не распределил рецензии</p>
+                  </>
+                ) : (
+                  <>
+                    <CheckCircle size={28} color="var(--color-success-fg)" style={{ margin: '0 auto 12px' }} />
+                    <p style={{ color: 'var(--color-fg-default)', fontWeight: 600, margin: '0 0 4px' }}>
+                      {selectedAssignment ? 'Нет работ для этого задания' : 'Все рецензии завершены!'}
+                    </p>
+                    <p style={{ color: 'var(--color-fg-muted)', fontSize: 13, margin: 0 }}>Отличная работа!</p>
+                  </>
+                )}
               </div>
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>

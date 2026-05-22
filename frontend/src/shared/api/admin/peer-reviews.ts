@@ -159,6 +159,19 @@ export function usePeerReviewStats(assignmentId?: number) {
 }
 
 /**
+ * Активные сессии для студента (по его группам)
+ */
+export function useMyActiveSessions() {
+  const isAuth = typeof window !== 'undefined' && !!localStorage.getItem('access_token');
+  const { data, error, isLoading, mutate } = useSWR(
+    isAuth ? '/peer-review-sessions/my-active' : null,
+    fetcher,
+    { revalidateOnFocus: false, dedupingInterval: 30000 }
+  );
+  return { sessions: (data as any[]) || [], isLoading, isError: error, mutate };
+}
+
+/**
  * Получить peer review сессии для задания
  */
 export function usePeerReviewSessions(assignmentId?: number) {
