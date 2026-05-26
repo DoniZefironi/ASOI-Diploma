@@ -1,0 +1,528 @@
+{
+  "info": {
+    "name": "АСОИ Диплом — API Testing (4.1–4.12)",
+    "_postman_id": "asoi-diploma-2024",
+    "description": "Тестирование REST API дипломного проекта. BASE URL: http://localhost:2904\n\nПорядок запуска:\n1. Запустите 4.1 (регистрация) — сохранит token\n2. Запустите 4.2 (верный пароль) — обновит token\n3. Далее по порядку.\n\nПеред тестами 4.11 и 4.12 укажите реальные electiveId и assignmentId в переменных коллекции.\nДля теста 4.9 нужен admin@example.com / Admin1234! в БД.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "base",         "value": "http://localhost:2904", "type": "string" },
+    { "key": "token",        "value": "",                       "type": "string" },
+    { "key": "adminToken",   "value": "",                       "type": "string" },
+    { "key": "electiveId",   "value": "1",                      "type": "string" },
+    { "key": "assignmentId", "value": "1",                      "type": "string" }
+  ],
+  "item": [
+
+    {
+      "name": "4.1 — Регистрация пользователя → 201",
+      "request": {
+        "method": "POST",
+        "url": { "raw": "{{base}}/auth/register", "host": ["{{base}}"], "path": ["auth","register"] },
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"firstName\": \"Иван\",\n  \"lastName\": \"Тестов\",\n  \"email\": \"ivan.testov@example.com\",\n  \"password\": \"Test1234!\"\n}"
+        }
+      },
+      "event": [{
+        "listen": "test",
+        "script": {
+          "type": "text/javascript",
+          "exec": [
+            "pm.test('Status 201 Created', () => pm.response.to.have.status(201));",
+            "pm.test('Has access_token', () => {",
+            "  const j = pm.response.json();",
+            "  pm.expect(j).to.have.property('access_token');",
+            "  pm.collectionVariables.set('token', j.access_token);",
+            "});",
+            "pm.test('Password not exposed in response', () => {",
+            "  pm.expect(pm.response.text()).to.not.include('Test1234!');",
+            "});"
+          ]
+        }
+      }]
+    },
+
+    {
+      "name": "4.2 — Авторизация (верный пароль) → 200 + JWT",
+      "request": {
+        "method": "POST",
+        "url": { "raw": "{{base}}/auth/login", "host": ["{{base}}"], "path": ["auth","login"] },
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"ivan.testov@example.com\",\n  \"password\": \"Test1234!\"\n}"
+        }
+      },
+      "event": [{
+        "listen": "test",
+        "script": {
+          "type": "text/javascript",
+          "exec": [
+            "pm.test('Status 200 OK', () => pm.response.to.have.status(200));",
+            "pm.test('Has access_token', () => {",
+            "  const j = pm.response.json();",
+            "  pm.expect(j).to.have.property('access_token');",
+            "  pm.collectionVariables.set('token', j.access_token);",
+            "});",
+            "pm.test('JWT payload contains userId, email, roles', () => {",
+            "  const j = pm.response.json();",
+            "  const payload = JSON.parse(atob(j.access_token.split('.')[1]));",
+            "  pm.expect(payload).to.have.property('sub');",
+            "  pm.expect(payload).to.have.property('email');",
+            "  pm.expect(payload).to.have.property('roles');",
+            "});"
+          ]
+        }
+      }]
+    },
+
+    {
+      "name": "4.2 — Авторизация (неверный пароль) → 401",
+      "request": {
+        "method": "POST",
+        "url": { "raw": "{{base}}/auth/login", "host": ["{{base}}"], "path": ["auth","login"] },
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"ivan.testov@example.com\",\n  \"password\": \"WrongPassword999\"\n}"
+        }
+      },
+      "event": [{
+        "listen": "test",
+        "script": {
+          "type": "text/javascript",
+          "exec": [
+            "pm.test('Status 401 Unauthorized', () => pm.response.to.have.status(401));"
+          ]
+        }
+      }]
+    },
+
+    {
+      "name": "4.3 — Вопросы теста Голланда → 200 + 30 вопросов",
+      "request": {
+        "method": "GET",
+        "url": { "raw": "{{base}}/professional-orientation/tests/holland/questions", "host": ["{{base}}"], "path": ["professional-orientation","tests","holland","questions"] },
+        "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }]
+      },
+      "event": [{
+        "listen": "test",
+        "script": {
+          "type": "text/javascript",
+          "exec": [
+            "pm.test('Status 200 OK', () => pm.response.to.have.status(200));",
+            "pm.test('Returns array of 30 questions', () => {",
+            "  const arr = pm.response.json();",
+            "  pm.expect(arr).to.be.an('array').with.lengthOf(30);",
+            "});",
+            "pm.test('Each question has text, type=yes_no, order', () => {",
+            "  const q = pm.response.json()[0];",
+            "  pm.expect(q).to.have.property('text');",
+            "  pm.expect(q).to.have.property('type');",
+            "  pm.expect(q.type).to.equal('yes_no');",
+            "  pm.expect(q).to.have.property('order');",
+            "});"
+          ]
+        }
+      }]
+    },
+
+    {
+      "name": "4.4 — Ответы теста Голланда (30 ответов) → 201",
+      "request": {
+        "method": "POST",
+        "url": { "raw": "{{base}}/professional-orientation/tests/submit", "host": ["{{base}}"], "path": ["professional-orientation","tests","submit"] },
+        "header": [
+          { "key": "Content-Type",  "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{token}}" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"testType\": \"holland\",\n  \"answers\": [1,0,1,1,0,1,0,0,1,1,1,0,1,0,1,0,1,1,0,1,1,0,0,1,0,1,1,0,1,0]\n}"
+        }
+      },
+      "event": [{
+        "listen": "test",
+        "script": {
+          "type": "text/javascript",
+          "exec": [
+            "pm.test('Status 201 Created', () => pm.response.to.have.status(201));",
+            "pm.test('Has result object', () => {",
+            "  pm.expect(pm.response.json()).to.be.an('object');",
+            "});"
+          ]
+        }
+      }]
+    },
+
+    {
+      "name": "4.4 — Ответы теста Голланда (неполные) → 400",
+      "request": {
+        "method": "POST",
+        "url": { "raw": "{{base}}/professional-orientation/tests/submit", "host": ["{{base}}"], "path": ["professional-orientation","tests","submit"] },
+        "header": [
+          { "key": "Content-Type",  "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{token}}" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"testType\": \"holland\",\n  \"answers\": [1, 0, 1]\n}"
+        }
+      },
+      "event": [{
+        "listen": "test",
+        "script": {
+          "type": "text/javascript",
+          "exec": [
+            "pm.test('Status 400 Bad Request', () => pm.response.to.have.status(400));"
+          ]
+        }
+      }]
+    },
+
+    {
+      "name": "4.5 — Ответы теста Климова (20 ответов) + Forward Chaining → 201",
+      "request": {
+        "method": "POST",
+        "url": { "raw": "{{base}}/professional-orientation/tests/submit", "host": ["{{base}}"], "path": ["professional-orientation","tests","submit"] },
+        "header": [
+          { "key": "Content-Type",  "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{token}}" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"testType\": \"klimov\",\n  \"answers\": [1,0,1,0,1,1,0,1,0,1,0,1,1,0,1,0,0,1,0,1]\n}"
+        }
+      },
+      "event": [{
+        "listen": "test",
+        "script": {
+          "type": "text/javascript",
+          "exec": [
+            "pm.test('Status 201 Created', () => pm.response.to.have.status(201));",
+            "pm.test('Has result object', () => {",
+            "  pm.expect(pm.response.json()).to.be.an('object');",
+            "});"
+          ]
+        }
+      }]
+    },
+
+    {
+      "name": "4.6 — Результаты анализа (трейты + топ-5 специальностей) → 200",
+      "request": {
+        "method": "GET",
+        "url": { "raw": "{{base}}/professional-orientation/expert-analysis", "host": ["{{base}}"], "path": ["professional-orientation","expert-analysis"] },
+        "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }]
+      },
+      "event": [{
+        "listen": "test",
+        "script": {
+          "type": "text/javascript",
+          "exec": [
+            "pm.test('Status 200 OK', () => pm.response.to.have.status(200));",
+            "pm.test('Has topCareers array', () => {",
+            "  const j = pm.response.json();",
+            "  pm.expect(j).to.have.property('topCareers');",
+            "  pm.expect(j.topCareers).to.be.an('array');",
+            "});",
+            "pm.test('Has hollandType and personalityInsight', () => {",
+            "  const j = pm.response.json();",
+            "  pm.expect(j).to.have.property('hollandType');",
+            "  pm.expect(j).to.have.property('personalityInsight');",
+            "});"
+          ]
+        }
+      }]
+    },
+
+    {
+      "name": "4.7 — Генерация дорожной карты (Gemini / fallback) → 2xx",
+      "request": {
+        "method": "POST",
+        "url": { "raw": "{{base}}/professional-orientation/roadmap", "host": ["{{base}}"], "path": ["professional-orientation","roadmap"] },
+        "header": [
+          { "key": "Content-Type",  "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{token}}" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"careerId\": \"backend_developer\",\n  \"careerTitle\": \"Backend-разработчик\",\n  \"traitScores\": {\n    \"analytical\": 8.5,\n    \"technical\": 9.0,\n    \"creative\": 5.5,\n    \"communicative\": 4.0,\n    \"leadership\": 3.5\n  },\n  \"firedRuleDescriptions\": [\n    \"Высокий аналитический потенциал\",\n    \"Склонность к системному мышлению\",\n    \"Предпочтение точных задач\"\n  ],\n  \"confidence\": 87\n}"
+        }
+      },
+      "event": [{
+        "listen": "test",
+        "script": {
+          "type": "text/javascript",
+          "exec": [
+            "pm.test('Status 2xx (Gemini или fallback)', () => {",
+            "  pm.expect(pm.response.code).to.be.within(200, 299);",
+            "});",
+            "pm.test('Has phases array with 4-5 phases', () => {",
+            "  const j = pm.response.json();",
+            "  pm.expect(j).to.have.property('phases');",
+            "  pm.expect(j.phases.length).to.be.within(4, 5);",
+            "});",
+            "pm.test('Has totalDuration', () => {",
+            "  pm.expect(pm.response.json()).to.have.property('totalDuration');",
+            "});"
+          ]
+        }
+      }]
+    },
+
+    {
+      "name": "4.8 — История тестирований текущего пользователя → 200",
+      "request": {
+        "method": "GET",
+        "url": { "raw": "{{base}}/professional-orientation", "host": ["{{base}}"], "path": ["professional-orientation"] },
+        "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }]
+      },
+      "event": [{
+        "listen": "test",
+        "script": {
+          "type": "text/javascript",
+          "exec": [
+            "pm.test('Status 200 OK', () => pm.response.to.have.status(200));",
+            "pm.test('Has testResult field', () => {",
+            "  const j = pm.response.json();",
+            "  pm.expect(j).to.have.property('testResult');",
+            "});",
+            "pm.test('История другого пользователя недоступна без его токена', () => {",
+            "  pm.expect(pm.response.code).to.not.equal(403);",
+            "});"
+          ]
+        }
+      }]
+    },
+
+    {
+      "name": "4.9 — Вход как администратор (получить adminToken)",
+      "request": {
+        "method": "POST",
+        "url": { "raw": "{{base}}/auth/login", "host": ["{{base}}"], "path": ["auth","login"] },
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"admin@example.com\",\n  \"password\": \"Admin1234!\"\n}"
+        }
+      },
+      "event": [{
+        "listen": "test",
+        "script": {
+          "type": "text/javascript",
+          "exec": [
+            "pm.test('Status 200 OK', () => pm.response.to.have.status(200));",
+            "const j = pm.response.json();",
+            "if (j.access_token) {",
+            "  pm.collectionVariables.set('adminToken', j.access_token);",
+            "  console.log('adminToken saved');",
+            "}"
+          ]
+        }
+      }]
+    },
+
+    {
+      "name": "4.9 — Обновление конфигурации теста (Администратор) → 200",
+      "request": {
+        "method": "PUT",
+        "url": { "raw": "{{base}}/professional-orientation/admin/tests/holland", "host": ["{{base}}"], "path": ["professional-orientation","admin","tests","holland"] },
+        "header": [
+          { "key": "Content-Type",  "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"Тест Голланда (обновлён)\",\n  \"description\": \"Обновлённое описание профориентационного теста Голланда\",\n  \"duration\": \"15–20 минут\",\n  \"questionCount\": 30\n}"
+        }
+      },
+      "event": [{
+        "listen": "test",
+        "script": {
+          "type": "text/javascript",
+          "exec": [
+            "pm.test('Status 200 OK', () => pm.response.to.have.status(200));",
+            "pm.test('Returns updated config object', () => {",
+            "  pm.expect(pm.response.json()).to.be.an('object');",
+            "});"
+          ]
+        }
+      }]
+    },
+
+    {
+      "name": "4.9 — Обновление теста (Студент без прав) → 403",
+      "request": {
+        "method": "PUT",
+        "url": { "raw": "{{base}}/professional-orientation/admin/tests/holland", "host": ["{{base}}"], "path": ["professional-orientation","admin","tests","holland"] },
+        "header": [
+          { "key": "Content-Type",  "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{token}}" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"Попытка изменить без прав администратора\"\n}"
+        }
+      },
+      "event": [{
+        "listen": "test",
+        "script": {
+          "type": "text/javascript",
+          "exec": [
+            "pm.test('Status 403 Forbidden', () => pm.response.to.have.status(403));"
+          ]
+        }
+      }]
+    },
+
+    {
+      "name": "4.10 — Запуск кода в компиляторе → 200 + результат",
+      "request": {
+        "method": "POST",
+        "url": { "raw": "{{base}}/compiler/execute", "host": ["{{base}}"], "path": ["compiler","execute"] },
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"code\": \"n = int(input())\\nprint(n * n)\",\n  \"language\": \"python\",\n  \"stdin\": \"7\"\n}"
+        }
+      },
+      "event": [{
+        "listen": "test",
+        "script": {
+          "type": "text/javascript",
+          "exec": [
+            "pm.test('Status 200 OK', () => pm.response.to.have.status(200));",
+            "pm.test('Output contains 49', () => {",
+            "  const j = pm.response.json();",
+            "  const out = j.output || j.result || j.stdout || '';",
+            "  pm.expect(out).to.include('49');",
+            "});"
+          ]
+        }
+      }]
+    },
+
+    {
+      "name": "4.10 — Компилятор: превышение лимита времени → без 500",
+      "request": {
+        "method": "POST",
+        "url": { "raw": "{{base}}/compiler/execute", "host": ["{{base}}"], "path": ["compiler","execute"] },
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"code\": \"import time\\ntime.sleep(10)\\nprint('done')\",\n  \"language\": \"python\",\n  \"stdin\": \"\"\n}"
+        }
+      },
+      "event": [{
+        "listen": "test",
+        "script": {
+          "type": "text/javascript",
+          "exec": [
+            "pm.test('No 500 server error', () => pm.expect(pm.response.code).to.not.equal(500));",
+            "pm.test('Response contains time_limit marker', () => {",
+            "  const text = pm.response.text();",
+            "  pm.expect(text).to.match(/time_limit|timeout|TLE|exceeded/i);",
+            "});"
+          ]
+        }
+      }]
+    },
+
+    {
+      "name": "4.11 — Сдача задания через компилятор → 201",
+      "request": {
+        "method": "POST",
+        "url": { "raw": "{{base}}/assignments/submissions", "host": ["{{base}}"], "path": ["assignments","submissions"] },
+        "header": [
+          { "key": "Content-Type",  "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{token}}" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"assignmentId\": {{assignmentId}},\n  \"content\": \"def solution(n):\\n    return n * n\\n\\nprint(solution(int(input())))\",\n  \"repositoryUrl\": \"https://github.com/student/asoi-solution\"\n}"
+        }
+      },
+      "event": [{
+        "listen": "test",
+        "script": {
+          "type": "text/javascript",
+          "exec": [
+            "pm.test('Status 201 Created', () => pm.response.to.have.status(201));",
+            "pm.test('Has id and status', () => {",
+            "  const j = pm.response.json();",
+            "  pm.expect(j).to.have.property('id');",
+            "  pm.expect(j).to.have.property('status');",
+            "});"
+          ]
+        }
+      }]
+    },
+
+    {
+      "name": "4.11 — Сдача задания (несуществующее assignmentId) → 400/404",
+      "request": {
+        "method": "POST",
+        "url": { "raw": "{{base}}/assignments/submissions", "host": ["{{base}}"], "path": ["assignments","submissions"] },
+        "header": [
+          { "key": "Content-Type",  "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{token}}" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"assignmentId\": 999999,\n  \"content\": \"print('test')\"\n}"
+        }
+      },
+      "event": [{
+        "listen": "test",
+        "script": {
+          "type": "text/javascript",
+          "exec": [
+            "pm.test('Status 4xx error', () => {",
+            "  pm.expect(pm.response.code).to.be.within(400, 499);",
+            "});"
+          ]
+        }
+      }]
+    },
+
+    {
+      "name": "4.12 — Запись на факультатив → 201",
+      "request": {
+        "method": "POST",
+        "url": { "raw": "{{base}}/electives/{{electiveId}}/enroll", "host": ["{{base}}"], "path": ["electives","{{electiveId}}","enroll"] },
+        "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }]
+      },
+      "event": [{
+        "listen": "test",
+        "script": {
+          "type": "text/javascript",
+          "exec": [
+            "pm.test('Status 201 Created', () => pm.response.to.have.status(201));"
+          ]
+        }
+      }]
+    },
+
+    {
+      "name": "4.12 — Повторная запись на тот же факультатив → 409 Conflict",
+      "request": {
+        "method": "POST",
+        "url": { "raw": "{{base}}/electives/{{electiveId}}/enroll", "host": ["{{base}}"], "path": ["electives","{{electiveId}}","enroll"] },
+        "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }]
+      },
+      "event": [{
+        "listen": "test",
+        "script": {
+          "type": "text/javascript",
+          "exec": [
+            "pm.test('Status 409 Conflict', () => pm.response.to.have.status(409));"
+          ]
+        }
+      }]
+    }
+
+  ]
+}

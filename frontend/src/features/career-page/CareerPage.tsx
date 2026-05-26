@@ -22,7 +22,7 @@ function ConfidenceRing({ value, size = 72, strokeWidth = 6 }: { value: number; 
   const dash = (value / 100) * circ;
   return (
     <svg width={size} height={size} style={{ transform: 'rotate(-90deg)' }}>
-      <circle cx={size/2} cy={size/2} r={r} fill="none" stroke="#1F2937" strokeWidth={strokeWidth} />
+      <circle cx={size/2} cy={size/2} r={r} fill="none" stroke="var(--color-border-default)" strokeWidth={strokeWidth} />
       <circle cx={size/2} cy={size/2} r={r} fill="none" stroke="#3B82F6" strokeWidth={strokeWidth}
         strokeLinecap="round" strokeDasharray={`${dash} ${circ}`}
         style={{ transition: 'stroke-dasharray 0.8s ease' }} />
@@ -40,33 +40,33 @@ function ExpertCareerCard({ career }: { career: ExpertCareer }) {
           <span className="absolute inset-0 flex items-center justify-center text-xl">{career.emoji}</span>
         </div>
         <div className="flex-1 min-w-0">
-          <h4 className="text-white font-semibold text-base leading-snug">{career.title}</h4>
+          <h4 className="text-gh-fg font-semibold text-base leading-snug">{career.title}</h4>
           <p className="text-blue-400 text-xs mt-0.5">{career.confidence}% совпадение</p>
         </div>
       </div>
-      <p className="text-gray-400 text-sm leading-relaxed flex-1">{career.description}</p>
+      <p className="text-gh-fg-muted text-sm leading-relaxed flex-1">{career.description}</p>
       <div>
-        <p className="text-gray-500 text-xs uppercase tracking-wide mb-2">Навыки</p>
+        <p className="text-gh-fg-subtle text-xs uppercase tracking-wide mb-2">Навыки</p>
         <div className="flex flex-wrap gap-1.5">
           {career.skills.slice(0, 5).map(s => (
-            <span key={s} className="px-2 py-0.5 bg-blue-900/30 border border-blue-800/50 text-blue-300 rounded-full text-xs">{s}</span>
+            <span key={s} className="px-2 py-0.5 bg-blue-500/15 border border-blue-500/30 text-blue-500 rounded-full text-xs">{s}</span>
           ))}
         </div>
       </div>
       <div className="flex items-center justify-between text-xs">
         <span className="text-green-400 font-medium">{career.salaryRange}</span>
-        <span className={`px-2 py-0.5 rounded-full ${career.demandLevel === 'Очень высокий' ? 'bg-green-900/40 text-green-400' : career.demandLevel === 'Высокий' ? 'bg-blue-900/40 text-blue-400' : 'bg-gray-700 text-gray-400'}`}>
+        <span className={`px-2 py-0.5 rounded-full ${career.demandLevel === 'Очень высокий' ? 'bg-green-500/15 text-green-600 dark:text-green-400' : career.demandLevel === 'Высокий' ? 'bg-blue-500/15 text-blue-600 dark:text-blue-400' : 'bg-gh-canvas-inset text-gh-fg-muted'}`}>
           {career.demandLevel}
         </span>
       </div>
       {career.growthPath.length > 0 && (
         <div>
-          <p className="text-gray-500 text-xs uppercase tracking-wide mb-2">Карьерный путь</p>
+          <p className="text-gh-fg-subtle text-xs uppercase tracking-wide mb-2">Карьерный путь</p>
           <div className="flex items-center gap-1 flex-wrap">
             {career.growthPath.map((step, i) => (
               <span key={i} className="flex items-center gap-1">
-                <span className="text-gray-400 text-xs">{step}</span>
-                {i < career.growthPath.length - 1 && <ArrowRight className="h-3 w-3 text-gray-600 flex-shrink-0" />}
+                <span className="text-gh-fg-muted text-xs">{step}</span>
+                {i < career.growthPath.length - 1 && <ArrowRight className="h-3 w-3 text-gh-fg-subtle flex-shrink-0" />}
               </span>
             ))}
           </div>
