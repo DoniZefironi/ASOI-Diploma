@@ -179,9 +179,9 @@ export default function CompilerPage() {
           </div>
 
           {/* Code area with line numbers */}
-          <div style={{ flex: 1, display: 'flex', background: '#0d1117', overflow: 'auto', position: 'relative' }}>
+          <div style={{ flex: 1, display: 'flex', background: 'var(--color-canvas-inset)', overflow: 'auto', position: 'relative' }}>
             {/* Line numbers */}
-            <div style={{ padding: '16px 8px 16px 12px', fontFamily: 'ui-monospace,SFMono-Regular,Menlo,monospace', fontSize: 13, lineHeight: '1.6', color: '#444c56', userSelect: 'none', minWidth: 40, textAlign: 'right', borderRight: '1px solid #21262d', background: '#010409', flexShrink: 0 }}>
+            <div style={{ padding: '16px 8px 16px 12px', fontFamily: 'ui-monospace,SFMono-Regular,Menlo,monospace', fontSize: 13, lineHeight: '1.6', color: 'var(--color-fg-subtle)', userSelect: 'none', minWidth: 40, textAlign: 'right', borderRight: '1px solid var(--color-border-default)', background: 'var(--color-canvas-inset)', flexShrink: 0 }}>
               {code.split('\n').map((_, i) => (
                 <div key={i}>{i + 1}</div>
               ))}
@@ -196,9 +196,9 @@ export default function CompilerPage() {
               spellCheck={false}
               style={{
                 flex: 1, padding: '16px 16px 16px 12px', border: 'none', outline: 'none',
-                background: 'transparent', color: '#e6edf3', resize: 'none',
+                background: 'transparent', color: 'var(--color-fg-default)', resize: 'none',
                 fontFamily: 'ui-monospace,SFMono-Regular,Menlo,monospace', fontSize: 13, lineHeight: '1.6',
-                caretColor: '#58a6ff', minHeight: 400,
+                caretColor: 'var(--color-accent-fg)', minHeight: 400,
               }}
             />
           </div>
@@ -219,7 +219,7 @@ export default function CompilerPage() {
           </div>
           <pre style={{
             flex: 1, margin: 0, padding: '16px', overflow: 'auto',
-            background: '#010409', color: '#e6edf3',
+            background: 'var(--color-canvas-inset)', color: 'var(--color-fg-default)',
             fontFamily: 'ui-monospace,SFMono-Regular,Menlo,monospace', fontSize: 13, lineHeight: '1.6',
             whiteSpace: 'pre-wrap', wordBreak: 'break-word', minHeight: 400,
           }}>
@@ -227,7 +227,7 @@ export default function CompilerPage() {
               ? <span style={{ color: '#d29922' }}>⏳ Выполняется…</span>
               : output
                 ? <span style={{ color: isError ? '#f85149' : '#3fb950' }}>{output}</span>
-                : <span style={{ color: '#444c56' }}>Результат выполнения появится здесь{'\n'}Нажмите «Запустить» или Ctrl+↵</span>
+                : <span style={{ color: 'var(--color-fg-subtle)' }}>Результат выполнения появится здесь{'\n'}Нажмите «Запустить» или Ctrl+↵</span>
             }
           </pre>
         </div>

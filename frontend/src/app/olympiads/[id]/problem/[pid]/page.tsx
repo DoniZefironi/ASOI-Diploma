@@ -20,7 +20,7 @@ const STATUS_CFG: Record<string, { color: string; label: string; Icon: any }> = 
   accepted:     { color: '#3fb950', label: 'Принято!',        Icon: CheckCircle },
   wrong_answer: { color: '#f85149', label: 'Неверный ответ',  Icon: XCircle },
   error:        { color: '#d29922', label: 'Ошибка выполнения', Icon: AlertTriangle },
-  pending:      { color: '#8b949e', label: 'На проверке',      Icon: Clock },
+  pending:      { color: 'var(--color-fg-muted)', label: 'На проверке',      Icon: Clock },
 };
 
 export default function ProblemPage() {
@@ -90,14 +90,14 @@ export default function ProblemPage() {
   };
 
   if (loading) return (
-    <div style={{ minHeight: '100vh', background: '#0d1117', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-      <div style={{ width: 24, height: 24, border: '2px solid #21262d', borderTopColor: '#58a6ff', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+    <div style={{ minHeight: '100vh', background: 'var(--color-canvas-default)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div style={{ width: 24, height: 24, border: '2px solid var(--color-border-default)', borderTopColor: 'var(--color-accent-fg)', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
       <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
     </div>
   );
 
   if (!olympiad || !problem) return (
-    <div style={{ minHeight: '100vh', background: '#0d1117', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#8b949e' }}>
+    <div style={{ minHeight: '100vh', background: 'var(--color-canvas-default)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--color-fg-muted)' }}>
       Задача не найдена
     </div>
   );
@@ -106,24 +106,24 @@ export default function ProblemPage() {
   const isSolved  = prevSubs.some(s => s.status === 'accepted');
 
   return (
-    <div style={{ height: '100vh', background: '#0d1117', color: '#e6edf3', display: 'flex', flexDirection: 'column', fontFamily: 'ui-monospace,SFMono-Regular,Menlo,monospace' }}>
+    <div style={{ height: '100vh', background: 'var(--color-canvas-default)', color: 'var(--color-fg-default)', display: 'flex', flexDirection: 'column', fontFamily: 'ui-monospace,SFMono-Regular,Menlo,monospace' }}>
 
       {/* Top bar */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '8px 16px', background: '#161b22', borderBottom: '1px solid #21262d', flexShrink: 0 }}>
-        <button onClick={() => router.push(`/olympiads/${id}`)} style={{ display: 'flex', alignItems: 'center', gap: 5, color: '#8b949e', background: 'none', border: 'none', cursor: 'pointer', fontSize: 13 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '8px 16px', background: 'var(--color-canvas-overlay)', borderBottom: '1px solid var(--color-border-default)', flexShrink: 0 }}>
+        <button onClick={() => router.push(`/olympiads/${id}`)} style={{ display: 'flex', alignItems: 'center', gap: 5, color: 'var(--color-fg-muted)', background: 'none', border: 'none', cursor: 'pointer', fontSize: 13 }}>
           <ChevronLeft size={14} /> {olympiad.title}
         </button>
-        <span style={{ color: '#21262d' }}>|</span>
-        <span style={{ fontSize: 14, fontWeight: 600, color: '#e6edf3' }}>{problem.title}</span>
+        <span style={{ color: 'var(--color-border-default)' }}>|</span>
+        <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--color-fg-default)' }}>{problem.title}</span>
         <span style={{ fontSize: 11, color: DIFF_COLOR[problem.difficulty], background: `${DIFF_COLOR[problem.difficulty]}1a`, padding: '2px 8px', borderRadius: 20 }}>{DIFF_LABEL[problem.difficulty]}</span>
         {isSolved && <span style={{ fontSize: 11, color: '#3fb950', background: 'rgba(63,185,80,0.1)', padding: '2px 8px', borderRadius: 20 }}>✓ Решено · {bestScore} б.</span>}
         <div style={{ marginLeft: 'auto', display: 'flex', gap: 6 }}>
           <select value={lang} onChange={e => handleLangChange(e.target.value)}
-            style={{ fontSize: 12, background: '#21262d', border: '1px solid #30363d', borderRadius: 6, color: '#e6edf3', padding: '4px 8px', cursor: 'pointer' }}>
+            style={{ fontSize: 12, background: 'var(--color-canvas-inset)', border: '1px solid var(--color-border-default)', borderRadius: 6, color: 'var(--color-fg-default)', padding: '4px 8px', cursor: 'pointer' }}>
             {olympiad.allowedLanguages.map(l => <option key={l} value={l}>{l.toUpperCase()}</option>)}
           </select>
           <button onClick={testCode} disabled={testing}
-            style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '5px 12px', fontSize: 12, background: '#21262d', color: '#e6edf3', border: '1px solid #30363d', borderRadius: 6, cursor: 'pointer' }}>
+            style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '5px 12px', fontSize: 12, background: 'var(--color-canvas-inset)', color: 'var(--color-fg-default)', border: '1px solid var(--color-border-default)', borderRadius: 6, cursor: 'pointer' }}>
             {testing ? <Loader2 size={12} style={{ animation: 'spin 1s linear infinite' }} /> : <Play size={12} />} Тест
           </button>
           <button onClick={submit} disabled={submitting}
@@ -137,45 +137,45 @@ export default function ProblemPage() {
       <div style={{ flex: 1, display: 'grid', gridTemplateColumns: '420px 1fr', overflow: 'hidden' }}>
 
         {/* Left: problem statement */}
-        <div style={{ overflow: 'auto', padding: '20px 24px', borderRight: '1px solid #21262d', fontFamily: '-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif' }}>
-          <h2 style={{ margin: '0 0 6px', fontSize: 18, fontWeight: 700, color: '#e6edf3' }}>{problem.title}</h2>
+        <div style={{ overflow: 'auto', padding: '20px 24px', borderRight: '1px solid var(--color-border-default)', fontFamily: '-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif' }}>
+          <h2 style={{ margin: '0 0 6px', fontSize: 18, fontWeight: 700, color: 'var(--color-fg-default)' }}>{problem.title}</h2>
           <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
             <span style={{ fontSize: 11, color: '#d29922' }}>{problem.points} баллов</span>
           </div>
 
-          <div style={{ fontSize: 14, color: '#c9d1d9', lineHeight: 1.7, whiteSpace: 'pre-wrap', marginBottom: 20 }}>
+          <div style={{ fontSize: 14, color: 'var(--color-fg-default)', lineHeight: 1.7, whiteSpace: 'pre-wrap', marginBottom: 20 }}>
             {problem.description}
           </div>
 
           {problem.inputDescription && (
             <div style={{ marginBottom: 14 }}>
-              <p style={{ margin: '0 0 4px', fontSize: 12, fontWeight: 700, color: '#8b949e', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Входные данные</p>
-              <p style={{ margin: 0, fontSize: 13, color: '#c9d1d9' }}>{problem.inputDescription}</p>
+              <p style={{ margin: '0 0 4px', fontSize: 12, fontWeight: 700, color: 'var(--color-fg-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Входные данные</p>
+              <p style={{ margin: 0, fontSize: 13, color: 'var(--color-fg-default)' }}>{problem.inputDescription}</p>
             </div>
           )}
           {problem.outputDescription && (
             <div style={{ marginBottom: 16 }}>
-              <p style={{ margin: '0 0 4px', fontSize: 12, fontWeight: 700, color: '#8b949e', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Выходные данные</p>
-              <p style={{ margin: 0, fontSize: 13, color: '#c9d1d9' }}>{problem.outputDescription}</p>
+              <p style={{ margin: '0 0 4px', fontSize: 12, fontWeight: 700, color: 'var(--color-fg-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Выходные данные</p>
+              <p style={{ margin: 0, fontSize: 13, color: 'var(--color-fg-default)' }}>{problem.outputDescription}</p>
             </div>
           )}
 
           {problem.examples.length > 0 && (
             <div>
-              <p style={{ margin: '0 0 10px', fontSize: 12, fontWeight: 700, color: '#8b949e', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Примеры</p>
+              <p style={{ margin: '0 0 10px', fontSize: 12, fontWeight: 700, color: 'var(--color-fg-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Примеры</p>
               {problem.examples.map((ex, i) => (
-                <div key={i} style={{ marginBottom: 12, background: '#161b22', borderRadius: 6, border: '1px solid #21262d', overflow: 'hidden' }}>
+                <div key={i} style={{ marginBottom: 12, background: 'var(--color-canvas-overlay)', borderRadius: 6, border: '1px solid var(--color-border-default)', overflow: 'hidden' }}>
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr' }}>
-                    <div style={{ padding: '8px 12px', borderRight: '1px solid #21262d' }}>
-                      <p style={{ margin: '0 0 4px', fontSize: 10, color: '#6e7681', textTransform: 'uppercase' }}>Вход</p>
-                      <pre style={{ margin: 0, fontSize: 12, color: '#e6edf3', whiteSpace: 'pre-wrap' }}>{ex.input}</pre>
+                    <div style={{ padding: '8px 12px', borderRight: '1px solid var(--color-border-default)' }}>
+                      <p style={{ margin: '0 0 4px', fontSize: 10, color: 'var(--color-fg-subtle)', textTransform: 'uppercase' }}>Вход</p>
+                      <pre style={{ margin: 0, fontSize: 12, color: 'var(--color-fg-default)', whiteSpace: 'pre-wrap' }}>{ex.input}</pre>
                     </div>
                     <div style={{ padding: '8px 12px' }}>
-                      <p style={{ margin: '0 0 4px', fontSize: 10, color: '#6e7681', textTransform: 'uppercase' }}>Выход</p>
+                      <p style={{ margin: '0 0 4px', fontSize: 10, color: 'var(--color-fg-subtle)', textTransform: 'uppercase' }}>Выход</p>
                       <pre style={{ margin: 0, fontSize: 12, color: '#3fb950', whiteSpace: 'pre-wrap' }}>{ex.output}</pre>
                     </div>
                   </div>
-                  {ex.explanation && <p style={{ margin: 0, padding: '6px 12px', fontSize: 11, color: '#8b949e', borderTop: '1px solid #21262d' }}>{ex.explanation}</p>}
+                  {ex.explanation && <p style={{ margin: 0, padding: '6px 12px', fontSize: 11, color: 'var(--color-fg-muted)', borderTop: '1px solid var(--color-border-default)' }}>{ex.explanation}</p>}
                 </div>
               ))}
             </div>
@@ -184,14 +184,14 @@ export default function ProblemPage() {
           {/* Previous attempts */}
           {prevSubs.length > 0 && (
             <div style={{ marginTop: 20 }}>
-              <p style={{ margin: '0 0 8px', fontSize: 12, fontWeight: 700, color: '#8b949e', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Мои попытки</p>
+              <p style={{ margin: '0 0 8px', fontSize: 12, fontWeight: 700, color: 'var(--color-fg-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Мои попытки</p>
               {prevSubs.slice(0, 5).map(s => {
                 const cfg = STATUS_CFG[s.status];
                 return (
-                  <div key={s.id} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '5px 0', borderBottom: '1px solid #21262d' }}>
+                  <div key={s.id} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '5px 0', borderBottom: '1px solid var(--color-border-default)' }}>
                     <cfg.Icon size={13} color={cfg.color} />
                     <span style={{ fontSize: 12, color: cfg.color }}>{cfg.label}</span>
-                    <span style={{ fontSize: 11, color: '#6e7681' }}>{s.language.toUpperCase()}</span>
+                    <span style={{ fontSize: 11, color: 'var(--color-fg-subtle)' }}>{s.language.toUpperCase()}</span>
                     {s.status === 'accepted' && <span style={{ marginLeft: 'auto', fontSize: 12, fontWeight: 700, color: '#d29922' }}>+{s.score}</span>}
                   </div>
                 );
@@ -203,9 +203,9 @@ export default function ProblemPage() {
         {/* Right: editor + output */}
         <div style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
           {/* Editor */}
-          <div style={{ flex: 1, display: 'flex', overflow: 'hidden', background: '#010409' }}>
+          <div style={{ flex: 1, display: 'flex', overflow: 'hidden', background: 'var(--color-canvas-inset)' }}>
             {/* Line numbers */}
-            <div style={{ padding: '16px 8px 16px 12px', fontFamily: 'monospace', fontSize: 13, lineHeight: '1.6', color: '#444c56', userSelect: 'none', minWidth: 44, textAlign: 'right', borderRight: '1px solid #21262d', background: '#010409', flexShrink: 0 }}>
+            <div style={{ padding: '16px 8px 16px 12px', fontFamily: 'monospace', fontSize: 13, lineHeight: '1.6', color: 'var(--color-fg-subtle)', userSelect: 'none', minWidth: 44, textAlign: 'right', borderRight: '1px solid var(--color-border-default)', background: 'var(--color-canvas-inset)', flexShrink: 0 }}>
               {code.split('\n').map((_, i) => <div key={i}>{i + 1}</div>)}
             </div>
             <textarea
@@ -214,24 +214,24 @@ export default function ProblemPage() {
               onChange={e => setCode(e.target.value)}
               onKeyDown={handleTabKey}
               spellCheck={false}
-              style={{ flex: 1, padding: '16px 16px 16px 12px', border: 'none', outline: 'none', background: 'transparent', color: '#e6edf3', resize: 'none', fontFamily: 'monospace', fontSize: 13, lineHeight: '1.6', caretColor: '#58a6ff' }}
+              style={{ flex: 1, padding: '16px 16px 16px 12px', border: 'none', outline: 'none', background: 'transparent', color: 'var(--color-fg-default)', resize: 'none', fontFamily: 'monospace', fontSize: 13, lineHeight: '1.6', caretColor: 'var(--color-accent-fg)' }}
             />
           </div>
 
           {/* Submit result */}
           {result && (
-            <div style={{ padding: '12px 16px', background: '#161b22', borderTop: '1px solid #21262d', display: 'flex', alignItems: 'center', gap: 10 }}>
+            <div style={{ padding: '12px 16px', background: 'var(--color-canvas-overlay)', borderTop: '1px solid var(--color-border-default)', display: 'flex', alignItems: 'center', gap: 10 }}>
               {(() => { const cfg = STATUS_CFG[result.status]; return <><cfg.Icon size={16} color={cfg.color} /><span style={{ fontSize: 14, fontWeight: 600, color: cfg.color }}>{cfg.label}</span></>; })()}
               {result.status === 'accepted' && <span style={{ fontSize: 14, fontWeight: 700, color: '#d29922' }}>+{result.score} баллов</span>}
-              {result.errorMessage && <span style={{ fontSize: 12, color: '#8b949e' }}>{result.errorMessage}</span>}
+              {result.errorMessage && <span style={{ fontSize: 12, color: 'var(--color-fg-muted)' }}>{result.errorMessage}</span>}
             </div>
           )}
 
           {/* Test output */}
           {(testOutput || testing) && (
-            <div style={{ maxHeight: 180, overflow: 'auto', padding: '10px 14px', background: '#010409', borderTop: '1px solid #21262d' }}>
-              <p style={{ margin: '0 0 4px', fontSize: 10, color: '#6e7681', textTransform: 'uppercase' }}>Вывод (тест)</p>
-              <pre style={{ margin: 0, fontSize: 12, color: testing ? '#6e7681' : testOutput.startsWith('Ошибка') ? '#f85149' : '#3fb950', whiteSpace: 'pre-wrap', wordBreak: 'break-all' }}>
+            <div style={{ maxHeight: 180, overflow: 'auto', padding: '10px 14px', background: 'var(--color-canvas-inset)', borderTop: '1px solid var(--color-border-default)' }}>
+              <p style={{ margin: '0 0 4px', fontSize: 10, color: 'var(--color-fg-subtle)', textTransform: 'uppercase' }}>Вывод (тест)</p>
+              <pre style={{ margin: 0, fontSize: 12, color: testing ? 'var(--color-fg-subtle)' : testOutput.startsWith('Ошибка') ? '#f85149' : '#3fb950', whiteSpace: 'pre-wrap', wordBreak: 'break-all' }}>
                 {testing ? 'Выполняется...' : testOutput}
               </pre>
             </div>
