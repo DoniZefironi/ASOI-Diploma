@@ -1,0 +1,494 @@
+{
+  "info": {
+    "name": "АСОИ Диплом IoT — API Testing (4.1–4.15)",
+    "_postman_id": "asoi-diploma-iot-2024",
+    "description": "Тестирование API: IoT-комнаты, хакатоны, стажировки, расписание. BASE: http://localhost:2904",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "base",         "value": "http://localhost:2904" },
+    { "key": "studentToken", "value": "" },
+    { "key": "mentorToken",  "value": "" },
+    { "key": "editorToken",  "value": "" },
+    { "key": "viewerToken",  "value": "" },
+    { "key": "roomId",       "value": "1" },
+    { "key": "inviteCode",   "value": "550e8400-e29b-41d4-a716-446655440000" },
+    { "key": "hackathonId",  "value": "1" },
+    { "key": "teamId",       "value": "1" },
+    { "key": "stageId",      "value": "1" },
+    { "key": "submissionId", "value": "1" },
+    { "key": "internshipId", "value": "1" }
+  ],
+  "item": [
+
+    {
+      "name": "— Вход: student_iot",
+      "request": {
+        "method": "POST",
+        "url": {
+          "raw": "{{base}}/auth/login",
+          "host": ["{{base}}"],
+          "path": ["auth", "login"]
+        },
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"student.iot@example.com\",\n  \"password\": \"Student1234!\"\n}"
+        }
+      },
+      "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+        "pm.test('Status 200', () => pm.response.to.have.status(200));",
+        "const j = pm.response.json();",
+        "if (j.access_token) pm.collectionVariables.set('studentToken', j.access_token);"
+      ]}}]
+    },
+
+    {
+      "name": "— Вход: mentor_iot",
+      "request": {
+        "method": "POST",
+        "url": {
+          "raw": "{{base}}/auth/login",
+          "host": ["{{base}}"],
+          "path": ["auth", "login"]
+        },
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"mentor.iot@example.com\",\n  \"password\": \"Mentor1234!\"\n}"
+        }
+      },
+      "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+        "pm.test('Status 200', () => pm.response.to.have.status(200));",
+        "const j = pm.response.json();",
+        "if (j.access_token) pm.collectionVariables.set('mentorToken', j.access_token);"
+      ]}}]
+    },
+
+    {
+      "name": "— Вход: editor",
+      "request": {
+        "method": "POST",
+        "url": {
+          "raw": "{{base}}/auth/login",
+          "host": ["{{base}}"],
+          "path": ["auth", "login"]
+        },
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"editor.user@example.com\",\n  \"password\": \"Editor1234!\"\n}"
+        }
+      },
+      "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+        "const j = pm.response.json();",
+        "if (j.access_token) pm.collectionVariables.set('editorToken', j.access_token);"
+      ]}}]
+    },
+
+    {
+      "name": "— Вход: viewer",
+      "request": {
+        "method": "POST",
+        "url": {
+          "raw": "{{base}}/auth/login",
+          "host": ["{{base}}"],
+          "path": ["auth", "login"]
+        },
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"viewer.user@example.com\",\n  \"password\": \"Viewer1234!\"\n}"
+        }
+      },
+      "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+        "const j = pm.response.json();",
+        "if (j.access_token) pm.collectionVariables.set('viewerToken', j.access_token);"
+      ]}}]
+    },
+
+    {
+      "name": "4.1 — Создание IoT-комнаты → 201",
+      "request": {
+        "method": "POST",
+        "url": {
+          "raw": "{{base}}/rooms",
+          "host": ["{{base}}"],
+          "path": ["rooms"]
+        },
+        "header": [
+          { "key": "Content-Type",  "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{studentToken}}" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"IoT Lab Alpha\",\n  \"type\": \"iot\",\n  \"isPublic\": true,\n  \"description\": \"Совместная работа над IoT-сенсорами\"\n}"
+        }
+      },
+      "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+        "pm.test('Status 201 Created', () => pm.response.to.have.status(201));",
+        "pm.test('Has id and inviteCode', () => {",
+        "  const j = pm.response.json();",
+        "  pm.expect(j).to.have.property('id');",
+        "  pm.expect(j).to.have.property('inviteCode');",
+        "  pm.collectionVariables.set('roomId', String(j.id));",
+        "  pm.collectionVariables.set('inviteCode', j.inviteCode);",
+        "});",
+        "pm.test('isPublic = true', () => {",
+        "  pm.expect(pm.response.json().isPublic).to.equal(true);",
+        "});"
+      ]}}]
+    },
+
+    {
+      "name": "4.2 — Вступление по invite-коду → 201",
+      "request": {
+        "method": "POST",
+        "url": {
+          "raw": "{{base}}/rooms/invite/{{inviteCode}}/join",
+          "host": ["{{base}}"],
+          "path": ["rooms", "invite", "{{inviteCode}}", "join"]
+        },
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{viewerToken}}" }
+        ]
+      },
+      "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+        "pm.test('Status 201 Created', () => pm.response.to.have.status(201));",
+        "pm.test('Member record created', () => {",
+        "  pm.expect(pm.response.json()).to.be.an('object');",
+        "});"
+      ]}}]
+    },
+
+    {
+      "name": "4.3 — Повторное вступление → 409 Conflict",
+      "request": {
+        "method": "POST",
+        "url": {
+          "raw": "{{base}}/rooms/invite/{{inviteCode}}/join",
+          "host": ["{{base}}"],
+          "path": ["rooms", "invite", "{{inviteCode}}", "join"]
+        },
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{viewerToken}}" }
+        ]
+      },
+      "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+        "pm.test('Status 409 Conflict (UQ_rm_room_user)', () => pm.response.to.have.status(409));"
+      ]}}]
+    },
+
+    {
+      "name": "4.4 — Обновление состояния комнаты (editor) → 200",
+      "request": {
+        "method": "POST",
+        "url": {
+          "raw": "{{base}}/rooms/{{roomId}}/state",
+          "host": ["{{base}}"],
+          "path": ["rooms", "{{roomId}}", "state"]
+        },
+        "header": [
+          { "key": "Content-Type",  "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{editorToken}}" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"state\": {\n    \"nodes\": [\n      {\n        \"id\": \"n1\",\n        \"type\": \"sensor\",\n        \"x\": 100,\n        \"y\": 150,\n        \"config\": { \"unit\": \"°C\", \"minValue\": -10, \"maxValue\": 50 }\n      },\n      {\n        \"id\": \"n2\",\n        \"type\": \"display\",\n        \"x\": 300,\n        \"y\": 150,\n        \"config\": {}\n      }\n    ],\n    \"wires\": [\n      { \"sourceId\": \"n1\", \"sourcePort\": \"out\", \"targetId\": \"n2\", \"targetPort\": \"in\" }\n    ],\n    \"meta\": { \"scale\": 1.0, \"offsetX\": 0, \"offsetY\": 0 }\n  }\n}"
+        }
+      },
+      "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+        "pm.test('Status 200 OK', () => pm.response.to.have.status(200));",
+        "pm.test('State field updated', () => {",
+        "  pm.expect(pm.response.json()).to.be.an('object');",
+        "});"
+      ]}}]
+    },
+
+    {
+      "name": "4.5 — Обновление состояния комнаты (viewer) → 403",
+      "request": {
+        "method": "POST",
+        "url": {
+          "raw": "{{base}}/rooms/{{roomId}}/state",
+          "host": ["{{base}}"],
+          "path": ["rooms", "{{roomId}}", "state"]
+        },
+        "header": [
+          { "key": "Content-Type",  "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{viewerToken}}" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"state\": {\n    \"nodes\": [],\n    \"wires\": [],\n    \"meta\": { \"scale\": 1.0, \"offsetX\": 0, \"offsetY\": 0 }\n  }\n}"
+        }
+      },
+      "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+        "pm.test('Status 403 Forbidden', () => pm.response.to.have.status(403));"
+      ]}}]
+    },
+
+    {
+      "name": "4.6 — Регистрация команды на хакатон → 201",
+      "request": {
+        "method": "POST",
+        "url": {
+          "raw": "{{base}}/hackathons/teams",
+          "host": ["{{base}}"],
+          "path": ["hackathons", "teams"]
+        },
+        "header": [
+          { "key": "Content-Type",  "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{studentToken}}" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"hackathonId\": {{hackathonId}},\n  \"name\": \"Team IoT Masters\",\n  \"memberIds\": [2, 3],\n  \"projectName\": \"IoT Monitoring System\",\n  \"projectDescription\": \"Система мониторинга микроклимата на базе ESP32\"\n}"
+        }
+      },
+      "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+        "pm.test('Status 201 Created', () => pm.response.to.have.status(201));",
+        "pm.test('Has team id', () => {",
+        "  const j = pm.response.json();",
+        "  pm.expect(j).to.have.property('id');",
+        "  pm.collectionVariables.set('teamId', String(j.id));",
+        "});"
+      ]}}]
+    },
+
+    {
+      "name": "4.7 — Повторная регистрация участника → 409 Conflict",
+      "request": {
+        "method": "POST",
+        "url": {
+          "raw": "{{base}}/hackathons/teams",
+          "host": ["{{base}}"],
+          "path": ["hackathons", "teams"]
+        },
+        "header": [
+          { "key": "Content-Type",  "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{studentToken}}" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"hackathonId\": {{hackathonId}},\n  \"name\": \"Duplicate Team\",\n  \"memberIds\": [2]\n}"
+        }
+      },
+      "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+        "pm.test('Status 409 Conflict (UQ_tm_team_user)', () => pm.response.to.have.status(409));"
+      ]}}]
+    },
+
+    {
+      "name": "4.8 — Поэтапная сдача промежуточного результата → 201",
+      "request": {
+        "method": "POST",
+        "url": {
+          "raw": "{{base}}/hackathons/stages/{{stageId}}/submit",
+          "host": ["{{base}}"],
+          "path": ["hackathons", "stages", "{{stageId}}", "submit"]
+        },
+        "header": [
+          { "key": "Content-Type",  "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{studentToken}}" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"teamId\": {{teamId}},\n  \"projectUrl\": \"https://github.com/team-iot/stage1-sensor-module\",\n  \"note\": \"Реализован модуль сбора данных с температурных датчиков\"\n}"
+        }
+      },
+      "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+        "pm.test('Status 201 Created', () => pm.response.to.have.status(201));",
+        "pm.test('Has id and submittedAt', () => {",
+        "  pm.expect(pm.response.json()).to.have.property('id');",
+        "});"
+      ]}}]
+    },
+
+    {
+      "name": "4.9 — Финальная сдача проекта команды → 201",
+      "request": {
+        "method": "POST",
+        "url": {
+          "raw": "{{base}}/hackathons/submissions",
+          "host": ["{{base}}"],
+          "path": ["hackathons", "submissions"]
+        },
+        "header": [
+          { "key": "Content-Type",  "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{studentToken}}" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"teamId\": {{teamId}},\n  \"sourceCodeUrl\": \"https://github.com/team-iot/final-project\",\n  \"submissionNote\": \"Полная реализация IoT-системы мониторинга микроклимата с веб-интерфейсом\",\n  \"documentationUrl\": \"https://github.com/team-iot/final-project/wiki\"\n}"
+        }
+      },
+      "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+        "pm.test('Status 201 Created', () => pm.response.to.have.status(201));",
+        "pm.test('Has id (isGraded=false)', () => {",
+        "  const j = pm.response.json();",
+        "  pm.expect(j).to.have.property('id');",
+        "  pm.collectionVariables.set('submissionId', String(j.id));",
+        "});"
+      ]}}]
+    },
+
+    {
+      "name": "4.10 — Оценивание проекта ментором → 201",
+      "request": {
+        "method": "POST",
+        "url": {
+          "raw": "{{base}}/hackathons/submissions/{{submissionId}}/grade",
+          "host": ["{{base}}"],
+          "path": ["hackathons", "submissions", "{{submissionId}}", "grade"]
+        },
+        "header": [
+          { "key": "Content-Type",  "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{mentorToken}}" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"innovationScore\": 90,\n  \"functionalityScore\": 95,\n  \"presentationScore\": 92,\n  \"teamworkScore\": 90,\n  \"feedback\": \"Отличная архитектура системы, хорошо задокументированный код. Рекомендую добавить обработку ошибок при потере соединения с датчиком.\"\n}"
+        }
+      },
+      "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+        "pm.test('Status 201 Created', () => pm.response.to.have.status(201));",
+        "pm.test('Grade record created', () => {",
+        "  pm.expect(pm.response.json()).to.be.an('object');",
+        "});"
+      ]}}]
+    },
+
+    {
+      "name": "4.11 — Подача заявки на стажировку → 201",
+      "request": {
+        "method": "POST",
+        "url": {
+          "raw": "{{base}}/internships/{{internshipId}}/apply",
+          "host": ["{{base}}"],
+          "path": ["internships", "{{internshipId}}", "apply"]
+        },
+        "header": [
+          { "key": "Content-Type",  "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{studentToken}}" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"comment\": \"Уважаемые коллеги, прошу рассмотреть мою кандидатуру на позицию IoT-разработчика. Имею опыт работы с ESP32 и протоколом MQTT в рамках учебных проектов.\"\n}"
+        }
+      },
+      "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+        "pm.test('Status 201 Created', () => pm.response.to.have.status(201));",
+        "pm.test('Has status pending', () => {",
+        "  pm.expect(pm.response.json()).to.have.property('status');",
+        "});"
+      ]}}]
+    },
+
+    {
+      "name": "4.12 — Повторная заявка на ту же стажировку → 409 Conflict",
+      "request": {
+        "method": "POST",
+        "url": {
+          "raw": "{{base}}/internships/{{internshipId}}/apply",
+          "host": ["{{base}}"],
+          "path": ["internships", "{{internshipId}}", "apply"]
+        },
+        "header": [
+          { "key": "Content-Type",  "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{studentToken}}" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"comment\": \"Повторная заявка\"\n}"
+        }
+      },
+      "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+        "pm.test('Status 409 Conflict (UQ_ia_user_internship)', () => pm.response.to.have.status(409));"
+      ]}}]
+    },
+
+    {
+      "name": "4.13 — Просмотр стажировки с фиксацией аналитики → 200",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{base}}/internships/{{internshipId}}",
+          "host": ["{{base}}"],
+          "path": ["internships", "{{internshipId}}"]
+        },
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{studentToken}}" }
+        ]
+      },
+      "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+        "pm.test('Status 200 OK', () => pm.response.to.have.status(200));",
+        "pm.test('Has internship object with id and title', () => {",
+        "  const j = pm.response.json();",
+        "  pm.expect(j).to.have.property('id');",
+        "  pm.expect(j).to.have.property('title');",
+        "});"
+      ]}}]
+    },
+
+    {
+      "name": "4.14 — Создание элемента расписания (ментор) → 201",
+      "request": {
+        "method": "POST",
+        "url": {
+          "raw": "{{base}}/schedule",
+          "host": ["{{base}}"],
+          "path": ["schedule"]
+        },
+        "header": [
+          { "key": "Content-Type",  "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{mentorToken}}" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"Лекция: Протоколы IoT — MQTT и CoAP\",\n  \"description\": \"Разбор протоколов IoT: MQTT и CoAP — особенности, сравнение, применение в реальных системах\",\n  \"type\": \"lecture\",\n  \"startTime\": \"2025-09-15T10:00:00.000Z\",\n  \"endTime\": \"2025-09-15T11:30:00.000Z\",\n  \"location\": \"Ауд. 301\"\n}"
+        }
+      },
+      "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+        "pm.test('Status 201 Created', () => pm.response.to.have.status(201));",
+        "pm.test('type = lecture', () => {",
+        "  const j = pm.response.json();",
+        "  pm.expect(j).to.have.property('id');",
+        "  pm.expect(j.type).to.equal('lecture');",
+        "});"
+      ]}}]
+    },
+
+    {
+      "name": "4.15 — Фильтрация расписания по дате → 200 + только 15.09",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{base}}/schedule?startDate=2025-09-15T00:00:00.000Z&endDate=2025-09-15T23:59:59.999Z",
+          "host": ["{{base}}"],
+          "path": ["schedule"],
+          "query": [
+            { "key": "startDate", "value": "2025-09-15T00:00:00.000Z" },
+            { "key": "endDate",   "value": "2025-09-15T23:59:59.999Z" }
+          ]
+        },
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{studentToken}}" }
+        ]
+      },
+      "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+        "pm.test('Status 200 OK', () => pm.response.to.have.status(200));",
+        "pm.test('Returns array', () => {",
+        "  pm.expect(pm.response.json()).to.be.an('array');",
+        "});",
+        "pm.test('All items on 2025-09-15', () => {",
+        "  pm.response.json().forEach(item => {",
+        "    const d = new Date(item.startTime);",
+        "    pm.expect(d.toISOString().startsWith('2025-09-15')).to.be.true;",
+        "  });",
+        "});"
+      ]}}]
+    }
+
+  ]
+}
