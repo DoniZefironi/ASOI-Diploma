@@ -1,0 +1,279 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Enterprise Architect — Database Diagram (SQL Server 2012)
+  Тема 1: АСОИ «Профориентационная работа по IT-специальностям»
+  12 таблиц: 3 общих + 9 специфичных для T1
+  Импорт: File > Import/Export > Import Package from XMI File
+-->
+<xmi:XMI xmi:version="2.1"
+         xmlns:uml="http://www.omg.org/spec/UML/20090901"
+         xmlns:xmi="http://www.omg.org/spec/XMI/20090901">
+
+  <xmi:Documentation exporter="Enterprise Architect" exporterVersion="6.5"/>
+
+  <uml:Model xmi:type="uml:Model" xmi:id="MDL_T1_DB" name="Тема 1 — База данных SQL Server 2012">
+    <packagedElement xmi:type="uml:Package" xmi:id="PKG_T1_DB" name="T1_Database">
+
+      <!-- ══════════════════════════════════════════════════════════
+           ОБЩИЕ ТАБЛИЦЫ
+      ══════════════════════════════════════════════════════════ -->
+
+      <packagedElement xmi:type="uml:Class" xmi:id="T_users" name="users">
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="C_u_id"        name="id : INT IDENTITY PK"/>
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="C_u_email"     name="email : NVARCHAR(255) NOT NULL UNIQUE"/>
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="C_u_pwdHash"   name="passwordHash : NVARCHAR(255) NOT NULL"/>
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="C_u_firstName" name="firstName : NVARCHAR(100) NULL"/>
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="C_u_lastName"  name="lastName : NVARCHAR(100) NULL"/>
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="C_u_avatar"    name="avatar : NVARCHAR(MAX) NULL"/>
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="C_u_isActive"  name="isActive : BIT NOT NULL DEFAULT(1)"/>
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="C_u_createdAt" name="createdAt : DATETIME2(7) NOT NULL DEFAULT GETDATE()"/>
+      </packagedElement>
+
+      <packagedElement xmi:type="uml:Class" xmi:id="T_user_roles" name="user_roles">
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="C_ur_id"     name="id : INT IDENTITY PK"/>
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="C_ur_userId" name="userId : INT NOT NULL FK → users.id CASCADE"/>
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="C_ur_role"   name="role : NVARCHAR(100) NOT NULL"/>
+      </packagedElement>
+
+      <packagedElement xmi:type="uml:Class" xmi:id="T_courses" name="courses">
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="C_co_id"          name="id : INT IDENTITY PK"/>
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="C_co_name"        name="name : NVARCHAR(255) NOT NULL"/>
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="C_co_type"        name="type : NVARCHAR(50) NOT NULL"/>
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="C_co_description" name="description : NVARCHAR(MAX) NULL"/>
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="C_co_duration"    name="duration : INT NULL"/>
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="C_co_imageUrl"    name="imageUrl : NVARCHAR(500) NULL"/>
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="C_co_isActive"    name="isActive : BIT NOT NULL DEFAULT(1)"/>
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="C_co_createdAt"   name="createdAt : DATETIME2(7) NOT NULL DEFAULT GETDATE()"/>
+      </packagedElement>
+
+      <!-- ══════════════════════════════════════════════════════════
+           ПРОФОРИЕНТАЦИЯ
+      ══════════════════════════════════════════════════════════ -->
+
+      <packagedElement xmi:type="uml:Class" xmi:id="T_career_tests" name="career_tests">
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="C_ct_id"        name="id : INT IDENTITY PK"/>
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="C_ct_title"     name="title : NVARCHAR(255) NOT NULL"/>
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="C_ct_category"  name="category : NVARCHAR(100) NOT NULL"/>
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="C_ct_questions" name="questions : NVARCHAR(MAX) NOT NULL (JSON)"/>
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="C_ct_isActive"  name="isActive : BIT NOT NULL DEFAULT(1)"/>
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="C_ct_createdAt" name="createdAt : DATETIME2(7) NOT NULL DEFAULT GETDATE()"/>
+      </packagedElement>
+
+      <packagedElement xmi:type="uml:Class" xmi:id="T_professional_orientations" name="professional_orientations">
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="C_po_id"          name="id : INT IDENTITY PK"/>
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="C_po_userId"      name="userId : INT NOT NULL FK → users.id CASCADE"/>
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="C_po_answers"     name="answers : NVARCHAR(MAX) NOT NULL (JSON)"/>
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="C_po_recProf"     name="recommendedProfession : NVARCHAR(255) NULL"/>
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="C_po_score"       name="score : FLOAT NULL"/>
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="C_po_completedAt" name="completedAt : DATETIME2(7) NOT NULL DEFAULT GETDATE()"/>
+      </packagedElement>
+
+      <!-- ══════════════════════════════════════════════════════════
+           ОЛИМПИАДЫ
+      ══════════════════════════════════════════════════════════ -->
+
+      <packagedElement xmi:type="uml:Class" xmi:id="T_olympiads" name="olympiads">
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="C_ol_id"          name="id : INT IDENTITY PK"/>
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="C_ol_title"       name="title : NVARCHAR(255) NOT NULL"/>
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="C_ol_description" name="description : NVARCHAR(MAX) NULL"/>
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="C_ol_startDate"   name="startDate : DATETIME2(7) NOT NULL"/>
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="C_ol_endDate"     name="endDate : DATETIME2(7) NOT NULL"/>
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="C_ol_createdBy"   name="createdBy : INT NOT NULL FK → users.id"/>
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="C_ol_isActive"    name="isActive : BIT NOT NULL DEFAULT(1)"/>
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="C_ol_createdAt"   name="createdAt : DATETIME2(7) NOT NULL DEFAULT GETDATE()"/>
+      </packagedElement>
+
+      <packagedElement xmi:type="uml:Class" xmi:id="T_olympiad_problems" name="olympiad_problems">
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="C_op_id"          name="id : INT IDENTITY PK"/>
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="C_op_olympiadId"  name="olympiadId : INT NOT NULL FK → olympiads.id CASCADE"/>
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="C_op_title"       name="title : NVARCHAR(255) NOT NULL"/>
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="C_op_description" name="description : NVARCHAR(MAX) NOT NULL"/>
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="C_op_maxScore"    name="maxScore : INT NOT NULL DEFAULT(100)"/>
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="C_op_testCases"   name="testCases : NVARCHAR(MAX) NULL (JSON)"/>
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="C_op_createdAt"   name="createdAt : DATETIME2(7) NOT NULL DEFAULT GETDATE()"/>
+      </packagedElement>
+
+      <packagedElement xmi:type="uml:Class" xmi:id="T_olympiad_submissions" name="olympiad_submissions">
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="C_os_id"          name="id : INT IDENTITY PK"/>
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="C_os_olympiadId"  name="olympiadId : INT NOT NULL FK → olympiads.id"/>
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="C_os_problemId"   name="problemId : INT NOT NULL FK → olympiad_problems.id"/>
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="C_os_userId"      name="userId : INT NOT NULL FK → users.id"/>
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="C_os_code"        name="code : NVARCHAR(MAX) NOT NULL"/>
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="C_os_language"    name="language : NVARCHAR(50) NOT NULL"/>
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="C_os_status"      name="status : NVARCHAR(50) NOT NULL DEFAULT 'pending'"/>
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="C_os_score"       name="score : INT NULL"/>
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="C_os_submittedAt" name="submittedAt : DATETIME2(7) NOT NULL DEFAULT GETDATE()"/>
+      </packagedElement>
+
+      <!-- ══════════════════════════════════════════════════════════
+           ФАКУЛЬТАТИВЫ
+      ══════════════════════════════════════════════════════════ -->
+
+      <packagedElement xmi:type="uml:Class" xmi:id="T_electives" name="electives">
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="C_el_id"          name="id : INT IDENTITY PK"/>
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="C_el_title"       name="title : NVARCHAR(255) NOT NULL"/>
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="C_el_description" name="description : NVARCHAR(MAX) NULL"/>
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="C_el_maxStudents" name="maxStudents : INT NOT NULL DEFAULT(30)"/>
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="C_el_startDate"   name="startDate : DATETIME2(7) NULL"/>
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="C_el_courseType"  name="courseType : NVARCHAR(50) NULL"/>
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="C_el_isActive"    name="isActive : BIT NOT NULL DEFAULT(1)"/>
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="C_el_createdBy"   name="createdBy : INT NOT NULL FK → users.id"/>
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="C_el_createdAt"   name="createdAt : DATETIME2(7) NOT NULL DEFAULT GETDATE()"/>
+      </packagedElement>
+
+      <packagedElement xmi:type="uml:Class" xmi:id="T_elective_enrollments" name="elective_enrollments">
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="C_ee_id"         name="id : INT IDENTITY PK"/>
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="C_ee_userId"     name="userId : INT NOT NULL FK → users.id"/>
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="C_ee_electiveId" name="electiveId : INT NOT NULL FK → electives.id CASCADE"/>
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="C_ee_status"     name="status : NVARCHAR(50) NOT NULL DEFAULT 'active'"/>
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="C_ee_enrolledAt" name="enrolledAt : DATETIME2(7) NOT NULL DEFAULT GETDATE()"/>
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="C_ee_unique"     name="UNIQUE(userId, electiveId)"/>
+      </packagedElement>
+
+      <packagedElement xmi:type="uml:Class" xmi:id="T_elective_schedule_items" name="elective_schedule_items">
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="C_esi_id"          name="id : INT IDENTITY PK"/>
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="C_esi_electiveId"  name="electiveId : INT NOT NULL FK → electives.id CASCADE"/>
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="C_esi_topic"       name="topic : NVARCHAR(255) NOT NULL"/>
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="C_esi_scheduledAt" name="scheduledAt : DATETIME2(7) NOT NULL"/>
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="C_esi_room"        name="room : NVARCHAR(100) NULL"/>
+      </packagedElement>
+
+      <!-- ══════════════════════════════════════════════════════════
+           АНАЛИТИКА
+      ══════════════════════════════════════════════════════════ -->
+
+      <packagedElement xmi:type="uml:Class" xmi:id="T_site_visits" name="site_visits">
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="C_sv_id"          name="id : INT IDENTITY PK"/>
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="C_sv_userId"      name="userId : INT NULL FK → users.id SET NULL"/>
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="C_sv_path"        name="path : NVARCHAR(500) NOT NULL"/>
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="C_sv_displayName" name="displayName : NVARCHAR(255) NULL"/>
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="C_sv_visitedAt"   name="visitedAt : DATETIME2(7) NOT NULL DEFAULT GETDATE()"/>
+      </packagedElement>
+
+      <!-- ══════════════════════════════════════════════════════════
+           СВЯЗИ (FOREIGN KEYS)
+      ══════════════════════════════════════════════════════════ -->
+
+      <packagedElement xmi:type="uml:Association" xmi:id="FK_user_roles_userId"
+                       name="1:M — CASCADE">
+        <memberEnd xmi:idref="C_ur_userId"/>
+        <ownedEnd xmi:type="uml:Property" xmi:id="AE_ur_user" name="user"
+                  type="T_users" association="FK_user_roles_userId">
+          <lowerValue xmi:type="uml:LiteralInteger" value="1"/>
+          <upperValue xmi:type="uml:LiteralInteger" value="1"/>
+        </ownedEnd>
+      </packagedElement>
+
+      <packagedElement xmi:type="uml:Association" xmi:id="FK_prof_orient_userId"
+                       name="1:M — CASCADE">
+        <memberEnd xmi:idref="C_po_userId"/>
+        <ownedEnd xmi:type="uml:Property" xmi:id="AE_po_user" name="user"
+                  type="T_users" association="FK_prof_orient_userId">
+          <lowerValue xmi:type="uml:LiteralInteger" value="1"/>
+          <upperValue xmi:type="uml:LiteralInteger" value="1"/>
+        </ownedEnd>
+      </packagedElement>
+
+      <packagedElement xmi:type="uml:Association" xmi:id="FK_olympiads_createdBy"
+                       name="M:1">
+        <memberEnd xmi:idref="C_ol_createdBy"/>
+        <ownedEnd xmi:type="uml:Property" xmi:id="AE_ol_user" name="user"
+                  type="T_users" association="FK_olympiads_createdBy">
+          <lowerValue xmi:type="uml:LiteralInteger" value="1"/>
+          <upperValue xmi:type="uml:LiteralInteger" value="1"/>
+        </ownedEnd>
+      </packagedElement>
+
+      <packagedElement xmi:type="uml:Association" xmi:id="FK_olympiad_problems_olympiadId"
+                       name="1:M — CASCADE">
+        <memberEnd xmi:idref="C_op_olympiadId"/>
+        <ownedEnd xmi:type="uml:Property" xmi:id="AE_op_olympiad" name="olympiad"
+                  type="T_olympiads" association="FK_olympiad_problems_olympiadId">
+          <lowerValue xmi:type="uml:LiteralInteger" value="1"/>
+          <upperValue xmi:type="uml:LiteralInteger" value="1"/>
+        </ownedEnd>
+      </packagedElement>
+
+      <packagedElement xmi:type="uml:Association" xmi:id="FK_olympiad_subs_olympiadId"
+                       name="1:M">
+        <memberEnd xmi:idref="C_os_olympiadId"/>
+        <ownedEnd xmi:type="uml:Property" xmi:id="AE_os_olympiad" name="olympiad"
+                  type="T_olympiads" association="FK_olympiad_subs_olympiadId">
+          <lowerValue xmi:type="uml:LiteralInteger" value="1"/>
+          <upperValue xmi:type="uml:LiteralInteger" value="1"/>
+        </ownedEnd>
+      </packagedElement>
+
+      <packagedElement xmi:type="uml:Association" xmi:id="FK_olympiad_subs_problemId"
+                       name="1:M">
+        <memberEnd xmi:idref="C_os_problemId"/>
+        <ownedEnd xmi:type="uml:Property" xmi:id="AE_os_problem" name="problem"
+                  type="T_olympiad_problems" association="FK_olympiad_subs_problemId">
+          <lowerValue xmi:type="uml:LiteralInteger" value="1"/>
+          <upperValue xmi:type="uml:LiteralInteger" value="1"/>
+        </ownedEnd>
+      </packagedElement>
+
+      <packagedElement xmi:type="uml:Association" xmi:id="FK_olympiad_subs_userId"
+                       name="1:M">
+        <memberEnd xmi:idref="C_os_userId"/>
+        <ownedEnd xmi:type="uml:Property" xmi:id="AE_os_user" name="user"
+                  type="T_users" association="FK_olympiad_subs_userId">
+          <lowerValue xmi:type="uml:LiteralInteger" value="1"/>
+          <upperValue xmi:type="uml:LiteralInteger" value="1"/>
+        </ownedEnd>
+      </packagedElement>
+
+      <packagedElement xmi:type="uml:Association" xmi:id="FK_electives_createdBy"
+                       name="M:1">
+        <memberEnd xmi:idref="C_el_createdBy"/>
+        <ownedEnd xmi:type="uml:Property" xmi:id="AE_el_user" name="user"
+                  type="T_users" association="FK_electives_createdBy">
+          <lowerValue xmi:type="uml:LiteralInteger" value="1"/>
+          <upperValue xmi:type="uml:LiteralInteger" value="1"/>
+        </ownedEnd>
+      </packagedElement>
+
+      <packagedElement xmi:type="uml:Association" xmi:id="FK_elective_enroll_userId"
+                       name="1:M">
+        <memberEnd xmi:idref="C_ee_userId"/>
+        <ownedEnd xmi:type="uml:Property" xmi:id="AE_ee_user" name="user"
+                  type="T_users" association="FK_elective_enroll_userId">
+          <lowerValue xmi:type="uml:LiteralInteger" value="1"/>
+          <upperValue xmi:type="uml:LiteralInteger" value="1"/>
+        </ownedEnd>
+      </packagedElement>
+
+      <packagedElement xmi:type="uml:Association" xmi:id="FK_elective_enroll_electiveId"
+                       name="1:M — CASCADE">
+        <memberEnd xmi:idref="C_ee_electiveId"/>
+        <ownedEnd xmi:type="uml:Property" xmi:id="AE_ee_elective" name="elective"
+                  type="T_electives" association="FK_elective_enroll_electiveId">
+          <lowerValue xmi:type="uml:LiteralInteger" value="1"/>
+          <upperValue xmi:type="uml:LiteralInteger" value="1"/>
+        </ownedEnd>
+      </packagedElement>
+
+      <packagedElement xmi:type="uml:Association" xmi:id="FK_elective_schedule_electiveId"
+                       name="1:M — CASCADE">
+        <memberEnd xmi:idref="C_esi_electiveId"/>
+        <ownedEnd xmi:type="uml:Property" xmi:id="AE_esi_elective" name="elective"
+                  type="T_electives" association="FK_elective_schedule_electiveId">
+          <lowerValue xmi:type="uml:LiteralInteger" value="1"/>
+          <upperValue xmi:type="uml:LiteralInteger" value="1"/>
+        </ownedEnd>
+      </packagedElement>
+
+      <packagedElement xmi:type="uml:Association" xmi:id="FK_site_visits_userId"
+                       name="1:M — SET NULL">
+        <memberEnd xmi:idref="C_sv_userId"/>
+        <ownedEnd xmi:type="uml:Property" xmi:id="AE_sv_user" name="user"
+                  type="T_users" association="FK_site_visits_userId">
+          <lowerValue xmi:type="uml:LiteralInteger" value="0"/>
+          <upperValue xmi:type="uml:LiteralInteger" value="1"/>
+        </ownedEnd>
+      </packagedElement>
+
+    </packagedElement>
+  </uml:Model>
+</xmi:XMI>

@@ -1,0 +1,476 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Enterprise Architect — State Machine Diagram
+  Тема 1: АСОИ «Профориентационная работа по IT-специальностям»
+  Импорт: File > Import/Export > Import Package from XMI File
+  Затем: Create Diagram > Statechart Diagram
+-->
+<xmi:XMI xmi:version="2.1"
+         xmlns:xmi="http://www.omg.org/XMI"
+         xmlns:uml="http://www.omg.org/spec/UML/20110701">
+
+  <xmi:Documentation exporter="Enterprise Architect" exporterVersion="6.5"/>
+
+  <uml:Model xmi:type="uml:Model" xmi:id="MDL_T1_SM" name="Тема 1 — Диаграмма состояний">
+
+    <packagedElement xmi:type="uml:StateMachine"
+                     xmi:id="SM_T1_APP"
+                     name="Состояния приложения Т1"
+                     visibility="public">
+
+      <region xmi:type="uml:Region" xmi:id="RGN_MAIN" name="main">
+
+        <!-- ══════════════ НАЧАЛЬНОЕ СОСТОЯНИЕ ══════════════ -->
+        <subvertex xmi:type="uml:Pseudostate" xmi:id="PS_INIT" kind="initial" name=""/>
+
+        <!-- ══════════════ ПРОСТЫЕ СОСТОЯНИЯ ══════════════ -->
+
+        <subvertex xmi:type="uml:State" xmi:id="S_MAIN" name="Главная">
+          <entry xmi:type="uml:OpaqueBehavior" xmi:id="BHV_MAIN_EN" name="">
+            <body>loadPageContent</body>
+            <body>LinkCourses; LinkOlympiads; LinkProfOrientation</body>
+          </entry>
+        </subvertex>
+
+        <subvertex xmi:type="uml:State" xmi:id="S_AUTH" name="Авторизация">
+          <entry xmi:type="uml:OpaqueBehavior" xmi:id="BHV_AUTH_EN" name="">
+            <body>displayLoginForm</body>
+          </entry>
+          <exit xmi:type="uml:OpaqueBehavior" xmi:id="BHV_AUTH_EX" name="">
+            <body>validateCredentials</body>
+          </exit>
+          <doActivity xmi:type="uml:OpaqueBehavior" xmi:id="BHV_AUTH_DO" name="">
+            <body>waitForCredentials</body>
+          </doActivity>
+        </subvertex>
+
+        <subvertex xmi:type="uml:State" xmi:id="S_REG" name="Регистрация">
+          <entry xmi:type="uml:OpaqueBehavior" xmi:id="BHV_REG_EN" name="">
+            <body>displayRegisterForm</body>
+          </entry>
+          <exit xmi:type="uml:OpaqueBehavior" xmi:id="BHV_REG_EX" name="">
+            <body>saveUser</body>
+          </exit>
+          <doActivity xmi:type="uml:OpaqueBehavior" xmi:id="BHV_REG_DO" name="">
+            <body>waitForInput</body>
+          </doActivity>
+        </subvertex>
+
+        <subvertex xmi:type="uml:State" xmi:id="S_COURSES" name="Каталог курсов и факультативов">
+          <entry xmi:type="uml:OpaqueBehavior" xmi:id="BHV_CRS_EN" name="">
+            <body>loadCourses</body>
+            <body>loadElectives</body>
+            <body>displayCatalog</body>
+          </entry>
+          <doActivity xmi:type="uml:OpaqueBehavior" xmi:id="BHV_CRS_DO" name="">
+            <body>waitForSelection</body>
+          </doActivity>
+        </subvertex>
+
+        <subvertex xmi:type="uml:State" xmi:id="S_ELECTIVE" name="Страница факультатива">
+          <entry xmi:type="uml:OpaqueBehavior" xmi:id="BHV_EL_EN" name="">
+            <body>loadElectiveDetails</body>
+            <body>loadSchedule</body>
+            <body>loadEnrollmentStatus</body>
+          </entry>
+          <exit xmi:type="uml:OpaqueBehavior" xmi:id="BHV_EL_EX" name="">
+            <body>saveEnrollment</body>
+          </exit>
+          <doActivity xmi:type="uml:OpaqueBehavior" xmi:id="BHV_EL_DO" name="">
+            <body>waitForAction</body>
+          </doActivity>
+        </subvertex>
+
+        <subvertex xmi:type="uml:State" xmi:id="S_HOLLAND" name="Тест Голланда (RIASEC)">
+          <entry xmi:type="uml:OpaqueBehavior" xmi:id="BHV_HOL_EN" name="">
+            <body>loadTestConfig</body>
+            <body>displayFirstQuestion</body>
+          </entry>
+          <exit xmi:type="uml:OpaqueBehavior" xmi:id="BHV_HOL_EX" name="">
+            <body>saveAnswers</body>
+          </exit>
+          <doActivity xmi:type="uml:OpaqueBehavior" xmi:id="BHV_HOL_DO" name="">
+            <body>waitForAnswer</body>
+          </doActivity>
+        </subvertex>
+
+        <subvertex xmi:type="uml:State" xmi:id="S_KLIMOV" name="Тест Климова (ДДО)">
+          <entry xmi:type="uml:OpaqueBehavior" xmi:id="BHV_KLI_EN" name="">
+            <body>loadTestConfig</body>
+            <body>displayFirstQuestion</body>
+          </entry>
+          <exit xmi:type="uml:OpaqueBehavior" xmi:id="BHV_KLI_EX" name="">
+            <body>saveAnswers</body>
+          </exit>
+          <doActivity xmi:type="uml:OpaqueBehavior" xmi:id="BHV_KLI_DO" name="">
+            <body>waitForAnswer</body>
+          </doActivity>
+        </subvertex>
+
+        <subvertex xmi:type="uml:State" xmi:id="S_RESULT" name="Результаты экспертной системы">
+          <entry xmi:type="uml:OpaqueBehavior" xmi:id="BHV_RES_EN" name="">
+            <body>runForwardChaining</body>
+            <body>applyMYCIN</body>
+            <body>displayTop5Specialties</body>
+            <body>displayRadarChart</body>
+          </entry>
+          <doActivity xmi:type="uml:OpaqueBehavior" xmi:id="BHV_RES_DO" name="">
+            <body>waitForAction</body>
+          </doActivity>
+        </subvertex>
+
+        <subvertex xmi:type="uml:State" xmi:id="S_ROADMAP" name="Дорожная карта обучения">
+          <entry xmi:type="uml:OpaqueBehavior" xmi:id="BHV_RDM_EN" name="">
+            <body>callGeminiAPI</body>
+            <body>displayRoadmap</body>
+          </entry>
+          <doActivity xmi:type="uml:OpaqueBehavior" xmi:id="BHV_RDM_DO" name="">
+            <body>waitForAction</body>
+          </doActivity>
+        </subvertex>
+
+        <subvertex xmi:type="uml:State" xmi:id="S_OLYMPIADS" name="Каталог олимпиад">
+          <entry xmi:type="uml:OpaqueBehavior" xmi:id="BHV_OLY_EN" name="">
+            <body>loadOlympiads</body>
+            <body>displayList</body>
+          </entry>
+          <doActivity xmi:type="uml:OpaqueBehavior" xmi:id="BHV_OLY_DO" name="">
+            <body>waitForSelection</body>
+          </doActivity>
+        </subvertex>
+
+        <subvertex xmi:type="uml:State" xmi:id="S_OLYMPIAD_DETAIL" name="Страница олимпиады">
+          <entry xmi:type="uml:OpaqueBehavior" xmi:id="BHV_OLD_EN" name="">
+            <body>loadOlympiadDetails</body>
+            <body>loadProblems</body>
+            <body>loadLeaderboard</body>
+          </entry>
+          <doActivity xmi:type="uml:OpaqueBehavior" xmi:id="BHV_OLD_DO" name="">
+            <body>waitForProblemSelection</body>
+          </doActivity>
+        </subvertex>
+
+        <subvertex xmi:type="uml:State" xmi:id="S_COMPILER" name="Компилятор (задача олимпиады)">
+          <entry xmi:type="uml:OpaqueBehavior" xmi:id="BHV_CMP_EN" name="">
+            <body>loadProblemDescription</body>
+            <body>loadSubmissionHistory</body>
+            <body>initCodeEditor</body>
+          </entry>
+          <exit xmi:type="uml:OpaqueBehavior" xmi:id="BHV_CMP_EX" name="">
+            <body>saveCode</body>
+          </exit>
+          <doActivity xmi:type="uml:OpaqueBehavior" xmi:id="BHV_CMP_DO" name="">
+            <body>waitForSubmission</body>
+          </doActivity>
+        </subvertex>
+
+        <subvertex xmi:type="uml:State" xmi:id="S_PROFILE" name="Профиль пользователя">
+          <entry xmi:type="uml:OpaqueBehavior" xmi:id="BHV_PRF_EN" name="">
+            <body>loadProfileData</body>
+            <body>loadHistory</body>
+          </entry>
+          <doActivity xmi:type="uml:OpaqueBehavior" xmi:id="BHV_PRF_DO" name="">
+            <body>waitForInput</body>
+          </doActivity>
+        </subvertex>
+
+        <!-- ══════════════ СОСТАВНЫЕ СОСТОЯНИЯ ══════════════ -->
+
+        <subvertex xmi:type="uml:State" xmi:id="S_MENTOR" name="Панель ментора">
+          <entry xmi:type="uml:OpaqueBehavior" xmi:id="BHV_MNT_EN" name="">
+            <body>loadMentorData</body>
+          </entry>
+          <doActivity xmi:type="uml:OpaqueBehavior" xmi:id="BHV_MNT_DO" name="">
+            <body>waitForTabSelection</body>
+          </doActivity>
+
+          <region xmi:type="uml:Region" xmi:id="RGN_MENTOR" name="mentor_region">
+            <subvertex xmi:type="uml:Pseudostate" xmi:id="PS_MNT_INIT" kind="initial" name=""/>
+
+            <subvertex xmi:type="uml:State" xmi:id="S_MNT_ELEC" name="Управление факультативами">
+              <entry xmi:type="uml:OpaqueBehavior" xmi:id="BHV_MELEC_EN" name="">
+                <body>loadElectiveList</body>
+                <body>displayElectiveTable</body>
+              </entry>
+              <doActivity xmi:type="uml:OpaqueBehavior" xmi:id="BHV_MELEC_DO" name="">
+                <body>waitForInput</body>
+              </doActivity>
+            </subvertex>
+
+            <subvertex xmi:type="uml:State" xmi:id="S_MNT_OLYMP" name="Управление олимпиадами">
+              <entry xmi:type="uml:OpaqueBehavior" xmi:id="BHV_MOLP_EN" name="">
+                <body>loadOlympiadList</body>
+                <body>displaySubmissions</body>
+              </entry>
+              <doActivity xmi:type="uml:OpaqueBehavior" xmi:id="BHV_MOLP_DO" name="">
+                <body>waitForAction</body>
+              </doActivity>
+            </subvertex>
+
+            <subvertex xmi:type="uml:State" xmi:id="S_MNT_TESTS" name="Управление тестами профориентации">
+              <entry xmi:type="uml:OpaqueBehavior" xmi:id="BHV_MTST_EN" name="">
+                <body>loadCareerTestConfigs</body>
+              </entry>
+              <doActivity xmi:type="uml:OpaqueBehavior" xmi:id="BHV_MTST_DO" name="">
+                <body>waitForInput</body>
+              </doActivity>
+            </subvertex>
+
+            <subvertex xmi:type="uml:State" xmi:id="S_MNT_ANAL" name="Аналитика профориентации">
+              <entry xmi:type="uml:OpaqueBehavior" xmi:id="BHV_MANA_EN" name="">
+                <body>loadStudentResults</body>
+                <body>displayCharts</body>
+              </entry>
+              <doActivity xmi:type="uml:OpaqueBehavior" xmi:id="BHV_MANA_DO" name="">
+                <body>waitForTabSelection</body>
+              </doActivity>
+            </subvertex>
+
+            <transition xmi:type="uml:Transition" xmi:id="TR_MNT_INIT"   source="PS_MNT_INIT"   target="S_MNT_ELEC"  kind="external"/>
+            <transition xmi:type="uml:Transition" xmi:id="TR_MNT_E_O"    source="S_MNT_ELEC"    target="S_MNT_OLYMP" kind="external">
+              <trigger xmi:type="uml:Trigger" xmi:id="TRG_MNT_E_O" name="OlympiadsTabClicked"/>
+            </transition>
+            <transition xmi:type="uml:Transition" xmi:id="TR_MNT_O_T"    source="S_MNT_OLYMP"   target="S_MNT_TESTS" kind="external">
+              <trigger xmi:type="uml:Trigger" xmi:id="TRG_MNT_O_T" name="TestsTabClicked"/>
+            </transition>
+            <transition xmi:type="uml:Transition" xmi:id="TR_MNT_T_A"    source="S_MNT_TESTS"   target="S_MNT_ANAL"  kind="external">
+              <trigger xmi:type="uml:Trigger" xmi:id="TRG_MNT_T_A" name="AnalyticsTabClicked"/>
+            </transition>
+            <transition xmi:type="uml:Transition" xmi:id="TR_MNT_A_E"    source="S_MNT_ANAL"    target="S_MNT_ELEC"  kind="external">
+              <trigger xmi:type="uml:Trigger" xmi:id="TRG_MNT_A_E" name="ElectivesTabClicked"/>
+            </transition>
+          </region>
+        </subvertex>
+
+        <subvertex xmi:type="uml:State" xmi:id="S_ADMIN" name="Панель администратора">
+          <entry xmi:type="uml:OpaqueBehavior" xmi:id="BHV_ADM_EN" name="">
+            <body>loadAdminData</body>
+          </entry>
+          <doActivity xmi:type="uml:OpaqueBehavior" xmi:id="BHV_ADM_DO" name="">
+            <body>waitForTabSelection</body>
+          </doActivity>
+
+          <region xmi:type="uml:Region" xmi:id="RGN_ADMIN" name="admin_region">
+            <subvertex xmi:type="uml:Pseudostate" xmi:id="PS_ADM_INIT" kind="initial" name=""/>
+
+            <subvertex xmi:type="uml:State" xmi:id="S_ADM_USERS" name="Управление пользователями">
+              <entry xmi:type="uml:OpaqueBehavior" xmi:id="BHV_AUSR_EN" name="">
+                <body>loadUserList</body>
+              </entry>
+              <doActivity xmi:type="uml:OpaqueBehavior" xmi:id="BHV_AUSR_DO" name="">
+                <body>waitForInput</body>
+              </doActivity>
+            </subvertex>
+
+            <subvertex xmi:type="uml:State" xmi:id="S_ADM_COURSES" name="Управление курсами">
+              <entry xmi:type="uml:OpaqueBehavior" xmi:id="BHV_ACRS_EN" name="">
+                <body>loadCourseList</body>
+              </entry>
+              <doActivity xmi:type="uml:OpaqueBehavior" xmi:id="BHV_ACRS_DO" name="">
+                <body>waitForInput</body>
+              </doActivity>
+            </subvertex>
+
+            <subvertex xmi:type="uml:State" xmi:id="S_ADM_TESTS" name="Управление тестами">
+              <entry xmi:type="uml:OpaqueBehavior" xmi:id="BHV_ATST_EN" name="">
+                <body>loadCareerTestList</body>
+              </entry>
+              <doActivity xmi:type="uml:OpaqueBehavior" xmi:id="BHV_ATST_DO" name="">
+                <body>waitForInput</body>
+              </doActivity>
+            </subvertex>
+
+            <subvertex xmi:type="uml:State" xmi:id="S_ADM_ANAL" name="Аналитика платформы">
+              <entry xmi:type="uml:OpaqueBehavior" xmi:id="BHV_AANA_EN" name="">
+                <body>loadSiteVisits</body>
+                <body>displayCharts</body>
+              </entry>
+              <doActivity xmi:type="uml:OpaqueBehavior" xmi:id="BHV_AANA_DO" name="">
+                <body>waitForTabSelection</body>
+              </doActivity>
+            </subvertex>
+
+            <transition xmi:type="uml:Transition" xmi:id="TR_ADM_INIT"  source="PS_ADM_INIT"   target="S_ADM_USERS"   kind="external"/>
+            <transition xmi:type="uml:Transition" xmi:id="TR_ADM_U_C"   source="S_ADM_USERS"   target="S_ADM_COURSES" kind="external">
+              <trigger xmi:type="uml:Trigger" xmi:id="TRG_ADM_U_C" name="CoursesTabClicked"/>
+            </transition>
+            <transition xmi:type="uml:Transition" xmi:id="TR_ADM_C_T"   source="S_ADM_COURSES" target="S_ADM_TESTS"   kind="external">
+              <trigger xmi:type="uml:Trigger" xmi:id="TRG_ADM_C_T" name="TestsTabClicked"/>
+            </transition>
+            <transition xmi:type="uml:Transition" xmi:id="TR_ADM_T_A"   source="S_ADM_TESTS"   target="S_ADM_ANAL"   kind="external">
+              <trigger xmi:type="uml:Trigger" xmi:id="TRG_ADM_T_A" name="AnalyticsTabClicked"/>
+            </transition>
+            <transition xmi:type="uml:Transition" xmi:id="TR_ADM_A_U"   source="S_ADM_ANAL"    target="S_ADM_USERS"  kind="external">
+              <trigger xmi:type="uml:Trigger" xmi:id="TRG_ADM_A_U" name="UsersTabClicked"/>
+            </transition>
+          </region>
+        </subvertex>
+
+        <!-- ══════════════ ПЕРЕХОДЫ ВЕРХНЕГО УРОВНЯ ══════════════ -->
+
+        <transition xmi:type="uml:Transition" xmi:id="TR_INIT_MAIN"
+                    source="PS_INIT" target="S_MAIN" kind="external"/>
+
+        <transition xmi:type="uml:Transition" xmi:id="TR_MAIN_AUTH"
+                    source="S_MAIN" target="S_AUTH" kind="external">
+          <trigger xmi:type="uml:Trigger" xmi:id="TRG_MAIN_AUTH" name="LoginLinkClicked"/>
+        </transition>
+
+        <transition xmi:type="uml:Transition" xmi:id="TR_AUTH_MAIN"
+                    source="S_AUTH" target="S_MAIN" kind="external">
+          <trigger xmi:type="uml:Trigger" xmi:id="TRG_AUTH_MAIN" name="LoginSuccess"/>
+        </transition>
+
+        <transition xmi:type="uml:Transition" xmi:id="TR_MAIN_REG"
+                    source="S_MAIN" target="S_REG" kind="external">
+          <trigger xmi:type="uml:Trigger" xmi:id="TRG_MAIN_REG" name="RegisterLinkClicked"/>
+        </transition>
+
+        <transition xmi:type="uml:Transition" xmi:id="TR_REG_MAIN"
+                    source="S_REG" target="S_MAIN" kind="external">
+          <trigger xmi:type="uml:Trigger" xmi:id="TRG_REG_MAIN" name="RegistrationSuccess"/>
+        </transition>
+
+        <transition xmi:type="uml:Transition" xmi:id="TR_MAIN_LOGOUT"
+                    source="S_MAIN" target="S_MAIN" kind="internal">
+          <trigger xmi:type="uml:Trigger" xmi:id="TRG_MAIN_LOGOUT" name="LogoutClicked"/>
+          <effect xmi:type="uml:OpaqueBehavior" xmi:id="EFF_LOGOUT" name="">
+            <body>clearSession</body>
+          </effect>
+        </transition>
+
+        <transition xmi:type="uml:Transition" xmi:id="TR_MAIN_CRS"
+                    source="S_MAIN" target="S_COURSES" kind="external">
+          <trigger xmi:type="uml:Trigger" xmi:id="TRG_MAIN_CRS" name="CoursesLinkClicked"/>
+          <guard xmi:type="uml:Constraint" xmi:id="GRD_MAIN_CRS">
+            <specification xmi:type="uml:OpaqueExpression" xmi:id="GRDSP_MAIN_CRS">
+              <body>Authenticated</body>
+            </specification>
+          </guard>
+        </transition>
+
+        <transition xmi:type="uml:Transition" xmi:id="TR_CRS_ELEC"
+                    source="S_COURSES" target="S_ELECTIVE" kind="external">
+          <trigger xmi:type="uml:Trigger" xmi:id="TRG_CRS_ELEC" name="ElectiveSelected"/>
+        </transition>
+
+        <transition xmi:type="uml:Transition" xmi:id="TR_ELEC_CRS"
+                    source="S_ELECTIVE" target="S_COURSES" kind="external">
+          <trigger xmi:type="uml:Trigger" xmi:id="TRG_ELEC_CRS" name="BackClicked | EnrollmentSuccess"/>
+        </transition>
+
+        <transition xmi:type="uml:Transition" xmi:id="TR_MAIN_HOLLAND"
+                    source="S_MAIN" target="S_HOLLAND" kind="external">
+          <trigger xmi:type="uml:Trigger" xmi:id="TRG_MAIN_HOLLAND" name="StartProfOrientationClicked"/>
+          <guard xmi:type="uml:Constraint" xmi:id="GRD_MAIN_HOL">
+            <specification xmi:type="uml:OpaqueExpression" xmi:id="GRDSP_MAIN_HOL">
+              <body>Authenticated</body>
+            </specification>
+          </guard>
+        </transition>
+
+        <transition xmi:type="uml:Transition" xmi:id="TR_HOL_KLI"
+                    source="S_HOLLAND" target="S_KLIMOV" kind="external">
+          <trigger xmi:type="uml:Trigger" xmi:id="TRG_HOL_KLI" name="HollandTestCompleted"/>
+        </transition>
+
+        <transition xmi:type="uml:Transition" xmi:id="TR_KLI_RES"
+                    source="S_KLIMOV" target="S_RESULT" kind="external">
+          <trigger xmi:type="uml:Trigger" xmi:id="TRG_KLI_RES" name="KlimovTestCompleted"/>
+        </transition>
+
+        <transition xmi:type="uml:Transition" xmi:id="TR_RES_ROADMAP"
+                    source="S_RESULT" target="S_ROADMAP" kind="external">
+          <trigger xmi:type="uml:Trigger" xmi:id="TRG_RES_ROADMAP" name="GenerateRoadmapClicked"/>
+        </transition>
+
+        <transition xmi:type="uml:Transition" xmi:id="TR_ROADMAP_RES"
+                    source="S_ROADMAP" target="S_RESULT" kind="external">
+          <trigger xmi:type="uml:Trigger" xmi:id="TRG_ROADMAP_RES" name="BackClicked"/>
+        </transition>
+
+        <transition xmi:type="uml:Transition" xmi:id="TR_RES_MAIN"
+                    source="S_RESULT" target="S_MAIN" kind="external">
+          <trigger xmi:type="uml:Trigger" xmi:id="TRG_RES_MAIN" name="BackToMainClicked"/>
+        </transition>
+
+        <transition xmi:type="uml:Transition" xmi:id="TR_MAIN_OLYMP"
+                    source="S_MAIN" target="S_OLYMPIADS" kind="external">
+          <trigger xmi:type="uml:Trigger" xmi:id="TRG_MAIN_OLYMP" name="OlympiadsLinkClicked"/>
+          <guard xmi:type="uml:Constraint" xmi:id="GRD_MAIN_OLYMP">
+            <specification xmi:type="uml:OpaqueExpression" xmi:id="GRDSP_MAIN_OLYMP">
+              <body>Authenticated</body>
+            </specification>
+          </guard>
+        </transition>
+
+        <transition xmi:type="uml:Transition" xmi:id="TR_OLYMP_DET"
+                    source="S_OLYMPIADS" target="S_OLYMPIAD_DETAIL" kind="external">
+          <trigger xmi:type="uml:Trigger" xmi:id="TRG_OLYMP_DET" name="OlympiadSelected"/>
+        </transition>
+
+        <transition xmi:type="uml:Transition" xmi:id="TR_DET_OLYMP"
+                    source="S_OLYMPIAD_DETAIL" target="S_OLYMPIADS" kind="external">
+          <trigger xmi:type="uml:Trigger" xmi:id="TRG_DET_OLYMP" name="BackClicked"/>
+        </transition>
+
+        <transition xmi:type="uml:Transition" xmi:id="TR_DET_CMP"
+                    source="S_OLYMPIAD_DETAIL" target="S_COMPILER" kind="external">
+          <trigger xmi:type="uml:Trigger" xmi:id="TRG_DET_CMP" name="ProblemSelected"/>
+        </transition>
+
+        <transition xmi:type="uml:Transition" xmi:id="TR_CMP_DET"
+                    source="S_COMPILER" target="S_OLYMPIAD_DETAIL" kind="external">
+          <trigger xmi:type="uml:Trigger" xmi:id="TRG_CMP_DET" name="BackClicked | SubmitSuccess"/>
+        </transition>
+
+        <transition xmi:type="uml:Transition" xmi:id="TR_MAIN_PROF"
+                    source="S_MAIN" target="S_PROFILE" kind="external">
+          <trigger xmi:type="uml:Trigger" xmi:id="TRG_MAIN_PROF" name="ProfileLinkClicked"/>
+          <guard xmi:type="uml:Constraint" xmi:id="GRD_MAIN_PROF">
+            <specification xmi:type="uml:OpaqueExpression" xmi:id="GRDSP_MAIN_PROF">
+              <body>Authenticated</body>
+            </specification>
+          </guard>
+        </transition>
+
+        <transition xmi:type="uml:Transition" xmi:id="TR_PROF_MAIN"
+                    source="S_PROFILE" target="S_MAIN" kind="external">
+          <trigger xmi:type="uml:Trigger" xmi:id="TRG_PROF_MAIN" name="BackClicked"/>
+        </transition>
+
+        <transition xmi:type="uml:Transition" xmi:id="TR_MAIN_MNT"
+                    source="S_MAIN" target="S_MENTOR" kind="external">
+          <trigger xmi:type="uml:Trigger" xmi:id="TRG_MAIN_MNT" name="MentorPanelClicked"/>
+          <guard xmi:type="uml:Constraint" xmi:id="GRD_MAIN_MNT">
+            <specification xmi:type="uml:OpaqueExpression" xmi:id="GRDSP_MAIN_MNT">
+              <body>Authenticated and isMentor</body>
+            </specification>
+          </guard>
+        </transition>
+
+        <transition xmi:type="uml:Transition" xmi:id="TR_MNT_MAIN"
+                    source="S_MENTOR" target="S_MAIN" kind="external">
+          <trigger xmi:type="uml:Trigger" xmi:id="TRG_MNT_MAIN" name="BackClicked"/>
+        </transition>
+
+        <transition xmi:type="uml:Transition" xmi:id="TR_MAIN_ADM"
+                    source="S_MAIN" target="S_ADMIN" kind="external">
+          <trigger xmi:type="uml:Trigger" xmi:id="TRG_MAIN_ADM" name="AdminPanelClicked"/>
+          <guard xmi:type="uml:Constraint" xmi:id="GRD_MAIN_ADM">
+            <specification xmi:type="uml:OpaqueExpression" xmi:id="GRDSP_MAIN_ADM">
+              <body>Authenticated and isAdmin</body>
+            </specification>
+          </guard>
+        </transition>
+
+        <transition xmi:type="uml:Transition" xmi:id="TR_ADM_MAIN"
+                    source="S_ADMIN" target="S_MAIN" kind="external">
+          <trigger xmi:type="uml:Trigger" xmi:id="TRG_ADM_MAIN" name="BackClicked"/>
+        </transition>
+
+      </region>
+    </packagedElement>
+
+  </uml:Model>
+</xmi:XMI>

@@ -1,0 +1,438 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Enterprise Architect — Component Diagram (Frontend)
+  Тема 2: Электроника + Английский
+  Архитектура: Feature-Sliced Design (FSD)
+  Слои: app → features → shared,  widgets → shared
+
+  Импорт: File > Import/Export > Import Package from XMI File
+  Затем:  Create Diagram > Component Diagram, перетащить компоненты на canvas
+-->
+<xmi:XMI xmi:version="2.1"
+         xmlns:uml="http://www.omg.org/spec/UML/20090901"
+         xmlns:xmi="http://www.omg.org/spec/XMI/20090901">
+
+  <xmi:Documentation exporter="Enterprise Architect" exporterVersion="6.5"/>
+
+  <uml:Model xmi:type="uml:Model" xmi:id="MDL_T2_FE" name="Тема 2 — Компоненты Frontend">
+    <packagedElement xmi:type="uml:Package" xmi:id="PKG_FE" name="frontend/src">
+
+      <!-- ══════════════════════════════════════════════════════════
+           СЛОЙ: app/   (Next.js App Router — страницы)
+      ══════════════════════════════════════════════════════════ -->
+      <packagedElement xmi:type="uml:Component" xmi:id="C_APP" name="app/">
+
+        <!-- Общие -->
+        <packagedElement xmi:type="uml:Component" xmi:id="C_APP_LAYOUT"    name="layout.tsx"/>
+
+        <!-- Аутентификация -->
+        <packagedElement xmi:type="uml:Component" xmi:id="C_APP_AUTH"      name="auth/page.tsx"/>
+
+        <!-- Курсы и материалы -->
+        <packagedElement xmi:type="uml:Component" xmi:id="C_APP_COURSES"   name="courses/page.tsx"/>
+        <packagedElement xmi:type="uml:Component" xmi:id="C_APP_VOCAB"     name="courses/english-vocab/page.tsx"/>
+        <packagedElement xmi:type="uml:Component" xmi:id="C_APP_LIBRARY"   name="library/page.tsx"/>
+
+        <!-- Задания и проверки -->
+        <packagedElement xmi:type="uml:Component" xmi:id="C_APP_ASSIGN"    name="assignments/[id]/page.tsx"/>
+        <packagedElement xmi:type="uml:Component" xmi:id="C_APP_PR"        name="peer-review/page.tsx"/>
+        <packagedElement xmi:type="uml:Component" xmi:id="C_APP_CIRCUIT"   name="circuit/page.tsx"/>
+
+        <!-- Форум -->
+        <packagedElement xmi:type="uml:Component" xmi:id="C_APP_FORUM"     name="forum/page.tsx"/>
+        <packagedElement xmi:type="uml:Component" xmi:id="C_APP_FORUM_S"   name="forum/[id]/page.tsx"/>
+        <packagedElement xmi:type="uml:Component" xmi:id="C_APP_FORUM_T"   name="forum/topic/[id]/page.tsx"/>
+
+        <!-- Хакатоны -->
+        <packagedElement xmi:type="uml:Component" xmi:id="C_APP_HACK"      name="hackathons/[hackathonId]/page.tsx"/>
+        <packagedElement xmi:type="uml:Component" xmi:id="C_APP_HACK_TEAM" name="hackathons/[hackathonId]/team/[teamId]/page.tsx"/>
+
+        <!-- Пользователь -->
+        <packagedElement xmi:type="uml:Component" xmi:id="C_APP_DASH"      name="dashboard/page.tsx"/>
+        <packagedElement xmi:type="uml:Component" xmi:id="C_APP_PROFILE"   name="profile/page.tsx"/>
+        <packagedElement xmi:type="uml:Component" xmi:id="C_APP_PROFILE_ID" name="profile/[id]/page.tsx"/>
+
+        <!-- Панель ментора -->
+        <packagedElement xmi:type="uml:Component" xmi:id="C_APP_MENTOR"    name="mentor/page.tsx"/>
+        <packagedElement xmi:type="uml:Component" xmi:id="C_APP_MENTOR_L"  name="mentor/layout.tsx"/>
+        <packagedElement xmi:type="uml:Component" xmi:id="C_APP_MENTOR_GR" name="mentor/groups/page.tsx"/>
+        <packagedElement xmi:type="uml:Component" xmi:id="C_APP_MENTOR_GID" name="mentor/groups/[id]/page.tsx"/>
+        <packagedElement xmi:type="uml:Component" xmi:id="C_APP_MENTOR_AS" name="mentor/assignments/page.tsx"/>
+        <packagedElement xmi:type="uml:Component" xmi:id="C_APP_MENTOR_MA" name="mentor/materials/page.tsx"/>
+        <packagedElement xmi:type="uml:Component" xmi:id="C_APP_MENTOR_HA" name="mentor/hackathons/page.tsx"/>
+        <packagedElement xmi:type="uml:Component" xmi:id="C_APP_MENTOR_FO" name="mentor/forum/page.tsx"/>
+        <packagedElement xmi:type="uml:Component" xmi:id="C_APP_MENTOR_VO" name="mentor/vocabulary/page.tsx"/>
+
+        <!-- Панель администратора -->
+        <packagedElement xmi:type="uml:Component" xmi:id="C_APP_ADMIN"     name="admin/page.tsx"/>
+        <packagedElement xmi:type="uml:Component" xmi:id="C_APP_ADMIN_L"   name="admin/layout.tsx"/>
+        <packagedElement xmi:type="uml:Component" xmi:id="C_APP_ADMIN_GR"  name="admin/groups/page.tsx"/>
+        <packagedElement xmi:type="uml:Component" xmi:id="C_APP_ADMIN_AS"  name="admin/assignments/page.tsx"/>
+        <packagedElement xmi:type="uml:Component" xmi:id="C_APP_ADMIN_MA"  name="admin/materials/page.tsx"/>
+        <packagedElement xmi:type="uml:Component" xmi:id="C_APP_ADMIN_VO"  name="admin/vocabulary/page.tsx"/>
+        <packagedElement xmi:type="uml:Component" xmi:id="C_APP_ADMIN_HA"  name="admin/hackathons/[id]/page.tsx"/>
+        <packagedElement xmi:type="uml:Component" xmi:id="C_APP_ADMIN_FO"  name="admin/forum/page.tsx"/>
+        <packagedElement xmi:type="uml:Component" xmi:id="C_APP_ADMIN_CR"  name="admin/course-registrations/page.tsx"/>
+      </packagedElement>
+
+      <!-- ══════════════════════════════════════════════════════════
+           СЛОЙ: widgets/
+      ══════════════════════════════════════════════════════════ -->
+      <packagedElement xmi:type="uml:Component" xmi:id="C_WIDGETS" name="widgets/">
+        <packagedElement xmi:type="uml:Component" xmi:id="C_W_HEADER" name="header/Header.tsx"/>
+        <packagedElement xmi:type="uml:Component" xmi:id="C_W_FOOTER" name="footer/Footer.tsx"/>
+        <packagedElement xmi:type="uml:Component" xmi:id="C_W_VIDEO"  name="video-background/VideoBackground.tsx"/>
+      </packagedElement>
+
+      <!-- ══════════════════════════════════════════════════════════
+           СЛОЙ: features/   (функциональные модули)
+      ══════════════════════════════════════════════════════════ -->
+      <packagedElement xmi:type="uml:Component" xmi:id="C_FEAT" name="features/">
+
+        <!-- auth -->
+        <packagedElement xmi:type="uml:Component" xmi:id="C_F_AUTH" name="auth/">
+          <packagedElement xmi:type="uml:Component" xmi:id="C_F_AUTHPAGE"  name="AuthPage.tsx"/>
+        </packagedElement>
+
+        <!-- home -->
+        <packagedElement xmi:type="uml:Component" xmi:id="C_F_HOME" name="home/">
+          <packagedElement xmi:type="uml:Component" xmi:id="C_F_FEATSEC"  name="FeaturesSection.tsx"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="C_F_STATSSEC" name="StatsSection.tsx"/>
+        </packagedElement>
+
+        <!-- courses-page -->
+        <packagedElement xmi:type="uml:Component" xmi:id="C_F_COURSES" name="courses-page/">
+          <packagedElement xmi:type="uml:Component" xmi:id="C_F_COURSESPAGE" name="CoursesPage.tsx"/>
+        </packagedElement>
+
+        <!-- circuit -->
+        <packagedElement xmi:type="uml:Component" xmi:id="C_F_CIRCUIT" name="circuit/">
+          <packagedElement xmi:type="uml:Component" xmi:id="C_F_CIRCUITSIM" name="CircuitSimulator.tsx"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="C_F_NODEVIEW"   name="components/NodeView.tsx"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="C_F_WIREVIEW"   name="components/WireView.tsx"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="C_F_PALETTE"    name="components/Palette.tsx"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="C_F_PREVWIRE"   name="components/PreviewWire.tsx"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="C_F_AIASSIST"   name="components/AiAssistant.tsx"/>
+        </packagedElement>
+
+        <!-- assignments -->
+        <packagedElement xmi:type="uml:Component" xmi:id="C_F_ASSIGN" name="assignments/">
+          <packagedElement xmi:type="uml:Component" xmi:id="C_F_ASSIGNDET" name="AssignmentDetailPage.tsx"/>
+        </packagedElement>
+
+        <!-- peer-review -->
+        <packagedElement xmi:type="uml:Component" xmi:id="C_F_PR" name="peer-review/">
+          <packagedElement xmi:type="uml:Component" xmi:id="C_F_PRPAGE"  name="PeerReviewPage.tsx"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="C_F_MPRPAGE" name="MentorPeerReviewPage.tsx"/>
+        </packagedElement>
+
+        <!-- english -->
+        <packagedElement xmi:type="uml:Component" xmi:id="C_F_ENGLISH" name="english/">
+          <packagedElement xmi:type="uml:Component" xmi:id="C_F_TECHVOC" name="TechVocabulary.tsx"/>
+        </packagedElement>
+
+        <!-- library -->
+        <packagedElement xmi:type="uml:Component" xmi:id="C_F_LIBRARY" name="library/">
+          <packagedElement xmi:type="uml:Component" xmi:id="C_F_LIBPAGE" name="LibraryPage.tsx"/>
+        </packagedElement>
+
+        <!-- forum -->
+        <packagedElement xmi:type="uml:Component" xmi:id="C_F_FORUM" name="forum/">
+          <packagedElement xmi:type="uml:Component" xmi:id="C_F_FORUMPAGE" name="ForumPage.tsx"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="C_F_FORUMSEC"  name="ForumSectionPage.tsx"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="C_F_FORUMTOP"  name="ForumTopicPage.tsx"/>
+        </packagedElement>
+
+        <!-- groups -->
+        <packagedElement xmi:type="uml:Component" xmi:id="C_F_GROUPS" name="groups/">
+          <packagedElement xmi:type="uml:Component" xmi:id="C_F_GROUPDET" name="GroupDetailPage.tsx"/>
+        </packagedElement>
+
+        <!-- dashboard -->
+        <packagedElement xmi:type="uml:Component" xmi:id="C_F_DASH" name="dashboard/">
+          <packagedElement xmi:type="uml:Component" xmi:id="C_F_DASHPAGE" name="DashboardPage.tsx"/>
+        </packagedElement>
+
+        <!-- profile -->
+        <packagedElement xmi:type="uml:Component" xmi:id="C_F_PROFILE" name="profile/">
+          <packagedElement xmi:type="uml:Component" xmi:id="C_F_PROFILEPAGE" name="ProfilePage.tsx"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="C_F_PUBPROFILE"  name="PublicProfilePage.tsx"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="C_F_ACHSEC"      name="AchievementsSection.tsx"/>
+        </packagedElement>
+
+        <!-- mentor -->
+        <packagedElement xmi:type="uml:Component" xmi:id="C_F_MENTOR" name="mentor/">
+          <packagedElement xmi:type="uml:Component" xmi:id="C_F_MENTORDASH" name="MentorDashboard.tsx"/>
+        </packagedElement>
+
+        <!-- admin -->
+        <packagedElement xmi:type="uml:Component" xmi:id="C_F_ADMIN" name="admin/">
+          <packagedElement xmi:type="uml:Component" xmi:id="C_F_ADMINDASH"   name="AdminDashboard.tsx"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="C_F_ADMINSIDEB"  name="AdminSidebar.tsx"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="C_F_GROUPMGMT"   name="GroupManagement.tsx"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="C_F_GROUPFORM"   name="GroupForm.tsx"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="C_F_ASSIGNMGMT"  name="AssignmentManagement.tsx"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="C_F_ASSIGNFORM"  name="AssignmentForm.tsx"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="C_F_MATMGMT"     name="MaterialManagement.tsx"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="C_F_MATFORM"     name="MaterialForm.tsx"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="C_F_VOCMGMT"     name="VocabularyManagement.tsx"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="C_F_CIRCUITMGMT" name="CircuitSimManagement.tsx"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="C_F_CIRCUITSIMF" name="CircuitSimForm.tsx"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="C_F_COURSEREGS"  name="CourseRegistrations.tsx"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="C_F_ADMINHACKS"  name="hackathons/AdminHackathons.tsx"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="C_F_HACKFORM"    name="hackathons/HackathonForm.tsx"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="C_F_HACKS"       name="hackathons/Hackathons.tsx"/>
+        </packagedElement>
+
+        <!-- notifications -->
+        <packagedElement xmi:type="uml:Component" xmi:id="C_F_NOTIF" name="notifications/">
+          <packagedElement xmi:type="uml:Component" xmi:id="C_F_NOTIFBELL" name="NotificationBell.tsx"/>
+        </packagedElement>
+
+      </packagedElement>
+
+      <!-- ══════════════════════════════════════════════════════════
+           СЛОЙ: shared/   (переиспользуемые модули)
+      ══════════════════════════════════════════════════════════ -->
+      <packagedElement xmi:type="uml:Component" xmi:id="C_SHARED" name="shared/">
+
+        <!-- api/ — HTTP-клиенты, SWR-хуки -->
+        <packagedElement xmi:type="uml:Component" xmi:id="C_SH_API" name="api/">
+          <packagedElement xmi:type="uml:Component" xmi:id="C_SH_CLIENT"    name="client.ts"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="C_SH_AUTHAPI"   name="authApi.ts"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="C_SH_HACKAPI"   name="hackathons/index.ts"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="C_SH_FORUMAPI"  name="forum/index.ts"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="C_SH_PRAPI"     name="admin/peer-reviews.ts"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="C_SH_ASSIGNAPI" name="admin/assignments.ts"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="C_SH_MATAPI"    name="admin/materials.ts"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="C_SH_CGAPI"     name="admin/course-groups.ts"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="C_SH_REGAPI"    name="admin/registrations.ts"/>
+        </packagedElement>
+
+        <!-- lib/ — утилиты и контекст -->
+        <packagedElement xmi:type="uml:Component" xmi:id="C_SH_LIB" name="lib/">
+          <packagedElement xmi:type="uml:Component" xmi:id="C_SH_AUTHCTX"   name="auth-context.tsx"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="C_SH_THEME"     name="theme.tsx"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="C_SH_PROTROUTE" name="protected-route.tsx"/>
+        </packagedElement>
+
+        <!-- ui/ — базовые UI-примитивы -->
+        <packagedElement xmi:type="uml:Component" xmi:id="C_SH_UI" name="ui/">
+          <packagedElement xmi:type="uml:Component" xmi:id="C_SH_BADGE"   name="badge/Badge.tsx"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="C_SH_BUTTON"  name="button/Button.tsx"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="C_SH_CARD"    name="ui/card/Card.tsx"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="C_SH_INPUT"   name="input/input.tsx"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="C_SH_SIDEBAR" name="sidebar/GhSidebar.tsx"/>
+        </packagedElement>
+
+      </packagedElement>
+
+      <!-- ══════════════════════════════════════════════════════════
+           ЗАВИСИМОСТИ МЕЖДУ СЛОЯМИ FSD
+           Правило FSD: зависимости только вниз по иерархии слоёв
+           app → features, app → widgets
+           features → shared
+           widgets → shared
+      ══════════════════════════════════════════════════════════ -->
+
+      <!-- app → features: страницы используют компоненты из features -->
+      <packagedElement xmi:type="uml:Usage" xmi:id="DEP_APP_FEAT"
+                       name="uses"
+                       client="C_APP"
+                       supplier="C_FEAT"/>
+
+      <!-- app → widgets: страницы используют Header и Footer -->
+      <packagedElement xmi:type="uml:Usage" xmi:id="DEP_APP_WGT"
+                       name="uses"
+                       client="C_APP"
+                       supplier="C_WIDGETS"/>
+
+      <!-- app → shared/lib: страницы используют protected-route, auth-context -->
+      <packagedElement xmi:type="uml:Usage" xmi:id="DEP_APP_SHLIB"
+                       name="uses"
+                       client="C_APP"
+                       supplier="C_SH_LIB"/>
+
+      <!-- features → shared/api: feature-компоненты используют API-клиенты -->
+      <packagedElement xmi:type="uml:Usage" xmi:id="DEP_FEAT_SHAPI"
+                       name="uses"
+                       client="C_FEAT"
+                       supplier="C_SH_API"/>
+
+      <!-- features → shared/lib: feature-компоненты используют auth-context -->
+      <packagedElement xmi:type="uml:Usage" xmi:id="DEP_FEAT_SHLIB"
+                       name="uses"
+                       client="C_FEAT"
+                       supplier="C_SH_LIB"/>
+
+      <!-- features → shared/ui: feature-компоненты используют базовые UI-примитивы -->
+      <packagedElement xmi:type="uml:Usage" xmi:id="DEP_FEAT_SHUI"
+                       name="uses"
+                       client="C_FEAT"
+                       supplier="C_SH_UI"/>
+
+      <!-- widgets → shared/ui: виджеты используют базовые UI-примитивы -->
+      <packagedElement xmi:type="uml:Usage" xmi:id="DEP_WGT_SHUI"
+                       name="uses"
+                       client="C_WIDGETS"
+                       supplier="C_SH_UI"/>
+
+      <!-- shared/api → shared/lib: API-клиенты используют auth-context для токена -->
+      <packagedElement xmi:type="uml:Usage" xmi:id="DEP_SHAPI_SHLIB"
+                       name="uses"
+                       client="C_SH_API"
+                       supplier="C_SH_LIB"/>
+
+      <!-- ── Зависимости feature-модулей на конкретные API-клиенты ── -->
+
+      <!-- circuit → shared/api (нет специфичного API, использует client.ts) -->
+      <packagedElement xmi:type="uml:Usage" xmi:id="DEP_CIRCUIT_API"
+                       name="uses"
+                       client="C_F_CIRCUIT"
+                       supplier="C_SH_CLIENT"/>
+
+      <!-- assignments → shared/api/admin/assignments -->
+      <packagedElement xmi:type="uml:Usage" xmi:id="DEP_ASSIGN_API"
+                       name="uses"
+                       client="C_F_ASSIGN"
+                       supplier="C_SH_ASSIGNAPI"/>
+
+      <!-- peer-review → shared/api/admin/peer-reviews -->
+      <packagedElement xmi:type="uml:Usage" xmi:id="DEP_PR_API"
+                       name="uses"
+                       client="C_F_PR"
+                       supplier="C_SH_PRAPI"/>
+
+      <!-- library → shared/api/admin/materials -->
+      <packagedElement xmi:type="uml:Usage" xmi:id="DEP_LIB_API"
+                       name="uses"
+                       client="C_F_LIBRARY"
+                       supplier="C_SH_MATAPI"/>
+
+      <!-- forum → shared/api/forum -->
+      <packagedElement xmi:type="uml:Usage" xmi:id="DEP_FORUM_API"
+                       name="uses"
+                       client="C_F_FORUM"
+                       supplier="C_SH_FORUMAPI"/>
+
+      <!-- admin → shared/api/admin/* -->
+      <packagedElement xmi:type="uml:Usage" xmi:id="DEP_ADMIN_CGAPI"
+                       name="uses"
+                       client="C_F_ADMIN"
+                       supplier="C_SH_CGAPI"/>
+
+      <packagedElement xmi:type="uml:Usage" xmi:id="DEP_ADMIN_REGAPI"
+                       name="uses"
+                       client="C_F_ADMIN"
+                       supplier="C_SH_REGAPI"/>
+
+      <!-- groups → shared/api/admin/course-groups -->
+      <packagedElement xmi:type="uml:Usage" xmi:id="DEP_GROUPS_API"
+                       name="uses"
+                       client="C_F_GROUPS"
+                       supplier="C_SH_CGAPI"/>
+
+      <!-- hackathons pages → shared/api/hackathons -->
+      <packagedElement xmi:type="uml:Usage" xmi:id="DEP_HACK_API"
+                       name="uses"
+                       client="C_F_ADMIN"
+                       supplier="C_SH_HACKAPI"/>
+
+      <!-- app/auth → features/auth -->
+      <packagedElement xmi:type="uml:Usage" xmi:id="DEP_APAUTH_FAUTH"
+                       name="renders"
+                       client="C_APP_AUTH"
+                       supplier="C_F_AUTHPAGE"/>
+
+      <!-- app/circuit → features/circuit -->
+      <packagedElement xmi:type="uml:Usage" xmi:id="DEP_APCIR_FCIR"
+                       name="renders"
+                       client="C_APP_CIRCUIT"
+                       supplier="C_F_CIRCUIT"/>
+
+      <!-- app/assignments → features/assignments -->
+      <packagedElement xmi:type="uml:Usage" xmi:id="DEP_APAS_FAS"
+                       name="renders"
+                       client="C_APP_ASSIGN"
+                       supplier="C_F_ASSIGN"/>
+
+      <!-- app/peer-review → features/peer-review -->
+      <packagedElement xmi:type="uml:Usage" xmi:id="DEP_APPR_FPR"
+                       name="renders"
+                       client="C_APP_PR"
+                       supplier="C_F_PR"/>
+
+      <!-- app/library → features/library -->
+      <packagedElement xmi:type="uml:Usage" xmi:id="DEP_APLIB_FLIB"
+                       name="renders"
+                       client="C_APP_LIBRARY"
+                       supplier="C_F_LIBRARY"/>
+
+      <!-- app/forum/* → features/forum -->
+      <packagedElement xmi:type="uml:Usage" xmi:id="DEP_APFOR_FFOR"
+                       name="renders"
+                       client="C_APP_FORUM"
+                       supplier="C_F_FORUM"/>
+
+      <!-- app/courses → features/courses-page -->
+      <packagedElement xmi:type="uml:Usage" xmi:id="DEP_APCRS_FCRS"
+                       name="renders"
+                       client="C_APP_COURSES"
+                       supplier="C_F_COURSES"/>
+
+      <!-- app/courses/english-vocab → features/english -->
+      <packagedElement xmi:type="uml:Usage" xmi:id="DEP_APVOC_FENG"
+                       name="renders"
+                       client="C_APP_VOCAB"
+                       supplier="C_F_ENGLISH"/>
+
+      <!-- app/dashboard → features/dashboard -->
+      <packagedElement xmi:type="uml:Usage" xmi:id="DEP_APDASH_FDASH"
+                       name="renders"
+                       client="C_APP_DASH"
+                       supplier="C_F_DASH"/>
+
+      <!-- app/profile → features/profile -->
+      <packagedElement xmi:type="uml:Usage" xmi:id="DEP_APPRF_FPRF"
+                       name="renders"
+                       client="C_APP_PROFILE"
+                       supplier="C_F_PROFILE"/>
+
+      <!-- app/mentor → features/mentor -->
+      <packagedElement xmi:type="uml:Usage" xmi:id="DEP_APMNT_FMNT"
+                       name="renders"
+                       client="C_APP_MENTOR"
+                       supplier="C_F_MENTOR"/>
+
+      <!-- app/admin → features/admin -->
+      <packagedElement xmi:type="uml:Usage" xmi:id="DEP_APADM_FADM"
+                       name="renders"
+                       client="C_APP_ADMIN"
+                       supplier="C_F_ADMIN"/>
+
+      <!-- circuit components → circuit simulator -->
+      <packagedElement xmi:type="uml:Usage" xmi:id="DEP_CIR_NODE"
+                       name="uses"
+                       client="C_F_CIRCUITSIM"
+                       supplier="C_F_NODEVIEW"/>
+      <packagedElement xmi:type="uml:Usage" xmi:id="DEP_CIR_WIRE"
+                       name="uses"
+                       client="C_F_CIRCUITSIM"
+                       supplier="C_F_WIREVIEW"/>
+      <packagedElement xmi:type="uml:Usage" xmi:id="DEP_CIR_PAL"
+                       name="uses"
+                       client="C_F_CIRCUITSIM"
+                       supplier="C_F_PALETTE"/>
+      <packagedElement xmi:type="uml:Usage" xmi:id="DEP_CIR_PREV"
+                       name="uses"
+                       client="C_F_CIRCUITSIM"
+                       supplier="C_F_PREVWIRE"/>
+      <packagedElement xmi:type="uml:Usage" xmi:id="DEP_CIR_AI"
+                       name="uses"
+                       client="C_F_CIRCUITSIM"
+                       supplier="C_F_AIASSIST"/>
+
+    </packagedElement>
+  </uml:Model>
+
+</xmi:XMI>

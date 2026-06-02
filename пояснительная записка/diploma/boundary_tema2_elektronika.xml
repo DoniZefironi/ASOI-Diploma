@@ -1,0 +1,273 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xmi:XMI xmi:version="2.1"
+  xmlns:xmi="http://schema.omg.org/spec/XMI/2.1"
+  xmlns:uml="http://schema.omg.org/spec/UML/2.1.2">
+
+  <xmi:Documentation exporter="Enterprise Architect" exporterVersion="6.5"/>
+
+  <!--
+    Boundary Class Diagram — Тема 2: Электроника + Английский технический язык
+    Стереотипы закодированы в имени атрибута через «»
+  -->
+
+  <uml:Model xmi:type="uml:Model" name="T2_BoundaryClasses" visibility="public">
+    <packagedElement xmi:type="uml:Package" xmi:id="pkg_t2_boundary" name="Boundary Classes T2" visibility="public">
+
+    <!-- ═══════════════════════════════════════════════════════ MainPage -->
+    <packagedElement xmi:type="uml:Class" xmi:id="bnd_MainPage" name="MainPage" visibility="public">
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_main_1" name="«navbar» Header с логотипом и навигационными ссылками" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_main_2" name="«section» Hero-секция (название платформы, описание направлений)" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_main_3" name="«button» Войти (для неаутентифицированного пользователя)" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_main_4" name="«button» Зарегистрироваться (для неаутентифицированного пользователя)" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_main_5" name="«grid» Карточки доступных курсов (электроника, английский)" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_main_6" name="«card» Карточка курса (название, тип, описание, изображение)" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_main_7" name="«section» Статистика платформы (число студентов, курсов, заданий)" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_main_8" name="«footer» Подвал страницы" visibility="public" isUnique="true" isOrdered="false"/>
+    </packagedElement>
+
+    <!-- ═══════════════════════════════════════════════════════ AuthPage -->
+    <packagedElement xmi:type="uml:Class" xmi:id="bnd_AuthPage" name="AuthPage" visibility="public">
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_auth_1"  name="«navbar» Header" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_auth_2"  name="«tabs» Переключатель Вход / Регистрация" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_auth_3"  name="«form» LoginForm (форма входа)" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_auth_4"  name="«input» Электронная почта" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_auth_5"  name="«input» Пароль" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_auth_6"  name="«button» Показать/скрыть пароль" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_auth_7"  name="«button» Войти" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_auth_8"  name="«form» RegisterForm (форма регистрации)" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_auth_9"  name="«input» Имя" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_auth_10" name="«input» Фамилия" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_auth_11" name="«input» Электронная почта (регистрация)" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_auth_12" name="«input» Пароль (регистрация)" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_auth_13" name="«button» Зарегистрироваться" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_auth_14" name="«alert» Сообщение об ошибке (неверные данные / email занят)" visibility="public" isUnique="true" isOrdered="false"/>
+    </packagedElement>
+
+    <!-- ═══════════════════════════════════════════════════════ CoursesPage -->
+    <packagedElement xmi:type="uml:Class" xmi:id="bnd_CoursesPage" name="CoursesPage" visibility="public">
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_crs_1"  name="«navbar» Header" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_crs_2"  name="«grid» Сетка карточек курсов" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_crs_3"  name="«card» Карточка курса (название, тип, описание, изображение, анимация появления)" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_crs_4"  name="«badge» Тип курса (electronics / english)" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_crs_5"  name="«list» Список доступных учебных групп курса" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_crs_6"  name="«card» Карточка учебной группы (название, год, семестр, мест занято / всего)" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_crs_7"  name="«button» Записаться в группу" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_crs_8"  name="«badge» Статус записи (pending — ожидает / approved — зачислен)" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_crs_9"  name="«alert» Уведомление о статусе заявки" visibility="public" isUnique="true" isOrdered="false"/>
+    </packagedElement>
+
+    <!-- ═══════════════════════════════════════════════════════ LibraryPage -->
+    <packagedElement xmi:type="uml:Class" xmi:id="bnd_LibraryPage" name="LibraryPage" visibility="public">
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_lib_1"  name="«navbar» Header" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_lib_2"  name="«shelf» Визуализация книжной полки с карточками-корешками" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_lib_3"  name="«card» Карточка-корешок материала (название, тип, цветовая кодировка)" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_lib_4"  name="«select» Фильтр по типу (лекции / видео / документы / код / шаблоны / справочники)" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_lib_5"  name="«select» Фильтр по курсу" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_lib_6"  name="«input» Поиск по названию материала" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_lib_7"  name="«select» Сортировка (по дате / по названию)" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_lib_8"  name="«button» Применить фильтры / Сбросить" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_lib_9"  name="«pagination» Постраничная навигация" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_lib_10" name="«modal» Детальная карточка материала (описание, ссылка, миниатюра)" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_lib_11" name="«button» Открыть материал / Перейти по ссылке" visibility="public" isUnique="true" isOrdered="false"/>
+    </packagedElement>
+
+    <!-- ═══════════════════════════════════════════════════════ CircuitSimulatorPage -->
+    <packagedElement xmi:type="uml:Class" xmi:id="bnd_CircuitPage" name="CircuitSimulatorPage" visibility="public">
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_cir_1"  name="«navbar» Header" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_cir_2"  name="«panel» Левая панель компонентов (AND, OR, NOT, NAND, NOR, XOR, XNOR, DFF, TFF, CLOCK, LED, DISPLAY, SEVEN_SEGMENT)" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_cir_3"  name="«canvas» Рабочий холст (drag-and-drop размещение и соединение компонентов)" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_cir_4"  name="«toolbar» Панель инструментов (Выбрать, Удалить, Очистить холст)" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_cir_5"  name="«button» Симулировать (запуск симуляции)" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_cir_6"  name="«display» Отображение логических сигналов на выходах (0 / 1)" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_cir_7"  name="«panel» Блок задания (условие схемотехнической задачи)" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_cir_8"  name="«button» Прикрепить схему как ответ на задание" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_cir_9"  name="«panel» Результаты проверки (балл, maxScore, isPassed, feedback по тест-кейсам)" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_cir_10" name="«alert» Статус отправки решения (принято / ошибка в тестах)" visibility="public" isUnique="true" isOrdered="false"/>
+    </packagedElement>
+
+    <!-- ═══════════════════════════════════════════════════════ VocabularyPage -->
+    <packagedElement xmi:type="uml:Class" xmi:id="bnd_VocabPage" name="VocabularyPage" visibility="public">
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_voc_1"  name="«navbar» Header" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_voc_2"  name="«grid» Сетка словарных карточек" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_voc_3"  name="«card» Карточка термина (термин, транскрипция, перевод, уровень)" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_voc_4"  name="«select» Фильтр по тематической категории" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_voc_5"  name="«select» Фильтр по уровню сложности" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_voc_6"  name="«input» Поиск по термину или переводу" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_voc_7"  name="«modal» Детальная карточка термина (определение, пример использования)" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_voc_8"  name="«button» Применить фильтры / Сбросить" visibility="public" isUnique="true" isOrdered="false"/>
+    </packagedElement>
+
+    <!-- ═══════════════════════════════════════════════════════ DashboardPage -->
+    <packagedElement xmi:type="uml:Class" xmi:id="bnd_DashboardPage" name="DashboardPage" visibility="public">
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_dash_1"  name="«navbar» Header" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_dash_2"  name="«select» Выбор учебной группы" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_dash_3"  name="«list» Список заданий группы с дедлайнами и статусами" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_dash_4"  name="«card» Карточка задания (название, тип, дедлайн, максимальный балл)" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_dash_5"  name="«badge» Статус сдачи (draft / submitted / under_review / reviewed / graded)" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_dash_6"  name="«link» Перейти к заданию" visibility="public" isUnique="true" isOrdered="false"/>
+    </packagedElement>
+
+    <!-- ═══════════════════════════════════════════════════════ AssignmentDetailPage -->
+    <packagedElement xmi:type="uml:Class" xmi:id="bnd_AssignmentPage" name="AssignmentDetailPage" visibility="public">
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_asgn_1"  name="«navbar» Header" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_asgn_2"  name="«panel» Описание задания (название, тип, условие, требования)" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_asgn_3"  name="«badge» Дедлайн сдачи" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_asgn_4"  name="«badge» Максимальный балл" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_asgn_5"  name="«badge» Текущий статус сдачи" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_asgn_6"  name="«textarea» Поле ввода текстового ответа" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_asgn_7"  name="«upload» Прикрепление файлов" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_asgn_8"  name="«input» Ссылка на репозиторий (GitHub / GitLab)" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_asgn_9"  name="«button» Сохранить черновик" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_asgn_10" name="«button» Отправить работу" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_asgn_11" name="«panel» Результат проверки ментором (итоговый балл, комментарий)" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_asgn_12" name="«panel» Результаты peer review (оценки по критериям, текст рецензий)" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_asgn_13" name="«link» Перейти к эмулятору схем (для заданий типа практика)" visibility="public" isUnique="true" isOrdered="false"/>
+    </packagedElement>
+
+    <!-- ═══════════════════════════════════════════════════════ PeerReviewPage -->
+    <packagedElement xmi:type="uml:Class" xmi:id="bnd_PeerReviewPage" name="PeerReviewPage" visibility="public">
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_pr_1"  name="«navbar» Header" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_pr_2"  name="«tabs» Вкладки (Проверить работу / Мои рецензии)" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_pr_3"  name="«list» Список работ, назначенных для рецензирования" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_pr_4"  name="«card» Карточка работы (задание, статус рецензии: завершена / в процессе)" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_pr_5"  name="«panel» Содержимое рецензируемой работы (ответ студента, ссылка на репозиторий)" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_pr_6"  name="«form» Форма рецензии" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_pr_7"  name="«input» Общая оценка (балл)" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_pr_8"  name="«list» Оценки по критериям (criteriaScores)" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_pr_9"  name="«textarea» Текст рецензии (feedback)" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_pr_10" name="«button» Отправить рецензию" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_pr_11" name="«list» Полученные рецензии на собственную работу (score, feedback)" visibility="public" isUnique="true" isOrdered="false"/>
+    </packagedElement>
+
+    <!-- ═══════════════════════════════════════════════════════ ForumPage -->
+    <packagedElement xmi:type="uml:Class" xmi:id="bnd_ForumPage" name="ForumPage" visibility="public">
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_for_1"  name="«navbar» Header" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_for_2"  name="«list» Список разделов форума курсов" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_for_3"  name="«card» Карточка раздела форума (название, описание, число тем)" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_for_4"  name="«link» Перейти к разделу" visibility="public" isUnique="true" isOrdered="false"/>
+    </packagedElement>
+
+    <!-- ═══════════════════════════════════════════════════════ ForumSectionPage -->
+    <packagedElement xmi:type="uml:Class" xmi:id="bnd_ForumSectionPage" name="ForumSectionPage" visibility="public">
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_fsec_1"  name="«navbar» Header" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_fsec_2"  name="«breadcrumb» Навигация (Форум → Раздел)" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_fsec_3"  name="«list» Список тем раздела (закреплённые — первыми, затем по дате)" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_fsec_4"  name="«card» Карточка темы (заголовок, автор, дата, число сообщений)" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_fsec_5"  name="«badge» Метка «Закреплено» (isPinned = true)" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_fsec_6"  name="«badge» Метка «Закрыто» (isClosed = true)" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_fsec_7"  name="«button» + Создать тему" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_fsec_8"  name="«form» Форма создания темы (заголовок, текст первого сообщения)" visibility="public" isUnique="true" isOrdered="false"/>
+    </packagedElement>
+
+    <!-- ═══════════════════════════════════════════════════════ ForumTopicPage -->
+    <packagedElement xmi:type="uml:Class" xmi:id="bnd_ForumTopicPage" name="ForumTopicPage" visibility="public">
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_ftop_1"  name="«navbar» Header" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_ftop_2"  name="«breadcrumb» Навигация (Форум → Раздел → Тема)" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_ftop_3"  name="«header» Заголовок темы" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_ftop_4"  name="«counter» Счётчик просмотров темы (viewsCount)" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_ftop_5"  name="«list» Список сообщений темы" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_ftop_6"  name="«card» Сообщение (аватар автора, имя, дата, текст, отметка isEdited)" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_ftop_7"  name="«form» Форма написания ответа" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_ftop_8"  name="«textarea» Поле ввода текста ответа" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_ftop_9"  name="«button» Опубликовать ответ" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_ftop_10" name="«alert» Тема закрыта (ответы недоступны, isClosed = true)" visibility="public" isUnique="true" isOrdered="false"/>
+    </packagedElement>
+
+    <!-- ═══════════════════════════════════════════════════════ HackathonsPage -->
+    <packagedElement xmi:type="uml:Class" xmi:id="bnd_HackathonsPage" name="HackathonsPage" visibility="public">
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_hacks_1"  name="«navbar» Header" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_hacks_2"  name="«grid» Список карточек активных хакатонов" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_hacks_3"  name="«card» Карточка хакатона (название, тема, даты, размер команды, призовой фонд)" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_hacks_4"  name="«badge» Статус хакатона (active — идёт / upcoming — скоро / completed — завершён)" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_hacks_5"  name="«button» Участвовать (для хакатонов со статусом active / upcoming)" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_hacks_6"  name="«button» Подробнее (переход на страницу хакатона)" visibility="public" isUnique="true" isOrdered="false"/>
+    </packagedElement>
+
+    <!-- ═══════════════════════════════════════════════════════ HackathonDetailPage -->
+    <packagedElement xmi:type="uml:Class" xmi:id="bnd_HackathonDetailPage" name="HackathonDetailPage" visibility="public">
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_hack_1"  name="«navbar» Header" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_hack_2"  name="«panel» Описание хакатона (тема, задание, правила, критерии оценки)" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_hack_3"  name="«timeline» Временная шкала этапов с дедлайнами" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_hack_4"  name="«list» Задания хакатона с максимальными баллами" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_hack_5"  name="«panel» Состав команды (участники, статус команды)" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_hack_6"  name="«button» Создать команду" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_hack_7"  name="«form» Форма регистрации команды (название, состав участников)" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_hack_8"  name="«form» Форма сдачи проекта команды (ссылка на репозиторий, описание)" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_hack_9"  name="«button» Сдать проект" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_hack_10" name="«table» Результаты оценивания (балл, feedback от жюри)" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_hack_11" name="«badge» Итоговый статус команды (оценено / ожидает оценки)" visibility="public" isUnique="true" isOrdered="false"/>
+    </packagedElement>
+
+    <!-- ═══════════════════════════════════════════════════════ ProfilePage -->
+    <packagedElement xmi:type="uml:Class" xmi:id="bnd_ProfilePage" name="ProfilePage" visibility="public">
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_prof_1"  name="«navbar» Header" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_prof_2"  name="«panel» Информация об аккаунте (имя, фамилия, email, аватар, роль)" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_prof_3"  name="«button» Редактировать профиль" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_prof_4"  name="«form» Форма редактирования (имя, фамилия, загрузка аватара)" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_prof_5"  name="«tabs» Вкладки (Группы / История заданий / Хакатоны / Достижения)" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_prof_6"  name="«list» Записи в учебные группы (название группы, курс, статус)" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_prof_7"  name="«table» История сданных заданий (название, группа, статус, оценка)" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_prof_8"  name="«list» Участие в хакатонах (команда, хакатон, результат)" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_prof_9"  name="«grid» Сетка полученных достижений (значок, название, дата)" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_prof_10" name="«badge» Карточка достижения (тип, название, очки, дата получения)" visibility="public" isUnique="true" isOrdered="false"/>
+    </packagedElement>
+
+    <!-- ═══════════════════════════════════════════════════════ MentorDashboardPage -->
+    <packagedElement xmi:type="uml:Class" xmi:id="bnd_MentorPage" name="MentorDashboardPage" visibility="public">
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_mnt_1"  name="«navbar» Header" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_mnt_2"  name="«tabs» Вкладки (Группы / Материалы / Задания / Словарь / Хакатоны / Форум)" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_mnt_3"  name="«list» [Группы] Список учебных групп ментора" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_mnt_4"  name="«button» [Группы] Создать группу" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_mnt_5"  name="«table» [Группы] Состав группы с рейтингом студентов" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_mnt_6"  name="«button» [Группы] Отчислить студента из группы" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_mnt_7"  name="«list» [Материалы] Список материалов курса" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_mnt_8"  name="«form» [Материалы] Форма загрузки материала (название, тип, файл, публичность)" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_mnt_9"  name="«button» [Материалы] Загрузить / Редактировать / Удалить материал" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_mnt_10" name="«list» [Задания] Список заданий с числом сдач и статусами" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_mnt_11" name="«form» [Задания] Форма создания задания (тип, условие, дедлайн, тест-кейсы)" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_mnt_12" name="«table» [Задания] Список сдач студентов (статус, итоговый балл, feedback)" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_mnt_13" name="«form» [Задания] Форма выставления оценки и feedback" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_mnt_14" name="«button» [Задания] Рассчитать итоговую оценку (mentorScore*0.6 + peerAvg*0.4)" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_mnt_15" name="«stats» [Задания] Сводка peer review (avg, completed, pending)" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_mnt_16" name="«table» [Словарь] Таблица словарных карточек (термин, перевод, уровень, статус)" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_mnt_17" name="«form» [Словарь] Форма добавления/редактирования карточки" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_mnt_18" name="«button» [Словарь] Деактивировать карточку (isActive = false)" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_mnt_19" name="«list» [Хакатоны] Список хакатонов курса" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_mnt_20" name="«form» [Хакатоны] Форма создания хакатона (этапы, задания, критерии оценки)" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_mnt_21" name="«table» [Хакатоны] Список сданных проектов команд" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_mnt_22" name="«form» [Хакатоны] Форма оценивания проекта (балл, feedback)" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_mnt_23" name="«list» [Форум] Список разделов и тем форума" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_mnt_24" name="«button» [Форум] Добавить раздел / Удалить тему (модерация)" visibility="public" isUnique="true" isOrdered="false"/>
+    </packagedElement>
+
+    <!-- ═══════════════════════════════════════════════════════ AdminDashboardPage -->
+    <packagedElement xmi:type="uml:Class" xmi:id="bnd_AdminPage" name="AdminDashboardPage" visibility="public">
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_adm_1"  name="«navbar» Header" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_adm_2"  name="«tabs» Вкладки (Пользователи / Группы / Записи / Задания / Материалы / Словарь / Хакатоны / Форум / Аналитика)" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_adm_3"  name="«table» [Пользователи] Таблица учётных записей (email, имя, роль, статус)" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_adm_4"  name="«select» [Пользователи] Изменение роли пользователя" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_adm_5"  name="«button» [Пользователи] Заблокировать / Разблокировать аккаунт" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_adm_6"  name="«table» [Группы] Все учебные группы платформы" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_adm_7"  name="«button» [Группы] Создать / Редактировать / Удалить группу" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_adm_8"  name="«table» [Записи] Все заявки студентов с фильтром по статусу" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_adm_9"  name="«button» [Записи] Одобрить / Отменить запись студента в группу" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_adm_10" name="«table» [Задания] Все задания платформы с числом сдач" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_adm_11" name="«button» [Задания] Деактивировать / Удалить задание" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_adm_12" name="«table» [Материалы] Все учебные материалы платформы" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_adm_13" name="«button» [Материалы] Удалить / Изменить публичность материала" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_adm_14" name="«table» [Словарь] Все словарные карточки платформы" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_adm_15" name="«button» [Словарь] Деактивировать / Удалить карточку" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_adm_16" name="«table» [Хакатоны] Все хакатоны с текущим статусом" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_adm_17" name="«button» [Хакатоны] Изменить статус хакатона (active / judging / completed)" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_adm_18" name="«list» [Форум] Все разделы, темы и сообщения форума" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_adm_19" name="«button» [Форум] Удалить раздел / тему / сообщение" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_adm_20" name="«chart» [Аналитика] Графики активности (задания по статусам, материалы по типам)" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_adm_21" name="«kpi» [Аналитика] KPI-карточки (студентов, заданий, сдач, хакатонов)" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_adm_22" name="«table» [Аналитика] Рейтинг групп по средней успеваемости" visibility="public" isUnique="true" isOrdered="false"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="a_adm_23" name="«modal» ConfirmationModal (подтверждение удаления / изменения)" visibility="public" isUnique="true" isOrdered="false"/>
+    </packagedElement>
+
+    </packagedElement>
+  </uml:Model>
+
+</xmi:XMI>

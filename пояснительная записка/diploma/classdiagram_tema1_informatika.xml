@@ -1,0 +1,391 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Enterprise Architect — Class Diagram
+  Тема 1: АСОИ «Профориентационная работа по IT-специальностям»
+  Импорт: File > Import/Export > Import Package from XMI File
+-->
+<xmi:XMI xmi:version="2.1"
+         xmlns:uml="http://www.omg.org/spec/UML/20090901"
+         xmlns:xmi="http://www.omg.org/spec/XMI/20090901">
+
+  <xmi:Documentation exporter="Enterprise Architect" exporterVersion="6.5"/>
+
+  <uml:Model xmi:type="uml:Model" xmi:id="MDL_T1_CD" name="Тема 1 — Диаграмма классов">
+    <packagedElement xmi:type="uml:Package" xmi:id="PKG_T1" name="Domain_T1">
+
+      <!-- Primitive Types -->
+      <packagedElement xmi:type="uml:PrimitiveType" xmi:id="PT_INT"   name="INTEGER"/>
+      <packagedElement xmi:type="uml:PrimitiveType" xmi:id="PT_STR"   name="STRING"/>
+      <packagedElement xmi:type="uml:PrimitiveType" xmi:id="PT_TEXT"  name="TEXT"/>
+      <packagedElement xmi:type="uml:PrimitiveType" xmi:id="PT_BOOL"  name="BOOLEAN"/>
+      <packagedElement xmi:type="uml:PrimitiveType" xmi:id="PT_FLOAT" name="FLOAT"/>
+      <packagedElement xmi:type="uml:PrimitiveType" xmi:id="PT_DATE"  name="DATE"/>
+      <packagedElement xmi:type="uml:PrimitiveType" xmi:id="PT_JSON"  name="JSON"/>
+
+      <!-- ══════ User ══════ -->
+      <packagedElement xmi:type="uml:Class" xmi:id="C_User" name="User">
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="A_U_id"        name="id"           type="PT_INT"  visibility="public"/>
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="A_U_email"     name="email"        type="PT_STR"  visibility="public"/>
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="A_U_pwdHash"   name="passwordHash" type="PT_STR"  visibility="public"/>
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="A_U_firstName" name="firstName"    type="PT_STR"  visibility="public"/>
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="A_U_lastName"  name="lastName"     type="PT_STR"  visibility="public"/>
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="A_U_avatar"    name="avatar"       type="PT_STR"  visibility="public"/>
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="A_U_isActive"  name="isActive"     type="PT_BOOL" visibility="public"/>
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="A_U_createdAt" name="createdAt"    type="PT_DATE" visibility="public"/>
+        <ownedOperation xmi:type="uml:Operation" xmi:id="O_U_login"    name="login"    visibility="public">
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_U_lg_email" name="email"    type="PT_STR" direction="in"/>
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_U_lg_pwd"   name="password" type="PT_STR" direction="in"/>
+        </ownedOperation>
+        <ownedOperation xmi:type="uml:Operation" xmi:id="O_U_register" name="register" visibility="public">
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_U_rg_email"  name="email"     type="PT_STR" direction="in"/>
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_U_rg_pwd"    name="password"  type="PT_STR" direction="in"/>
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_U_rg_fname"  name="firstName" type="PT_STR" direction="in"/>
+        </ownedOperation>
+        <ownedOperation xmi:type="uml:Operation" xmi:id="O_U_update"   name="update"   visibility="public">
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_U_up_id"   name="id"   type="PT_INT" direction="in"/>
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_U_up_data" name="data" type="PT_STR" direction="in"/>
+        </ownedOperation>
+        <ownedOperation xmi:type="uml:Operation" xmi:id="O_U_delete"   name="delete"   visibility="public">
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_U_del_id" name="id" type="PT_INT" direction="in"/>
+        </ownedOperation>
+        <ownedOperation xmi:type="uml:Operation" xmi:id="O_U_block"    name="block"    visibility="public">
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_U_blk_id" name="id" type="PT_INT" direction="in"/>
+        </ownedOperation>
+      </packagedElement>
+
+      <!-- ══════ UserRole ══════ -->
+      <packagedElement xmi:type="uml:Class" xmi:id="C_UserRole" name="UserRole">
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="A_UR_id"     name="id"     type="PT_INT" visibility="public"/>
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="A_UR_userId" name="userId" type="PT_INT" visibility="public"/>
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="A_UR_role"   name="role"   type="PT_STR" visibility="public"/>
+        <ownedOperation xmi:type="uml:Operation" xmi:id="O_UR_assign" name="assign" visibility="public">
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_UR_as_userId" name="userId" type="PT_INT" direction="in"/>
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_UR_as_role"   name="role"   type="PT_STR" direction="in"/>
+        </ownedOperation>
+        <ownedOperation xmi:type="uml:Operation" xmi:id="O_UR_remove" name="remove" visibility="public">
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_UR_rm_id" name="id" type="PT_INT" direction="in"/>
+        </ownedOperation>
+      </packagedElement>
+
+      <!-- ══════ Course ══════ -->
+      <packagedElement xmi:type="uml:Class" xmi:id="C_Course" name="Course">
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="A_CO_id"          name="id"          type="PT_INT"  visibility="public"/>
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="A_CO_name"        name="name"        type="PT_STR"  visibility="public"/>
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="A_CO_type"        name="type"        type="PT_STR"  visibility="public"/>
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="A_CO_description" name="description" type="PT_TEXT" visibility="public"/>
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="A_CO_duration"    name="duration"    type="PT_INT"  visibility="public"/>
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="A_CO_imageUrl"    name="imageUrl"    type="PT_STR"  visibility="public"/>
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="A_CO_isActive"    name="isActive"    type="PT_BOOL" visibility="public"/>
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="A_CO_createdAt"   name="createdAt"   type="PT_DATE" visibility="public"/>
+        <ownedOperation xmi:type="uml:Operation" xmi:id="O_CO_findAll" name="findAll" visibility="public"/>
+        <ownedOperation xmi:type="uml:Operation" xmi:id="O_CO_create"  name="create"  visibility="public">
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_CO_cr_data" name="data" type="PT_STR" direction="in"/>
+        </ownedOperation>
+        <ownedOperation xmi:type="uml:Operation" xmi:id="O_CO_update"  name="update"  visibility="public">
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_CO_up_id"   name="id"   type="PT_INT" direction="in"/>
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_CO_up_data" name="data" type="PT_STR" direction="in"/>
+        </ownedOperation>
+      </packagedElement>
+
+      <!-- ══════ CareerTest ══════ -->
+      <packagedElement xmi:type="uml:Class" xmi:id="C_CareerTest" name="CareerTest">
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="A_CT_id"        name="id"        type="PT_INT"  visibility="public"/>
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="A_CT_title"     name="title"     type="PT_STR"  visibility="public"/>
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="A_CT_category"  name="category"  type="PT_STR"  visibility="public"/>
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="A_CT_questions" name="questions" type="PT_JSON" visibility="public"/>
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="A_CT_isActive"  name="isActive"  type="PT_BOOL" visibility="public"/>
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="A_CT_createdAt" name="createdAt" type="PT_DATE" visibility="public"/>
+        <ownedOperation xmi:type="uml:Operation" xmi:id="O_CT_findAll"   name="findAll"   visibility="public"/>
+        <ownedOperation xmi:type="uml:Operation" xmi:id="O_CT_getConfig" name="getConfig" visibility="public">
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_CT_gc_id" name="id" type="PT_INT" direction="in"/>
+        </ownedOperation>
+        <ownedOperation xmi:type="uml:Operation" xmi:id="O_CT_create"   name="create"   visibility="public">
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_CT_cr_data" name="data" type="PT_STR" direction="in"/>
+        </ownedOperation>
+        <ownedOperation xmi:type="uml:Operation" xmi:id="O_CT_update"   name="update"   visibility="public">
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_CT_up_id"   name="id"   type="PT_INT" direction="in"/>
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_CT_up_data" name="data" type="PT_STR" direction="in"/>
+        </ownedOperation>
+      </packagedElement>
+
+      <!-- ══════ ProfessionalOrientation ══════ -->
+      <packagedElement xmi:type="uml:Class" xmi:id="C_ProfOrient" name="ProfessionalOrientation">
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="A_PO_id"      name="id"                   type="PT_INT"   visibility="public"/>
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="A_PO_userId"  name="userId"               type="PT_INT"   visibility="public"/>
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="A_PO_answers" name="answers"              type="PT_JSON"  visibility="public"/>
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="A_PO_recProf" name="recommendedProfession" type="PT_STR"  visibility="public"/>
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="A_PO_score"   name="score"                type="PT_FLOAT" visibility="public"/>
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="A_PO_compAt"  name="completedAt"          type="PT_DATE"  visibility="public"/>
+        <ownedOperation xmi:type="uml:Operation" xmi:id="O_PO_submit"    name="submit"    visibility="public">
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_PO_sub_userId"  name="userId"  type="PT_INT"  direction="in"/>
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_PO_sub_answers" name="answers" type="PT_JSON" direction="in"/>
+        </ownedOperation>
+        <ownedOperation xmi:type="uml:Operation" xmi:id="O_PO_analyse"   name="analyse"   visibility="public">
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_PO_an_answers" name="answers" type="PT_JSON" direction="in"/>
+        </ownedOperation>
+        <ownedOperation xmi:type="uml:Operation" xmi:id="O_PO_getHistory" name="getHistory" visibility="public">
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_PO_gh_userId" name="userId" type="PT_INT" direction="in"/>
+        </ownedOperation>
+        <ownedOperation xmi:type="uml:Operation" xmi:id="O_PO_generateRoadmap" name="generateRoadmap" visibility="public">
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_PO_gr_professionId" name="professionId" type="PT_INT" direction="in"/>
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_PO_gr_userId"       name="userId"       type="PT_INT" direction="in"/>
+        </ownedOperation>
+      </packagedElement>
+
+      <!-- ══════ Olympiad ══════ -->
+      <packagedElement xmi:type="uml:Class" xmi:id="C_Olympiad" name="Olympiad">
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="A_OL_id"          name="id"          type="PT_INT"  visibility="public"/>
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="A_OL_title"       name="title"       type="PT_STR"  visibility="public"/>
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="A_OL_description" name="description" type="PT_TEXT" visibility="public"/>
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="A_OL_startDate"   name="startDate"   type="PT_DATE" visibility="public"/>
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="A_OL_endDate"     name="endDate"     type="PT_DATE" visibility="public"/>
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="A_OL_createdBy"   name="createdBy"   type="PT_INT"  visibility="public"/>
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="A_OL_isActive"    name="isActive"    type="PT_BOOL" visibility="public"/>
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="A_OL_createdAt"   name="createdAt"   type="PT_DATE" visibility="public"/>
+        <ownedOperation xmi:type="uml:Operation" xmi:id="O_OL_findAll" name="findAll" visibility="public"/>
+        <ownedOperation xmi:type="uml:Operation" xmi:id="O_OL_findOne" name="findOne" visibility="public">
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_OL_fo_id" name="id" type="PT_INT" direction="in"/>
+        </ownedOperation>
+        <ownedOperation xmi:type="uml:Operation" xmi:id="O_OL_create"  name="create"  visibility="public">
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_OL_cr_data" name="data" type="PT_STR" direction="in"/>
+        </ownedOperation>
+        <ownedOperation xmi:type="uml:Operation" xmi:id="O_OL_update"  name="update"  visibility="public">
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_OL_up_id"   name="id"   type="PT_INT" direction="in"/>
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_OL_up_data" name="data" type="PT_STR" direction="in"/>
+        </ownedOperation>
+        <ownedOperation xmi:type="uml:Operation" xmi:id="O_OL_delete"  name="delete"  visibility="public">
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_OL_del_id" name="id" type="PT_INT" direction="in"/>
+        </ownedOperation>
+        <ownedOperation xmi:type="uml:Operation" xmi:id="O_OL_getLeaderboard" name="getLeaderboard" visibility="public">
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_OL_lb_id" name="olympiadId" type="PT_INT" direction="in"/>
+        </ownedOperation>
+      </packagedElement>
+
+      <!-- ══════ OlympiadProblem ══════ -->
+      <packagedElement xmi:type="uml:Class" xmi:id="C_OlympiadProblem" name="OlympiadProblem">
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="A_OP_id"          name="id"          type="PT_INT"  visibility="public"/>
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="A_OP_olympiadId"  name="olympiadId"  type="PT_INT"  visibility="public"/>
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="A_OP_title"       name="title"       type="PT_STR"  visibility="public"/>
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="A_OP_description" name="description" type="PT_TEXT" visibility="public"/>
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="A_OP_maxScore"    name="maxScore"    type="PT_INT"  visibility="public"/>
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="A_OP_testCases"   name="testCases"   type="PT_JSON" visibility="public"/>
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="A_OP_createdAt"   name="createdAt"   type="PT_DATE" visibility="public"/>
+        <ownedOperation xmi:type="uml:Operation" xmi:id="O_OP_findByOlympiad" name="findByOlympiad" visibility="public">
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_OP_fbo_id" name="olympiadId" type="PT_INT" direction="in"/>
+        </ownedOperation>
+        <ownedOperation xmi:type="uml:Operation" xmi:id="O_OP_create" name="create" visibility="public">
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_OP_cr_data" name="data" type="PT_STR" direction="in"/>
+        </ownedOperation>
+        <ownedOperation xmi:type="uml:Operation" xmi:id="O_OP_update" name="update" visibility="public">
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_OP_up_id"   name="id"   type="PT_INT" direction="in"/>
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_OP_up_data" name="data" type="PT_STR" direction="in"/>
+        </ownedOperation>
+        <ownedOperation xmi:type="uml:Operation" xmi:id="O_OP_delete" name="delete" visibility="public">
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_OP_del_id" name="id" type="PT_INT" direction="in"/>
+        </ownedOperation>
+      </packagedElement>
+
+      <!-- ══════ OlympiadSubmission ══════ -->
+      <packagedElement xmi:type="uml:Class" xmi:id="C_OlympiadSubmission" name="OlympiadSubmission">
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="A_OS_id"          name="id"          type="PT_INT"  visibility="public"/>
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="A_OS_olympiadId"  name="olympiadId"  type="PT_INT"  visibility="public"/>
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="A_OS_problemId"   name="problemId"   type="PT_INT"  visibility="public"/>
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="A_OS_userId"      name="userId"      type="PT_INT"  visibility="public"/>
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="A_OS_code"        name="code"        type="PT_TEXT" visibility="public"/>
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="A_OS_language"    name="language"    type="PT_STR"  visibility="public"/>
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="A_OS_status"      name="status"      type="PT_STR"  visibility="public"/>
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="A_OS_score"       name="score"       type="PT_INT"  visibility="public"/>
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="A_OS_submittedAt" name="submittedAt" type="PT_DATE" visibility="public"/>
+        <ownedOperation xmi:type="uml:Operation" xmi:id="O_OS_submit"  name="submit"  visibility="public">
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_OS_sub_problemId" name="problemId" type="PT_INT"  direction="in"/>
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_OS_sub_userId"    name="userId"    type="PT_INT"  direction="in"/>
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_OS_sub_code"      name="code"      type="PT_TEXT" direction="in"/>
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_OS_sub_language"  name="language"  type="PT_STR"  direction="in"/>
+        </ownedOperation>
+        <ownedOperation xmi:type="uml:Operation" xmi:id="O_OS_evaluate" name="evaluate" visibility="public">
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_OS_ev_id" name="submissionId" type="PT_INT" direction="in"/>
+        </ownedOperation>
+        <ownedOperation xmi:type="uml:Operation" xmi:id="O_OS_getByUser" name="getByUser" visibility="public">
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_OS_gbu_userId"    name="userId"    type="PT_INT" direction="in"/>
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_OS_gbu_problemId" name="problemId" type="PT_INT" direction="in"/>
+        </ownedOperation>
+      </packagedElement>
+
+      <!-- ══════ Elective ══════ -->
+      <packagedElement xmi:type="uml:Class" xmi:id="C_Elective" name="Elective">
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="A_EL_id"          name="id"          type="PT_INT"  visibility="public"/>
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="A_EL_title"       name="title"       type="PT_STR"  visibility="public"/>
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="A_EL_description" name="description" type="PT_TEXT" visibility="public"/>
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="A_EL_maxStudents" name="maxStudents" type="PT_INT"  visibility="public"/>
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="A_EL_startDate"   name="startDate"   type="PT_DATE" visibility="public"/>
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="A_EL_courseType"  name="courseType"  type="PT_STR"  visibility="public"/>
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="A_EL_isActive"    name="isActive"    type="PT_BOOL" visibility="public"/>
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="A_EL_createdBy"   name="createdBy"   type="PT_INT"  visibility="public"/>
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="A_EL_createdAt"   name="createdAt"   type="PT_DATE" visibility="public"/>
+        <ownedOperation xmi:type="uml:Operation" xmi:id="O_EL_findAll"  name="findAll"  visibility="public"/>
+        <ownedOperation xmi:type="uml:Operation" xmi:id="O_EL_findOne"  name="findOne"  visibility="public">
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_EL_fo_id" name="id" type="PT_INT" direction="in"/>
+        </ownedOperation>
+        <ownedOperation xmi:type="uml:Operation" xmi:id="O_EL_create"   name="create"   visibility="public">
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_EL_cr_data" name="data" type="PT_STR" direction="in"/>
+        </ownedOperation>
+        <ownedOperation xmi:type="uml:Operation" xmi:id="O_EL_update"   name="update"   visibility="public">
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_EL_up_id"   name="id"   type="PT_INT" direction="in"/>
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_EL_up_data" name="data" type="PT_STR" direction="in"/>
+        </ownedOperation>
+        <ownedOperation xmi:type="uml:Operation" xmi:id="O_EL_delete"   name="delete"   visibility="public">
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_EL_del_id" name="id" type="PT_INT" direction="in"/>
+        </ownedOperation>
+        <ownedOperation xmi:type="uml:Operation" xmi:id="O_EL_getStudents" name="getStudents" visibility="public">
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_EL_gs_id" name="electiveId" type="PT_INT" direction="in"/>
+        </ownedOperation>
+      </packagedElement>
+
+      <!-- ══════ ElectiveEnrollment ══════ -->
+      <packagedElement xmi:type="uml:Class" xmi:id="C_ElectiveEnrollment" name="ElectiveEnrollment">
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="A_EE_id"         name="id"         type="PT_INT"  visibility="public"/>
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="A_EE_userId"     name="userId"     type="PT_INT"  visibility="public"/>
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="A_EE_electiveId" name="electiveId" type="PT_INT"  visibility="public"/>
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="A_EE_status"     name="status"     type="PT_STR"  visibility="public"/>
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="A_EE_enrolledAt" name="enrolledAt" type="PT_DATE" visibility="public"/>
+        <ownedOperation xmi:type="uml:Operation" xmi:id="O_EE_enroll"   name="enroll"   visibility="public">
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_EE_en_userId"     name="userId"     type="PT_INT" direction="in"/>
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_EE_en_electiveId" name="electiveId" type="PT_INT" direction="in"/>
+        </ownedOperation>
+        <ownedOperation xmi:type="uml:Operation" xmi:id="O_EE_cancel"   name="cancel"   visibility="public">
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_EE_can_id" name="id" type="PT_INT" direction="in"/>
+        </ownedOperation>
+        <ownedOperation xmi:type="uml:Operation" xmi:id="O_EE_findByUser" name="findByUser" visibility="public">
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_EE_fbu_userId" name="userId" type="PT_INT" direction="in"/>
+        </ownedOperation>
+      </packagedElement>
+
+      <!-- ══════ ElectiveScheduleItem ══════ -->
+      <packagedElement xmi:type="uml:Class" xmi:id="C_ElectiveScheduleItem" name="ElectiveScheduleItem">
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="A_ESI_id"          name="id"          type="PT_INT"  visibility="public"/>
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="A_ESI_electiveId"  name="electiveId"  type="PT_INT"  visibility="public"/>
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="A_ESI_topic"       name="topic"       type="PT_STR"  visibility="public"/>
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="A_ESI_scheduledAt" name="scheduledAt" type="PT_DATE" visibility="public"/>
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="A_ESI_room"        name="room"        type="PT_STR"  visibility="public"/>
+        <ownedOperation xmi:type="uml:Operation" xmi:id="O_ESI_findByElective" name="findByElective" visibility="public">
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_ESI_fbe_id" name="electiveId" type="PT_INT" direction="in"/>
+        </ownedOperation>
+        <ownedOperation xmi:type="uml:Operation" xmi:id="O_ESI_create" name="create" visibility="public">
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_ESI_cr_data" name="data" type="PT_STR" direction="in"/>
+        </ownedOperation>
+        <ownedOperation xmi:type="uml:Operation" xmi:id="O_ESI_update" name="update" visibility="public">
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_ESI_up_id"   name="id"   type="PT_INT" direction="in"/>
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_ESI_up_data" name="data" type="PT_STR" direction="in"/>
+        </ownedOperation>
+        <ownedOperation xmi:type="uml:Operation" xmi:id="O_ESI_delete" name="delete" visibility="public">
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_ESI_del_id" name="id" type="PT_INT" direction="in"/>
+        </ownedOperation>
+      </packagedElement>
+
+      <!-- ══════ SiteVisit ══════ -->
+      <packagedElement xmi:type="uml:Class" xmi:id="C_SiteVisit" name="SiteVisit">
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="A_SV_id"          name="id"          type="PT_INT"  visibility="public"/>
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="A_SV_userId"      name="userId"      type="PT_INT"  visibility="public"/>
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="A_SV_path"        name="path"        type="PT_STR"  visibility="public"/>
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="A_SV_displayName" name="displayName" type="PT_STR"  visibility="public"/>
+        <ownedAttribute xmi:type="uml:Property" isUnique="true" xmi:id="A_SV_visitedAt"   name="visitedAt"   type="PT_DATE" visibility="public"/>
+        <ownedOperation xmi:type="uml:Operation" xmi:id="O_SV_track"  name="track"  visibility="public">
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_SV_tr_path"   name="path"   type="PT_STR" direction="in"/>
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_SV_tr_userId" name="userId" type="PT_INT" direction="in"/>
+        </ownedOperation>
+        <ownedOperation xmi:type="uml:Operation" xmi:id="O_SV_getStats" name="getStats" visibility="public"/>
+      </packagedElement>
+
+      <!-- ══════ АССОЦИАЦИИ ══════ -->
+
+      <packagedElement xmi:type="uml:Association" xmi:id="ASSOC_U_UR" name="">
+        <memberEnd xmi:idref="A_UR_userId"/>
+        <ownedEnd xmi:type="uml:Property" xmi:id="AE_U_UR" name="user" type="C_User" association="ASSOC_U_UR">
+          <lowerValue xmi:type="uml:LiteralInteger" xmi:id="LV_UUR" value="1"/>
+          <upperValue xmi:type="uml:LiteralInteger" xmi:id="UV_UUR" value="1"/>
+        </ownedEnd>
+      </packagedElement>
+
+      <packagedElement xmi:type="uml:Association" xmi:id="ASSOC_U_PO" name="">
+        <memberEnd xmi:idref="A_PO_userId"/>
+        <ownedEnd xmi:type="uml:Property" xmi:id="AE_U_PO" name="user" type="C_User" association="ASSOC_U_PO">
+          <lowerValue xmi:type="uml:LiteralInteger" xmi:id="LV_UPO" value="1"/>
+          <upperValue xmi:type="uml:LiteralInteger" xmi:id="UV_UPO" value="1"/>
+        </ownedEnd>
+      </packagedElement>
+
+      <packagedElement xmi:type="uml:Association" xmi:id="ASSOC_U_OL" name="">
+        <memberEnd xmi:idref="A_OL_createdBy"/>
+        <ownedEnd xmi:type="uml:Property" xmi:id="AE_U_OL" name="user" type="C_User" association="ASSOC_U_OL">
+          <lowerValue xmi:type="uml:LiteralInteger" xmi:id="LV_UOL" value="1"/>
+          <upperValue xmi:type="uml:LiteralInteger" xmi:id="UV_UOL" value="1"/>
+        </ownedEnd>
+      </packagedElement>
+
+      <packagedElement xmi:type="uml:Association" xmi:id="ASSOC_OL_OP" name="">
+        <memberEnd xmi:idref="A_OP_olympiadId"/>
+        <ownedEnd xmi:type="uml:Property" xmi:id="AE_OL_OP" name="olympiad" type="C_Olympiad" association="ASSOC_OL_OP">
+          <lowerValue xmi:type="uml:LiteralInteger" xmi:id="LV_OL_OP" value="1"/>
+          <upperValue xmi:type="uml:LiteralInteger" xmi:id="UV_OL_OP" value="1"/>
+        </ownedEnd>
+      </packagedElement>
+
+      <packagedElement xmi:type="uml:Association" xmi:id="ASSOC_OP_OS" name="">
+        <memberEnd xmi:idref="A_OS_problemId"/>
+        <ownedEnd xmi:type="uml:Property" xmi:id="AE_OP_OS" name="problem" type="C_OlympiadProblem" association="ASSOC_OP_OS">
+          <lowerValue xmi:type="uml:LiteralInteger" xmi:id="LV_OP_OS" value="1"/>
+          <upperValue xmi:type="uml:LiteralInteger" xmi:id="UV_OP_OS" value="1"/>
+        </ownedEnd>
+      </packagedElement>
+
+      <packagedElement xmi:type="uml:Association" xmi:id="ASSOC_OL_OS" name="">
+        <memberEnd xmi:idref="A_OS_olympiadId"/>
+        <ownedEnd xmi:type="uml:Property" xmi:id="AE_OL_OS" name="olympiad" type="C_Olympiad" association="ASSOC_OL_OS">
+          <lowerValue xmi:type="uml:LiteralInteger" xmi:id="LV_OL_OS" value="1"/>
+          <upperValue xmi:type="uml:LiteralInteger" xmi:id="UV_OL_OS" value="1"/>
+        </ownedEnd>
+      </packagedElement>
+
+      <packagedElement xmi:type="uml:Association" xmi:id="ASSOC_U_OS" name="">
+        <memberEnd xmi:idref="A_OS_userId"/>
+        <ownedEnd xmi:type="uml:Property" xmi:id="AE_U_OS" name="user" type="C_User" association="ASSOC_U_OS">
+          <lowerValue xmi:type="uml:LiteralInteger" xmi:id="LV_U_OS" value="1"/>
+          <upperValue xmi:type="uml:LiteralInteger" xmi:id="UV_U_OS" value="1"/>
+        </ownedEnd>
+      </packagedElement>
+
+      <packagedElement xmi:type="uml:Association" xmi:id="ASSOC_U_EL" name="">
+        <memberEnd xmi:idref="A_EL_createdBy"/>
+        <ownedEnd xmi:type="uml:Property" xmi:id="AE_U_EL" name="user" type="C_User" association="ASSOC_U_EL">
+          <lowerValue xmi:type="uml:LiteralInteger" xmi:id="LV_U_EL" value="1"/>
+          <upperValue xmi:type="uml:LiteralInteger" xmi:id="UV_U_EL" value="1"/>
+        </ownedEnd>
+      </packagedElement>
+
+      <packagedElement xmi:type="uml:Association" xmi:id="ASSOC_U_EE" name="">
+        <memberEnd xmi:idref="A_EE_userId"/>
+        <ownedEnd xmi:type="uml:Property" xmi:id="AE_U_EE" name="user" type="C_User" association="ASSOC_U_EE">
+          <lowerValue xmi:type="uml:LiteralInteger" xmi:id="LV_U_EE" value="1"/>
+          <upperValue xmi:type="uml:LiteralInteger" xmi:id="UV_U_EE" value="1"/>
+        </ownedEnd>
+      </packagedElement>
+
+      <packagedElement xmi:type="uml:Association" xmi:id="ASSOC_EL_EE" name="">
+        <memberEnd xmi:idref="A_EE_electiveId"/>
+        <ownedEnd xmi:type="uml:Property" xmi:id="AE_EL_EE" name="elective" type="C_Elective" association="ASSOC_EL_EE">
+          <lowerValue xmi:type="uml:LiteralInteger" xmi:id="LV_EL_EE" value="1"/>
+          <upperValue xmi:type="uml:LiteralInteger" xmi:id="UV_EL_EE" value="1"/>
+        </ownedEnd>
+      </packagedElement>
+
+      <packagedElement xmi:type="uml:Association" xmi:id="ASSOC_EL_ESI" name="">
+        <memberEnd xmi:idref="A_ESI_electiveId"/>
+        <ownedEnd xmi:type="uml:Property" xmi:id="AE_EL_ESI" name="elective" type="C_Elective" association="ASSOC_EL_ESI">
+          <lowerValue xmi:type="uml:LiteralInteger" xmi:id="LV_EL_ESI" value="1"/>
+          <upperValue xmi:type="uml:LiteralInteger" xmi:id="UV_EL_ESI" value="1"/>
+        </ownedEnd>
+      </packagedElement>
+
+    </packagedElement>
+  </uml:Model>
+</xmi:XMI>
