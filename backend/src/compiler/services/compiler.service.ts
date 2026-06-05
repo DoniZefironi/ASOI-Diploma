@@ -1,161 +1,147 @@
 // backend/src/compiler/services/compiler.service.ts
 import { Injectable, Logger, BadRequestException } from '@nestjs/common';
 import Docker from 'dockerode';
-import * as fs from 'fs';
-import * as path from 'path';
 import { ExecuteCodeDto } from '../dto/execute-code.dto';
+
+const IMAGE_MAP: Record<string, string> = {
+  js:     'sandbox-node:latest',
+  python: 'sandbox-python:latest',
+  cpp:    'sandbox-cpp:latest',
+  java:   'sandbox-java:latest',
+};
+
+const TIMEOUT_MS = 10_000;
 
 @Injectable()
 export class CompilerService {
   private readonly logger = new Logger(CompilerService.name);
-  private docker = new Docker();
+  private readonly docker = new Docker();
 
   async executeCode(dto: ExecuteCodeDto): Promise<{ output: string; error: string; status: string }> {
-    const { code, language, stdin, assignmentId } = dto;
+    const { code, language, stdin } = dto;
 
-    console.log('=== executeCode called ===');
-    console.log('DTO:', { code, language, stdin, assignmentId });
-
-    const imageName = this.getImageNameForLanguage(language);
+    const imageName = IMAGE_MAP[language];
     if (!imageName) {
       throw new BadRequestException(`Язык ${language} не поддерживается`);
     }
 
-    console.log('Using image:', imageName);
-
-    const tempDir = path.join(__dirname, '..', '..', 'temp', Date.now().toString());
-    fs.mkdirSync(tempDir, { recursive: true });
-
-    try {
-      this.writeCodeToFile(code, language, tempDir);
-
-      const result = await this.runInDockerContainer(imageName, language, tempDir, stdin);
-
-      return {
-        output: result.stdout,
-        error: result.stderr,
-        status: result.stderr ? 'error' : 'success',
-      };
-    } catch (error) {
-      console.error('Error in executeCode:', error.message);
-      return {
-        output: '',
-        error: error.message || 'Неизвестная ошибка',
-        status: 'error',
-      };
-    } finally {
-      fs.rmSync(tempDir, { recursive: true, force: true });
-    }
-  }
-
-  private getImageNameForLanguage(language: string): string | null {
-    const images: { [key: string]: string } = {
-      js: 'sandbox-node:latest',
-      python: 'sandbox-python:latest',
-      cpp: 'sandbox-cpp:latest',
-      java: 'sandbox-java:latest',
-    };
-
-    return images[language] || null;
-  }
-
-  private writeCodeToFile(code: string, language: string, dir: string): void {
-    console.log('=== writeCodeToFile called ===');
-    const fileNameMap: { [key: string]: string } = {
-      js: 'main.js',
-      python: 'main.py',
-      cpp: 'main.cpp',
-      java: 'Main.java',
-    };
-
-    const fileName = fileNameMap[language];
-    if (!fileName) {
-      throw new Error(`Язык ${language} не поддерживается`);
-    }
-
-    const filePath = path.join(dir, fileName);
-    console.log('Writing to file:', filePath);
-    console.log('Code content:\n', code);
-
-    fs.writeFileSync(filePath, code);
-  }
-
-  private async runInDockerContainer(
-    imageName: string,
-    language: string,
-    tempDir: string,
-    stdin?: string,
-  ): Promise<{ stdout: string; stderr: string }> {
-    console.log('=== runInDockerContainer called ===');
-    console.log('Image:', imageName);
-    console.log('Language:', language);
-    console.log('TempDir:', tempDir);
-    console.log('Stdin:', stdin);
-
     try {
       await this.docker.getImage(imageName).inspect();
-    } catch (err) {
+    } catch {
       throw new BadRequestException(`Образ ${imageName} не найден. Убедитесь, что он собран.`);
     }
 
-    let cmd: string[] = [];
-    switch (language) {
-      case 'js':
-        cmd = ['node', 'main.js'];
-        break;
-      case 'python':
-        cmd = ['python', 'main.py'];
-        break;
-      case 'cpp':
-        cmd = ['/bin/sh', '-c', 'g++ main.cpp -o main && ./main'];
-        break;
-      case 'java':
-        cmd = ['/bin/sh', '-c', 'javac Main.java && java Main'];
-        break;
-      default:
-        throw new Error(`Команда для языка ${language} не определена`);
+    try {
+      return await this.run(imageName, language, code, stdin);
+    } catch (err: any) {
+      this.logger.error('executeCode error', err?.message);
+      return { output: '', error: err?.message ?? 'Неизвестная ошибка', status: 'error' };
     }
+  }
+
+  // Кодируем код в base64 и встраиваем в команду контейнера.
+  // Это позволяет избежать bind-mount temp-файлов через Docker socket.
+  private buildCmd(language: string, code: string): string[] {
+    const b64 = Buffer.from(code).toString('base64');
+    switch (language) {
+      case 'python':
+        return ['sh', '-c', `echo '${b64}' | base64 -d > /app/main.py && python /app/main.py`];
+      case 'js':
+        return ['sh', '-c', `echo '${b64}' | base64 -d > /app/main.js && node /app/main.js`];
+      case 'cpp':
+        return ['sh', '-c', `echo '${b64}' | base64 -d > /app/main.cpp && g++ /app/main.cpp -o /app/main && /app/main`];
+      case 'java':
+        return ['sh', '-c', `echo '${b64}' | base64 -d > /app/Main.java && javac /app/Main.java && java -cp /app Main`];
+      default:
+        throw new BadRequestException(`Команда для языка ${language} не определена`);
+    }
+  }
+
+  private async run(
+    imageName: string,
+    language: string,
+    code: string,
+    stdin?: string,
+  ): Promise<{ output: string; error: string; status: string }> {
+    const cmd      = this.buildCmd(language, code);
+    const hasStdin = !!stdin;
 
     const container = await this.docker.createContainer({
       Image: imageName,
       Cmd: cmd,
-      HostConfig: {
-        Binds: [`${tempDir}:/app`],
-        Memory: 100 * 1024 * 1024, 
-        NanoCpus: 500000000, 
-        NetworkMode: 'none', 
-        PidsLimit: 100, 
-      },
       WorkingDir: '/app',
-      AttachStdin: !!stdin,
+      HostConfig: {
+        Memory:      100 * 1024 * 1024,
+        NanoCpus:    500_000_000,
+        NetworkMode: 'none',
+        PidsLimit:   100,
+        // Без Binds — файл передаётся через base64 в команде
+      },
+      AttachStdin:  hasStdin,
+      OpenStdin:    hasStdin,
+      StdinOnce:    hasStdin,
       AttachStdout: true,
       AttachStderr: true,
       Tty: false,
     });
 
-    await container.start();
+    let timedOut = false;
 
-    if (stdin) {
-      const stream = await container.attach({ stream: true, stdin: true, stdout: true, stderr: true });
-      stream.write(stdin);
-      stream.end();
+    try {
+      await container.start();
+
+      if (hasStdin) {
+        const s = await container.attach({ stream: true, stdin: true, hijack: true });
+        s.write(stdin + '\n');
+        s.end();
+      }
+
+      const killTimer = setTimeout(async () => {
+        timedOut = true;
+        try { await container.kill(); } catch {}
+      }, TIMEOUT_MS);
+
+      const waitResult = await container.wait();
+      clearTimeout(killTimer);
+
+      if (timedOut) {
+        return {
+          output: '',
+          error:  'time_limit_exceeded: превышен лимит времени выполнения (10 сек)',
+          status: 'error',
+        };
+      }
+
+      const logBuf = await container.logs({ stdout: true, stderr: true, follow: false }) as Buffer;
+      const { stdout, stderr } = this.demux(logBuf);
+
+      return {
+        output: stdout.trim(),
+        error:  stderr.trim(),
+        status: waitResult.StatusCode === 0 && !stderr.trim() ? 'success' : 'error',
+      };
+    } finally {
+      try { await container.remove({ force: true }); } catch {}
+    }
+  }
+
+  // Разделяет мультиплексированный вывод Docker (8-байтные заголовки)
+  private demux(buf: Buffer): { stdout: string; stderr: string } {
+    let out = '';
+    let err = '';
+    let i   = 0;
+
+    while (i + 8 <= buf.length) {
+      const type = buf[i];
+      const size = buf.readUInt32BE(i + 4);
+      i += 8;
+      if (size === 0 || i + size > buf.length) break;
+      const chunk = buf.slice(i, i + size).toString('utf8');
+      if      (type === 1) out += chunk;
+      else if (type === 2) err += chunk;
+      i += size;
     }
 
-    const waitResult = await container.wait();
-
-    const logs = await container.logs({
-      stdout: true,
-      stderr: true,
-      follow: false,
-    });
-
-    const logString = logs.toString();
-
-    const stdout = logString;
-    const stderr = '';
-
-    await container.remove();
-
-    return { stdout, stderr };
+    return { stdout: out, stderr: err };
   }
 }

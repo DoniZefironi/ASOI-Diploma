@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Enterprise Architect — Deployment Diagram
+  Тема 1: АСОИ «Профориентационная работа по IT-специальностям»
+  Импорт: File > Import/Export > Import Package from XMI File
+  Затем: Create Diagram > Deployment Diagram
+-->
+<xmi:XMI xmi:version="2.1"
+         xmlns:uml="http://www.omg.org/spec/UML/20090901"
+         xmlns:xmi="http://www.omg.org/spec/XMI/20090901">
+
+  <xmi:Documentation exporter="Enterprise Architect" exporterVersion="6.5"/>
+
+  <uml:Model xmi:type="uml:Model" xmi:id="MDL_T1_DEP"
+             name="Тема 1 — Диаграмма развёртывания">
+    <packagedElement xmi:type="uml:Package" xmi:id="PKG_T1_DEP" name="Deployment_T1">
+
+      <!-- ══════════════════════════════
+           «device» Браузер пользователя
+      ══════════════════════════════ -->
+      <packagedElement xmi:type="uml:Node" xmi:id="N_BROWSER"
+                       name=":Браузер пользователя" visibility="public">
+        <nestedNode xmi:type="uml:ExecutionEnvironment" xmi:id="N_BROWSER_ENV"
+                    name=":Веб-браузер (Chrome / Firefox / Edge)">
+          <nestedClassifier xmi:type="uml:Artifact" xmi:id="A_SPA"
+                            name=":Next.js SPA (React 19)"/>
+          <nestedClassifier xmi:type="uml:Artifact" xmi:id="A_INFERENCE"
+                            name=":inferenceEngine.ts"/>
+          <nestedClassifier xmi:type="uml:Artifact" xmi:id="A_ZUSTAND"
+                            name=":Zustand Store"/>
+        </nestedNode>
+      </packagedElement>
+
+      <!-- ══════════════════════════════
+           «device» Сервер приложений
+      ══════════════════════════════ -->
+      <packagedElement xmi:type="uml:Node" xmi:id="N_SERVER"
+                       name=":Сервер приложений" visibility="public">
+
+        <!-- «executionEnvironment» frontend-container -->
+        <nestedNode xmi:type="uml:ExecutionEnvironment" xmi:id="N_FE"
+                    name=":frontend-container : 3000">
+          <nestedClassifier xmi:type="uml:Artifact" xmi:id="A_NEXTJS"
+                            name=":Next.js 15 / App Router"/>
+          <nestedClassifier xmi:type="uml:Artifact" xmi:id="A_FSD"
+                            name=":Feature-Sliced Design"/>
+          <nestedClassifier xmi:type="uml:Artifact" xmi:id="A_SWR_FE"
+                            name=":SWR (кеширование)"/>
+        </nestedNode>
+
+        <!-- «executionEnvironment» backend-container -->
+        <nestedNode xmi:type="uml:ExecutionEnvironment" xmi:id="N_BE"
+                    name=":backend-container : 2904">
+          <nestedClassifier xmi:type="uml:Artifact" xmi:id="A_NESTJS"
+                            name=":NestJS REST API"/>
+          <nestedClassifier xmi:type="uml:Artifact" xmi:id="A_EXPERT"
+                            name=":ExpertSystemService"/>
+          <nestedClassifier xmi:type="uml:Artifact" xmi:id="A_ROADMAP"
+                            name=":RoadmapService"/>
+          <nestedClassifier xmi:type="uml:Artifact" xmi:id="A_COMPILER"
+                            name=":CompilerService (sandbox)"/>
+          <nestedClassifier xmi:type="uml:Artifact" xmi:id="A_AUTH"
+                            name=":AuthModule (JWT + Passport)"/>
+          <nestedClassifier xmi:type="uml:Artifact" xmi:id="A_TYPEORM"
+                            name=":TypeORM"/>
+        </nestedNode>
+
+        <!-- «executionEnvironment» postgres-container -->
+        <nestedNode xmi:type="uml:ExecutionEnvironment" xmi:id="N_DB"
+                    name=":postgres-container : 5432">
+          <nestedClassifier xmi:type="uml:Artifact" xmi:id="A_PG"
+                            name=":PostgreSQL (12 таблиц)"/>
+        </nestedNode>
+
+      </packagedElement>
+
+      <!-- ══════════════════════════════
+           «device» Google Cloud
+      ══════════════════════════════ -->
+      <packagedElement xmi:type="uml:Node" xmi:id="N_CLOUD"
+                       name=":Google Cloud" visibility="public">
+        <nestedNode xmi:type="uml:ExecutionEnvironment" xmi:id="N_GEMINI_ENV"
+                    name=":Google AI API">
+          <nestedClassifier xmi:type="uml:Artifact" xmi:id="A_GEMINI"
+                            name=":Gemini 2.0 Flash API"/>
+        </nestedNode>
+      </packagedElement>
+
+      <!-- ══════════════════════════════
+           СВЯЗИ
+      ══════════════════════════════ -->
+
+      <!-- Браузер → Сервер (HTTPS :443) -->
+      <packagedElement xmi:type="uml:CommunicationPath" xmi:id="CP_BR_SRV"
+                       name="HTTPS :443">
+        <memberEnd xmi:idref="CE_BR_1"/>
+        <ownedEnd xmi:type="uml:Property" xmi:id="CE_BR_1"
+                  type="N_BROWSER" association="CP_BR_SRV"/>
+        <ownedEnd xmi:type="uml:Property" xmi:id="CE_BR_2"
+                  type="N_FE" association="CP_BR_SRV"/>
+      </packagedElement>
+
+      <!-- frontend → backend (HTTP :2904) -->
+      <packagedElement xmi:type="uml:CommunicationPath" xmi:id="CP_FE_BE"
+                       name="HTTP :2904 (Docker network)">
+        <memberEnd xmi:idref="CE_FE_1"/>
+        <ownedEnd xmi:type="uml:Property" xmi:id="CE_FE_1"
+                  type="N_FE" association="CP_FE_BE"/>
+        <ownedEnd xmi:type="uml:Property" xmi:id="CE_FE_2"
+                  type="N_BE" association="CP_FE_BE"/>
+      </packagedElement>
+
+      <!-- backend → PostgreSQL (TCP :5432) -->
+      <packagedElement xmi:type="uml:CommunicationPath" xmi:id="CP_BE_DB"
+                       name="TCP :5432 (Docker network)">
+        <memberEnd xmi:idref="CE_BE_1"/>
+        <ownedEnd xmi:type="uml:Property" xmi:id="CE_BE_1"
+                  type="N_BE" association="CP_BE_DB"/>
+        <ownedEnd xmi:type="uml:Property" xmi:id="CE_BE_2"
+                  type="N_DB" association="CP_BE_DB"/>
+      </packagedElement>
+
+      <!-- backend → Google Gemini (HTTPS) -->
+      <packagedElement xmi:type="uml:CommunicationPath" xmi:id="CP_BE_GEM"
+                       name="HTTPS / Gemini REST API">
+        <memberEnd xmi:idref="CE_GEM_1"/>
+        <ownedEnd xmi:type="uml:Property" xmi:id="CE_GEM_1"
+                  type="N_BE" association="CP_BE_GEM"/>
+        <ownedEnd xmi:type="uml:Property" xmi:id="CE_GEM_2"
+                  type="N_CLOUD" association="CP_BE_GEM"/>
+      </packagedElement>
+
+    </packagedElement>
+  </uml:Model>
+
+  <!-- EA Extension: стереотипы узлов -->
+  <xmi:Extension extender="Enterprise Architect" extenderID="6.5">
+    <elements>
+      <element xmi:idref="N_BROWSER"    xmi:type="uml:Node" name=":Браузер пользователя"    scope="public"><properties stereotype="device"/></element>
+      <element xmi:idref="N_BROWSER_ENV" xmi:type="uml:ExecutionEnvironment" name=":Веб-браузер"  scope="public"><properties stereotype="executionEnvironment"/></element>
+      <element xmi:idref="N_SERVER"     xmi:type="uml:Node" name=":Сервер приложений"        scope="public"><properties stereotype="device"/></element>
+      <element xmi:idref="N_FE"         xmi:type="uml:ExecutionEnvironment" name=":frontend-container : 3000" scope="public"><properties stereotype="executionEnvironment"/></element>
+      <element xmi:idref="N_BE"         xmi:type="uml:ExecutionEnvironment" name=":backend-container : 2904"  scope="public"><properties stereotype="executionEnvironment"/></element>
+      <element xmi:idref="N_DB"         xmi:type="uml:ExecutionEnvironment" name=":postgres-container : 5432" scope="public"><properties stereotype="executionEnvironment"/></element>
+      <element xmi:idref="N_CLOUD"      xmi:type="uml:Node" name=":Google Cloud"             scope="public"><properties stereotype="device"/></element>
+      <element xmi:idref="N_GEMINI_ENV" xmi:type="uml:ExecutionEnvironment" name=":Google AI API" scope="public"><properties stereotype="executionEnvironment"/></element>
+    </elements>
+  </xmi:Extension>
+
+</xmi:XMI>

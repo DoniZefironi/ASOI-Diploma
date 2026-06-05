@@ -37,6 +37,10 @@ services:
       LC_ALL: en_US.UTF-8
     ports:
       - "2904:2904"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    group_add:
+      - "0"
     depends_on:
       db:
         condition: service_healthy
