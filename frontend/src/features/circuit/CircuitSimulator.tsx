@@ -269,7 +269,7 @@ export default function CircuitSimulator({ starterCircuit, onCircuitSubmit, subm
                     onClick={() => handleAddNode(type)}
                     onMouseEnter={() => setTooltip(hint)}
                     onMouseLeave={() => setTooltip(null)}
-                    className="w-full text-left px-2 py-1.5 rounded-md text-xs text-gray-300 hover:bg-gray-700 hover:text-white transition-colors flex items-center gap-2 group"
+                    className="w-full text-left px-2 py-1.5 rounded-md text-sm text-gray-300 hover:bg-gray-700 hover:text-white transition-colors flex items-center gap-2 group"
                   >
                     <span className="w-2 h-2 rounded-full bg-current opacity-40 group-hover:opacity-100 shrink-0" style={{ backgroundColor: getCategoryColor(category) }} />
                     {label}

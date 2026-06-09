@@ -371,7 +371,7 @@ function ScheduleList({ groupId }: { groupId: number }) {
         <Link
           key={item.id}
           href={`/schedule/${item.id}`}
-          className="block p-3 bg-gh-canvas rounded-lg hover:bg-gray-800 transition-colors"
+          className="block p-3 bg-gh-canvas rounded-lg hover:bg-white-800 transition-colors"
         >
           <div className="flex justify-between items-start">
             <div>

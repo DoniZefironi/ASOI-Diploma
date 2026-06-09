@@ -155,7 +155,7 @@ export const CourseCardWithRegistration = ({ course, index }: CourseCardWithRegi
   const cfg = categoryConfig[course.category] ?? { icon: '📖', bg: 'bg-gray-500/20', border: 'border-l-gray-500' };
 
   return (
-    <div className={`border-l-4 ${cfg.border} bg-gray-800/60 hover:bg-gray-800 transition-colors duration-200`}>
+    <div className={`border-l-4 ${cfg.border} bg-gh-canvas-overlay hover:bg-gh-canvas-subtle transition-colors duration-200`}>
       {/* Кликабельная строка — раскрывает описание */}
       <div
         className="flex items-center gap-4 px-5 py-4 cursor-pointer select-none"
@@ -169,24 +169,24 @@ export const CourseCardWithRegistration = ({ course, index }: CourseCardWithRegi
           <div className="flex items-center gap-2 flex-wrap">
             <h3 className="font-semibold text-gh-fg text-base leading-tight truncate">{course.title}</h3>
             {course.category === 'language' && (
-              <span className="text-xs bg-purple-900/50 text-purple-300 border border-purple-700/50 rounded-full px-2 py-0.5 shrink-0">
+              <span className="text-xs bg-gh-done-subtle text-gh-done border border-gh-done-muted rounded-full px-2 py-0.5 shrink-0">
                 🌍 Доступно всем
               </span>
             )}
           </div>
-          <p className="text-gray-400 text-sm mt-0.5 line-clamp-1">{course.description}</p>
+          <p className="text-gh-fg-muted text-sm mt-0.5 line-clamp-1">{course.description}</p>
         </div>
 
         <div className="flex items-center gap-3 flex-shrink-0">
           {course.duration && (
-            <span className="text-gray-500 text-sm whitespace-nowrap hidden sm:block">{course.duration}ч</span>
+            <span className="text-gh-fg-subtle text-sm whitespace-nowrap hidden sm:block">{course.duration}ч</span>
           )}
           <span className={`text-xs px-2 py-0.5 rounded-full font-medium whitespace-nowrap hidden md:block ${course.levelColor}`}>
             {course.level}
           </span>
           <ChevronDown
             size={16}
-            className="text-gray-400 transition-transform duration-200 flex-shrink-0"
+            className="text-gh-fg-muted transition-transform duration-200 flex-shrink-0"
             style={{ transform: expanded ? 'rotate(180deg)' : 'rotate(0deg)' }}
           />
           <Button
@@ -203,39 +203,39 @@ export const CourseCardWithRegistration = ({ course, index }: CourseCardWithRegi
 
       {/* Раскрытое описание */}
       {expanded && (
-        <div className="px-5 pb-4 ml-15 border-t border-gray-700/50 pt-3">
-          <p className="text-gray-300 text-sm leading-relaxed">{course.description}</p>
+        <div className="px-5 pb-4 ml-15 border-t border-gh-border-muted pt-3">
+          <p className="text-gh-fg text-sm leading-relaxed">{course.description}</p>
           {course.duration && (
-            <p className="text-gray-500 text-xs mt-2">Продолжительность: {course.duration} часов</p>
+            <p className="text-gh-fg-muted text-xs mt-2">Продолжительность: {course.duration} часов</p>
           )}
         </div>
       )}
 
 
       {registrationError && (
-        <div className="mx-5 mb-3 p-2 bg-red-900 border border-red-700 text-red-200 rounded text-sm">
+        <div className="mx-5 mb-3 p-2 bg-gh-danger-subtle border border-gh-danger-muted text-gh-danger rounded text-sm">
           {registrationError}
         </div>
       )}
 
       {successMessage && (
-        <div className="mx-5 mb-3 p-2 bg-green-900 border border-green-700 text-green-200 rounded text-sm">
+        <div className="mx-5 mb-3 p-2 bg-gh-success-subtle border border-gh-success-muted text-gh-success rounded text-sm">
           {successMessage}
         </div>
       )}
 
       {showGroups && (
         <div className="px-5 pb-4 space-y-2 ml-15">
-          {groupsLoading && <p className="text-gray-400 text-sm py-1">Загрузка групп...</p>}
+          {groupsLoading && <p className="text-gh-fg-muted text-sm py-1">Загрузка групп...</p>}
 
           {groupsError && (
-            <div className="p-2 bg-red-900 border border-red-700 text-red-200 rounded text-sm">
+            <div className="p-2 bg-gh-danger-subtle border border-gh-danger-muted text-gh-danger rounded text-sm">
               Ошибка загрузки групп
             </div>
           )}
 
           {!groupsLoading && !groupsError && displayGroups.length === 0 && (
-            <p className="text-gray-400 text-sm py-1">Нет доступных групп</p>
+            <p className="text-gh-fg-muted text-sm py-1">Нет доступных групп</p>
           )}
 
           {displayGroups.map((group) => {
@@ -245,13 +245,13 @@ export const CourseCardWithRegistration = ({ course, index }: CourseCardWithRegi
             return (
               <div
                 key={group.id}
-                className={`flex justify-between items-center p-3 rounded-lg ${
-                  isRejected ? 'bg-red-900/30' : 'bg-gray-700/60'
+                className={`flex justify-between items-center p-3 rounded-lg border ${
+                  isRejected ? 'bg-gh-danger-subtle border-gh-danger-muted' : 'bg-gh-canvas-inset border-gh-border'
                 }`}
               >
                 <div>
-                  <span className="text-white text-sm font-medium block">{group.name}</span>
-                  <span className="text-gray-400 text-xs">
+                  <span className="text-gh-fg text-sm font-medium block">{group.name}</span>
+                  <span className="text-gh-fg-muted text-xs">
                     До {group.maxStudents} студентов
                     {group.startDate && ` · с ${new Date(group.startDate).toLocaleDateString('ru-RU')}`}
                   </span>

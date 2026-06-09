@@ -390,7 +390,6 @@ function Shelf({ books }: { books: Material[] }) {
         borderBottom: 'none',
         minHeight: 210,
         flexWrap: 'nowrap',
-        overflowX: 'auto',
       }}>
         {filled.map((m, i) =>
           m ? (
@@ -664,7 +663,7 @@ export default function LibraryPage() {
                   <div key={si} style={{ marginBottom: 32 }}>
                     <div style={{ display: 'flex', gap: 16, alignItems: 'flex-end', padding: '24px 24px 0',
                       background: S.surface, borderRadius: '8px 8px 0 0', border: `1px solid ${S.border}`,
-                      borderBottom: 'none', minHeight: 210, flexWrap: 'nowrap', overflowX: 'auto' }}>
+                      borderBottom: 'none', minHeight: 210, flexWrap: 'nowrap' }}>
                       {filled.map((t, i) => t
                         ? <VocabBookCard key={t.id} term={t} />
                         : <div key={`ev-${i}`} style={{ width: 120, height: 160, opacity: 0.1 }}>
